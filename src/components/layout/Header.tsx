@@ -45,10 +45,12 @@ export const Header: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-primary via-primary-hover to-accent shadow-lg flex items-center justify-center animate-glow">
-            <span className="text-white font-bold text-xs">R</span>
-          </div>
-          <span className="font-semibold text-foreground text-sm tracking-tight">RGS MVUI</span>
+          <NavLink to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-primary via-primary-hover to-accent shadow-lg flex items-center justify-center animate-glow">
+              <span className="text-white font-bold text-xs">R</span>
+            </div>
+            <span className="font-semibold text-foreground text-sm tracking-tight">RGS MVUI</span>
+          </NavLink>
         </motion.div>
 
         {/* Center Navigation - Floating Tabs */}
