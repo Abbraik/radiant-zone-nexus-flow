@@ -10,7 +10,7 @@ interface ShellProps {
 export const Shell: React.FC<ShellProps> = ({ children }) => {
   return (
     <FeatureFlagProvider>
-      <div className="min-h-screen w-full flex flex-col bg-background">
+      <div className="h-screen w-full flex flex-col bg-background overflow-hidden">
         <Header />
         
         <motion.main

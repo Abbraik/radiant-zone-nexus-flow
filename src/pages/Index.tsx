@@ -54,9 +54,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="h-full w-full relative">
       {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-tertiary" />
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
@@ -65,11 +65,12 @@ const Index = () => {
       </div>
 
       <motion.div 
-        className="relative z-10 max-w-7xl mx-auto p-6 space-y-8"
+        className="relative z-10 h-full flex flex-col max-w-7xl mx-auto p-6"
         variants={containerAnimation}
         initial="hidden"
         animate="visible"
       >
+        <div className="flex-1 flex flex-col justify-center space-y-8">
         {/* Top Row: Status Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Sprint Status Card */}
@@ -246,6 +247,7 @@ const Index = () => {
               </div>
             </Card>
           </motion.div>
+        </div>
         </div>
       </motion.div>
     </div>
