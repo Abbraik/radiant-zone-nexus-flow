@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, User } from 'lucide-react';
+import { ChevronDown, User, BarChart3 } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { Task } from '../../hooks/useTasks';
 import { useFeatureFlags, FeatureFlagChip } from '../layout/FeatureFlagProvider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -10,11 +11,13 @@ import { Button } from '../ui/button';
 interface WorkspaceHeaderProps {
   activeTask: Task | null;
   myTasks: Task[];
+  isDashboard?: boolean;
 }
 
 export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({ 
   activeTask, 
-  myTasks 
+  myTasks,
+  isDashboard = false
 }) => {
   return (
     <motion.header
@@ -22,13 +25,42 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
       animate={{ opacity: 1, y: 0 }}
       className="h-16 bg-glass/70 backdrop-blur-20 border-b border-white/10 px-6 flex items-center justify-between"
     >
-      {/* Left: Logo + Title */}
+      {/* Left: Logo + Title + Navigation */}
       <div className="flex items-center gap-4">
         <div className="text-xl font-semibold text-white">
-          🏛️ Workspace
+          🏛️ {isDashboard ? 'Dashboard' : 'Workspace'}
         </div>
         
-        {activeTask && myTasks.length > 1 && (
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 ml-4">
+          <NavLink
+            to="/workspace"
+            className={({ isActive }) =>
+              `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive && !isDashboard
+                  ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`
+            }
+          >
+            Workspace
+          </NavLink>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                isActive || isDashboard
+                  ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`
+            }
+          >
+            <BarChart3 className="h-4 w-4" />
+            Dashboard
+          </NavLink>
+        </div>
+        
+        {activeTask && myTasks.length > 1 && !isDashboard && (
           <Select value={activeTask.id}>
             <SelectTrigger className="w-64 bg-white/10 border-white/20 text-white">
               <SelectValue />
@@ -49,11 +81,19 @@ export const WorkspaceHeader: React.FC<WorkspaceHeaderProps> = ({
         )}
       </div>
 
-      {/* Center: Task Count */}
-      {myTasks.length > 0 && (
+      {/* Center: Task Count or Dashboard Info */}
+      {!isDashboard && myTasks.length > 0 && (
         <div className="flex items-center gap-2 text-sm text-gray-300">
           <Badge variant="secondary" className="bg-white/10 text-white">
             {myTasks.length} active task{myTasks.length !== 1 ? 's' : ''}
+          </Badge>
+        </div>
+      )}
+      
+      {isDashboard && (
+        <div className="flex items-center gap-2 text-sm text-gray-300">
+          <Badge variant="secondary" className="bg-teal-500/20 text-teal-300">
+            Personal Analytics
           </Badge>
         </div>
       )}

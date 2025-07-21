@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Shell } from "./components/layout/Shell";
 import { FeatureFlagGuard, FeatureFlagProvider } from "./components/layout/FeatureFlagProvider";
 import { Workspace } from "./components/workspace/Workspace";
+import { WorkspaceHeader } from "./components/workspace/WorkspaceHeader";
+import Dashboard from "./pages/Dashboard";
 import { ThinkZone } from "./pages/ThinkZone";
 import { ActZone } from "./pages/ActZone";
 import { MonitorZone } from "./pages/MonitorZone";
@@ -50,6 +52,14 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Workspace />} />
               <Route path="/workspace" element={<Workspace />} />
+              <Route path="/dashboard" element={
+                <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                  <WorkspaceHeader activeTask={null} myTasks={[]} isDashboard={true} />
+                  <div className="flex-1 overflow-auto">
+                    <Dashboard />
+                  </div>
+                </div>
+              } />
               <Route path="*" element={<Workspace />} />
             </Routes>
           </FeatureFlagGuard>
