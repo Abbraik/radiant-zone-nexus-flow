@@ -1,158 +1,235 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Lightbulb, Play, TrendingUp, Download, Zap, BarChart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Play, 
+  CheckCircle,
+  ChevronDown,
+  Download,
+  Save,
+  Settings
+} from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Switch } from '../components/ui/switch';
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Label } from '../components/ui/label';
-import { Sparkline } from '../components/ui/sparkline';
-import { useMockInsights, useMockMetrics } from '../hooks/use-mock-data';
+import { Slider } from '../components/ui/slider';
+import { toast } from '../hooks/use-toast';
 
-const simulationTypes = [
-  { value: 'monte-carlo', label: 'Monte Carlo Analysis', description: 'Risk & probability modeling' },
-  { value: 'scenario', label: 'Scenario Planning', description: 'What-if simulations' },
-  { value: 'optimization', label: 'Parameter Optimization', description: 'Find optimal configurations' }
+// Mock insights data
+const mockInsights = [
+  {
+    id: 'insight-1',
+    title: 'Loop A overfire at Wk2',
+    summary: 'Customer onboarding loop shows 127% tension spike during week 2 implementation phases.',
+    timestamp: '2 hours ago',
+    category: 'pattern'
+  },
+  {
+    id: 'insight-2', 
+    title: 'API throttling reduces errors',
+    summary: 'Rate limiting intervention decreased system failures by 43% while maintaining throughput.',
+    timestamp: '5 hours ago',
+    category: 'opportunity'
+  },
+  {
+    id: 'insight-3',
+    title: 'Team velocity correlation',
+    summary: 'Sprint rhythm timing correlates with team satisfaction scores (r=0.82).',
+    timestamp: '1 day ago',
+    category: 'discovery'
+  }
 ];
 
-const shockTypes = [
-  { value: 'demand-spike', label: 'Demand Spike', description: '3x normal load' },
-  { value: 'system-failure', label: 'System Failure', description: 'Critical component down' },
-  { value: 'resource-constraint', label: 'Resource Constraint', description: '50% capacity reduction' }
+const parameterOptions = [
+  { value: 'tension', label: 'Tension Level' },
+  { value: 'srt', label: 'Sprint Rhythm Time' },
+  { value: 'leverage', label: 'Leverage Point' },
+  { value: 'throughput', label: 'System Throughput' }
 ];
 
 export const InnovateLearnZone: React.FC = () => {
-  const { data: insights = [] } = useMockInsights();
-  const { data: metrics = [] } = useMockMetrics();
-  const [selectedSimulation, setSelectedSimulation] = useState('');
-  const [selectedShock, setSelectedShock] = useState('');
+  const [currentInsight, setCurrentInsight] = useState(0);
+  const [paramX, setParamX] = useState('');
+  const [paramY, setParamY] = useState('');
+  const [intensity, setIntensity] = useState([50]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [lastResult, setLastResult] = useState<number | null>(null);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentInsight((prev) => (prev + 1) % mockInsights.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleRunSimulation = () => {
-    console.log('Running simulation:', selectedSimulation);
+    if (!paramX || !paramY) {
+      toast({
+        title: "Parameters Required",
+        description: "Please select both X and Y parameters",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const result = Math.random() * 10 - 5; // Random delta between -5 and +5
+    setLastResult(result);
+    
+    toast({
+      title: "Simulation Complete",
+      description: `Δ=${result > 0 ? '+' : ''}${result.toFixed(1)}%`,
+      action: (
+        <button className="underline">Capture as Insight</button>
+      )
+    });
   };
 
   const handleShockRehearsal = () => {
-    console.log('Running shock rehearsal:', selectedShock);
+    toast({
+      title: "Shock Rehearsal Started",
+      description: "Running stress test simulation...",
+    });
   };
 
-  const lastRunMetric = metrics[0];
-  const deltaValue = lastRunMetric ? ((Math.random() - 0.5) * 2).toFixed(1) : '0';
+  const nextInsight = () => {
+    setCurrentInsight((prev) => (prev + 1) % mockInsights.length);
+  };
+
+  const prevInsight = () => {
+    setCurrentInsight((prev) => (prev - 1 + mockInsights.length) % mockInsights.length);
+  };
 
   return (
-    <div className="space-y-6 animate-entrance">
-      {/* Header */}
-      <motion.div
-        initial={{ y: -10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="text-center space-y-2"
-      >
-        <h1 className="text-3xl font-bold text-foreground flex items-center justify-center gap-3">
-          <Lightbulb className="h-8 w-8 text-primary" />
-          Innovate + Learn Zone
-        </h1>
-        <p className="text-foreground-muted max-w-2xl mx-auto">
-          Discover insights, run experiments, and learn from system behavior patterns
-        </p>
-      </motion.div>
+    <div className="h-full relative overflow-hidden">
+      {/* Animated Backdrop */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Data-stream particle effect */}
+        <div className="absolute inset-0 opacity-10">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-teal-400 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                x: [0, Math.random() * 200 - 100],
+                y: [0, Math.random() * 200 - 100],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: Math.random() * 10 + 5,
+                repeat: Infinity,
+                delay: Math.random() * 5,
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
-      {/* Two-Column Layout */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left Column - Insight Feed (60%) */}
-        <div className="lg:col-span-2">
-          <Card className="glass rounded-2xl shadow-lg p-6 h-full">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">Insight Feed</h3>
-                <Badge variant="secondary" className="bg-primary/20 text-primary">
-                  {insights.length} Active
-                </Badge>
+      <div className="relative z-10 h-full overflow-auto p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Hero Carousel: Insight Feed */}
+          <motion.div
+            className="max-w-4xl mx-auto p-4 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-white">Latest Insights</h2>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={prevInsight}
+                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-white" />
+                  </button>
+                  <button
+                    onClick={nextInsight}
+                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </button>
+                </div>
               </div>
 
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {insights.map((insight, index) => (
+              <div className="relative h-40 overflow-hidden">
+                <AnimatePresence mode="wait">
                   <motion.div
-                    key={insight.id}
-                    initial={{ opacity: 0, x: -10 }}
+                    key={currentInsight}
+                    className="absolute inset-0 bg-white/10 rounded-xl p-4 flex flex-col justify-between"
+                    initial={{ opacity: 0, x: 100 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-glass-secondary rounded-lg p-4 hover:bg-glass-accent transition-colors border border-border-subtle"
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.3, type: "spring" }}
+                    whileHover={{ y: -4, boxShadow: '0 8px 25px rgba(0,0,0,0.3)' }}
                   >
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge
-                              variant="outline"
-                              className={`text-xs ${
-                                insight.category === 'opportunity' ? 'border-success text-success' :
-                                insight.category === 'risk' ? 'border-destructive text-destructive' :
-                                insight.category === 'pattern' ? 'border-info text-info' :
-                                'border-warning text-warning'
-                              }`}
-                            >
-                              {insight.category}
-                            </Badge>
-                            <Badge variant="secondary" className="text-xs">
-                              {Math.round(insight.confidence * 100)}% confidence
-                            </Badge>
-                          </div>
-                          <h4 className="font-medium text-foreground mb-1">
-                            {insight.title}
-                          </h4>
-                          <p className="text-sm text-foreground-muted">
-                            {insight.summary}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-foreground-muted">
-                          {insight.createdAt.toLocaleDateString()}
-                        </span>
-                        <Button size="sm" variant="outline" className="text-xs">
-                          <Play className="h-3 w-3 mr-1" />
-                          Try Experiment
-                        </Button>
-                      </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        {mockInsights[currentInsight].title}
+                      </h3>
+                      <p className="text-sm text-gray-300 line-clamp-2">
+                        {mockInsights[currentInsight].summary}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {mockInsights[currentInsight].timestamp}
+                      </span>
+                      <button className="text-teal-400 underline text-sm flex items-center space-x-1 hover:text-teal-300 transition-colors">
+                        <span>Try Experiment</span>
+                        <Play className="w-3 h-3" />
+                      </button>
                     </div>
                   </motion.div>
-                ))}
+                </AnimatePresence>
               </div>
 
-              {insights.length === 0 && (
-                <div className="text-center py-8 text-foreground-muted">
-                  <Lightbulb className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No new insights available</p>
-                </div>
-              )}
+              {/* Carousel indicators */}
+              <div className="flex justify-center space-x-2 mt-4">
+                {mockInsights.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentInsight(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentInsight ? 'bg-teal-400' : 'bg-white/30'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-          </Card>
-        </div>
+          </motion.div>
 
-        {/* Right Column - Quick-Run & Last-Run (40%) */}
-        <div className="space-y-6">
-          {/* Quick-Run Panel */}
-          <Card className="glass rounded-2xl shadow-lg p-6">
+          {/* Experiment Studio Panel */}
+          <motion.div
+            className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Parameters Column */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
-                Quick-Run
-              </h3>
-
+              <h3 className="text-xl font-semibold text-white">New Experiment</h3>
+              
               <div className="space-y-4">
                 <div>
-                  <Label className="text-sm">Simulation Type</Label>
-                  <Select value={selectedSimulation} onValueChange={setSelectedSimulation}>
-                    <SelectTrigger className="glass-secondary mt-2">
-                      <SelectValue placeholder="Select simulation" />
+                  <label className="text-gray-300 text-sm mb-2 block">Parameter X</label>
+                  <Select value={paramX} onValueChange={setParamX}>
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                      <SelectValue placeholder="Select parameter X" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {simulationTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          <div>
-                            <div className="font-medium">{type.label}</div>
-                            <div className="text-xs text-muted-foreground">{type.description}</div>
-                          </div>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      {parameterOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value} className="text-white hover:bg-slate-700">
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -160,100 +237,181 @@ export const InnovateLearnZone: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label className="text-sm">Shock Type</Label>
-                  <Select value={selectedShock} onValueChange={setSelectedShock}>
-                    <SelectTrigger className="glass-secondary mt-2">
-                      <SelectValue placeholder="Select shock scenario" />
+                  <label className="text-gray-300 text-sm mb-2 block">Parameter Y</label>
+                  <Select value={paramY} onValueChange={setParamY}>
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                      <SelectValue placeholder="Select parameter Y" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {shockTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          <div>
-                            <div className="font-medium">{type.label}</div>
-                            <div className="text-xs text-muted-foreground">{type.description}</div>
-                          </div>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      {parameterOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value} className="text-white hover:bg-slate-700">
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-gray-300 text-sm">Intensity</label>
+                    <motion.div
+                      className="bg-teal-500 text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-medium"
+                      key={intensity[0]}
+                      initial={{ scale: 0.8 }}
+                      animate={{ scale: [0.8, 1.2, 1] }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {intensity[0]}
+                    </motion.div>
+                  </div>
+                  <div className="px-3">
+                    <Slider
+                      value={intensity}
+                      onValueChange={setIntensity}
+                      max={100}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
                   <Button
                     onClick={handleRunSimulation}
-                    disabled={!selectedSimulation}
-                    className="w-full bg-primary hover:bg-primary-hover"
+                    className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-3 px-6"
                   >
-                    <BarChart className="h-4 w-4 mr-2" />
                     Run Simulation
                   </Button>
                   
-                  <Button
+                  <button
                     onClick={handleShockRehearsal}
-                    disabled={!selectedShock}
-                    variant="outline"
-                    className="w-full"
+                    className="w-full text-teal-300 underline text-sm hover:text-teal-200 transition-colors flex items-center justify-center space-x-1"
                   >
-                    <Zap className="h-4 w-4 mr-2" />
-                    Shock-Rehearsal
-                  </Button>
+                    <span>Run Shock-Rehearsal</span>
+                    <Play className="w-3 h-3" />
+                  </button>
                 </div>
               </div>
             </div>
-          </Card>
 
-          {/* Last-Run Preview */}
-          <Card className="glass rounded-2xl shadow-lg p-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Last Run
-              </h3>
-
-              {lastRunMetric ? (
-                <div className="space-y-3">
+            {/* Live Preview Column */}
+            <div className="lg:col-span-2 space-y-4">
+              <h3 className="text-xl font-semibold text-white">Live Preview</h3>
+              
+              <motion.div
+                className="w-full h-48 bg-white/10 rounded-lg flex items-center justify-center relative"
+                whileHover={{ scale: 1.02 }}
+              >
+                {lastResult !== null ? (
                   <div className="text-center">
-                    <Sparkline
-                      data={lastRunMetric.sparklineData}
-                      width={120}
-                      height={40}
-                      color="#3b82f6"
-                      fillColor="#3b82f6"
-                      className="mx-auto"
-                    />
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="text-sm text-foreground-muted">{lastRunMetric.name}</div>
-                    <div className="text-lg font-bold text-foreground">
-                      {lastRunMetric.value} {lastRunMetric.unit}
+                    <div className="text-4xl font-bold text-white mb-2">
+                      {lastResult > 0 ? '+' : ''}{lastResult.toFixed(1)}%
                     </div>
-                    <div className={`text-sm font-medium ${
-                      parseFloat(deltaValue) > 0 ? 'text-success' : 'text-destructive'
-                    }`}>
-                      {parseFloat(deltaValue) > 0 ? '+' : ''}{deltaValue}% change
-                    </div>
+                    <div className="text-gray-300">Performance Change</div>
+                    <motion.div
+                      className="absolute top-4 right-4 bg-teal-500 text-white rounded-full px-3 py-1 text-sm"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      Latest Result
+                    </motion.div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Button variant="outline" size="sm" className="w-full text-xs">
-                      <Download className="h-3 w-3 mr-1" />
-                      ORS Bundle
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full text-xs">
-                      <Download className="h-3 w-3 mr-1" />
-                      Lesson Summary
-                    </Button>
+                ) : (
+                  <div className="text-center text-gray-400">
+                    <div className="text-6xl mb-2">📊</div>
+                    <div>Run a simulation to see results</div>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-6 text-foreground-muted">
-                  <BarChart className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No recent runs</p>
-                </div>
-              )}
+                )}
+              </motion.div>
             </div>
-          </Card>
+          </motion.div>
+
+          {/* Advanced Settings Accordion */}
+          <div className="max-w-4xl mx-auto">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-teal-300 underline text-sm hover:text-teal-200 transition-colors"
+              >
+                Advanced Options
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {showAdvanced && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden mt-4"
+                >
+                  <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-6 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-white">Advanced Options</h3>
+                      <motion.div
+                        animate={{ rotate: showAdvanced ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      </motion.div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">ORS Export Options</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Switch />
+                            <span className="text-gray-300 text-sm">Loop Data</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Switch />
+                            <span className="text-gray-300 text-sm">Simulation Log</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Switch />
+                            <span className="text-gray-300 text-sm">Metrics CSV</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Knowledge Graph</h4>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-300">Enable 3D Graph</span>
+                          <Switch />
+                        </div>
+                        <Button variant="outline" className="border-white/30 text-white w-full">
+                          <Settings className="w-4 h-4 mr-2" />
+                          Open Graph
+                        </Button>
+                      </div>
+
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Template Manager</h4>
+                        <Select>
+                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                            <SelectValue placeholder="Load template" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-600">
+                            <SelectItem value="default" className="text-white">Default Setup</SelectItem>
+                            <SelectItem value="stress" className="text-white">Stress Test</SelectItem>
+                            <SelectItem value="optimization" className="text-white">Optimization Run</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline" className="border-white/30 text-white w-full">
+                          <Save className="w-4 h-4 mr-2" />
+                          Save as Template
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
