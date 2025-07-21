@@ -133,6 +133,7 @@ export type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
 // Feature Flag Types
 export interface FeatureFlags {
   newRgsUI: boolean;
+  newTaskDrivenUI: boolean;
   cldStudio: boolean;
   advancedAnalytics: boolean;
   mockDataMode: boolean;
