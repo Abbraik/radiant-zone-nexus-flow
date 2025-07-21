@@ -1,308 +1,367 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { BarChart3, Filter, TrendingUp, TrendingDown, Minus, Download, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Search, 
+  Eye, 
+  Wrench, 
+  ChevronDown, 
+  X,
+  Filter,
+  Calendar,
+  Download,
+  Bell
+} from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
-import { Label } from '../components/ui/label';
-import { Sparkline } from '../components/ui/sparkline';
-import { useMockLoops, useMockMetrics } from '../hooks/use-mock-data';
-import type { TensionLevel, DEBandLevel } from '../types';
+import { Badge } from '../components/ui/badge';
 
-const pulseFilterItems = [
-  { id: 'green', label: 'Healthy', emoji: '🟢', color: 'text-success' },
-  { id: 'yellow', label: 'Warning', emoji: '🟡', color: 'text-warning' },
-  { id: 'red', label: 'Critical', emoji: '🔴', color: 'text-destructive' },
-  { id: 'scheduled', label: 'Scheduled', emoji: '📅', color: 'text-info' }
+// Mock data
+const mockLoops = [
+  {
+    id: 'loop-1',
+    name: 'Customer Onboarding',
+    triScore: 8.5,
+    deBand: 'green',
+    trend: [7.2, 7.8, 8.1, 8.3, 8.5],
+    status: 'healthy',
+    lastCheck: '2 hours ago'
+  },
+  {
+    id: 'loop-2', 
+    name: 'API Performance',
+    triScore: 6.2,
+    deBand: 'yellow',
+    trend: [7.1, 6.8, 6.5, 6.3, 6.2],
+    status: 'warning',
+    lastCheck: '1 hour ago'
+  },
+  {
+    id: 'loop-3',
+    name: 'Payment Processing',
+    triScore: 3.1,
+    deBand: 'red', 
+    trend: [5.2, 4.8, 4.1, 3.5, 3.1],
+    status: 'critical',
+    lastCheck: '30 minutes ago'
+  },
+  {
+    id: 'loop-4',
+    name: 'User Engagement',
+    triScore: 7.8,
+    deBand: 'green',
+    trend: [7.0, 7.2, 7.5, 7.6, 7.8],
+    status: 'healthy',
+    lastCheck: '1 hour ago'
+  },
+  {
+    id: 'loop-5',
+    name: 'Data Pipeline',
+    triScore: 5.4,
+    deBand: 'yellow',
+    trend: [6.1, 5.9, 5.7, 5.6, 5.4],
+    status: 'warning',
+    lastCheck: '45 minutes ago'
+  }
 ];
 
-const getTrendIcon = (trend: string) => {
-  switch (trend) {
-    case 'up':
-      return <TrendingUp className="h-4 w-4 text-success" />;
-    case 'down':
-      return <TrendingDown className="h-4 w-4 text-destructive" />;
-    default:
-      return <Minus className="h-4 w-4 text-foreground-muted" />;
-  }
-};
+const TrendSparkline: React.FC<{ data: number[]; status: string }> = ({ data, status }) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  
+  const points = data.map((value, index) => ({
+    x: (index / (data.length - 1)) * 80,
+    y: 20 - ((value - min) / range) * 16
+  }));
 
-const getDEBandEmoji = (band: DEBandLevel) => {
-  switch (band) {
-    case 'red': return '🔴';
-    case 'orange': return '🟠';
-    case 'yellow': return '🟡';
-    case 'green': return '🟢';
-    default: return '⚪';
-  }
+  const pathData = points.map((point, index) => 
+    `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+  ).join(' ');
+
+  const strokeColor = status === 'critical' ? '#ef4444' : 
+                     status === 'warning' ? '#f59e0b' : '#10b981';
+
+  return (
+    <svg width="80" height="24" className="overflow-visible">
+      <motion.path
+        d={pathData}
+        fill="none"
+        stroke={strokeColor}
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      />
+      {points.map((point, index) => (
+        <motion.circle
+          key={index}
+          cx={point.x}
+          cy={point.y}
+          r="2"
+          fill={strokeColor}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: index * 0.1, duration: 0.3 }}
+        />
+      ))}
+    </svg>
+  );
 };
 
 export const MonitorZone: React.FC = () => {
-  const { data: loops = [] } = useMockLoops();
-  const { data: metrics = [] } = useMockMetrics();
+  const [searchQuery, setSearchQuery] = useState('');
   const [showLowTRI, setShowLowTRI] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [selectedLoop, setSelectedLoop] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  const toggleFilter = (filterId: string) => {
-    setActiveFilters(prev =>
-      prev.includes(filterId)
-        ? prev.filter(id => id !== filterId)
-        : [...prev, filterId]
-    );
-  };
-
-  const filteredLoops = loops.filter(loop => {
-    if (showLowTRI && loop.triScore > 3) return false;
-    return true;
+  const filteredLoops = mockLoops.filter(loop => {
+    const matchesSearch = loop.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = !showLowTRI || loop.triScore <= 3;
+    const matchesStatus = !activeFilter || loop.status === activeFilter;
+    return matchesSearch && matchesFilter && matchesStatus;
   });
 
+  const statusCounts = {
+    healthy: mockLoops.filter(l => l.status === 'healthy').length,
+    warning: mockLoops.filter(l => l.status === 'warning').length,
+    critical: mockLoops.filter(l => l.status === 'critical').length
+  };
+
+  const handleRowClick = (loopId: string) => {
+    setSelectedLoop(loopId);
+  };
+
   return (
-    <div className="space-y-6 animate-entrance">
-      {/* Header */}
-      <motion.div
-        initial={{ y: -10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="text-center space-y-2"
-      >
-        <h1 className="text-3xl font-bold text-foreground flex items-center justify-center gap-3">
-          <BarChart3 className="h-8 w-8 text-primary" />
-          Monitor Zone
-        </h1>
-        <p className="text-foreground-muted max-w-2xl mx-auto">
-          Track loop performance, monitor TRI scores, and analyze system health indicators
-        </p>
-      </motion.div>
-
-      {/* Main Panel */}
-      <Card className="zone-panel-full">
-        <div className="space-y-6">
-          {/* PulseBar - Status Filters */}
+    <div className="h-full relative overflow-hidden">
+      {/* Animated Backdrop */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="absolute inset-0 opacity-5">
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-glass-secondary rounded-xl p-4"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-primary" />
-                <h3 className="font-medium text-foreground">System Pulse</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="low-tri"
-                  checked={showLowTRI}
-                  onCheckedChange={setShowLowTRI}
-                />
-                <Label htmlFor="low-tri" className="text-sm text-foreground-muted">
-                  Show TRI ≤ 3 only
-                </Label>
-              </div>
-            </div>
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-teal-500/20 to-blue-500/20 blur-3xl"
+            animate={{ 
+              x: [0, 80, 0],
+              y: [0, -40, 0],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+      </div>
 
-            <div className="flex flex-wrap gap-2">
-              {pulseFilterItems.map((item) => (
-                <motion.button
-                  key={item.id}
-                  onClick={() => toggleFilter(item.id)}
-                  className={`
-                    flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-fast
-                    ${activeFilters.includes(item.id)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-glass-primary text-foreground-muted hover:text-foreground hover:bg-glass-accent'
-                    }
-                  `}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span>{item.emoji}</span>
-                  <span>{item.label}</span>
-                  <Badge variant="secondary" className="ml-1 bg-white/20 text-xs">
-                    {Math.floor(Math.random() * 10 + 1)}
-                  </Badge>
-                </motion.button>
-              ))}
+      <div className="relative z-10 h-full overflow-auto p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Hero Section: PulseBar Overview */}
+          <motion.div
+            className="w-full max-w-4xl mx-auto p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold text-white">System Pulse</h2>
+              
+              <div className="flex items-center space-x-4">
+                {[
+                  { status: 'healthy', icon: '🟢', count: statusCounts.healthy, label: 'Healthy' },
+                  { status: 'warning', icon: '🟡', count: statusCounts.warning, label: 'Warning' },
+                  { status: 'critical', icon: '🔴', count: statusCounts.critical, label: 'Critical' },
+                ].map((chip, index) => (
+                  <motion.button
+                    key={chip.status}
+                    onClick={() => setActiveFilter(activeFilter === chip.status ? null : chip.status)}
+                    className={`
+                      flex items-center space-x-2 px-4 py-2 rounded-full border border-white/20 transition-all duration-200
+                      ${activeFilter === chip.status ? 'bg-white/20 border-teal-500' : 'bg-white/10 hover:bg-white/15'}
+                    `}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <span className="text-xl">{chip.icon}</span>
+                    <span className="text-white font-medium">{chip.count} {chip.label}</span>
+                  </motion.button>
+                ))}
+                
+                <div className="flex items-center space-x-2 px-4 py-2 bg-white/10 rounded-full border border-white/20">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  <span className="text-white text-sm">Next check in 5 days</span>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          {/* Loop Performance Table */}
-          <div className="space-y-4">
+          {/* Filter & Search Bar */}
+          <motion.div
+            className="p-4 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">Loop Performance</h3>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export CSV
-                </Button>
-                <Button variant="outline" size="sm">
-                  Review TRI
-                </Button>
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search loops..."
+                    className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400 rounded-full w-80"
+                  />
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={showLowTRI}
+                    onCheckedChange={setShowLowTRI}
+                  />
+                  <span className="text-white text-sm">Show TRI ≤ 3</span>
+                </div>
               </div>
+
+              {(searchQuery || showLowTRI || activeFilter) && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setShowLowTRI(false);
+                    setActiveFilter(null);
+                  }}
+                  className="text-teal-300 underline text-sm hover:text-teal-200 transition-colors"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Core Loop Table */}
+          <motion.div
+            className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            {/* Table Header */}
+            <div className="grid grid-cols-5 gap-4 p-4 border-b border-white/20 text-gray-300 font-medium">
+              <div className="col-span-2">Loop Name</div>
+              <div className="text-center">Trend</div>
+              <div className="text-center">DE-Band</div>
+              <div className="text-center">TRI Score</div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border-subtle">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-foreground-muted">Loop Name</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-foreground-muted">Performance</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-foreground-muted">DE-Band</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-foreground-muted">TRI Score</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-foreground-muted">Trend</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-foreground-muted">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredLoops.map((loop, index) => {
-                    const loopMetrics = metrics.filter(m => m.loopId === loop.id);
-                    const primaryMetric = loopMetrics[0];
+            {/* Table Rows */}
+            <div className="divide-y divide-white/10">
+              {filteredLoops.map((loop, index) => (
+                <motion.div
+                  key={loop.id}
+                  className="grid grid-cols-5 gap-4 p-4 hover:bg-white/10 cursor-pointer transition-all duration-150"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -2, boxShadow: '0 8px 25px rgba(0,0,0,0.2)' }}
+                  onClick={() => handleRowClick(loop.id)}
+                >
+                  <div className="col-span-2">
+                    <div className="text-white font-medium">{loop.name}</div>
+                    <div className="text-gray-400 text-sm">Last check: {loop.lastCheck}</div>
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <TrendSparkline data={loop.trend} status={loop.status} />
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <div 
+                      className={`
+                        w-6 h-6 rounded-full flex items-center justify-center text-sm
+                        ${loop.deBand === 'green' ? 'bg-green-500' :
+                          loop.deBand === 'yellow' ? 'bg-yellow-500' : 'bg-red-500'}
+                      `}
+                      title={loop.deBand === 'green' ? 'Within band' : 
+                             loop.deBand === 'yellow' ? 'Warning threshold' : 'Critical breach'}
+                    >
+                      {loop.deBand === 'green' ? '🟢' : 
+                       loop.deBand === 'yellow' ? '🟡' : '🔴'}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <div className="bg-teal-500 text-white rounded-full w-10 h-8 flex items-center justify-center text-sm font-medium">
+                      {loop.triScore}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
 
-                    return (
-                      <motion.tr
-                        key={loop.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="border-b border-border-subtle hover:bg-glass-secondary/50 transition-colors"
+            {/* Advanced Settings Link */}
+            <div className="p-4 border-t border-white/10 flex justify-end">
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-teal-300 underline text-sm hover:text-teal-200 transition-colors"
+              >
+                Advanced Analytics
+              </button>
+            </div>
+
+            {/* Advanced Settings Accordion */}
+            <AnimatePresence>
+              {showAdvanced && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden border-t border-white/10"
+                >
+                  <div className="p-6 space-y-6 bg-white/5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-white">Advanced Analytics</h3>
+                      <motion.div
+                        animate={{ rotate: showAdvanced ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        <td className="py-4 px-4">
-                          <div>
-                            <div className="font-medium text-foreground">{loop.name}</div>
-                            <div className="text-sm text-foreground-muted">
-                              SRT: {loop.srt}mo • {loop.status}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          {primaryMetric && (
-                            <div className="flex items-center gap-3">
-                              <Sparkline
-                                data={primaryMetric.sparklineData}
-                                width={80}
-                                height={30}
-                                color={primaryMetric.trend === 'up' ? '#10b981' : 
-                                       primaryMetric.trend === 'down' ? '#ef4444' : '#6b7280'}
-                                className="opacity-80"
-                              />
-                              <div className="text-sm">
-                                <div className="font-medium text-foreground">
-                                  {primaryMetric.value} {primaryMetric.unit}
-                                </div>
-                                <div className="text-foreground-muted">
-                                  Target: {primaryMetric.target}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge
-                            variant="outline"
-                            className={`de-band-${loop.deBand} border-current`}
-                          >
-                            {getDEBandEmoji(loop.deBand)} {loop.deBand.toUpperCase()}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-2">
-                            <span className={`font-bold text-lg ${
-                              loop.triScore <= 3 ? 'text-destructive' :
-                              loop.triScore <= 6 ? 'text-warning' :
-                              'text-success'
-                            }`}>
-                              {loop.triScore}
-                            </span>
-                            {loop.triScore <= 3 && (
-                              <AlertCircle className="h-4 w-4 text-destructive" />
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          {primaryMetric && getTrendIcon(primaryMetric.trend)}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge
-                            variant={loop.status === 'active' ? 'default' : 'secondary'}
-                            className={loop.status === 'active' ? 'bg-success/20 text-success border-success/30' : ''}
-                          >
-                            {loop.status}
-                          </Badge>
-                        </td>
-                      </motion.tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      </motion.div>
+                    </div>
 
-            {filteredLoops.length === 0 && (
-              <div className="text-center py-12 text-foreground-muted">
-                <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No loops match the current filters</p>
-              </div>
-            )}
-          </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Historical Data Export</h4>
+                        <div className="flex space-x-2">
+                          <Input type="date" className="bg-white/10 border-white/20 text-white" />
+                          <Input type="date" className="bg-white/10 border-white/20 text-white" />
+                          <Button variant="outline" className="border-white/30 text-white">
+                            <Download className="w-4 h-4 mr-2" />
+                            Export CSV
+                          </Button>
+                        </div>
+                      </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="p-4 bg-glass-secondary">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-foreground-muted">Active Loops</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {loops.filter(l => l.status === 'active').length}
-                  </p>
-                </div>
-                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                  🔄
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4 bg-glass-secondary">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-foreground-muted">Avg TRI Score</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {(loops.reduce((sum, l) => sum + l.triScore, 0) / loops.length).toFixed(1)}
-                  </p>
-                </div>
-                <div className="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center">
-                  📊
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4 bg-glass-secondary">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-foreground-muted">High Tension</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {loops.filter(l => l.tension === 'high').length}
-                  </p>
-                </div>
-                <div className="w-8 h-8 rounded-lg bg-destructive/20 flex items-center justify-center">
-                  🔥
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4 bg-glass-secondary">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-foreground-muted">In Red Band</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {loops.filter(l => l.deBand === 'red').length}
-                  </p>
-                </div>
-                <div className="w-8 h-8 rounded-lg bg-destructive/20 flex items-center justify-center">
-                  🔴
-                </div>
-              </div>
-            </Card>
-          </div>
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Alert Rules</h4>
+                        <div className="space-y-2">
+                          <Input 
+                            placeholder="Notify when TRI < 3 for 2 days"
+                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                          />
+                          <Button variant="outline" className="border-white/30 text-white w-full">
+                            <Bell className="w-4 h-4 mr-2" />
+                            Set Alert Rule
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
