@@ -1,304 +1,405 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ChevronDown, ChevronRight, Settings, Play, Lightbulb } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Settings, Play, Lightbulb, Target, Zap, Users, Database } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Slider } from '../components/ui/slider';
+import { Switch } from '../components/ui/switch';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
-import { ProgressBar } from '../components/ui/progress-bar';
-import { TensionChip } from '../components/ui/tension-chip';
 import { useMockSprints } from '../hooks/use-mock-data';
 import type { TensionLevel, LeverageType, ThinkFormData } from '../types';
 
 const leverageOptions = [
   {
     value: 'high-leverage' as LeverageType,
-    label: 'High Leverage',
-    description: 'Maximum impact, system-wide changes',
-    icon: '🚀'
+    label: 'Paradigms',
+    description: 'Shift mental models & worldviews',
+    icon: Target,
   },
   {
     value: 'medium-leverage' as LeverageType,
-    label: 'Medium Leverage',
-    description: 'Moderate impact, focused improvements',
-    icon: '⚡'
+    label: 'Structure',
+    description: 'Change system architecture',
+    icon: Database,
   },
   {
     value: 'low-leverage' as LeverageType,
-    label: 'Low Leverage',
-    description: 'Targeted fixes, specific issues',
-    icon: '🔧'
+    label: 'Flows',
+    description: 'Optimize information & feedback',
+    icon: Zap,
+  },
+  {
+    value: 'high-leverage' as LeverageType,
+    label: 'Power',
+    description: 'Redistribute decision authority',
+    icon: Users,
   }
 ];
 
+const tensionSignals = [
+  { value: 'customer_satisfaction', label: 'Customer Satisfaction Score' },
+  { value: 'system_performance', label: 'System Performance Metrics' },
+  { value: 'team_velocity', label: 'Team Velocity' },
+  { value: 'technical_debt', label: 'Technical Debt Index' },
+  { value: 'user_engagement', label: 'User Engagement Rate' },
+];
+
+// Custom Slider Component
+const CustomSlider: React.FC<{
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+}> = ({ value, onChange, min = 3, max = 24, step = 3 }) => {
+  const percentage = ((value - min) / (max - min)) * 100;
+  const ticks = [3, 6, 12, 18, 24];
+
+  return (
+    <div className="relative w-full">
+      {/* Track */}
+      <div className="relative h-1 bg-white/20 rounded-full">
+        {/* Progress */}
+        <div 
+          className="absolute h-full bg-gradient-to-r from-teal-400 to-teal-500 rounded-full transition-all duration-300"
+          style={{ width: `${percentage}%` }}
+        />
+        
+        {/* Handle */}
+        <motion.div
+          className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg cursor-pointer border-2 border-teal-500"
+          style={{ left: `${percentage}%`, transform: 'translate(-50%, -50%)' }}
+          whileHover={{ scale: 1.1, boxShadow: '0 0 20px rgba(20, 184, 166, 0.5)' }}
+          whileDrag={{ scale: 1.2 }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDrag={(_, info) => {
+            const rect = (info.point.x - info.offset.x) / 400; // Assuming 400px width
+            const newValue = Math.round((rect * (max - min) + min) / step) * step;
+            onChange(Math.max(min, Math.min(max, newValue)));
+          }}
+        >
+          {/* Floating Value Badge */}
+          <motion.div
+            className="absolute -top-10 left-1/2 -translate-x-1/2 bg-teal-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-medium"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            whileHover={{ scale: 1.2 }}
+            key={value}
+          >
+            {value}
+          </motion.div>
+        </motion.div>
+      </div>
+      
+      {/* Tick marks */}
+      <div className="flex justify-between mt-2 px-3">
+        {ticks.map((tick) => (
+          <button
+            key={tick}
+            onClick={() => onChange(tick)}
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            {tick}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const ThinkZone: React.FC = () => {
-  const { data: sprints, isLoading } = useMockSprints();
+  const { data: sprints } = useMockSprints();
   const [formData, setFormData] = useState<ThinkFormData>({
     tension: 'medium',
     srt: 12,
     leverage: 'medium-leverage'
   });
+  const [selectedSignal, setSelectedSignal] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const currentSprint = sprints?.[0];
-  const weekProgress = currentSprint ? (currentSprint.week / currentSprint.totalWeeks) * 100 : 0;
+  const weekProgress = currentSprint ? (currentSprint.week / currentSprint.totalWeeks) * 100 : 33; // Default to week 2 of 6
 
   const handleSubmit = () => {
-    console.log('Starting sprint with data:', formData);
-    // Here you would typically create a new sprint
+    // Validation shake animation
+    if (!selectedSignal) {
+      // Add shake animation logic here
+      return;
+    }
+    console.log('Starting sprint with data:', { ...formData, signal: selectedSignal });
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background Decor - Parallax CLD Network */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/5 blur-xl"
-          animate={{ y: [0, -10, 0], scale: [1, 1.05, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute bottom-20 right-10 w-24 h-24 rounded-full bg-accent/5 blur-xl"
-          animate={{ y: [0, 15, 0], scale: [1, 0.95, 1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-        <motion.div 
-          className="absolute top-1/2 left-1/2 w-40 h-40 rounded-full bg-primary/3 blur-2xl"
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        />
+    <div className="h-full relative overflow-hidden">
+      {/* Full-Bleed Backdrop */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Parallax CLD Network Silhouette */}
+        <div className="absolute inset-0 opacity-10">
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-teal-500/20 to-blue-500/20 blur-3xl"
+            animate={{ 
+              x: [0, 50, 0],
+              y: [0, -30, 0],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-r from-purple-500/20 to-teal-500/20 blur-3xl"
+            animate={{ 
+              x: [0, -40, 0],
+              y: [0, 20, 0],
+              scale: [1, 0.9, 1],
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          />
+        </div>
       </div>
 
-      {/* Hero Panel */}
-      <motion.div
-        initial={{ y: 20, opacity: 0, scale: 0.98 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="panel-hero"
-      >
-        <div className="space-y-6">
-          {/* Sprint Progress - Circular Progress Ring */}
-          {currentSprint && (
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center space-y-6"
-            >
-              {/* Circular Progress Ring */}
-              <div className="relative flex items-center justify-center">
-                <div className="relative w-32 h-32">
+      {/* Glass Card Container */}
+      <div className="relative z-10 h-full flex items-center justify-center p-6">
+        <motion.div
+          className="max-w-3xl w-full bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <div className="p-8 space-y-8">
+            {/* Circular Progress Ring */}
+            <div className="text-center">
+              <div className="relative inline-block">
+                <div className="w-36 h-36 relative">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                     {/* Background circle */}
                     <circle
                       cx="50"
                       cy="50"
-                      r="45"
-                      stroke="hsl(var(--border))"
+                      r="42"
+                      stroke="rgba(255,255,255,0.1)"
                       strokeWidth="4"
                       fill="none"
-                      opacity="0.3"
                     />
                     {/* Progress circle */}
                     <motion.circle
                       cx="50"
                       cy="50"
-                      r="45"
-                      stroke="hsl(var(--primary))"
+                      r="42"
+                      stroke="url(#progressGradient)"
                       strokeWidth="4"
                       fill="none"
                       strokeLinecap="round"
                       style={{
-                        strokeDasharray: `${2 * Math.PI * 45}`,
-                        strokeDashoffset: `${2 * Math.PI * 45 * (1 - weekProgress / 100)}`
+                        strokeDasharray: `${2 * Math.PI * 42}`,
+                        strokeDashoffset: `${2 * Math.PI * 42 * (1 - weekProgress / 100)}`
                       }}
-                      initial={{ strokeDashoffset: 2 * Math.PI * 45 }}
-                      animate={{ strokeDashoffset: 2 * Math.PI * 45 * (1 - weekProgress / 100) }}
-                      transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+                      initial={{ strokeDashoffset: 2 * Math.PI * 42 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 42 * (1 - weekProgress / 100) }}
+                      transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
                     />
+                    <defs>
+                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#14b8a6" />
+                        <stop offset="100%" stopColor="#06b6d4" />
+                      </linearGradient>
+                    </defs>
                   </svg>
-                  {/* Center text */}
+                  
+                  {/* Center content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <motion.span 
-                      className="text-2xl font-bold text-foreground"
+                      className="text-3xl font-bold text-white"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: 0.8, type: "spring", bounce: 0.4 }}
+                      transition={{ delay: 0.6, type: "spring", bounce: 0.4 }}
                     >
-                      {currentSprint.week}
+                      Week 2
                     </motion.span>
-                    <span className="text-sm text-foreground-muted">of {currentSprint.totalWeeks}</span>
+                    <span className="text-sm text-gray-300">of 6</span>
                   </div>
                 </div>
               </div>
+              
+              <p className="text-gray-300 mt-4 text-base">
+                Define your loop's tension, target, and leverage.
+              </p>
+            </div>
 
-              {/* Status Info */}
-              <div className="flex items-center justify-center gap-4">
-                <div className="text-center">
-                  <p className="text-sm text-foreground-muted">Sprint Progress</p>
-                  <p className="font-semibold text-foreground">{Math.round(weekProgress)}% Complete</p>
-                </div>
-                <div className="w-px h-8 bg-border opacity-50" />
-                <TensionChip tension={currentSprint.tension} />
+            {/* Core Input Section */}
+            <div className="space-y-8">
+              {/* Tension Signal Selector */}
+              <div className="space-y-3">
+                <Label className="text-lg font-medium text-white">Tension Signal</Label>
+                <Select value={selectedSignal} onValueChange={setSelectedSignal}>
+                  <SelectTrigger className="w-full bg-white/10 text-white border-white/20 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    <SelectValue placeholder="Select a signal..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    {tensionSignals.map((signal) => (
+                      <SelectItem key={signal.value} value={signal.value} className="text-white hover:bg-slate-700">
+                        {signal.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-gray-400">
+                  Choose the metric that indicates system drift.
+                </p>
               </div>
+
+              {/* SRT Horizon Slider */}
+              <div className="space-y-4">
+                <Label className="text-lg font-medium text-white">Target Horizon (months)</Label>
+                <div className="px-3">
+                  <CustomSlider
+                    value={formData.srt}
+                    onChange={(value) => setFormData(prev => ({ ...prev, srt: value }))}
+                  />
+                </div>
+              </div>
+
+              {/* Leverage Point Picker */}
+              <div className="space-y-4">
+                <Label className="text-lg font-medium text-white">Choose a Leverage Point</Label>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {leverageOptions.map((option) => {
+                    const Icon = option.icon;
+                    const isSelected = formData.leverage === option.value;
+                    
+                    return (
+                      <motion.button
+                        key={option.value}
+                        onClick={() => setFormData(prev => ({ ...prev, leverage: option.value }))}
+                        className={`
+                          min-w-[140px] bg-white/10 rounded-xl p-4 flex flex-col items-center cursor-pointer
+                          border-2 transition-all duration-200
+                          ${isSelected 
+                            ? 'border-teal-500 -translate-y-1 shadow-lg shadow-teal-500/25' 
+                            : 'border-transparent hover:border-white/30 hover:-translate-y-0.5'
+                          }
+                        `}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Icon className="w-8 h-8 text-teal-400 mb-2" />
+                        <span className="text-white text-base font-medium mb-1">{option.label}</span>
+                        <span className="text-gray-400 text-sm text-center leading-tight">
+                          {option.description}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Primary Action Bar */}
+            <motion.div
+              className="sticky bottom-0 flex items-center justify-between pt-6 border-t border-white/10"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <motion.button
+                onClick={handleSubmit}
+                className="bg-teal-500 hover:bg-teal-600 text-white rounded-full py-3 px-10 text-lg font-semibold flex items-center gap-3 shadow-lg transition-all duration-200"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Play className="w-5 h-5" />
+                Start Sprint
+              </motion.button>
+              
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-teal-300 underline text-base hover:text-teal-200 transition-colors"
+              >
+                Advanced Settings
+              </button>
             </motion.div>
-          )}
 
-          {/* Tension Analysis */}
-          <div className="space-y-4">
-            <Label className="text-base font-medium text-foreground">Tension Level</Label>
-            <Select
-              value={formData.tension}
-              onValueChange={(value: TensionLevel) => 
-                setFormData(prev => ({ ...prev, tension: value }))
-              }
-            >
-              <SelectTrigger className="glass-secondary">
-                <SelectValue placeholder="Select tension level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="high">🔥 High Tension - Critical issues</SelectItem>
-                <SelectItem value="medium">⚡ Medium Tension - Important improvements</SelectItem>
-                <SelectItem value="low">🟢 Low Tension - Optimization opportunities</SelectItem>
-                <SelectItem value="neutral">⚪ Neutral - Maintenance mode</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-foreground-muted">
-              High tension indicates critical system stress requiring immediate intervention
-            </p>
-          </div>
-
-          {/* SRT Slider */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-base font-medium text-foreground">
-                Sprint Rhythm Time (SRT)
-              </Label>
-              <span className="text-sm font-medium text-primary">
-                {formData.srt} months
-              </span>
-            </div>
-            <Slider
-              value={[formData.srt]}
-              onValueChange={([value]) => 
-                setFormData(prev => ({ ...prev, srt: value }))
-              }
-              min={1}
-              max={24}
-              step={1}
-              className="w-full"
-            />
-            <p className="text-sm text-foreground-muted">
-              Optimal rhythm for sustainable improvement cycles
-            </p>
-          </div>
-
-          {/* Leverage Strategy */}
-          <div className="space-y-4">
-            <Label className="text-base font-medium text-foreground">Leverage Strategy</Label>
-            <div className="grid gap-3">
-              {leverageOptions.map((option) => (
-                <motion.button
-                  key={option.value}
-                  onClick={() => setFormData(prev => ({ ...prev, leverage: option.value }))}
-                  className={`
-                    p-4 rounded-xl border-2 transition-all duration-fast text-left
-                    ${formData.leverage === option.value
-                      ? 'border-primary bg-primary/10 text-foreground'
-                      : 'border-border hover:border-border-accent bg-glass-secondary text-foreground-muted hover:text-foreground'
-                    }
-                  `}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+            {/* Advanced Settings Accordion */}
+            <AnimatePresence>
+              {showAdvanced && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{option.icon}</span>
-                    <div>
-                      <div className="font-medium">{option.label}</div>
-                      <div className="text-sm opacity-75">{option.description}</div>
+                  <div className="bg-white/5 rounded-lg p-6 space-y-6 border border-white/10">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-white">Advanced Settings</h3>
+                      <motion.div
+                        animate={{ rotate: showAdvanced ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      </motion.div>
                     </div>
+
+                    {/* DE-Band Configuration */}
+                    <div className="space-y-3">
+                      <Label className="text-sm text-gray-300">DE-Band Configuration</Label>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Input
+                            type="number"
+                            placeholder="Lower Bound"
+                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500"
+                          />
+                        </div>
+                        <div>
+                          <Input
+                            type="number"
+                            placeholder="Upper Bound"
+                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">Define acceptable range for metric fluctuations.</p>
+                    </div>
+
+                    {/* Detailed SRT Options */}
+                    <div className="space-y-3">
+                      <Label className="text-sm text-gray-300">Detailed SRT Options</Label>
+                      <div className="flex items-center justify-between">
+                        <span className="text-white">Sync Across Loops</span>
+                        <Switch />
+                      </div>
+                    </div>
+
+                    {/* Loop Metadata */}
+                    <div className="space-y-3">
+                      <Label className="text-sm text-gray-300">Loop Metadata</Label>
+                      <Input
+                        placeholder="Loop ID (auto-generated)"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                        readOnly
+                      />
+                      <Input
+                        placeholder="Tags: platform, critical, customer-facing"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-teal-500"
+                      />
+                    </div>
+
+                    {/* Open CLD Studio */}
+                    <Button 
+                      variant="outline" 
+                      className="w-full text-teal-300 border-teal-300 hover:bg-teal-300 hover:text-slate-900 transition-all duration-200"
+                    >
+                      <Lightbulb className="w-4 h-4 mr-2" />
+                      Launch System Framing Studio
+                    </Button>
                   </div>
-                </motion.button>
-              ))}
-            </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-
-          {/* Primary Action - Premium Button */}
-          <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="pt-4"
-          >
-            <motion.button
-              onClick={handleSubmit}
-              className="btn-primary w-full h-14 text-lg font-semibold flex items-center justify-center gap-3"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Play className="h-5 w-5" />
-              Start Sprint
-            </motion.button>
-          </motion.div>
-
-          {/* Advanced Options */}
-          <Accordion type="single" collapsible>
-            <AccordionItem value="advanced" className="border-border-subtle">
-              <AccordionTrigger className="text-foreground-muted hover:text-foreground">
-                <div className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  Advanced Configuration
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-4 pt-4">
-                {/* DE-Band Configuration */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-sm">DE-Band Lower Bound</Label>
-                    <Input
-                      type="number"
-                      placeholder="0.0"
-                      className="glass-secondary mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-sm">DE-Band Upper Bound</Label>
-                    <Input
-                      type="number"
-                      placeholder="10.0"
-                      className="glass-secondary mt-2"
-                    />
-                  </div>
-                </div>
-
-                {/* Loop Metadata */}
-                <div>
-                  <Label className="text-sm">Loop ID</Label>
-                  <Input
-                    placeholder="auto-generated-id"
-                    className="glass-secondary mt-2"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-sm">Tags</Label>
-                  <Input
-                    placeholder="platform, critical, customer-facing"
-                    className="glass-secondary mt-2"
-                  />
-                </div>
-
-                {/* CLD Studio Link */}
-                <Button variant="outline" className="w-full">
-                  <Lightbulb className="h-4 w-4 mr-2" />
-                  Open CLD Studio
-                </Button>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 };
