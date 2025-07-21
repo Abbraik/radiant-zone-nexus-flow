@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface SparklineChartProps {
@@ -14,24 +14,16 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
   height = 60,
   width = '100%' 
 }) => {
-  const pathRef = useRef<SVGPathElement>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
-    if (pathRef.current) {
-      const path = pathRef.current;
-      const length = path.getTotalLength();
-      
-      // Set up the starting positions
-      path.style.strokeDasharray = `${length} ${length}`;
-      path.style.strokeDashoffset = `${length}`;
-      
-      // Trigger the animation
-      setTimeout(() => {
-        path.style.transition = 'stroke-dashoffset 600ms ease-in-out';
-        path.style.strokeDashoffset = '0';
-      }, 100);
-    }
-  }, [data]);
+    // Only animate once when component mounts
+    const timer = setTimeout(() => {
+      setHasAnimated(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!data || data.length < 2) {
     return (
@@ -73,15 +65,17 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
         </defs>
         
         {/* Area fill */}
-        <path
+        <motion.path
           d={`${pathData} L 100 100 L 0 100 Z`}
           fill={`url(#gradient-${color.replace('#', '')})`}
           opacity="0.6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: hasAnimated ? 0.6 : 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
         />
         
         {/* Line */}
         <motion.path
-          ref={pathRef}
           d={pathData}
           fill="none"
           stroke={color}
@@ -89,8 +83,8 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
           strokeLinecap="round"
           strokeLinejoin="round"
           initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          animate={{ pathLength: hasAnimated ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut", delay: 0.1 }}
         />
         
         {/* Data points */}
@@ -100,16 +94,19 @@ export const SparklineChart: React.FC<SparklineChartProps> = ({
           
           return (
             <motion.circle
-              key={index}
+              key={`${color}-${index}`} // Unique key to prevent conflicts
               cx={x}
               cy={y}
               r="0.8"
               fill={color}
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              animate={{ 
+                scale: hasAnimated ? 1 : 0, 
+                opacity: hasAnimated ? 1 : 0 
+              }}
               transition={{ 
-                duration: 0.3, 
-                delay: 0.6 + (index * 0.05),
+                duration: 0.2, 
+                delay: 0.7 + (index * 0.02),
                 ease: "easeOut"
               }}
             />

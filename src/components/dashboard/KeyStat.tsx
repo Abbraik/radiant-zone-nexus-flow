@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface KeyStatProps {
@@ -19,9 +19,15 @@ export const KeyStat: React.FC<KeyStatProps> = ({
   decimals = 0 
 }) => {
   const [animatedValue, setAnimatedValue] = useState(0);
+  const animationRef = useRef<number>();
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
+    // Only animate once when component mounts
+    if (hasAnimated.current) return;
+    
     const timer = setTimeout(() => {
+      hasAnimated.current = true;
       let start = 0;
       const duration = 1000; // 1 second
       const increment = value / (duration / 16); // 60fps
@@ -32,15 +38,20 @@ export const KeyStat: React.FC<KeyStatProps> = ({
           setAnimatedValue(value);
         } else {
           setAnimatedValue(start);
-          requestAnimationFrame(animate);
+          animationRef.current = requestAnimationFrame(animate);
         }
       };
       
       animate();
     }, delay * 1000);
 
-    return () => clearTimeout(timer);
-  }, [value, delay]);
+    return () => {
+      clearTimeout(timer);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []); // Empty dependency array to run only once
 
   return (
     <motion.div
