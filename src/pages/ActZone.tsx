@@ -1,268 +1,617 @@
 import React, { useState } from 'react';
-import { motion, Reorder } from 'framer-motion';
-import { Plus, Users, Calendar, GripVertical, Trash2, Edit3, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Plus, 
+  Search, 
+  GripVertical, 
+  Calendar, 
+  Edit, 
+  ChevronDown, 
+  X,
+  Check,
+  Play,
+  Users,
+  Settings
+} from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  DragStartEvent,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
+import { Avatar } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
-import { Avatar, AvatarFallback } from '../components/ui/avatar';
-import { useMockInterventions, useMockRoles } from '../hooks/use-mock-data';
-import type { Intervention, Role } from '../types';
+import { toast } from '../hooks/use-toast';
 
-interface BundleItem extends Intervention {
+// Mock data
+const availableInterventions = [
+  {
+    id: 'int-1',
+    name: 'API Rate Limiting',
+    description: 'Implement throttling for external API calls',
+    icon: '🚦',
+    category: 'Technology',
+    effort: 'Medium',
+    impact: 'High'
+  },
+  {
+    id: 'int-2',
+    name: 'Team Standup Restructure',
+    description: 'Optimize daily sync format and timing',
+    icon: '👥',
+    category: 'Process',
+    effort: 'Low',
+    impact: 'Medium'
+  },
+  {
+    id: 'int-3',
+    name: 'Code Review Guidelines',
+    description: 'Establish consistent review standards',
+    icon: '📋',
+    category: 'Governance',
+    effort: 'Medium',
+    impact: 'High'
+  },
+  {
+    id: 'int-4',
+    name: 'Performance Monitoring',
+    description: 'Add real-time system health dashboards',
+    icon: '📊',
+    category: 'Technology',
+    effort: 'High',
+    impact: 'High'
+  },
+  {
+    id: 'int-5',
+    name: 'Customer Feedback Loop',
+    description: 'Direct channel for user experience input',
+    icon: '🔄',
+    category: 'Process',
+    effort: 'Medium',
+    impact: 'High'
+  }
+];
+
+const mockRoles = [
+  {
+    id: 'role-1',
+    name: 'Alex Chen',
+    title: 'Champion',
+    avatar: '👨‍💻',
+    color: 'bg-teal-500'
+  },
+  {
+    id: 'role-2',
+    name: 'Sarah Kim',
+    title: 'Analyst',
+    avatar: '👩‍💼',
+    color: 'bg-purple-500'
+  }
+];
+
+interface Intervention {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  effort: string;
+  impact: string;
+}
+
+interface BundleItem {
+  id: string;
+  intervention: Intervention;
   order: number;
 }
 
-export const ActZone: React.FC = () => {
-  const { data: interventions = [], isLoading: interventionsLoading } = useMockInterventions();
-  const { data: roles = [], isLoading: rolesLoading } = useMockRoles();
-  
-  const [bundleItems, setBundleItems] = useState<BundleItem[]>([]);
-  const [selectedRoles, setSelectedRoles] = useState<Role[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dueDate, setDueDate] = useState('');
+// Sortable Intervention Card Component
+const SortableInterventionCard: React.FC<{ 
+  item: BundleItem;
+  onRemove: (id: string) => void;
+}> = ({ item, onRemove }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
 
-  const filteredInterventions = interventions.filter(intervention =>
-    intervention.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    intervention.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      layout
+      className={`
+        bg-white/10 rounded-lg p-3 flex items-center justify-between cursor-move
+        border border-white/20 hover:bg-white/15 transition-all duration-200
+        ${isDragging ? 'scale-105 shadow-xl' : ''}
+      `}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+    >
+      <div className="flex items-center space-x-3">
+        <span className="text-xl">{item.intervention.icon}</span>
+        <div>
+          <div className="text-white font-medium">{item.intervention.name}</div>
+          <div className="text-gray-400 text-sm">{item.intervention.description}</div>
+        </div>
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Badge variant="outline" className="text-xs">
+          {item.intervention.effort}
+        </Badge>
+        <button
+          {...listeners}
+          className="p-1 hover:bg-white/20 rounded text-gray-400 hover:text-white transition-colors"
+        >
+          <GripVertical className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onRemove(item.id)}
+          className="p-1 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+export const ActZone: React.FC = () => {
+  const [bundleItems, setBundleItems] = useState<BundleItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
-  const addToBunde = (intervention: Intervention) => {
+  const filteredInterventions = availableInterventions.filter(
+    intervention =>
+      intervention.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      intervention.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const addIntervention = (intervention: Intervention) => {
+    if (bundleItems.some(item => item.intervention.id === intervention.id)) {
+      toast({
+        title: "Already Added",
+        description: "This intervention is already in your bundle.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newItem: BundleItem = {
-      ...intervention,
+      id: `bundle-${intervention.id}`,
+      intervention,
       order: bundleItems.length
     };
+
     setBundleItems(prev => [...prev, newItem]);
   };
 
-  const removeFromBundle = (id: string) => {
+  const removeIntervention = (id: string) => {
     setBundleItems(prev => prev.filter(item => item.id !== id));
   };
 
-  const toggleRole = (role: Role) => {
-    setSelectedRoles(prev => {
-      const exists = prev.find(r => r.id === role.id);
-      if (exists) {
-        return prev.filter(r => r.id !== role.id);
-      } else {
-        return [...prev, role];
-      }
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setBundleItems((items) => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over?.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+
+    setActiveId(null);
+  };
+
+  const handleValidate = () => {
+    if (bundleItems.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please add at least one intervention to the bundle.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Bundle Validated",
+      description: "All interventions are compatible and ready for publication.",
     });
   };
 
   const handlePublish = () => {
-    console.log('Publishing bundle:', {
-      interventions: bundleItems,
-      roles: selectedRoles,
-      dueDate
+    if (bundleItems.length === 0) {
+      return;
+    }
+    
+    toast({
+      title: "Bundle Published",
+      description: `Successfully published bundle with ${bundleItems.length} interventions.`,
     });
   };
 
   return (
-    <div className="space-y-6 animate-entrance">
-      {/* Header */}
-      <motion.div
-        initial={{ y: -10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="text-center space-y-2"
-      >
-        <h1 className="text-3xl font-bold text-foreground flex items-center justify-center gap-3">
-          <Send className="h-8 w-8 text-primary" />
-          Act Zone
-        </h1>
-        <p className="text-foreground-muted max-w-2xl mx-auto">
-          Create intervention bundles, assign roles, and orchestrate implementation
-        </p>
-      </motion.div>
+    <div className="h-full relative overflow-hidden">
+      {/* Full-Bleed Backdrop */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Animated Network Mesh */}
+        <div className="absolute inset-0 opacity-5">
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-teal-500/20 to-blue-500/20 blur-3xl"
+            animate={{ 
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-r from-purple-500/20 to-teal-500/20 blur-3xl"
+            animate={{ 
+              x: [0, -60, 0],
+              y: [0, 30, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 7 }}
+          />
+        </div>
+      </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Left Panel - Intervention Picker */}
-        <Card className="zone-panel-wide lg:max-w-none p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">Available Interventions</h3>
-              <Badge variant="secondary" className="bg-primary/20 text-primary">
-                {interventions.length} Available
-              </Badge>
-            </div>
-
-            <Input
-              placeholder="Search interventions..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="glass-secondary"
-            />
-
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {filteredInterventions.map((intervention) => (
-                <motion.div
-                  key={intervention.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="p-4 bg-glass-secondary rounded-lg hover:bg-glass-accent transition-colors border border-border-subtle"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-foreground truncate">
-                        {intervention.name}
-                      </h4>
-                      <p className="text-sm text-foreground-muted mt-1 line-clamp-2">
-                        {intervention.description}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {intervention.type}
-                        </Badge>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs ${
-                            intervention.impact === 'high' ? 'border-success text-success' :
-                            intervention.impact === 'medium' ? 'border-warning text-warning' :
-                            'border-muted text-muted-foreground'
-                          }`}
-                        >
-                          {intervention.impact} impact
-                        </Badge>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => addToBunde(intervention)}
-                      disabled={bundleItems.some(item => item.id === intervention.id)}
-                      className="shrink-0"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Hero Ribbon */}
+        <motion.div
+          className="w-full bg-white/5 backdrop-blur-xl h-20 flex items-center justify-between px-8 shadow-lg border-b border-white/10"
+          initial={{ y: -80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+        >
+          <div className="flex items-center space-x-4">
+            <span className="text-3xl">🍲</span>
+            <span className="text-2xl font-semibold text-white">
+              {bundleItems.length} interventions
+            </span>
           </div>
-        </Card>
 
-        {/* Right Panel - Bundle Builder */}
-        <Card className="zone-panel-wide lg:max-w-none p-6">
-          <div className="space-y-4">
-            {/* Bundle Header */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Sprint Bundle</h3>
-                <p className="text-sm text-foreground-muted">
-                  {bundleItems.length} interventions • Due in{' '}
-                  {dueDate ? new Date(dueDate).toLocaleDateString() : 'TBD'}
-                </p>
-              </div>
-              <Badge variant="secondary" className="bg-primary/20 text-primary">
-                {bundleItems.length} Items
-              </Badge>
-            </div>
+          <div className="flex items-center space-x-2">
+            <Calendar className="w-5 h-5 text-gray-400" />
+            <span className="text-base text-white">Due in 6 weeks</span>
+          </div>
 
-            {/* Due Date */}
-            <div>
-              <Label className="text-sm">Due Date</Label>
-              <Input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="glass-secondary mt-2"
-              />
-            </div>
-
-            {/* Bundle Items - Reorderable */}
-            <div className="space-y-2">
-              <Label className="text-sm">Interventions (drag to reorder)</Label>
-              <Reorder.Group
-                axis="y"
-                values={bundleItems}
-                onReorder={setBundleItems}
-                className="space-y-2"
-              >
-                {bundleItems.map((item) => (
-                  <Reorder.Item
-                    key={item.id}
-                    value={item}
-                    className="p-3 bg-glass-secondary rounded-lg border border-border-subtle cursor-grab active:cursor-grabbing"
-                    whileDrag={{ scale: 1.02, boxShadow: '0 8px 25px rgba(0,0,0,0.3)' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <GripVertical className="h-4 w-4 text-foreground-muted" />
-                      <div className="flex-1 min-w-0">
-                        <h5 className="font-medium text-foreground text-sm truncate">
-                          {item.name}
-                        </h5>
-                        <p className="text-xs text-foreground-muted">
-                          {item.type} • {item.effort} effort
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeFromBundle(item.id)}
-                        className="text-destructive hover:text-destructive-foreground hover:bg-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </Reorder.Item>
-                ))}
-              </Reorder.Group>
-
-              {bundleItems.length === 0 && (
-                <div className="text-center py-8 text-foreground-muted">
-                  <Send className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Add interventions to create a bundle</p>
+          <div className="flex items-center space-x-3">
+            {mockRoles.map((role) => (
+              <div key={role.id} className="flex items-center space-x-2">
+                <div className={`w-10 h-10 ${role.color} rounded-full flex items-center justify-center text-white font-medium`}>
+                  {role.avatar}
                 </div>
-              )}
-            </div>
-
-            {/* Role Assignment */}
-            <div className="space-y-3">
-              <Label className="text-sm">Smart Roles Assignment</Label>
-              <div className="flex flex-wrap gap-2">
-                {roles.map((role) => (
-                  <motion.button
-                    key={role.id}
-                    onClick={() => toggleRole(role)}
-                    className={`
-                      flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-fast
-                      ${selectedRoles.find(r => r.id === role.id)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-glass-secondary text-foreground-muted hover:text-foreground'
-                      }
-                    `}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-xs">
-                        {role.avatar || role.name.slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{role.name}</span>
-                  </motion.button>
-                ))}
+                <span className="text-sm text-gray-300">{role.title}</span>
               </div>
-            </div>
+            ))}
+            <button className="w-10 h-10 border-2 border-dashed border-gray-400 rounded-full flex items-center justify-center hover:border-teal-400 transition-colors">
+              <Plus className="w-4 h-4 text-gray-400" />
+            </button>
+            <button className="text-teal-300 underline text-sm hover:text-teal-200 transition-colors ml-2">
+              Edit Roles
+            </button>
+          </div>
+        </motion.div>
 
-            {/* Publish Button */}
+        {/* Main Content */}
+        <div className="flex-1 p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
             <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl p-8"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             >
-              <Button
-                onClick={handlePublish}
-                disabled={bundleItems.length === 0 || selectedRoles.length === 0}
-                size="lg"
-                className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-semibold py-3 rounded-xl shadow-lg"
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Intervention Picker */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-white">Add Interventions</h3>
+                  
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search interventions..."
+                      className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400 rounded-full focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {filteredInterventions.map((intervention) => (
+                      <motion.div
+                        key={intervention.id}
+                        className="p-3 bg-white/5 rounded-lg hover:bg-white/10 cursor-pointer border border-white/10 hover:border-white/20 transition-all duration-200 group"
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-xl">{intervention.icon}</span>
+                            <div>
+                              <div className="text-white font-medium">{intervention.name}</div>
+                              <div className="text-gray-400 text-sm">{intervention.description}</div>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  {intervention.category}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {intervention.effort} effort
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <motion.button
+                            onClick={() => addIntervention(intervention)}
+                            className="bg-teal-500 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-teal-600"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bundle Canvas */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-white">Bundle Preview</h3>
+                  
+                  <div className="bg-white/5 rounded-xl p-4 min-h-64 border border-white/10">
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={bundleItems.map(item => item.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="space-y-3">
+                          {bundleItems.length === 0 ? (
+                            <div className="text-center py-12 text-gray-400">
+                              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                              <p>Add interventions to build your bundle</p>
+                            </div>
+                          ) : (
+                            bundleItems.map((item) => (
+                              <SortableInterventionCard
+                                key={item.id}
+                                item={item}
+                                onRemove={removeIntervention}
+                              />
+                            ))
+                          )}
+                        </div>
+                      </SortableContext>
+
+                      <DragOverlay>
+                        {activeId ? (
+                          <div className="bg-white/10 rounded-lg p-3 border border-white/20 shadow-xl">
+                            {bundleItems.find(item => item.id === activeId)?.intervention.name}
+                          </div>
+                        ) : null}
+                      </DragOverlay>
+                    </DndContext>
+                  </div>
+                </div>
+              </div>
+
+              {/* Smart Roles Panel */}
+              <motion.div
+                className="mt-6 p-4 bg-white/10 rounded-xl border border-white/10"
+                whileHover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
               >
-                <Send className="h-5 w-5 mr-2" />
-                Publish Bundle
-              </Button>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    {mockRoles.map((role) => (
+                      <motion.div
+                        key={role.id}
+                        className="flex items-center space-x-2 group"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <motion.div
+                          className={`w-10 h-10 ${role.color} rounded-full flex items-center justify-center text-white font-medium`}
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          {role.avatar}
+                        </motion.div>
+                        <div>
+                          <div className="text-white font-medium">{role.name}</div>
+                          <div className="text-gray-400 text-sm">{role.title}</div>
+                        </div>
+                        <motion.button
+                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/20 rounded"
+                          initial={{ opacity: 0 }}
+                          whileHover={{ opacity: 1 }}
+                        >
+                          <Edit className="w-4 h-4 text-gray-400" />
+                        </motion.button>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-400">Role defaults based on last sprint.</p>
+                </div>
+              </motion.div>
+
+              {/* Primary Action Bar */}
+              <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-b-2xl -mx-8 -mb-8 px-8 py-6 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => setShowAdvanced(!showAdvanced)}
+                    className="text-teal-300 underline text-base hover:text-teal-200 transition-colors"
+                  >
+                    Advanced Settings
+                  </button>
+
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      onClick={handleValidate}
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/10 rounded-full py-2 px-6"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Validate
+                    </Button>
+                    
+                    <motion.button
+                      onClick={handlePublish}
+                      disabled={bundleItems.length === 0}
+                      className="bg-teal-500 hover:bg-teal-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold text-lg rounded-full px-10 py-3 shadow-lg transition-all duration-200 flex items-center space-x-3"
+                      whileHover={{ scale: bundleItems.length > 0 ? 1.03 : 1 }}
+                      whileTap={{ scale: bundleItems.length > 0 ? 0.97 : 1 }}
+                    >
+                      <Play className="w-5 h-5" />
+                      <span>Publish Bundle</span>
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Advanced Settings Accordion */}
+              <AnimatePresence>
+                {showAdvanced && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden mt-4"
+                  >
+                    <div className="bg-white/5 rounded-lg p-6 space-y-6 border border-white/10">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-medium text-white">Advanced Settings</h3>
+                        <motion.div
+                          animate={{ rotate: showAdvanced ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="w-5 h-5 text-gray-400" />
+                        </motion.div>
+                      </div>
+
+                      {/* RACI Matrix */}
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">RACI Matrix</h4>
+                        <div className="grid grid-cols-4 gap-2 text-sm">
+                          <div className="text-gray-400 font-medium">Intervention</div>
+                          <div className="text-gray-400 font-medium">Champion</div>
+                          <div className="text-gray-400 font-medium">Analyst</div>
+                          <div className="text-gray-400 font-medium">Stakeholder</div>
+                          
+                          {bundleItems.map((item) => (
+                            <React.Fragment key={item.id}>
+                              <div className="text-white py-2">{item.intervention.name}</div>
+                              <select className="bg-white/10 border-white/20 text-white rounded p-1">
+                                <option value="R">Responsible</option>
+                                <option value="A">Accountable</option>
+                                <option value="C">Consulted</option>
+                                <option value="I">Informed</option>
+                              </select>
+                              <select className="bg-white/10 border-white/20 text-white rounded p-1">
+                                <option value="R">Responsible</option>
+                                <option value="A">Accountable</option>
+                                <option value="C">Consulted</option>
+                                <option value="I">Informed</option>
+                              </select>
+                              <select className="bg-white/10 border-white/20 text-white rounded p-1">
+                                <option value="R">Responsible</option>
+                                <option value="A">Accountable</option>
+                                <option value="C">Consulted</option>
+                                <option value="I">Informed</option>
+                              </select>
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Policy Standard Module */}
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Policy Standard Module</h4>
+                        <select className="w-full bg-white/10 border-white/20 text-white rounded-lg p-3">
+                          <option value="">Select PRS Module</option>
+                          <option value="security">Security Standards</option>
+                          <option value="compliance">Compliance Framework</option>
+                          <option value="performance">Performance Guidelines</option>
+                        </select>
+                      </div>
+
+                      {/* Scheduling Overrides */}
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Scheduling Overrides</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-gray-300 text-sm">Start Date</label>
+                            <Input
+                              type="date"
+                              className="bg-white/10 border-white/20 text-white rounded-full p-3 mt-1"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-gray-300 text-sm">End Date</label>
+                            <Input
+                              type="date"
+                              className="bg-white/10 border-white/20 text-white rounded-full p-3 mt-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
