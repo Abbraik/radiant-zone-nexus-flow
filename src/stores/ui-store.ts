@@ -13,7 +13,7 @@ interface UIStore extends UIState {
 
 const defaultFeatureFlags: FeatureFlags = {
   newRgsUI: true, // Enable by default for new UI
-  newTaskDrivenUI: false, // New task-driven workspace
+  newTaskDrivenUI: true, // New task-driven workspace - ENABLED
   cldStudio: true,
   advancedAnalytics: false,
   mockDataMode: process.env.NODE_ENV === 'development'
