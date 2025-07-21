@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { Brain, Zap, BarChart3, Lightbulb, User } from 'lucide-react';
+import { Brain, Zap, BarChart3, Lightbulb, User, Briefcase } from 'lucide-react';
 import { useUIStore } from '../../stores/ui-store';
-import { FeatureFlagChip } from './FeatureFlagProvider';
+import { FeatureFlagChip, useFeatureFlags } from './FeatureFlagProvider';
+import { Button } from '../ui/button';
 import type { Zone } from '../../types';
 
 interface ZoneTab {
@@ -22,9 +23,15 @@ const zoneTabs: ZoneTab[] = [
 
 export const Header: React.FC = () => {
   const { currentZone, setCurrentZone } = useUIStore();
+  const { updateFlag, isEnabled } = useFeatureFlags();
 
   const handleZoneChange = (zone: Zone) => {
     setCurrentZone(zone);
+  };
+
+  const toggleWorkspace = () => {
+    const isCurrentlyEnabled = isEnabled('newTaskDrivenUI');
+    updateFlag('newTaskDrivenUI', !isCurrentlyEnabled);
   };
 
   return (
@@ -105,8 +112,25 @@ export const Header: React.FC = () => {
           {/* Feature Flag Badge */}
           <FeatureFlagChip flag="newRgsUI" />
 
+          {/* Workspace Toggle Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleWorkspace}
+            className={`border-border/20 backdrop-blur-sm transition-all duration-200 ${
+              isEnabled('newTaskDrivenUI')
+                ? 'bg-primary text-primary-foreground border-primary/50 shadow-glow'
+                : 'bg-glass-secondary/60 text-foreground-muted hover:bg-glass-secondary/80'
+            }`}
+          >
+            <Briefcase className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">
+              {isEnabled('newTaskDrivenUI') ? 'Exit Workspace' : 'Workspace'}
+            </span>
+          </Button>
+
           {/* Role Pill */}
-          <div className="bg-glass-secondary/60 backdrop-blur-sm rounded-2xl px-4 py-1.5 border border-border/20 hidden sm:block">
+          <div className="bg-glass-secondary/60 backdrop-blur-sm rounded-2xl px-4 py-1.5 border border-border/20 hidden lg:block">
             <span className="text-xs font-medium text-foreground-muted">Product Manager</span>
           </div>
           
