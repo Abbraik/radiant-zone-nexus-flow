@@ -161,7 +161,8 @@
   }
 
   html {
-    @apply dark; /* Force dark mode for RGS */
+    /* Force dark mode for RGS MVUI */
+    color-scheme: dark;
   }
 
   body {
