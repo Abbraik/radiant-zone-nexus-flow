@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { Brain, Zap, BarChart3, Lightbulb, Menu, Settings } from 'lucide-react';
+import { Brain, Zap, BarChart3, Lightbulb, User, MoreHorizontal } from 'lucide-react';
 import { useUIStore } from '../../stores/ui-store';
 import { FeatureFlagChip } from './FeatureFlagProvider';
-import { Button } from '../ui/button';
 import type { Zone } from '../../types';
 
 interface ZoneTab {
@@ -22,7 +21,7 @@ const zoneTabs: ZoneTab[] = [
 ];
 
 export const Header: React.FC = () => {
-  const { setSidebarCollapsed, sidebarCollapsed, currentZone, setCurrentZone } = useUIStore();
+  const { setSidebarCollapsed, currentZone, setCurrentZone } = useUIStore();
 
   const handleZoneChange = (zone: Zone) => {
     setCurrentZone(zone);
@@ -30,84 +29,98 @@ export const Header: React.FC = () => {
 
   return (
     <motion.header
-      initial={{ y: -20, opacity: 0 }}
+      initial={{ y: -8, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="glass-secondary border-b border-border-subtle h-16 flex items-center justify-between px-6 sticky top-0 z-50"
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="h-12 relative z-50"
     >
-      {/* Left Section - Logo & Menu */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="lg:hidden"
+      {/* Full-width glass backdrop */}
+      <div className="absolute inset-0 bg-glass-backdrop/60 backdrop-blur-xl border-b border-border/10" />
+      
+      <div className="relative h-full flex items-center justify-between px-8 max-w-7xl mx-auto">
+        {/* Logo - Left */}
+        <motion.div 
+          className="flex items-center gap-3"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
         >
-          <Menu className="h-5 w-5" />
-        </Button>
-        
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">RGS</span>
+          <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-primary via-primary-hover to-accent shadow-lg flex items-center justify-center animate-glow">
+            <span className="text-white font-bold text-xs">R</span>
           </div>
-          <div className="hidden sm:block">
-            <h1 className="text-lg font-semibold text-foreground">MVUI</h1>
-            <p className="text-xs text-foreground-muted -mt-1">Multi-Variable User Interface</p>
-          </div>
-        </div>
-      </div>
+          <span className="font-semibold text-foreground text-sm tracking-tight">RGS MVUI</span>
+        </motion.div>
 
-      {/* Center Section - Zone Navigation */}
-      <nav className="hidden md:flex items-center gap-1 bg-glass-primary/50 rounded-xl p-1">
-        {zoneTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = currentZone === tab.id;
-          
-          return (
-            <NavLink
-              key={tab.id}
-              to={tab.path}
-              onClick={() => handleZoneChange(tab.id)}
-              className={({ isActive: navActive }) => `
-                relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-fast
-                ${navActive || isActive 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
-                  : 'text-foreground-muted hover:text-foreground hover:bg-glass-secondary/50'
+        {/* Center Navigation - Floating Tabs */}
+        <motion.nav 
+          className="flex items-center bg-glass-primary/40 backdrop-blur-md rounded-2xl p-1 border border-border/20 shadow-elevation"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          {zoneTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = currentZone === tab.id;
+            
+            return (
+              <NavLink
+                key={tab.id}
+                to={tab.path}
+                onClick={() => handleZoneChange(tab.id)}
+                className={({ isActive: navActive }) =>
+                  `relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                    navActive || isActive
+                      ? 'text-primary-foreground shadow-lg'
+                      : 'text-foreground-muted hover:text-foreground'
+                  }`
                 }
-              `}
-            >
-              {({ isActive: navActive }) => (
-                <>
-                  <Icon className="h-4 w-4" />
-                  <span className="hidden lg:inline">{tab.label}</span>
-                  {(navActive || isActive) && (
-                    <motion.div
-                      layoutId="activeZone"
-                      className="absolute inset-0 bg-primary rounded-lg -z-10"
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                </>
-              )}
-            </NavLink>
-          );
-        })}
-      </nav>
+              >
+                {({ isActive: navActive }) => (
+                  <>
+                    {(navActive || isActive) && (
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-primary to-primary-hover rounded-xl shadow-glow"
+                        layoutId="activeTab"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <Icon className="w-4 h-4 relative z-10" />
+                    <span className="relative z-10 hidden lg:inline">{tab.label}</span>
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
+        </motion.nav>
 
-      {/* Right Section - Feature Flags & Settings */}
-      <div className="flex items-center gap-3">
-        <FeatureFlagChip flag="newRgsUI" />
-        
-        <Button variant="ghost" size="sm" className="text-foreground-muted hover:text-foreground">
-          <Settings className="h-4 w-4" />
-        </Button>
-        
-        {/* Role Indicator */}
-        <div className="hidden sm:flex items-center gap-2 bg-glass-secondary/50 rounded-lg px-3 py-1.5">
-          <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-            <span className="text-xs">👩‍💼</span>
+        {/* Right Side - Role & Profile */}
+        <motion.div 
+          className="flex items-center gap-3"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          {/* Feature Flag Badge */}
+          <FeatureFlagChip flag="newRgsUI" />
+
+          {/* Role Pill */}
+          <div className="bg-glass-secondary/60 backdrop-blur-sm rounded-2xl px-4 py-1.5 border border-border/20 hidden sm:block">
+            <span className="text-xs font-medium text-foreground-muted">Product Manager</span>
           </div>
-          <span className="text-sm text-foreground-muted">Sarah Chen</span>
-        </div>
+          
+          {/* Profile */}
+          <button className="w-8 h-8 bg-glass-secondary/60 backdrop-blur-sm rounded-xl border border-border/20 flex items-center justify-center hover:bg-glass-secondary/80 transition-all duration-200 hover:scale-105">
+            <User className="w-4 h-4 text-foreground-muted" />
+          </button>
+
+          {/* More Options */}
+          <button
+            onClick={() => setSidebarCollapsed(true)}
+            className="w-8 h-8 bg-glass-secondary/60 backdrop-blur-sm rounded-xl border border-border/20 flex items-center justify-center hover:bg-glass-secondary/80 transition-all duration-200 hover:scale-105"
+          >
+            <MoreHorizontal className="w-4 h-4 text-foreground-muted" />
+          </button>
+        </motion.div>
       </div>
     </motion.header>
   );

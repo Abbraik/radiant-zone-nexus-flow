@@ -2,33 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-/* RGS MVUI Design System - Dark Mode Glassmorphism */
+/* RGS MVUI Design System - World-Class Apple-Grade Experience */
 
 @layer base {
   :root {
-    /* Core RGS Dark Theme Colors (HSL) */
-    --background: 220 15% 8%;
-    --background-secondary: 220 13% 10%;
-    --background-tertiary: 220 11% 12%;
-    --foreground: 210 20% 95%;
-    --foreground-muted: 210 15% 75%;
-    --foreground-subtle: 210 10% 55%;
+    /* Apple-Grade Color Foundation - Muted Base with Vibrant Accents */
+    --background: 220 18% 6%;
+    --background-secondary: 220 16% 8%;
+    --background-tertiary: 220 14% 10%;
+    --background-canvas: 220 20% 4%;
+    --foreground: 210 25% 98%;
+    --foreground-muted: 210 20% 85%;
+    --foreground-subtle: 210 15% 65%;
 
-    /* Glassmorphism Layers */
-    --glass-primary: 220 20% 15%;
-    --glass-secondary: 220 15% 20%;
-    --glass-accent: 220 10% 25%;
-    --glass-overlay: 220 50% 5%;
+    /* Premium Glassmorphism System */
+    --glass-primary: 220 25% 12%;
+    --glass-secondary: 220 20% 18%;
+    --glass-accent: 220 15% 25%;
+    --glass-overlay: 220 60% 2%;
+    --glass-backdrop: 220 30% 8%;
 
-    /* RGS Brand Colors */
-    --primary: 215 85% 55%;
-    --primary-hover: 215 85% 65%;
-    --primary-muted: 215 60% 35%;
-    --primary-foreground: 210 40% 98%;
+    /* Vibrant Accent Palette - Teal & Sapphire */
+    --primary: 185 85% 55%;
+    --primary-hover: 185 90% 65%;
+    --primary-glow: 185 100% 70%;
+    --primary-muted: 185 60% 40%;
+    --primary-foreground: 220 15% 98%;
 
-    --secondary: 240 20% 25%;
-    --secondary-hover: 240 25% 30%;
-    --secondary-foreground: 210 20% 85%;
+    --accent: 215 90% 60%;
+    --accent-hover: 215 95% 70%;
+    --accent-glow: 215 100% 75%;
+    --accent-muted: 215 70% 45%;
+    --accent-foreground: 220 15% 98%;
+
+    --secondary: 220 25% 20%;
+    --secondary-hover: 220 30% 25%;
+    --secondary-foreground: 210 25% 90%;
 
     /* Status & Feedback Colors */
     --success: 142 76% 36%;
@@ -68,26 +77,48 @@
     --popover-foreground: 210 20% 90%;
 
     /* Interactive Elements */
-    --muted: 220 15% 18%;
-    --muted-foreground: 210 15% 65%;
-    --accent: 220 15% 20%;
-    --accent-foreground: 210 20% 85%;
+    --muted: 220 20% 15%;
+    --muted-foreground: 210 18% 70%;
 
-    /* Layout */
-    --radius: 0.75rem;
-    --radius-lg: 1rem;
-    --radius-xl: 1.25rem;
+    /* Apple-Grade Layout System - 8px Grid */
+    --radius: 1.5rem;     /* 24px - Premium corner radius */
+    --radius-lg: 2rem;    /* 32px - Large cards */
+    --radius-xl: 2.5rem;  /* 40px - Hero panels */
+    --radius-button: 1.75rem; /* 28px - Perfect button curves */
 
-    /* Animations */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* Ultra-Smooth Animation System */
+    --transition-micro: 100ms cubic-bezier(0.23, 1, 0.32, 1);    /* Instant feedback */
+    --transition-fast: 200ms cubic-bezier(0.23, 1, 0.32, 1);     /* UI interactions */
+    --transition-smooth: 300ms cubic-bezier(0.23, 1, 0.32, 1);   /* Panel transitions */
+    --transition-slow: 500ms cubic-bezier(0.23, 1, 0.32, 1);     /* Scene changes */
+    --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);           /* Spring bounce */
 
-    /* Shadows & Blur */
-    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --shadow-elevation: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --blur-glass: 20px;
-    --blur-subtle: 10px;
+    /* Premium Shadow & Depth System */
+    --shadow-subtle: 0 2px 8px -2px rgba(0, 0, 0, 0.1);
+    --shadow-glass: 0 16px 40px -8px rgba(0, 0, 0, 0.3);
+    --shadow-elevation: 0 8px 32px -4px rgba(0, 0, 0, 0.25);
+    --shadow-hero: 0 32px 64px -16px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 32px rgba(185, 85%, 55%, 0.15);
+    --blur-glass: 24px;
+    --blur-subtle: 12px;
+    --blur-backdrop: 40px;
+
+    /* Typography Scale - System UI Foundation */
+    --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+    
+    /* Premium Spacing System - 8px Grid */
+    --space-1: 0.125rem;   /* 2px */
+    --space-2: 0.25rem;    /* 4px */
+    --space-3: 0.5rem;     /* 8px */
+    --space-4: 0.75rem;    /* 12px */
+    --space-5: 1rem;       /* 16px */
+    --space-6: 1.25rem;    /* 20px */
+    --space-8: 2rem;       /* 32px */
+    --space-10: 2.5rem;    /* 40px */
+    --space-12: 3rem;      /* 48px */
+    --space-16: 4rem;      /* 64px */
 
     /* Sidebar - RGS specific */
     --sidebar-background: 220 15% 8%;
@@ -134,29 +165,44 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply text-foreground antialiased;
+    font-family: var(--font-body);
     background: 
-      radial-gradient(ellipse at top, hsl(var(--background-secondary)) 0%, hsl(var(--background)) 100%),
-      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background-tertiary)) 100%);
+      radial-gradient(ellipse 140% 120% at 50% -20%, hsl(var(--background-secondary)) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 100% at 20% 100%, hsl(var(--accent) / 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 100% at 80% 100%, hsl(var(--primary) / 0.02) 0%, transparent 50%),
+      hsl(var(--background-canvas));
+    background-attachment: fixed;
+    overflow-x: hidden;
   }
 
-  /* Glassmorphism utilities */
+  /* Premium Glassmorphism System */
   .glass {
-    background: hsl(var(--glass-primary) / 0.7);
-    backdrop-filter: blur(var(--blur-glass));
-    border: 1px solid hsl(var(--border-subtle) / 0.2);
+    background: hsl(var(--glass-primary) / 0.85);
+    backdrop-filter: blur(var(--blur-glass)) saturate(1.2);
+    border: 1px solid hsl(var(--border-subtle) / 0.3);
+    box-shadow: var(--shadow-glass);
   }
 
   .glass-secondary {
-    background: hsl(var(--glass-secondary) / 0.6);
-    backdrop-filter: blur(var(--blur-subtle));
-    border: 1px solid hsl(var(--border) / 0.3);
+    background: hsl(var(--glass-secondary) / 0.7);
+    backdrop-filter: blur(var(--blur-subtle)) saturate(1.1);
+    border: 1px solid hsl(var(--border) / 0.4);
+    box-shadow: var(--shadow-elevation);
   }
 
   .glass-accent {
-    background: hsl(var(--glass-accent) / 0.8);
-    backdrop-filter: blur(var(--blur-glass));
-    border: 1px solid hsl(var(--border-accent) / 0.2);
+    background: hsl(var(--glass-accent) / 0.9);
+    backdrop-filter: blur(var(--blur-glass)) saturate(1.3);
+    border: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: var(--shadow-hero), var(--shadow-glow);
+  }
+
+  .glass-hero {
+    background: hsl(var(--glass-backdrop) / 0.95);
+    backdrop-filter: blur(var(--blur-backdrop)) saturate(1.4);
+    border: 1px solid hsl(var(--primary) / 0.15);
+    box-shadow: var(--shadow-hero);
   }
 
   /* Custom scrollbars */
@@ -181,32 +227,105 @@
 }
 
 @layer utilities {
-  /* RGS Animation Classes */
+  /* Apple-Grade Animation System */
   .animate-entrance {
-    animation: entrance var(--transition-smooth) ease-out;
+    animation: entrance var(--transition-smooth) var(--spring);
   }
 
-  .animate-glass-hover {
-    transition: all var(--transition-fast);
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
   }
 
-  .animate-glass-hover:hover {
-    background: hsl(var(--glass-secondary) / 0.8);
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+
+  /* Premium Interactive States */
+  .btn-primary {
+    @apply relative overflow-hidden rounded-[--radius-button] px-8 py-4 font-medium text-primary-foreground transition-all;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
+    box-shadow: var(--shadow-elevation), 0 0 0 1px hsl(var(--primary) / 0.2);
+    transform: scale(1);
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hero), var(--shadow-glow);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-secondary {
+    @apply rounded-[--radius-button] px-6 py-3 font-medium border border-border/40 transition-all;
+    background: hsl(var(--glass-secondary) / 0.6);
+    backdrop-filter: blur(var(--blur-subtle));
+  }
+
+  .btn-secondary:hover {
     transform: translateY(-1px);
+    background: hsl(var(--glass-secondary) / 0.8);
     box-shadow: var(--shadow-elevation);
   }
 
-  /* Zone-specific utilities */
-  .zone-panel {
-    @apply glass rounded-2xl shadow-lg p-6 max-w-2xl mx-auto;
+  /* Premium Panel System */
+  .panel-hero {
+    @apply glass-hero rounded-[--radius-xl] p-12 max-w-4xl mx-auto relative;
+    margin-top: var(--space-16);
+    margin-bottom: var(--space-16);
   }
 
-  .zone-panel-wide {
-    @apply glass rounded-2xl shadow-lg p-6 max-w-3xl mx-auto;
+  .panel-floating {
+    @apply glass rounded-[--radius-lg] p-8 max-w-2xl mx-auto relative;
+    transform: translateY(0);
+    transition: all var(--transition-smooth);
   }
 
-  .zone-panel-full {
-    @apply glass rounded-2xl shadow-lg p-6 w-full;
+  .panel-floating:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hero);
+  }
+
+  .panel-full {
+    @apply glass rounded-[--radius] p-6 w-full relative;
+  }
+
+  /* Apple-Grade Input System */
+  .input-floating {
+    @apply relative block w-full px-4 py-3 text-foreground bg-transparent border border-border/30 rounded-[--radius] transition-all;
+    backdrop-filter: blur(var(--blur-subtle));
+  }
+
+  .input-floating:focus {
+    @apply outline-none border-primary ring-2 ring-primary/20;
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+  }
+
+  .input-floating + label {
+    @apply absolute left-4 -top-6 text-sm font-medium text-foreground-subtle transition-all;
+  }
+
+  /* Status & Feedback - Semantic Colors */
+  .status-success {
+    @apply bg-green-500/10 text-green-300 border border-green-500/20 rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .status-warning {
+    @apply bg-yellow-500/10 text-yellow-300 border border-yellow-500/20 rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .status-error {
+    @apply bg-red-500/10 text-red-300 border border-red-500/20 rounded-full px-3 py-1 text-xs font-medium;
+  }
+
+  .status-info {
+    @apply bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded-full px-3 py-1 text-xs font-medium;
   }
 
   /* Status chips */
@@ -243,13 +362,65 @@
   }
 }
 
+/* Apple-Grade Keyframe Animations */
 @keyframes entrance {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(16px) scale(0.96);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.1);
+  }
+  100% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.2), 0 0 80px hsl(var(--primary) / 0.1);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }

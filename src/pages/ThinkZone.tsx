@@ -41,7 +41,6 @@ export const ThinkZone: React.FC = () => {
     srt: 12,
     leverage: 'medium-leverage'
   });
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
   const currentSprint = sprints?.[0];
   const weekProgress = currentSprint ? (currentSprint.week / currentSprint.totalWeeks) * 100 : 0;
@@ -52,47 +51,97 @@ export const ThinkZone: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-entrance">
-      {/* Header */}
-      <motion.div
-        initial={{ y: -10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="text-center space-y-2"
-      >
-        <h1 className="text-3xl font-bold text-foreground flex items-center justify-center gap-3">
-          <Lightbulb className="h-8 w-8 text-primary" />
-          Think Zone
-        </h1>
-        <p className="text-foreground-muted max-w-2xl mx-auto">
-          Plan your sprint by analyzing tension levels, setting rhythm timelines, and selecting leverage strategies
-        </p>
-      </motion.div>
+    <div className="min-h-screen relative">
+      {/* Background Decor - Parallax CLD Network */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div 
+          className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/5 blur-xl"
+          animate={{ y: [0, -10, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-20 right-10 w-24 h-24 rounded-full bg-accent/5 blur-xl"
+          animate={{ y: [0, 15, 0], scale: [1, 0.95, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+        <motion.div 
+          className="absolute top-1/2 left-1/2 w-40 h-40 rounded-full bg-primary/3 blur-2xl"
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
 
-      {/* Main Panel */}
-      <Card className="zone-panel">
+      {/* Hero Panel */}
+      <motion.div
+        initial={{ y: 20, opacity: 0, scale: 0.98 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="panel-hero"
+      >
         <div className="space-y-6">
-          {/* Sprint Progress */}
+          {/* Sprint Progress - Circular Progress Ring */}
           {currentSprint && (
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="space-y-3"
+              className="text-center space-y-6"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Week {currentSprint.week}/{currentSprint.totalWeeks}
-                  </h3>
-                  <p className="text-sm text-foreground-muted">Current Sprint Progress</p>
+              {/* Circular Progress Ring */}
+              <div className="relative flex items-center justify-center">
+                <div className="relative w-32 h-32">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    {/* Background circle */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      stroke="hsl(var(--border))"
+                      strokeWidth="4"
+                      fill="none"
+                      opacity="0.3"
+                    />
+                    {/* Progress circle */}
+                    <motion.circle
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="4"
+                      fill="none"
+                      strokeLinecap="round"
+                      style={{
+                        strokeDasharray: `${2 * Math.PI * 45}`,
+                        strokeDashoffset: `${2 * Math.PI * 45 * (1 - weekProgress / 100)}`
+                      }}
+                      initial={{ strokeDashoffset: 2 * Math.PI * 45 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 45 * (1 - weekProgress / 100) }}
+                      transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+                    />
+                  </svg>
+                  {/* Center text */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <motion.span 
+                      className="text-2xl font-bold text-foreground"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.8, type: "spring", bounce: 0.4 }}
+                    >
+                      {currentSprint.week}
+                    </motion.span>
+                    <span className="text-sm text-foreground-muted">of {currentSprint.totalWeeks}</span>
+                  </div>
                 </div>
+              </div>
+
+              {/* Status Info */}
+              <div className="flex items-center justify-center gap-4">
+                <div className="text-center">
+                  <p className="text-sm text-foreground-muted">Sprint Progress</p>
+                  <p className="font-semibold text-foreground">{Math.round(weekProgress)}% Complete</p>
+                </div>
+                <div className="w-px h-8 bg-border opacity-50" />
                 <TensionChip tension={currentSprint.tension} />
               </div>
-              <ProgressBar
-                value={currentSprint.week}
-                max={currentSprint.totalWeeks}
-                label="Sprint Timeline"
-                variant={currentSprint.tension === 'high' ? 'danger' : 'default'}
-              />
             </motion.div>
           )}
 
@@ -175,20 +224,22 @@ export const ThinkZone: React.FC = () => {
             </div>
           </div>
 
-          {/* Primary Action */}
+          {/* Primary Action - Premium Button */}
           <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
+            className="pt-4"
           >
-            <Button
+            <motion.button
               onClick={handleSubmit}
-              size="lg"
-              className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-semibold py-3 rounded-xl shadow-lg"
+              className="btn-primary w-full h-14 text-lg font-semibold flex items-center justify-center gap-3"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <Play className="h-5 w-5 mr-2" />
+              <Play className="h-5 w-5" />
               Start Sprint
-            </Button>
+            </motion.button>
           </motion.div>
 
           {/* Advanced Options */}
@@ -247,7 +298,7 @@ export const ThinkZone: React.FC = () => {
             </AccordionItem>
           </Accordion>
         </div>
-      </Card>
+      </motion.div>
     </div>
   );
 };
