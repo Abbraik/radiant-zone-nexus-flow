@@ -31,7 +31,7 @@ const App = () => (
             }
           >
             <Routes>
-              <Route path="/" element={<ThinkZone />} />
+              <Route path="/" element={<Index />} />
               <Route path="/think" element={<ThinkZone />} />
               <Route path="/act" element={<ActZone />} />
               <Route path="/monitor" element={<MonitorZone />} />
