@@ -6,9 +6,10 @@ import { Badge } from '../ui/badge';
 
 interface SRTRangeSliderProps {
   task: Task;
+  loopId?: string;
 }
 
-const SRTRangeSlider: React.FC<SRTRangeSliderProps> = ({ task }) => {
+const SRTRangeSlider: React.FC<SRTRangeSliderProps> = ({ task, loopId }) => {
   const [srtRange, setSrtRange] = useState([6]);
 
   return (
@@ -19,7 +20,9 @@ const SRTRangeSlider: React.FC<SRTRangeSliderProps> = ({ task }) => {
     >
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-white mb-2">SRT Range</h3>
-        <p className="text-sm text-gray-300">Set the strategic response timeframe (0-24 months)</p>
+        <p className="text-sm text-gray-300">
+          Set strategic response timeframe for {loopId ? `Loop ${loopId}` : 'current task'} (0-24 months)
+        </p>
       </div>
 
       <div className="space-y-6">

@@ -67,6 +67,31 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
     );
   }
 
+  // Generate props based on widget type and task
+  const getWidgetProps = () => {
+    const baseProps = { task };
+    
+    // Add specific props based on widget type
+    switch (widgetName) {
+      case 'TensionSelector':
+      case 'SRTRangeSlider':
+        return { ...baseProps, loopId: task.loop_id };
+      case 'InterventionPicker':
+      case 'BundlePreview':
+      case 'SmartRolesPanel':
+        return { ...baseProps, bundleId: task.loop_id };
+      case 'LoopTable':
+        return { ...baseProps, filter: { loopId: task.loop_id } };
+      case 'TRIDetailDrawer':
+        return { ...baseProps, loopId: task.loop_id };
+      case 'SimulationParams':
+      case 'SimulationPreview':
+        return { ...baseProps, scenarioId: task.loop_id };
+      default:
+        return baseProps;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -76,7 +101,7 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
       className="mb-6"
     >
       <Suspense fallback={<LoadingSkeleton />}>
-        <WidgetComponent task={task} />
+        <WidgetComponent {...getWidgetProps()} />
       </Suspense>
     </motion.div>
   );

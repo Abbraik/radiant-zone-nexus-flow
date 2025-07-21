@@ -70,6 +70,10 @@ export const Workspace: React.FC = () => {
             <div className="mb-6 p-6 bg-glass/70 backdrop-blur-20 rounded-2xl shadow-2xl border border-white/10">
               <div className="flex items-start justify-between">
                 <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm text-teal-300 font-medium">Working on:</span>
+                    <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
+                  </div>
                   <h1 className="text-2xl font-semibold text-white mb-2">
                     {activeTask.title}
                   </h1>
@@ -83,16 +87,26 @@ export const Workspace: React.FC = () => {
                     <span className="text-xs bg-white/10 text-gray-300 px-2 py-1 rounded-full">
                       {activeTask.type}
                     </span>
+                    {activeTask.loop_id && (
+                      <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+                        {activeTask.type.includes('simulation') ? `Scenario ${activeTask.loop_id}` : `Loop ${activeTask.loop_id}`}
+                      </span>
+                    )}
                   </div>
                 </div>
                 
                 <Button
                   onClick={() => completeTask(activeTask.id)}
                   disabled={isCompletingTask}
-                  className="bg-teal-500 hover:bg-teal-600 text-white"
+                  className={`${
+                    activeTask.type === 'publish_bundle' 
+                      ? 'bg-primary hover:bg-primary-hover text-white font-medium' 
+                      : 'bg-teal-500 hover:bg-teal-600 text-white'
+                  }`}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  {isCompletingTask ? 'Completing...' : 'Complete Task'}
+                  {isCompletingTask ? 'Completing...' : 
+                   activeTask.type === 'publish_bundle' ? 'Publish Bundle' : 'Complete Task'}
                 </Button>
               </div>
             </div>

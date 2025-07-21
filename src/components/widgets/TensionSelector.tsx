@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 interface TensionSelectorProps {
   task: Task;
+  loopId?: string;
 }
 
 const tensionOptions = [
@@ -16,7 +17,7 @@ const tensionOptions = [
   { value: 'escalating', label: 'Escalating', description: 'Growing pressure requiring proactive measures' }
 ];
 
-const TensionSelector: React.FC<TensionSelectorProps> = ({ task }) => {
+const TensionSelector: React.FC<TensionSelectorProps> = ({ task, loopId }) => {
   const [selectedTension, setSelectedTension] = useState<string>('');
 
   return (

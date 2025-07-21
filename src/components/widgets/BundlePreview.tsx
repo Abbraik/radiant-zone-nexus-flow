@@ -5,9 +5,10 @@ import { Package } from 'lucide-react';
 
 interface BundlePreviewProps {
   task: Task;
+  bundleId?: string;
 }
 
-const BundlePreview: React.FC<BundlePreviewProps> = ({ task }) => {
+const BundlePreview: React.FC<BundlePreviewProps> = ({ task, bundleId }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -18,7 +19,9 @@ const BundlePreview: React.FC<BundlePreviewProps> = ({ task }) => {
         <Package className="h-6 w-6 text-teal-400" />
         <h3 className="text-xl font-semibold text-white">Bundle Preview</h3>
       </div>
-      <p className="text-gray-300">Bundle preview widget for {task.title}</p>
+      <p className="text-gray-300">
+        Bundle preview for {bundleId ? `Bundle ${bundleId}` : task.title}
+      </p>
     </motion.div>
   );
 };

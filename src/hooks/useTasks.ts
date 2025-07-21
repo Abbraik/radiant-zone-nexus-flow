@@ -12,16 +12,74 @@ export interface Task extends TaskType {
   updated_at: Date;
 }
 
-// Mock data with status
-const mockTasksWithStatus: Task[] = mockTasks.map((task, index) => ({
-  ...task,
-  status: index === 0 ? 'claimed' : 'available',
-  owner_id: index === 0 ? 'current-user' : undefined,
-  loop_id: `loop-${index + 1}`,
-  due_at: new Date(Date.now() + (index + 1) * 7 * 24 * 60 * 60 * 1000),
-  created_at: new Date(),
-  updated_at: new Date()
-}));
+// Enhanced mock data with specific examples
+const mockTasksWithStatus: Task[] = [
+  {
+    id: '1',
+    title: 'Define tension for Loop A',
+    description: 'Set up tension parameters for the current sprint cycle',
+    zone: 'think',
+    type: 'define_tension',
+    components: ['TensionSelector', 'SRTRangeSlider'],
+    status: 'available',
+    loop_id: 'A',
+    due_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '2',
+    title: 'Publish bundle B',
+    description: 'Create and validate intervention bundle for Loop B',
+    zone: 'act',
+    type: 'publish_bundle',
+    components: ['InterventionPicker', 'BundlePreview', 'SmartRolesPanel'],
+    status: 'available',
+    loop_id: 'B',
+    due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '3',
+    title: 'Review TRI for Loop C',
+    description: 'Monitor system health and TRI performance metrics',
+    zone: 'monitor',
+    type: 'review_tri',
+    components: ['LoopTable', 'TRIDetailDrawer'],
+    status: 'available',
+    loop_id: 'C',
+    due_at: new Date(Date.now() + 0.5 * 24 * 60 * 60 * 1000), // critical - 12 hours
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '4',
+    title: 'Run simulation for Scenario X',
+    description: 'Test system resilience with parameter variations',
+    zone: 'innovate-learn',
+    type: 'run_simulation',
+    components: ['SimulationParams', 'SimulationPreview'],
+    status: 'available',
+    loop_id: 'X',
+    due_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '5',
+    title: 'Capture insight from Loop C test',
+    description: 'Document and save insights from recent testing',
+    zone: 'innovate-learn',
+    type: 'capture_insight',
+    components: ['InsightFeed', 'ExperimentStudio'],
+    status: 'available',
+    loop_id: 'C',
+    due_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
+    created_at: new Date(),
+    updated_at: new Date()
+  }
+];
 
 export const useTasks = () => {
   const { toast } = useToast();
@@ -74,6 +132,8 @@ export const useTasks = () => {
       return taskId;
     },
     onSuccess: (taskId) => {
+      const task = allTasks.find(t => t.id === taskId);
+      
       queryClient.setQueryData(['tasks'], (oldTasks: Task[] = []) => 
         oldTasks.map(task => 
           task.id === taskId 
@@ -82,9 +142,24 @@ export const useTasks = () => {
         )
       );
       
+      // Custom completion messages based on task type
+      let title = "Task Completed";
+      let description = "Great work! Task marked as complete";
+      
+      if (task?.type === 'run_simulation') {
+        title = "Simulation Complete";
+        description = "Δ=+5% — Capture as Insight";
+      } else if (task?.type === 'publish_bundle') {
+        title = "Bundle Published";
+        description = "Intervention bundle successfully deployed";
+      } else if (task?.type === 'review_tri') {
+        title = "TRI Review Complete";
+        description = "System health assessment completed";
+      }
+      
       toast({
-        title: "Task Completed",
-        description: "Great work! Task marked as complete",
+        title,
+        description,
         duration: 3000
       });
     }

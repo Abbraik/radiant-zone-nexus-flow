@@ -5,9 +5,10 @@ import { Plus } from 'lucide-react';
 
 interface InterventionPickerProps {
   task: Task;
+  bundleId?: string;
 }
 
-const InterventionPicker: React.FC<InterventionPickerProps> = ({ task }) => {
+const InterventionPicker: React.FC<InterventionPickerProps> = ({ task, bundleId }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -18,7 +19,9 @@ const InterventionPicker: React.FC<InterventionPickerProps> = ({ task }) => {
         <Plus className="h-6 w-6 text-teal-400" />
         <h3 className="text-xl font-semibold text-white">Intervention Picker</h3>
       </div>
-      <p className="text-gray-300">Intervention selection widget for {task.title}</p>
+      <p className="text-gray-300">
+        Intervention selection for {bundleId ? `Bundle ${bundleId}` : task.title}
+      </p>
     </motion.div>
   );
 };

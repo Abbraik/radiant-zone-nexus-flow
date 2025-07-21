@@ -143,12 +143,21 @@ export const WorkspaceSidebar: React.FC<WorkspaceSidebarProps> = ({
                                 {task.zone}
                               </Badge>
                             </div>
-                            {task.due_at && (
-                              <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
-                                <Calendar className="h-3 w-3" />
-                                {format(task.due_at, 'MMM d')}
-                              </div>
-                            )}
+                             {task.due_at && (
+                               <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
+                                 <Calendar className="h-3 w-3" />
+                                 Due {task.due_at && new Date(task.due_at).getTime() - Date.now() < 24 * 60 * 60 * 1000 
+                                   ? 'tomorrow' 
+                                   : task.due_at && new Date(task.due_at).getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000
+                                   ? 'in 3d'
+                                   : format(task.due_at, 'MMM d')}
+                                 {task.due_at && new Date(task.due_at).getTime() - Date.now() < 24 * 60 * 60 * 1000 && (
+                                   <span className="ml-1 text-xs bg-red-500/20 text-red-300 px-1 py-0.5 rounded">
+                                     Critical
+                                   </span>
+                                 )}
+                               </div>
+                             )}
                           </div>
                         </div>
                       </motion.div>
@@ -190,12 +199,21 @@ export const WorkspaceSidebar: React.FC<WorkspaceSidebarProps> = ({
                                 {task.zone}
                               </Badge>
                             </div>
-                            {task.due_at && (
-                              <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
-                                <Clock className="h-3 w-3" />
-                                {format(task.due_at, 'MMM d')}
-                              </div>
-                            )}
+                             {task.due_at && (
+                               <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
+                                 <Clock className="h-3 w-3" />
+                                 Due {task.due_at && new Date(task.due_at).getTime() - Date.now() < 24 * 60 * 60 * 1000 
+                                   ? 'tomorrow' 
+                                   : task.due_at && new Date(task.due_at).getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000
+                                   ? 'in 3d'
+                                   : format(task.due_at, 'MMM d')}
+                                 {task.due_at && new Date(task.due_at).getTime() - Date.now() < 24 * 60 * 60 * 1000 && (
+                                   <span className="ml-1 text-xs bg-red-500/20 text-red-300 px-1 py-0.5 rounded">
+                                     Critical
+                                   </span>
+                                 )}
+                               </div>
+                             )}
                           </div>
                           
                           <Button
