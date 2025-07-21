@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { Brain, Zap, BarChart3, Lightbulb, User, MoreHorizontal } from 'lucide-react';
+import { Brain, Zap, BarChart3, Lightbulb, User } from 'lucide-react';
 import { useUIStore } from '../../stores/ui-store';
 import { FeatureFlagChip } from './FeatureFlagProvider';
 import type { Zone } from '../../types';
@@ -21,7 +21,7 @@ const zoneTabs: ZoneTab[] = [
 ];
 
 export const Header: React.FC = () => {
-  const { setSidebarCollapsed, currentZone, setCurrentZone } = useUIStore();
+  const { currentZone, setCurrentZone } = useUIStore();
 
   const handleZoneChange = (zone: Zone) => {
     setCurrentZone(zone);
@@ -111,14 +111,6 @@ export const Header: React.FC = () => {
           {/* Profile */}
           <button className="w-8 h-8 bg-glass-secondary/60 backdrop-blur-sm rounded-xl border border-border/20 flex items-center justify-center hover:bg-glass-secondary/80 transition-all duration-200 hover:scale-105">
             <User className="w-4 h-4 text-foreground-muted" />
-          </button>
-
-          {/* More Options */}
-          <button
-            onClick={() => setSidebarCollapsed(true)}
-            className="w-8 h-8 bg-glass-secondary/60 backdrop-blur-sm rounded-xl border border-border/20 flex items-center justify-center hover:bg-glass-secondary/80 transition-all duration-200 hover:scale-105"
-          >
-            <MoreHorizontal className="w-4 h-4 text-foreground-muted" />
           </button>
         </motion.div>
       </div>
