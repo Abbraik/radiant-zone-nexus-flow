@@ -106,18 +106,18 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 20, stiffness: 300, duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
             style={{ pointerEvents: 'none' }}
           >
             <div 
-              className="w-full max-w-[480px] max-h-[85vh] bg-glass/90 backdrop-blur-20 rounded-3xl shadow-2xl border border-white/10 overflow-hidden"
+              className="w-full max-w-[520px] max-h-[90vh] bg-glass/90 backdrop-blur-20 rounded-3xl shadow-2xl border border-white/10 overflow-hidden flex flex-col"
               style={{ pointerEvents: 'auto' }}
             >
               
               {/* Header */}
-              <div className="p-6 border-b border-white/10">
+              <div className="flex-shrink-0 p-4 sm:p-6 border-b border-white/10">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-semibold text-white">Task Mission Control</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-white">Task Mission Control</h2>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -129,9 +129,9 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                 </div>
               </div>
 
-              <div className="max-h-[calc(85vh-140px)] overflow-y-auto">
+              <div className="flex-1 overflow-y-auto min-h-0">
                 {/* Context Snapshot */}
-                <div className="p-6 space-y-4">
+                <div className="p-4 sm:p-6 space-y-4">
                   <div className="text-sm font-medium text-gray-300 mb-3">Context Snapshot</div>
                   
                   {/* Goal & OKR Chain */}
@@ -190,10 +190,10 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                 </div>
 
                 {/* Task Details */}
-                <div className="px-6 pb-4 space-y-4">
+                <div className="px-4 sm:px-6 pb-4 space-y-4">
                   <div className="border-t border-white/10 pt-4">
                     <h3 className="text-lg font-medium text-white mb-2">{task.title}</h3>
-                    <p className="text-base text-gray-300 leading-relaxed mb-4">{task.description}</p>
+                    <p className="text-sm sm:text-base text-gray-300 leading-relaxed mb-4">{task.description}</p>
 
                     {/* Meta Information */}
                     <div className="flex flex-wrap gap-2 mb-4">
@@ -296,9 +296,9 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
               </div>
 
               {/* Actions Footer */}
-              <div className="p-6 border-t border-white/10 space-y-4">
+              <div className="flex-shrink-0 p-4 sm:p-6 border-t border-white/10 space-y-3 sm:space-y-4">
                 {/* Primary Actions */}
-                <div className="flex items-center justify-end gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
                   <Button
                     variant="ghost"
                     onClick={onCancel}
@@ -309,15 +309,15 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                   <Button
                     onClick={onConfirm}
                     disabled={isLoading}
-                    className="bg-teal-500 hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-full"
+                    className="bg-teal-500 hover:bg-teal-600 text-white font-medium px-6 py-2 rounded-full w-full sm:w-auto"
                   >
                     {isLoading ? 'Claiming...' : 'Claim & Go to Workspace'}
                   </Button>
                 </div>
 
                 {/* Secondary Controls */}
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-sm">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                     {/* Snooze Dropdown */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -359,7 +359,7 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                     </DropdownMenu>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                     {/* Teams Chat */}
                     <Button
                       variant="ghost"
