@@ -142,6 +142,10 @@ export interface FeatureFlags {
   aiCopilot: boolean;
   automation: boolean;
   pluginSystem: boolean;
+  // New Cascade Feature Flags
+  useCascadeBar: boolean;
+  useTaskClaimPopup: boolean;
+  useTeamsButton: boolean;
 }
 
 // UI State Types

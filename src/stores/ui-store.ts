@@ -21,7 +21,11 @@ const defaultFeatureFlags: FeatureFlags = {
   workspacePro: true,
   aiCopilot: true,
   automation: true,
-  pluginSystem: false
+  pluginSystem: false,
+  // New Cascade Features - ENABLED
+  useCascadeBar: true,
+  useTaskClaimPopup: true,
+  useTeamsButton: true
 };
 
 const initialState: UIState = {

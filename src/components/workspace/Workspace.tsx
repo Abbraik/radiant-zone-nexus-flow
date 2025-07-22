@@ -9,13 +9,28 @@ import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
 import { GoalTreeWidget } from '../../modules/cascade/components/GoalTreeWidget';
 import { OKRPanel } from '../../modules/cascade/components/OKRPanel';
 import { PairWorkOverlay } from '../../modules/collab/components/PairWorkOverlay';
-import { useFeatureFlags } from '../layout/FeatureFlagProvider';
+import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { OKR } from '../../modules/collab/data/mockData';
+import CascadeSidebar from './CascadeSidebar';
+import TaskClaimPopup from './TaskClaimPopup';
+import EnhancedTaskCard from './EnhancedTaskCard';
 
 export const Workspace: React.FC = () => {
-  const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask } = useTasks();
+  const { 
+    myTasks, 
+    activeTask, 
+    availableTasks, 
+    completeTask, 
+    isCompletingTask,
+    openClaimPopup,
+    confirmClaimTask,
+    cancelClaimTask,
+    claimingTask,
+    showClaimPopup,
+    isClaimingTask
+  } = useTasks();
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState(false);
@@ -55,11 +70,23 @@ export const Workspace: React.FC = () => {
         />
         
         <div className="flex flex-1">
-          <WorkspaceProSidebar 
-            myTasks={myTasks} 
-            availableTasks={availableTasks}
-            activeTask={null}
-          />
+          <FeatureFlagGuard 
+            flag="useCascadeBar" 
+            fallback={
+              <WorkspaceProSidebar 
+                myTasks={myTasks} 
+                availableTasks={availableTasks}
+                activeTask={null}
+              />
+            }
+          >
+            <CascadeSidebar
+              myTasks={myTasks}
+              availableTasks={availableTasks}
+              activeTask={null}
+              onTaskClaim={openClaimPopup}
+            />
+          </FeatureFlagGuard>
           
           <main className="flex-1 p-6 overflow-auto">
             <motion.div
@@ -103,11 +130,23 @@ export const Workspace: React.FC = () => {
       />
       
       <div className="flex flex-1">
-        <WorkspaceProSidebar 
-          myTasks={myTasks} 
-          availableTasks={availableTasks}
-          activeTask={activeTask}
-        />
+        <FeatureFlagGuard 
+          flag="useCascadeBar" 
+          fallback={
+            <WorkspaceProSidebar 
+              myTasks={myTasks} 
+              availableTasks={availableTasks}
+              activeTask={activeTask}
+            />
+          }
+        >
+          <CascadeSidebar
+            myTasks={myTasks}
+            availableTasks={availableTasks}
+            activeTask={activeTask}
+            onTaskClaim={openClaimPopup}
+          />
+        </FeatureFlagGuard>
         
         <main className="flex-1 p-6 overflow-auto">
           <motion.div
@@ -115,49 +154,16 @@ export const Workspace: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto"
           >
-            {/* Task Header */}
-            <div className="mb-6 p-6 bg-glass/70 backdrop-blur-20 rounded-2xl shadow-2xl border border-white/10">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm text-teal-300 font-medium">Working on:</span>
-                    <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
-                  </div>
-                  <h1 className="text-2xl font-semibold text-white mb-2">
-                    {activeTask.title}
-                  </h1>
-                  <p className="text-gray-300 text-base">
-                    {activeTask.description}
-                  </p>
-                  <div className="flex items-center gap-2 mt-3">
-                    <span className="text-xs bg-teal-500/20 text-teal-300 px-2 py-1 rounded-full">
-                      {activeTask.zone}
-                    </span>
-                    <span className="text-xs bg-white/10 text-gray-300 px-2 py-1 rounded-full">
-                      {activeTask.type}
-                    </span>
-                    {activeTask.loop_id && (
-                      <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
-                        {activeTask.type.includes('simulation') ? `Scenario ${activeTask.loop_id}` : `Loop ${activeTask.loop_id}`}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <Button
-                  onClick={() => completeTask(activeTask.id)}
-                  disabled={isCompletingTask}
-                  className={`${
-                    activeTask.type === 'publish_bundle' 
-                      ? 'bg-primary hover:bg-primary-hover text-white font-medium' 
-                      : 'bg-teal-500 hover:bg-teal-600 text-white'
-                  }`}
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  {isCompletingTask ? 'Completing...' : 
-                   activeTask.type === 'publish_bundle' ? 'Publish Bundle' : 'Complete Task'}
-                </Button>
-              </div>
+            {/* Enhanced Task Card */}
+            <div className="mb-6">
+              <FeatureFlagGuard flag="useTeamsButton">
+                <EnhancedTaskCard
+                  task={activeTask}
+                  onComplete={completeTask}
+                  isCompleting={isCompletingTask}
+                  showTeamsButton={true}
+                />
+              </FeatureFlagGuard>
             </div>
 
             {/* Dynamic Widgets */}
@@ -227,6 +233,17 @@ export const Workspace: React.FC = () => {
         partnerId={pairWorkPartner || undefined}
         taskTitle={activeTask?.title}
       />
+
+      {/* Task Claim Popup */}
+      <FeatureFlagGuard flag="useTaskClaimPopup">
+        <TaskClaimPopup
+          isOpen={showClaimPopup}
+          task={claimingTask}
+          onConfirm={confirmClaimTask}
+          onCancel={cancelClaimTask}
+          isLoading={isClaimingTask}
+        />
+      </FeatureFlagGuard>
     </div>
   );
 };

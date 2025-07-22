@@ -84,6 +84,8 @@ const mockTasksWithStatus: Task[] = [
 export const useTasks = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [claimingTask, setClaimingTask] = useState<Task | null>(null);
+  const [showClaimPopup, setShowClaimPopup] = useState(false);
   
   const { data: allTasks = [], isLoading } = useQuery({
     queryKey: ['tasks'],
@@ -165,6 +167,27 @@ export const useTasks = () => {
     }
   });
 
+  const openClaimPopup = useCallback((taskId: string) => {
+    const task = allTasks.find(t => t.id === taskId);
+    if (task) {
+      setClaimingTask(task);
+      setShowClaimPopup(true);
+    }
+  }, [allTasks]);
+
+  const confirmClaimTask = useCallback(() => {
+    if (claimingTask) {
+      claimTaskMutation.mutate(claimingTask.id);
+      setShowClaimPopup(false);
+      setClaimingTask(null);
+    }
+  }, [claimingTask, claimTaskMutation]);
+
+  const cancelClaimTask = useCallback(() => {
+    setShowClaimPopup(false);
+    setClaimingTask(null);
+  }, []);
+
   const claimTask = useCallback((taskId: string) => {
     claimTaskMutation.mutate(taskId);
   }, [claimTaskMutation]);
@@ -181,6 +204,11 @@ export const useTasks = () => {
     isLoading,
     claimTask,
     completeTask,
+    openClaimPopup,
+    confirmClaimTask,
+    cancelClaimTask,
+    claimingTask,
+    showClaimPopup,
     isClaimingTask: claimTaskMutation.isPending,
     isCompletingTask: completeTaskMutation.isPending
   };
