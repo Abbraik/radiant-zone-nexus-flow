@@ -30,9 +30,13 @@ export const TaskClaimModal: React.FC<TaskClaimModalProps> = ({
   onConfirmClaim,
   isConfirming = false
 }) => {
+  console.log('TaskClaimModal props:', { isOpen, taskId, task: taskId ? cascadeTasks.find(t => t.id === taskId) : null });
   const task = taskId ? cascadeTasks.find(t => t.id === taskId) : null;
 
-  if (!task) return null;
+  if (!task) {
+    console.log('No task found for taskId:', taskId);
+    return null;
+  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

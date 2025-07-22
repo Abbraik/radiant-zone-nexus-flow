@@ -30,6 +30,8 @@ export const Workspace: React.FC = () => {
 
   const handleTaskClaim = (taskId: string) => {
     console.log('handleTaskClaim called with taskId:', taskId);
+    console.log('Current claimModalOpen:', claimModalOpen);
+    console.log('Current selectedTaskId:', selectedTaskId);
     setSelectedTaskId(taskId);
     setClaimModalOpen(true);
     console.log('Modal should be opening...');
