@@ -29,8 +29,10 @@ export const Workspace: React.FC = () => {
   const [isConfirmingClaim, setIsConfirmingClaim] = useState(false);
 
   const handleTaskClaim = (taskId: string) => {
+    console.log('handleTaskClaim called with taskId:', taskId);
     setSelectedTaskId(taskId);
     setClaimModalOpen(true);
+    console.log('Modal should be opening...');
   };
 
   const handleConfirmClaim = async (taskId: string) => {
