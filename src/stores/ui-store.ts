@@ -61,6 +61,7 @@ export const useUIStore = create<UIStore>()(
     }),
     {
       name: 'rgs-ui-store',
+      version: 2, // Increment version to force reset of persisted state
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         featureFlags: state.featureFlags

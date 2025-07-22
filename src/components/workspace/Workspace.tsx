@@ -41,6 +41,11 @@ export const Workspace: React.FC = () => {
 
   // Debug: Log the feature flags
   console.log('Workspace feature flags:', flags);
+  console.log('Cascade features enabled:', {
+    useCascadeBar: flags.useCascadeBar,
+    useTaskClaimPopup: flags.useTaskClaimPopup,
+    useTeamsButton: flags.useTeamsButton
+  });
 
   // Guard with feature flag - temporarily disabled to ensure access
   // if (!flags.workspacePro) {
@@ -171,7 +176,7 @@ export const Workspace: React.FC = () => {
               
               {/* Main Content Area */}
               <div className="xl:col-span-2 space-y-6">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   {components.map((componentName) => (
                     <DynamicWidget
                       key={componentName}
