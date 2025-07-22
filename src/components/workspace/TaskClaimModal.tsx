@@ -75,20 +75,33 @@ export const TaskClaimModal: React.FC<TaskClaimModalProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 99999,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        zIndex: 999999,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         backdropFilter: 'blur(8px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '16px'
+        padding: '20px'
       }}
       onClick={handleBackdropClick}
     >
-      <Card 
-        className="w-full max-w-2xl bg-gray-900/95 border border-white/20 shadow-2xl"
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '600px',
+          maxHeight: '90vh',
+          overflow: 'auto'
+        }}
         onClick={(e) => e.stopPropagation()}
       >
+        <Card 
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            borderRadius: '12px'
+          }}
+        >
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -231,7 +244,8 @@ export const TaskClaimModal: React.FC<TaskClaimModalProps> = ({
             </Button>
           </div>
         </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
