@@ -1,28 +1,48 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronRight, Bell, Settings, Wrench, Clock, AlertTriangle } from 'lucide-react';
+import { 
+  ChevronDown, 
+  ChevronRight, 
+  Bell, 
+  Settings, 
+  Wrench, 
+  Clock, 
+  AlertTriangle, 
+  Target,
+  CheckCircle,
+  TrendingUp,
+  User
+} from 'lucide-react';
 import { Task } from '../../hooks/useTasks';
 import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Progress } from '../ui/progress';
 import { cn } from '../../lib/utils';
 import CascadeBar from './CascadeBar';
+import { mockGoals, Goal, OKR } from '../../modules/collab/data/mockData';
 
 interface CascadeSidebarProps {
   myTasks: Task[];
   availableTasks: Task[];
   activeTask: Task | null;
   onTaskClaim?: (taskId: string) => void;
+  onOKRSelect?: (okr: OKR) => void;
 }
 
 const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
   myTasks,
   availableTasks,
   activeTask,
-  onTaskClaim
+  onTaskClaim,
+  onOKRSelect
 }) => {
   const { flags } = useFeatureFlags();
   const [alertsExpanded, setAlertsExpanded] = useState(true);
   const [toolsExpanded, setToolsExpanded] = useState(false);
+  const [goalsExpanded, setGoalsExpanded] = useState(true);
+  const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set(['G1']));
+  const [selectedOKR, setSelectedOKR] = useState<string | null>(null);
 
   // Mock alerts data
   const alerts = [
@@ -90,6 +110,50 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
     onTaskClaim?.(taskId);
   };
 
+  const toggleGoal = (goalId: string) => {
+    setExpandedGoals(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(goalId)) {
+        newSet.delete(goalId);
+      } else {
+        newSet.add(goalId);
+      }
+      return newSet;
+    });
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'on-track':
+        return <CheckCircle className="h-3 w-3 text-green-400" />;
+      case 'at-risk':
+        return <AlertTriangle className="h-3 w-3 text-yellow-400" />;
+      case 'off-track':
+        return <AlertTriangle className="h-3 w-3 text-red-400" />;
+      default:
+        return <Clock className="h-3 w-3 text-gray-400" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'on-track': return 'bg-green-500';
+      case 'at-risk': return 'bg-yellow-500';
+      case 'off-track': return 'bg-red-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'critical': return 'bg-red-500/20 text-red-300 border-red-500/50';
+      case 'high': return 'bg-orange-500/20 text-orange-300 border-orange-500/50';
+      case 'medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
+      case 'low': return 'bg-green-500/20 text-green-300 border-green-500/50';
+      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
+    }
+  };
+
   return (
     <div className="w-80 h-full bg-glass/70 backdrop-blur-20 border-r border-white/10 flex flex-col">
       {/* Cascade Bar */}
@@ -108,6 +172,166 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto scrollbar-hide space-y-4 p-4">
+
+        {/* Portfolio Summary */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Target className="h-4 w-4 text-blue-400" />
+            <h3 className="text-sm font-medium text-white">Portfolio Status</h3>
+          </div>
+          <div className="grid grid-cols-3 gap-2 p-3 bg-glass/50 backdrop-blur-20 rounded-lg border border-white/10">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-400">72%</div>
+              <div className="text-xs text-gray-400">Progress</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-400">3</div>
+              <div className="text-xs text-gray-400">At Risk</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-blue-400">8</div>
+              <div className="text-xs text-gray-400">Tasks</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Goals & OKRs Section */}
+        <div className="space-y-3">
+          <button
+            onClick={() => setGoalsExpanded(!goalsExpanded)}
+            className="w-full flex items-center justify-between text-sm font-medium text-white hover:text-teal-300 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4" />
+              <span>Goals & OKRs</span>
+            </div>
+            {goalsExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+
+          <AnimatePresence>
+            {goalsExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-2"
+              >
+                {mockGoals.slice(0, 2).map((goal) => (
+                  <motion.div
+                    key={goal.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="border border-white/10 rounded-lg overflow-hidden bg-glass/30"
+                  >
+                    {/* Goal Header */}
+                    <div
+                      onClick={() => toggleGoal(goal.id)}
+                      className="p-2 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {expandedGoals.has(goal.id) ? (
+                            <ChevronDown className="h-3 w-3 text-gray-400" />
+                          ) : (
+                            <ChevronRight className="h-3 w-3 text-gray-400" />
+                          )}
+                          {getStatusIcon(goal.status)}
+                          <div className="min-w-0 flex-1">
+                            <h4 className="text-xs font-medium text-white truncate">{goal.title}</h4>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-gray-400">{goal.progress}%</span>
+                          <div className="w-8">
+                            <Progress value={goal.progress} className="h-1" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* OKRs */}
+                    <AnimatePresence>
+                      {expandedGoals.has(goal.id) && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="p-2 space-y-2">
+                            {goal.okrs.slice(0, 2).map((okr) => (
+                              <div
+                                key={okr.id}
+                                className="p-2 rounded border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-1">
+                                    {getStatusIcon(okr.status)}
+                                    <h5 className="text-xs font-medium text-white truncate">{okr.title}</h5>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedOKR(okr.id);
+                                      onOKRSelect?.(okr);
+                                    }}
+                                    className="text-xs text-blue-400 hover:text-blue-300 h-auto p-1"
+                                  >
+                                    View
+                                  </Button>
+                                </div>
+
+                                {/* Progress */}
+                                <div className="mb-2">
+                                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                                    <span>{okr.current}/{okr.target}</span>
+                                    <span>{Math.round((okr.current / okr.target) * 100)}%</span>
+                                  </div>
+                                  <Progress 
+                                    value={(okr.current / okr.target) * 100} 
+                                    className="h-1"
+                                  />
+                                </div>
+
+                                {/* Sample Tasks */}
+                                {okr.tasks.slice(0, 2).map((task) => (
+                                  <div
+                                    key={task.id}
+                                    className="flex items-center justify-between p-1 bg-white/5 rounded text-xs"
+                                  >
+                                    <div className="flex items-center gap-1">
+                                      <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(
+                                        task.status === 'completed' ? 'on-track' :
+                                        task.status === 'in-progress' ? 'at-risk' : 'off-track'
+                                      )}`} />
+                                      <span className="text-white truncate">{task.title}</span>
+                                    </div>
+                                    {task.status === 'available' && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleTaskClaim(task.id)}
+                                        className="text-xs text-green-400 hover:text-green-300 h-auto p-1"
+                                      >
+                                        Claim
+                                      </Button>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         
         {/* Available Tasks Section */}
         <div className="space-y-3">

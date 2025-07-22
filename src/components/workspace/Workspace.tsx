@@ -6,7 +6,7 @@ import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
 import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
 import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
-import { GoalTreeWidget } from '../../modules/cascade/components/GoalTreeWidget';
+
 import { OKRPanel } from '../../modules/cascade/components/OKRPanel';
 import { PairWorkOverlay } from '../../modules/collab/components/PairWorkOverlay';
 import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
@@ -98,6 +98,7 @@ export const Workspace: React.FC = () => {
               availableTasks={availableTasks}
               activeTask={null}
               onTaskClaim={openClaimPopup}
+              onOKRSelect={(okr) => setSelectedOKR(okr)}
             />
           </FeatureFlagGuard>
           
@@ -177,6 +178,7 @@ export const Workspace: React.FC = () => {
             availableTasks={availableTasks}
             activeTask={activeTask}
             onTaskClaim={openClaimPopup}
+            onOKRSelect={(okr) => setSelectedOKR(okr)}
           />
         </FeatureFlagGuard>
         
@@ -199,10 +201,7 @@ export const Workspace: React.FC = () => {
             </div>
 
             {/* Dynamic Widgets */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              
-              {/* Main Content Area */}
-              <div className="xl:col-span-2 space-y-6">
+            <div className="space-y-6">
                 <AnimatePresence>
                   {components.map((componentName) => (
                     <DynamicWidget
@@ -223,16 +222,7 @@ export const Workspace: React.FC = () => {
                       <p className="text-gray-400">No widgets configured for this task type.</p>
                     </div>
                   </motion.div>
-                )}
-              </div>
-
-              {/* Goals & OKRs Sidebar */}
-              <div className="xl:col-span-1">
-                <GoalTreeWidget 
-                  onTaskClaim={(taskId) => console.log('Claim task:', taskId)}
-                  onOKRSelect={(okr) => setSelectedOKR(okr)}
-                />
-              </div>
+                 )}
             </div>
           </motion.div>
         </main>
