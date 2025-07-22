@@ -25,7 +25,24 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Workspace />} />
+            <Route path="/" element={
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'purple',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px',
+                zIndex: 999999
+              }}>
+                SIMPLE TEST COMPONENT WORKING
+              </div>
+            } />
             <Route path="/workspace" element={<Workspace />} />
             <Route path="/dashboard" element={
               <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
