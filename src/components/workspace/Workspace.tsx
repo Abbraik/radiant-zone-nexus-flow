@@ -14,17 +14,20 @@ export const Workspace: React.FC = () => {
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
 
-  // Guard with feature flag
-  if (!flags.workspacePro) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="text-center p-8 bg-glass/70 backdrop-blur-20 rounded-2xl border border-white/10">
-          <h2 className="text-2xl font-semibold text-white mb-4">Workspace Pro</h2>
-          <p className="text-gray-300">This feature is currently disabled.</p>
-        </div>
-      </div>
-    );
-  }
+  // Debug: Log the feature flags
+  console.log('Workspace feature flags:', flags);
+
+  // Guard with feature flag - temporarily disabled to ensure access
+  // if (!flags.workspacePro) {
+  //   return (
+  //     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  //       <div className="text-center p-8 bg-glass/70 backdrop-blur-20 rounded-2xl border border-white/10">
+  //         <h2 className="text-2xl font-semibold text-white mb-4">Workspace Pro</h2>
+  //         <p className="text-gray-300">This feature is currently disabled.</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (!activeTask) {
     return (
