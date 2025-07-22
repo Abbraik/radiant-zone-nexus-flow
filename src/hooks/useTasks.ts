@@ -168,10 +168,15 @@ export const useTasks = () => {
   });
 
   const openClaimPopup = useCallback((taskId: string) => {
+    console.log('useTasks: openClaimPopup called with taskId:', taskId);
     const task = allTasks.find(t => t.id === taskId);
+    console.log('useTasks: Found task:', task);
     if (task) {
+      console.log('useTasks: Setting claimingTask and showing popup');
       setClaimingTask(task);
       setShowClaimPopup(true);
+    } else {
+      console.log('useTasks: No task found with id:', taskId);
     }
   }, [allTasks]);
 

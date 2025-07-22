@@ -85,6 +85,8 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
   };
 
   const handleTaskClaim = (taskId: string) => {
+    console.log('CascadeSidebar: handleTaskClaim called with taskId:', taskId);
+    console.log('CascadeSidebar: onTaskClaim function:', onTaskClaim);
     onTaskClaim?.(taskId);
   };
 
