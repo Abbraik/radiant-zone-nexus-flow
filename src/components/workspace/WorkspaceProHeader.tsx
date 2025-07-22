@@ -8,7 +8,11 @@ import {
   BarChart3, 
   User, 
   Video,
-  ArrowLeft
+  ArrowLeft,
+  Settings,
+  Bell,
+  Search,
+  Plus
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Task } from '../../hooks/useTasks';
@@ -148,10 +152,47 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
             Personal Analytics
           </Badge>
         )}
-      </div>
+       </div>
 
-      {/* Right: Tools + AI + User */}
-      <div className="flex items-center gap-3">
+       {/* Right: Tools + AI + User */}
+       <div className="flex items-center gap-3">
+         {/* Search */}
+         <Button
+           variant="ghost"
+           size="sm"
+           className="text-gray-300 hover:text-white hover:bg-white/10"
+         >
+           <Search className="h-4 w-4" />
+         </Button>
+
+         {/* Notifications */}
+         <Button
+           variant="ghost"
+           size="sm"
+           className="text-gray-300 hover:text-white hover:bg-white/10 relative"
+         >
+           <Bell className="h-4 w-4" />
+           <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+         </Button>
+
+         {/* Add New */}
+         <Button
+           variant="ghost"
+           size="sm"
+           className="text-gray-300 hover:text-white hover:bg-white/10"
+         >
+           <Plus className="h-4 w-4 mr-2" />
+           New
+         </Button>
+
+         {/* Settings */}
+         <Button
+           variant="ghost"
+           size="sm"
+           className="text-gray-300 hover:text-white hover:bg-white/10"
+         >
+           <Settings className="h-4 w-4" />
+         </Button>
         {/* Teams Chat */}
         {flags.realTimeCollab && (
           <Button
