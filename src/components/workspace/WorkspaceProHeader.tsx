@@ -7,7 +7,8 @@ import {
   Target,
   BarChart3, 
   User, 
-  Video
+  Video,
+  ArrowLeft
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Task } from '../../hooks/useTasks';
@@ -46,6 +47,19 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
     >
       {/* Left: Logo + Title + Navigation */}
       <div className="flex items-center gap-4">
+        {/* Exit Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="text-gray-300 hover:text-white hover:bg-white/10"
+        >
+          <NavLink to="/">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Exit
+          </NavLink>
+        </Button>
+        
         <div className="text-xl font-semibold text-white">
           🏛️ Workspace Pro
         </div>
