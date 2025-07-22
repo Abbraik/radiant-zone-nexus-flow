@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
-import { WorkspaceProSidebar } from './WorkspaceProSidebar';
+import { CascadeSidebar } from './CascadeSidebar';
+import { TaskClaimModal } from './TaskClaimModal';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
 import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
 import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
@@ -15,7 +16,7 @@ import { CheckCircle, AlertCircle } from 'lucide-react';
 import { OKR } from '../../modules/collab/data/mockData';
 
 export const Workspace: React.FC = () => {
-  const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask } = useTasks();
+  const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask, claimTask } = useTasks();
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState(false);
@@ -23,6 +24,24 @@ export const Workspace: React.FC = () => {
   const [selectedOKR, setSelectedOKR] = useState<OKR | null>(null);
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [isConfirmingClaim, setIsConfirmingClaim] = useState(false);
+
+  const handleTaskClaim = (taskId: string) => {
+    setSelectedTaskId(taskId);
+    setClaimModalOpen(true);
+  };
+
+  const handleConfirmClaim = async (taskId: string) => {
+    setIsConfirmingClaim(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    await claimTask(taskId);
+    setIsConfirmingClaim(false);
+    setClaimModalOpen(false);
+    setSelectedTaskId(null);
+  };
 
   // Debug: Log the feature flags
   console.log('Workspace feature flags:', flags);
@@ -55,10 +74,9 @@ export const Workspace: React.FC = () => {
         />
         
         <div className="flex flex-1">
-          <WorkspaceProSidebar 
-            myTasks={myTasks} 
-            availableTasks={availableTasks}
-            activeTask={null}
+          <CascadeSidebar 
+            onTaskClaim={handleTaskClaim}
+            activeTaskId={activeTask?.id}
           />
           
           <main className="flex-1 p-6 overflow-auto">
@@ -103,10 +121,9 @@ export const Workspace: React.FC = () => {
       />
       
       <div className="flex flex-1">
-        <WorkspaceProSidebar 
-          myTasks={myTasks} 
-          availableTasks={availableTasks}
-          activeTask={activeTask}
+        <CascadeSidebar 
+          onTaskClaim={handleTaskClaim}
+          activeTaskId={activeTask?.id}
         />
         
         <main className="flex-1 p-6 overflow-auto">
@@ -226,6 +243,14 @@ export const Workspace: React.FC = () => {
         onClose={() => setIsPairWorkOpen(false)}
         partnerId={pairWorkPartner || undefined}
         taskTitle={activeTask?.title}
+      />
+
+      <TaskClaimModal
+        isOpen={claimModalOpen}
+        onClose={() => setClaimModalOpen(false)}
+        taskId={selectedTaskId}
+        onConfirmClaim={handleConfirmClaim}
+        isConfirming={isConfirmingClaim}
       />
     </div>
   );

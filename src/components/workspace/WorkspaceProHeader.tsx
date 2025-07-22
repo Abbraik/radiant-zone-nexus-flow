@@ -101,13 +101,26 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
         )}
       </div>
 
-      {/* Center: Collaboration & Status */}
+      {/* Center: Active Members & Collaboration */}
       <div className="flex items-center gap-4">
         {!isDashboard && (
           <EnhancedPresenceBar 
             taskId={activeTask?.id} 
             onPairWorkStart={onPairWorkStart}
           />
+        )}
+        
+        {/* Collaboration Button */}
+        {!isDashboard && flags.realTimeCollab && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onPairWorkStart ? () => onPairWorkStart('user2') : undefined}
+            className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
+          >
+            <Video className="h-4 w-4 mr-2" />
+            Collaborate
+          </Button>
         )}
         
         {!isDashboard && myTasks.length > 0 && (
@@ -123,7 +136,7 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
         )}
       </div>
 
-      {/* Right: Collaboration Tools + AI + User */}
+      {/* Right: Tools + AI + User */}
       <div className="flex items-center gap-3">
         {/* Teams Chat */}
         {flags.realTimeCollab && (
@@ -134,7 +147,7 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
             className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
           >
             <MessageSquare className="h-4 w-4 mr-2" />
-            Teams
+            Chat
           </Button>
         )}
 
