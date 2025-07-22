@@ -102,13 +102,17 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300, duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ pointerEvents: 'none' }}
           >
-            <div className="w-[480px] max-h-[80vh] bg-glass/90 backdrop-blur-20 rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
+            <div 
+              className="w-full max-w-[480px] max-h-[85vh] bg-glass/90 backdrop-blur-20 rounded-3xl shadow-2xl border border-white/10 overflow-hidden"
+              style={{ pointerEvents: 'auto' }}
+            >
               
               {/* Header */}
               <div className="p-6 border-b border-white/10">
@@ -125,7 +129,7 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                 </div>
               </div>
 
-              <div className="max-h-[calc(80vh-120px)] overflow-y-auto">
+              <div className="max-h-[calc(85vh-140px)] overflow-y-auto">
                 {/* Context Snapshot */}
                 <div className="p-6 space-y-4">
                   <div className="text-sm font-medium text-gray-300 mb-3">Context Snapshot</div>
