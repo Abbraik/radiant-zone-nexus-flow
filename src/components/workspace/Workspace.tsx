@@ -5,14 +5,24 @@ import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
 import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
+import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
+import { GoalTreeWidget } from '../../modules/cascade/components/GoalTreeWidget';
+import { OKRPanel } from '../../modules/cascade/components/OKRPanel';
+import { PairWorkOverlay } from '../../modules/collab/components/PairWorkOverlay';
 import { useFeatureFlags } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
 import { CheckCircle, AlertCircle } from 'lucide-react';
+import { OKR } from '../../modules/collab/data/mockData';
 
 export const Workspace: React.FC = () => {
   const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask } = useTasks();
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
+  const [isGoalTreeOpen, setIsGoalTreeOpen] = useState(false);
+  const [selectedOKR, setSelectedOKR] = useState<OKR | null>(null);
+  const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
+  const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
 
   // Debug: Log the feature flags
   console.log('Workspace feature flags:', flags);
@@ -36,6 +46,12 @@ export const Workspace: React.FC = () => {
           activeTask={null} 
           myTasks={myTasks} 
           onCopilotToggle={() => setIsCopilotOpen(true)}
+          onTeamsToggle={() => setIsTeamsOpen(true)}
+          onGoalTreeToggle={() => setIsGoalTreeOpen(true)}
+          onPairWorkStart={(partnerId) => {
+            setPairWorkPartner(partnerId);
+            setIsPairWorkOpen(true);
+          }}
         />
         
         <div className="flex flex-1">
@@ -78,6 +94,12 @@ export const Workspace: React.FC = () => {
         activeTask={activeTask} 
         myTasks={myTasks} 
         onCopilotToggle={() => setIsCopilotOpen(true)}
+        onTeamsToggle={() => setIsTeamsOpen(true)}
+        onGoalTreeToggle={() => setIsGoalTreeOpen(true)}
+        onPairWorkStart={(partnerId) => {
+          setPairWorkPartner(partnerId);
+          setIsPairWorkOpen(true);
+        }}
       />
       
       <div className="flex flex-1">
@@ -139,38 +161,71 @@ export const Workspace: React.FC = () => {
             </div>
 
             {/* Dynamic Widgets */}
-            <AnimatePresence mode="wait">
-              <div className="space-y-6">
-                {components.map((componentName) => (
-                  <DynamicWidget
-                    key={componentName}
-                    widgetName={componentName}
-                    task={activeTask}
-                  />
-                ))}
-              </div>
-            </AnimatePresence>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              
+              {/* Main Content Area */}
+              <div className="xl:col-span-2 space-y-6">
+                <AnimatePresence mode="wait">
+                  {components.map((componentName) => (
+                    <DynamicWidget
+                      key={componentName}
+                      widgetName={componentName}
+                      task={activeTask}
+                    />
+                  ))}
+                </AnimatePresence>
 
-            {components.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <div className="p-6 bg-glass/50 backdrop-blur-20 rounded-2xl border border-white/10">
-                  <p className="text-gray-400">No widgets configured for this task type.</p>
-                </div>
-              </motion.div>
-            )}
+                {components.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-12"
+                  >
+                    <div className="p-6 bg-glass/50 backdrop-blur-20 rounded-2xl border border-white/10">
+                      <p className="text-gray-400">No widgets configured for this task type.</p>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Goals & OKRs Sidebar */}
+              <div className="xl:col-span-1">
+                <GoalTreeWidget 
+                  onTaskClaim={(taskId) => console.log('Claim task:', taskId)}
+                  onOKRSelect={(okr) => setSelectedOKR(okr)}
+                />
+              </div>
+            </div>
           </motion.div>
         </main>
       </div>
       
-      {/* AI Copilot Drawer */}
+      {/* Overlays & Drawers */}
       <CopilotDrawer
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
         activeTask={activeTask}
+      />
+      
+      <TeamsDrawer
+        isOpen={isTeamsOpen}
+        onClose={() => setIsTeamsOpen(false)}
+        taskId={activeTask?.id}
+        taskTitle={activeTask?.title}
+      />
+
+      <OKRPanel
+        isOpen={!!selectedOKR}
+        onClose={() => setSelectedOKR(null)}
+        okr={selectedOKR}
+        onTaskClaim={(taskId) => console.log('Claim task from OKR:', taskId)}
+      />
+
+      <PairWorkOverlay
+        isOpen={isPairWorkOpen}
+        onClose={() => setIsPairWorkOpen(false)}
+        partnerId={pairWorkPartner || undefined}
+        taskTitle={activeTask?.title}
       />
     </div>
   );

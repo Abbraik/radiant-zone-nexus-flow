@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { 
   Bot, 
   Users, 
-  Zap, 
+  MessageSquare,
+  Target,
   BarChart3, 
-  Puzzle, 
   User, 
-  ChevronDown 
+  Video
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Task } from '../../hooks/useTasks';
@@ -15,20 +15,26 @@ import { useFeatureFlags, FeatureFlagChip } from '../layout/FeatureFlagProvider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { PresenceBar } from '../../modules/collab/components/PresenceBar';
+import { EnhancedPresenceBar } from '../../modules/collab/components/EnhancedPresenceBar';
 
 interface WorkspaceProHeaderProps {
   activeTask: Task | null;
   myTasks: Task[];
   isDashboard?: boolean;
   onCopilotToggle: () => void;
+  onTeamsToggle: () => void;
+  onGoalTreeToggle: () => void;
+  onPairWorkStart?: (partnerId: string) => void;
 }
 
 export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({ 
   activeTask, 
   myTasks,
   isDashboard = false,
-  onCopilotToggle
+  onCopilotToggle,
+  onTeamsToggle,
+  onGoalTreeToggle,
+  onPairWorkStart
 }) => {
   const { flags } = useFeatureFlags();
 
@@ -97,7 +103,12 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
 
       {/* Center: Collaboration & Status */}
       <div className="flex items-center gap-4">
-        {!isDashboard && <PresenceBar taskId={activeTask?.id} />}
+        {!isDashboard && (
+          <EnhancedPresenceBar 
+            taskId={activeTask?.id} 
+            onPairWorkStart={onPairWorkStart}
+          />
+        )}
         
         {!isDashboard && myTasks.length > 0 && (
           <Badge variant="secondary" className="bg-white/10 text-white">
@@ -112,8 +123,32 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
         )}
       </div>
 
-      {/* Right: AI + Modules + User */}
+      {/* Right: Collaboration Tools + AI + User */}
       <div className="flex items-center gap-3">
+        {/* Teams Chat */}
+        {flags.realTimeCollab && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onTeamsToggle}
+            className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Teams
+          </Button>
+        )}
+
+        {/* Goals & OKRs */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onGoalTreeToggle}
+          className="text-green-400 hover:text-green-300 hover:bg-green-500/20"
+        >
+          <Target className="h-4 w-4 mr-2" />
+          Goals
+        </Button>
+
         {/* AI Copilot */}
         {flags.aiCopilot && (
           <Button
