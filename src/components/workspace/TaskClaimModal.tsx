@@ -66,7 +66,7 @@ export const TaskClaimModal: React.FC<TaskClaimModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999]"
           />
 
           {/* Modal */}
@@ -74,7 +74,7 @@ export const TaskClaimModal: React.FC<TaskClaimModalProps> = ({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
           >
             <Card className="w-full max-w-2xl bg-glass/90 backdrop-blur-20 border-white/20">
               <div className="p-6">
