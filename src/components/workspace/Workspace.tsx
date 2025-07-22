@@ -250,7 +250,7 @@ export const Workspace: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-      {/* DEBUGGING: Show current state */}
+      {/* AGGRESSIVE DEBUGGING */}
       <div style={{
         position: 'fixed',
         top: '10px',
@@ -259,13 +259,44 @@ export const Workspace: React.FC = () => {
         color: 'white',
         padding: '10px',
         zIndex: 999999,
-        fontSize: '12px'
+        fontSize: '12px',
+        border: '2px solid white'
       }}>
+        WORKSPACE DEBUG:<br/>
         Modal State: {claimModalOpen ? 'OPEN' : 'CLOSED'}<br/>
-        TaskID: {selectedTaskId || 'null'}
+        TaskID: {selectedTaskId || 'null'}<br/>
+        Component Rendered: YES
       </div>
 
-      {/* SIMPLE MODAL TEST */}
+      {/* FORCE RENDER TEST */}
+      <div style={{
+        position: 'fixed',
+        top: '100px',
+        right: '10px',
+        backgroundColor: 'green',
+        color: 'white',
+        padding: '10px',
+        zIndex: 999998,
+        fontSize: '12px'
+      }}>
+        <button 
+          onClick={() => {
+            console.log('FORCE MODAL OPEN');
+            setSelectedTaskId('task1');
+            setClaimModalOpen(true);
+          }}
+          style={{
+            backgroundColor: 'white',
+            color: 'black',
+            padding: '5px',
+            border: 'none'
+          }}
+        >
+          FORCE MODAL
+        </button>
+      </div>
+
+      {/* SIMPLE RED OVERLAY TEST */}
       {claimModalOpen && (
         <div style={{
           position: 'fixed',
@@ -281,27 +312,21 @@ export const Workspace: React.FC = () => {
           color: 'white',
           fontSize: '24px'
         }}>
-          <div style={{
-            backgroundColor: 'black',
-            padding: '20px',
-            borderRadius: '8px'
-          }}>
-            SIMPLE MODAL IS WORKING!<br/>
-            Task ID: {selectedTaskId}<br/>
-            <button 
-              onClick={() => setClaimModalOpen(false)}
-              style={{
-                padding: '10px',
-                backgroundColor: 'white',
-                color: 'black',
-                border: 'none',
-                borderRadius: '4px',
-                marginTop: '10px'
-              }}
-            >
-              Close
-            </button>
-          </div>
+          RED OVERLAY TEST IS WORKING!<br/>
+          Task ID: {selectedTaskId}<br/>
+          <button 
+            onClick={() => setClaimModalOpen(false)}
+            style={{
+              padding: '10px',
+              backgroundColor: 'white',
+              color: 'black',
+              border: 'none',
+              borderRadius: '4px',
+              marginTop: '10px'
+            }}
+          >
+            Close
+          </button>
         </div>
       )}
 
