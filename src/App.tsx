@@ -24,56 +24,45 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={
-              <div style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                backgroundColor: 'purple',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-                zIndex: 999999
-              }}>
-                SIMPLE TEST COMPONENT WORKING
-              </div>
-            } />
-            <Route path="/workspace" element={<Workspace />} />
-            <Route path="/dashboard" element={
-              <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-                <WorkspaceHeader activeTask={null} myTasks={[]} isDashboard={true} />
-                <div className="flex-1 overflow-auto">
-                  <Dashboard />
+          <FeatureFlagGuard 
+            flag="newTaskDrivenUI" 
+            fallback={
+              <Shell>
+                <FeatureFlagGuard 
+                  flag="newRgsUI" 
+                  fallback={
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  }
+                >
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/think" element={<ThinkZone />} />
+                    <Route path="/act" element={<ActZone />} />
+                    <Route path="/monitor" element={<MonitorZone />} />
+                    <Route path="/innovate" element={<InnovateLearnZone />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </FeatureFlagGuard>
+              </Shell>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<Workspace />} />
+              <Route path="/workspace" element={<Workspace />} />
+              <Route path="/dashboard" element={
+                <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                  <WorkspaceHeader activeTask={null} myTasks={[]} isDashboard={true} />
+                  <div className="flex-1 overflow-auto">
+                    <Dashboard />
+                  </div>
                 </div>
-              </div>
-            } />
-            <Route path="/think" element={
-              <Shell>
-                <ThinkZone />
-              </Shell>
-            } />
-            <Route path="/act" element={
-              <Shell>
-                <ActZone />
-              </Shell>
-            } />
-            <Route path="/monitor" element={
-              <Shell>
-                <MonitorZone />
-              </Shell>
-            } />
-            <Route path="/innovate" element={
-              <Shell>
-                <InnovateLearnZone />
-              </Shell>
-            } />
-            <Route path="*" element={<Workspace />} />
-          </Routes>
+              } />
+              <Route path="*" element={<Workspace />} />
+            </Routes>
+          </FeatureFlagGuard>
         </BrowserRouter>
       </FeatureFlagProvider>
     </TooltipProvider>

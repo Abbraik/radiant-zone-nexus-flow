@@ -29,15 +29,11 @@ export const Workspace: React.FC = () => {
   const [isConfirmingClaim, setIsConfirmingClaim] = useState(false);
 
   const handleTaskClaim = (taskId: string) => {
-    console.log('🔥 handleTaskClaim called with taskId:', taskId);
-    console.log('🔥 Current modal state - isOpen:', claimModalOpen, 'selectedTaskId:', selectedTaskId);
     setSelectedTaskId(taskId);
     setClaimModalOpen(true);
-    console.log('🔥 Setting modal to open with taskId:', taskId);
   };
 
   const handleConfirmClaim = async (taskId: string) => {
-    console.log('🔥 Confirming claim for taskId:', taskId);
     setIsConfirmingClaim(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -45,7 +41,6 @@ export const Workspace: React.FC = () => {
     setIsConfirmingClaim(false);
     setClaimModalOpen(false);
     setSelectedTaskId(null);
-    console.log('🔥 Task claimed successfully');
   };
 
   // Debug: Log the feature flags
@@ -213,7 +208,7 @@ export const Workspace: React.FC = () => {
               {/* Goals & OKRs Sidebar */}
               <div className="xl:col-span-1">
                 <GoalTreeWidget 
-                  onTaskClaim={handleTaskClaim}
+                  onTaskClaim={(taskId) => console.log('Claim task:', taskId)}
                   onOKRSelect={(okr) => setSelectedOKR(okr)}
                 />
               </div>
@@ -240,7 +235,7 @@ export const Workspace: React.FC = () => {
         isOpen={!!selectedOKR}
         onClose={() => setSelectedOKR(null)}
         okr={selectedOKR}
-        onTaskClaim={handleTaskClaim}
+        onTaskClaim={(taskId) => console.log('Claim task from OKR:', taskId)}
       />
 
       <PairWorkOverlay
@@ -250,93 +245,9 @@ export const Workspace: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-      {/* AGGRESSIVE DEBUGGING */}
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        right: '10px',
-        backgroundColor: 'red',
-        color: 'white',
-        padding: '10px',
-        zIndex: 999999,
-        fontSize: '12px',
-        border: '2px solid white'
-      }}>
-        WORKSPACE DEBUG:<br/>
-        Modal State: {claimModalOpen ? 'OPEN' : 'CLOSED'}<br/>
-        TaskID: {selectedTaskId || 'null'}<br/>
-        Component Rendered: YES
-      </div>
-
-      {/* FORCE RENDER TEST */}
-      <div style={{
-        position: 'fixed',
-        top: '100px',
-        right: '10px',
-        backgroundColor: 'green',
-        color: 'white',
-        padding: '10px',
-        zIndex: 999998,
-        fontSize: '12px'
-      }}>
-        <button 
-          onClick={() => {
-            console.log('FORCE MODAL OPEN');
-            setSelectedTaskId('task1');
-            setClaimModalOpen(true);
-          }}
-          style={{
-            backgroundColor: 'white',
-            color: 'black',
-            padding: '5px',
-            border: 'none'
-          }}
-        >
-          FORCE MODAL
-        </button>
-      </div>
-
-      {/* SIMPLE RED OVERLAY TEST */}
-      {claimModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(255, 0, 0, 0.9)',
-          zIndex: 999999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontSize: '24px'
-        }}>
-          RED OVERLAY TEST IS WORKING!<br/>
-          Task ID: {selectedTaskId}<br/>
-          <button 
-            onClick={() => setClaimModalOpen(false)}
-            style={{
-              padding: '10px',
-              backgroundColor: 'white',
-              color: 'black',
-              border: 'none',
-              borderRadius: '4px',
-              marginTop: '10px'
-            }}
-          >
-            Close
-          </button>
-        </div>
-      )}
-
       <TaskClaimModal
         isOpen={claimModalOpen}
-        onClose={() => {
-          console.log('🔥 Closing modal');
-          setClaimModalOpen(false);
-          setSelectedTaskId(null);
-        }}
+        onClose={() => setClaimModalOpen(false)}
         taskId={selectedTaskId}
         onConfirmClaim={handleConfirmClaim}
         isConfirming={isConfirmingClaim}

@@ -55,32 +55,6 @@ const Index = () => {
 
   return (
     <div className="h-full w-full relative">
-      {/* DEBUG: Add workspace navigation */}
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        left: '10px',
-        backgroundColor: 'blue',
-        color: 'white',
-        padding: '10px',
-        zIndex: 999999,
-        fontSize: '12px'
-      }}>
-        You are on INDEX page, not WORKSPACE!<br/>
-        <button 
-          onClick={() => navigate('/workspace')}
-          style={{
-            backgroundColor: 'white',
-            color: 'black',
-            padding: '5px 10px',
-            border: 'none',
-            borderRadius: '4px',
-            marginTop: '5px'
-          }}
-        >
-          Go to Workspace
-        </button>
-      </div>
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-tertiary" />
