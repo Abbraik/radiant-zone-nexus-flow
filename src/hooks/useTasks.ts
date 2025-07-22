@@ -169,6 +169,8 @@ export const useTasks = () => {
 
   const openClaimPopup = useCallback((taskId: string) => {
     console.log('useTasks: openClaimPopup called with taskId:', taskId);
+    console.log('useTasks: allTasks:', allTasks);
+    console.log('useTasks: allTasks IDs:', allTasks.map(t => t.id));
     const task = allTasks.find(t => t.id === taskId);
     console.log('useTasks: Found task:', task);
     if (task) {
