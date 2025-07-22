@@ -20,7 +20,7 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
   onCancel,
   isLoading = false
 }) => {
-  console.log('TaskClaimPopup rendered:', { isOpen, task: task?.id, taskTitle: task?.title, isLoading });
+  console.log('TaskClaimPopup ALWAYS CALLED - props:', { isOpen, task: task?.id, taskTitle: task?.title, isLoading });
   
   if (!isOpen) {
     console.log('TaskClaimPopup: Not open, returning null');
@@ -31,6 +31,8 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
     console.log('TaskClaimPopup: No task provided, returning null');
     return null;
   }
+
+  console.log('TaskClaimPopup: RENDERING POPUP for task:', task.title);
 
   const getDueDateColor = (dueDate: Date | undefined) => {
     if (!dueDate) return 'text-gray-400';

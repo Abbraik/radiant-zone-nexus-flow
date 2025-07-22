@@ -31,6 +31,13 @@ export const Workspace: React.FC = () => {
     showClaimPopup,
     isClaimingTask
   } = useTasks();
+  
+  // Debug state values on every render
+  console.log('Workspace render - Popup state:', { 
+    showClaimPopup, 
+    claimingTask: claimingTask?.id, 
+    isClaimingTask 
+  });
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState(false);
@@ -114,6 +121,15 @@ export const Workspace: React.FC = () => {
             </motion.div>
           </main>
         </div>
+        
+        {/* Task Claim Popup - Also needs to be here for no active task state */}
+        <TaskClaimPopup
+          isOpen={showClaimPopup}
+          task={claimingTask}
+          onConfirm={confirmClaimTask}
+          onCancel={cancelClaimTask}
+          isLoading={isClaimingTask}
+        />
       </div>
     );
   }
