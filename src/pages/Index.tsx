@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Progress } from '../components/ui/progress';
-import { Header } from '../components/layout/Header';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -55,9 +54,7 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-background">
-      <Header />
-      <div className="flex-1 relative overflow-auto">
+    <div className="h-full w-full relative">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-tertiary" />
@@ -91,23 +88,13 @@ const Index = () => {
                     <span className="text-base">Due in {currentSprint.dueIn} days</span>
                   </div>
 
-                  <div className="flex gap-4">
-                    <Button 
-                      onClick={() => navigate('/workspace')}
-                      className="btn-primary text-lg px-8 py-4 group"
-                    >
-                      Go to Workspace
-                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                    <Button 
-                      onClick={() => navigate('/think')}
-                      variant="outline"
-                      className="btn-secondary text-lg px-8 py-4 group"
-                    >
-                      Think Zone
-                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </div>
+                  <Button 
+                    onClick={() => navigate('/think')}
+                    className="btn-primary text-lg px-8 py-4 group"
+                  >
+                    Go to Think Zone
+                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
                 </div>
 
                 {/* Progress Ring */}
@@ -263,7 +250,6 @@ const Index = () => {
         </div>
         </div>
       </motion.div>
-      </div>
     </div>
   );
 };

@@ -7,12 +7,7 @@ import {
   Target,
   BarChart3, 
   User, 
-  Video,
-  ArrowLeft,
-  Settings,
-  Bell,
-  Search,
-  Plus
+  Video
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Task } from '../../hooks/useTasks';
@@ -51,19 +46,6 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
     >
       {/* Left: Logo + Title + Navigation */}
       <div className="flex items-center gap-4">
-        {/* Exit Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          asChild
-          className="text-gray-300 hover:text-white hover:bg-white/10"
-        >
-          <NavLink to="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Exit
-          </NavLink>
-        </Button>
-        
         <div className="text-xl font-semibold text-white">
           🏛️ Workspace Pro
         </div>
@@ -119,26 +101,13 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
         )}
       </div>
 
-      {/* Center: Active Members & Collaboration */}
+      {/* Center: Collaboration & Status */}
       <div className="flex items-center gap-4">
         {!isDashboard && (
           <EnhancedPresenceBar 
             taskId={activeTask?.id} 
             onPairWorkStart={onPairWorkStart}
           />
-        )}
-        
-        {/* Collaboration Button */}
-        {!isDashboard && flags.realTimeCollab && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onPairWorkStart ? () => onPairWorkStart('user2') : undefined}
-            className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
-          >
-            <Video className="h-4 w-4 mr-2" />
-            Collaborate
-          </Button>
         )}
         
         {!isDashboard && myTasks.length > 0 && (
@@ -152,47 +121,10 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
             Personal Analytics
           </Badge>
         )}
-       </div>
+      </div>
 
-       {/* Right: Tools + AI + User */}
-       <div className="flex items-center gap-3">
-         {/* Search */}
-         <Button
-           variant="ghost"
-           size="sm"
-           className="text-gray-300 hover:text-white hover:bg-white/10"
-         >
-           <Search className="h-4 w-4" />
-         </Button>
-
-         {/* Notifications */}
-         <Button
-           variant="ghost"
-           size="sm"
-           className="text-gray-300 hover:text-white hover:bg-white/10 relative"
-         >
-           <Bell className="h-4 w-4" />
-           <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-         </Button>
-
-         {/* Add New */}
-         <Button
-           variant="ghost"
-           size="sm"
-           className="text-gray-300 hover:text-white hover:bg-white/10"
-         >
-           <Plus className="h-4 w-4 mr-2" />
-           New
-         </Button>
-
-         {/* Settings */}
-         <Button
-           variant="ghost"
-           size="sm"
-           className="text-gray-300 hover:text-white hover:bg-white/10"
-         >
-           <Settings className="h-4 w-4" />
-         </Button>
+      {/* Right: Collaboration Tools + AI + User */}
+      <div className="flex items-center gap-3">
         {/* Teams Chat */}
         {flags.realTimeCollab && (
           <Button
@@ -202,7 +134,7 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
             className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
           >
             <MessageSquare className="h-4 w-4 mr-2" />
-            Chat
+            Teams
           </Button>
         )}
 

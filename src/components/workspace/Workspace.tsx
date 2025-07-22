@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
-import { CascadeSidebar } from './CascadeSidebar';
-import { TaskClaimModal } from './TaskClaimModal';
+import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
 import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
 import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
@@ -16,7 +15,7 @@ import { CheckCircle, AlertCircle } from 'lucide-react';
 import { OKR } from '../../modules/collab/data/mockData';
 
 export const Workspace: React.FC = () => {
-  const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask, claimTask } = useTasks();
+  const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask } = useTasks();
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState(false);
@@ -24,33 +23,6 @@ export const Workspace: React.FC = () => {
   const [selectedOKR, setSelectedOKR] = useState<OKR | null>(null);
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
-  const [claimModalOpen, setClaimModalOpen] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [isConfirmingClaim, setIsConfirmingClaim] = useState(false);
-
-  const handleTaskClaim = (taskId: string) => {
-    console.log('🔥 handleTaskClaim called with taskId:', taskId);
-    console.log('🔥 Current modal state - isOpen:', claimModalOpen, 'selectedTaskId:', selectedTaskId);
-    setSelectedTaskId(taskId);
-    setClaimModalOpen(true);
-    console.log('🔥 Setting modal to open with taskId:', taskId);
-  };
-
-  const handleConfirmClaim = async (taskId: string) => {
-    console.log('🔥 handleConfirmClaim called with taskId:', taskId);
-    setIsConfirmingClaim(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      await claimTask(taskId);
-      console.log('🔥 Task claimed successfully');
-    } catch (error) {
-      console.error('🔥 Error claiming task:', error);
-    }
-    setIsConfirmingClaim(false);
-    setClaimModalOpen(false);
-    setSelectedTaskId(null);
-  };
 
   // Debug: Log the feature flags
   console.log('Workspace feature flags:', flags);
@@ -83,9 +55,10 @@ export const Workspace: React.FC = () => {
         />
         
         <div className="flex flex-1">
-          <CascadeSidebar 
-            onTaskClaim={handleTaskClaim}
-            activeTaskId={activeTask?.id}
+          <WorkspaceProSidebar 
+            myTasks={myTasks} 
+            availableTasks={availableTasks}
+            activeTask={null}
           />
           
           <main className="flex-1 p-6 overflow-auto">
@@ -130,9 +103,10 @@ export const Workspace: React.FC = () => {
       />
       
       <div className="flex flex-1">
-        <CascadeSidebar 
-          onTaskClaim={handleTaskClaim}
-          activeTaskId={activeTask?.id}
+        <WorkspaceProSidebar 
+          myTasks={myTasks} 
+          availableTasks={availableTasks}
+          activeTask={activeTask}
         />
         
         <main className="flex-1 p-6 overflow-auto">
@@ -217,7 +191,7 @@ export const Workspace: React.FC = () => {
               {/* Goals & OKRs Sidebar */}
               <div className="xl:col-span-1">
                 <GoalTreeWidget 
-                  onTaskClaim={handleTaskClaim}
+                  onTaskClaim={(taskId) => console.log('Claim task:', taskId)}
                   onOKRSelect={(okr) => setSelectedOKR(okr)}
                 />
               </div>
@@ -244,7 +218,7 @@ export const Workspace: React.FC = () => {
         isOpen={!!selectedOKR}
         onClose={() => setSelectedOKR(null)}
         okr={selectedOKR}
-        onTaskClaim={handleTaskClaim}
+        onTaskClaim={(taskId) => console.log('Claim task from OKR:', taskId)}
       />
 
       <PairWorkOverlay
@@ -253,24 +227,6 @@ export const Workspace: React.FC = () => {
         partnerId={pairWorkPartner || undefined}
         taskTitle={activeTask?.title}
       />
-
-      {/* Task Claim Modal */}
-      <TaskClaimModal
-        isOpen={claimModalOpen}
-        onClose={() => {
-          console.log('🔥 Modal close requested');
-          setClaimModalOpen(false);
-          setSelectedTaskId(null);
-        }}
-        taskId={selectedTaskId}
-        onConfirmClaim={handleConfirmClaim}
-        isConfirming={isConfirmingClaim}
-      />
-      
-      {/* Debug Modal State */}
-      <div className="fixed top-4 right-4 z-[100] bg-red-500 text-white p-2 rounded text-xs">
-        Modal: {claimModalOpen ? 'OPEN' : 'CLOSED'} | Task: {selectedTaskId || 'NONE'}
-      </div>
     </div>
   );
 };
