@@ -1,48 +1,28 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  Bell, 
-  Settings, 
-  Wrench, 
-  Clock, 
-  AlertTriangle, 
-  Target,
-  CheckCircle,
-  TrendingUp,
-  User
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, Bell, Settings, Wrench, Clock, AlertTriangle } from 'lucide-react';
 import { Task } from '../../hooks/useTasks';
 import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Progress } from '../ui/progress';
 import { cn } from '../../lib/utils';
 import CascadeBar from './CascadeBar';
-import { mockGoals, Goal, OKR } from '../../modules/collab/data/mockData';
 
 interface CascadeSidebarProps {
   myTasks: Task[];
   availableTasks: Task[];
   activeTask: Task | null;
   onTaskClaim?: (taskId: string) => void;
-  onOKRSelect?: (okr: OKR) => void;
 }
 
 const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
   myTasks,
   availableTasks,
   activeTask,
-  onTaskClaim,
-  onOKRSelect
+  onTaskClaim
 }) => {
   const { flags } = useFeatureFlags();
   const [alertsExpanded, setAlertsExpanded] = useState(true);
   const [toolsExpanded, setToolsExpanded] = useState(false);
-  const [goalsExpanded, setGoalsExpanded] = useState(true);
-  const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set(['G1']));
-  const [selectedOKR, setSelectedOKR] = useState<string | null>(null);
 
   // Mock alerts data
   const alerts = [
@@ -110,50 +90,6 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
     onTaskClaim?.(taskId);
   };
 
-  const toggleGoal = (goalId: string) => {
-    setExpandedGoals(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(goalId)) {
-        newSet.delete(goalId);
-      } else {
-        newSet.add(goalId);
-      }
-      return newSet;
-    });
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'on-track':
-        return <CheckCircle className="h-3 w-3 text-green-400" />;
-      case 'at-risk':
-        return <AlertTriangle className="h-3 w-3 text-yellow-400" />;
-      case 'off-track':
-        return <AlertTriangle className="h-3 w-3 text-red-400" />;
-      default:
-        return <Clock className="h-3 w-3 text-gray-400" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'on-track': return 'bg-green-500';
-      case 'at-risk': return 'bg-yellow-500';
-      case 'off-track': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'critical': return 'bg-red-500/20 text-red-300 border-red-500/50';
-      case 'high': return 'bg-orange-500/20 text-orange-300 border-orange-500/50';
-      case 'medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-      case 'low': return 'bg-green-500/20 text-green-300 border-green-500/50';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
-    }
-  };
-
   return (
     <div className="w-80 h-full bg-glass/70 backdrop-blur-20 border-r border-white/10 flex flex-col">
       {/* Cascade Bar */}
@@ -172,264 +108,76 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto scrollbar-hide space-y-4 p-4">
-
-        {/* Portfolio Summary */}
+        
+        {/* Available Tasks Section */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-blue-400" />
-            <h3 className="text-sm font-medium text-white">Portfolio Status</h3>
-          </div>
-          <div className="grid grid-cols-3 gap-2 p-3 bg-glass/50 backdrop-blur-20 rounded-lg border border-white/10">
-            <div className="text-center">
-              <div className="text-lg font-bold text-green-400">72%</div>
-              <div className="text-xs text-gray-400">Progress</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-yellow-400">3</div>
-              <div className="text-xs text-gray-400">At Risk</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-blue-400">8</div>
-              <div className="text-xs text-gray-400">Tasks</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Cascade Hierarchy: Goals → OKRs → Tasks */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-blue-400" />
-            <h3 className="text-sm font-medium text-white">Goal Cascade</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-white">Available Tasks</h3>
+            <span className="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-full">
+              {availableTasks.length}
+            </span>
           </div>
           
-          <div className="space-y-3">
-            {mockGoals.slice(0, 2).map((goal) => (
+          <div className="space-y-2">
+            {availableTasks.slice(0, 3).map((task) => (
               <motion.div
-                key={goal.id}
+                key={task.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="border border-white/10 rounded-lg overflow-hidden bg-glass/30"
+                className="p-3 bg-glass/50 backdrop-blur-20 rounded-lg border border-white/10 hover:border-white/20 transition-all group"
               >
-                {/* Goal Level */}
-                <div
-                  onClick={() => toggleGoal(goal.id)}
-                  className="p-3 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors border-l-4 border-l-blue-400"
-                >
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <h4 className="text-sm font-medium text-white group-hover:text-teal-300 transition-colors">
+                      {task.title}
+                    </h4>
+                    <span className="text-xs text-gray-400 bg-white/10 px-1.5 py-0.5 rounded">
+                      {task.zone}
+                    </span>
+                  </div>
+                  
+                  <p className="text-xs text-gray-300 line-clamp-2">
+                    {task.description}
+                  </p>
+                  
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {expandedGoals.has(goal.id) ? (
-                        <ChevronDown className="h-3 w-3 text-gray-400" />
-                      ) : (
-                        <ChevronRight className="h-3 w-3 text-gray-400" />
-                      )}
-                      {getStatusIcon(goal.status)}
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-medium text-white">{goal.title}</h4>
-                        <p className="text-xs text-gray-400 truncate">{goal.description}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-400">{goal.progress}%</span>
-                      <div className="w-12">
-                        <Progress value={goal.progress} className="h-2" />
-                      </div>
-                    </div>
+                    <span className="text-xs text-gray-400">
+                      {task.loop_id && (task.type.includes('simulation') ? `Scenario ${task.loop_id}` : `Loop ${task.loop_id}`)}
+                    </span>
+                    
+                    <FeatureFlagGuard flag="useTaskClaimPopup" fallback={
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleTaskClaim(task.id)}
+                        className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
+                      >
+                        Claim
+                      </Button>
+                    }>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleTaskClaim(task.id)}
+                        className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
+                      >
+                        Claim
+                      </Button>
+                    </FeatureFlagGuard>
                   </div>
                 </div>
-
-                {/* OKRs under Goal */}
-                <AnimatePresence>
-                  {expandedGoals.has(goal.id) && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="p-2 space-y-2">
-                        {goal.okrs.map((okr) => (
-                          <div
-                            key={okr.id}
-                            className="border border-white/10 rounded bg-white/5 overflow-hidden"
-                          >
-                            {/* OKR Level */}
-                            <div className="p-2 border-l-4 border-l-teal-400">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  {getStatusIcon(okr.status)}
-                                  <h5 className="text-xs font-medium text-white">{okr.title}</h5>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedOKR(okr.id);
-                                    onOKRSelect?.(okr);
-                                  }}
-                                  className="text-xs text-blue-400 hover:text-blue-300 h-auto p-1"
-                                >
-                                  Details
-                                </Button>
-                              </div>
-
-                              <p className="text-xs text-gray-400 mb-2">{okr.description}</p>
-
-                              {/* OKR Progress */}
-                              <div className="mb-3">
-                                <div className="flex justify-between text-xs text-gray-400 mb-1">
-                                  <span>{okr.current} / {okr.target} {okr.unit}</span>
-                                  <span>{Math.round((okr.current / okr.target) * 100)}%</span>
-                                </div>
-                                <Progress 
-                                  value={(okr.current / okr.target) * 100} 
-                                  className="h-1.5"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Tasks under OKR */}
-                            <div className="p-2 space-y-1 bg-white/5">
-                              <div className="text-xs text-gray-500 mb-1 pl-2">Tasks:</div>
-                              {okr.tasks.map((task) => (
-                                <motion.div
-                                  key={task.id}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  className="p-2 bg-white/10 rounded border border-white/10 hover:border-white/20 transition-all group border-l-4 border-l-amber-400"
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                      <div className={`w-2 h-2 rounded-full ${getStatusColor(
-                                        task.status === 'completed' ? 'on-track' :
-                                        task.status === 'in-progress' ? 'at-risk' : 
-                                        task.status === 'available' ? 'off-track' : 'off-track'
-                                      )}`} />
-                                      <span className="text-xs text-white truncate font-medium">{task.title}</span>
-                                      {task.assignee && (
-                                        <Badge variant="outline" className="text-xs">
-                                          <User className="h-2 w-2 mr-1" />
-                                          {task.assignee}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                    
-                                    <div className="flex items-center gap-2">
-                                      {task.priority && (
-                                        <Badge 
-                                          variant="outline" 
-                                          className={`text-xs ${getPriorityColor(task.priority)}`}
-                                        >
-                                          {task.priority}
-                                        </Badge>
-                                      )}
-                                      {task.status === 'available' && (
-                                        <FeatureFlagGuard flag="useTaskClaimPopup" fallback={
-                                          <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleTaskClaim(task.id)}
-                                            className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30 h-auto py-1"
-                                          >
-                                            Claim
-                                          </Button>
-                                        }>
-                                          <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleTaskClaim(task.id)}
-                                            className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30 h-auto py-1"
-                                          >
-                                            Claim
-                                          </Button>
-                                        </FeatureFlagGuard>
-                                      )}
-                                    </div>
-                                  </div>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </motion.div>
             ))}
+            
+            {availableTasks.length > 3 && (
+              <div className="text-center py-2">
+                <Button variant="ghost" size="sm" className="text-xs text-gray-400 hover:text-white">
+                  View {availableTasks.length - 3} more tasks
+                </Button>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Regular Available Tasks (not in goals) */}
-        {(() => {
-          const goalTaskIds = mockGoals.flatMap(goal =>
-            goal.okrs.flatMap(okr => okr.tasks.map(task => task.id))
-          );
-          const nonGoalTasks = availableTasks.filter(task => !goalTaskIds.includes(task.id));
-          
-          return nonGoalTasks.length > 0 ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-white">Other Available Tasks</h3>
-                <span className="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-full">
-                  {nonGoalTasks.length}
-                </span>
-              </div>
-              
-              <div className="space-y-2">
-                {nonGoalTasks.slice(0, 3).map((task) => (
-                  <motion.div
-                    key={task.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="p-3 bg-glass/50 backdrop-blur-20 rounded-lg border border-white/10 hover:border-white/20 transition-all group"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-start justify-between">
-                        <h4 className="text-sm font-medium text-white group-hover:text-teal-300 transition-colors">
-                          {task.title}
-                        </h4>
-                        <span className="text-xs text-gray-400 bg-white/10 px-1.5 py-0.5 rounded">
-                          {task.zone}
-                        </span>
-                      </div>
-                      
-                      <p className="text-xs text-gray-300 line-clamp-2">
-                        {task.description}
-                      </p>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-400">
-                          {task.loop_id && (task.type.includes('simulation') ? `Scenario ${task.loop_id}` : `Loop ${task.loop_id}`)}
-                        </span>
-                        
-                        <FeatureFlagGuard flag="useTaskClaimPopup" fallback={
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleTaskClaim(task.id)}
-                            className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
-                          >
-                            Claim
-                          </Button>
-                        }>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleTaskClaim(task.id)}
-                            className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
-                          >
-                            Claim
-                          </Button>
-                        </FeatureFlagGuard>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ) : null;
-        })()}
 
         {/* Alerts Panel */}
         <div className="space-y-3">
