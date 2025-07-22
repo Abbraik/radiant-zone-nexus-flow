@@ -25,6 +25,7 @@ const defaultFeatureFlags: FeatureFlags = {
   // New Cascade Features - ENABLED
   useCascadeBar: true,
   useTaskClaimPopup: true,
+  useEnhancedTaskPopup: true,
   useTeamsButton: true
 };
 

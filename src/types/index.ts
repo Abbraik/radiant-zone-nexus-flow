@@ -145,6 +145,7 @@ export interface FeatureFlags {
   // New Cascade Feature Flags
   useCascadeBar: boolean;
   useTaskClaimPopup: boolean;
+  useEnhancedTaskPopup: boolean;
   useTeamsButton: boolean;
 }
 

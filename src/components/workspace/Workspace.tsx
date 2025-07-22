@@ -15,6 +15,7 @@ import { CheckCircle, AlertCircle } from 'lucide-react';
 import { OKR } from '../../modules/collab/data/mockData';
 import CascadeSidebar from './CascadeSidebar';
 import TaskClaimPopup from './TaskClaimPopup';
+import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from './EnhancedTaskCard';
 
 export const Workspace: React.FC = () => {
@@ -122,14 +123,24 @@ export const Workspace: React.FC = () => {
           </main>
         </div>
         
-        {/* Task Claim Popup - Also needs to be here for no active task state */}
-        <TaskClaimPopup
-          isOpen={showClaimPopup}
-          task={claimingTask}
-          onConfirm={confirmClaimTask}
-          onCancel={cancelClaimTask}
-          isLoading={isClaimingTask}
-        />
+        {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
+        {flags.useEnhancedTaskPopup ? (
+          <EnhancedTaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        ) : (
+          <TaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        )}
       </div>
     );
   }
@@ -255,14 +266,24 @@ export const Workspace: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-      {/* Task Claim Popup */}
-      <TaskClaimPopup
-        isOpen={showClaimPopup}
-        task={claimingTask}
-        onConfirm={confirmClaimTask}
-        onCancel={cancelClaimTask}
-        isLoading={isClaimingTask}
-      />
+        {/* Task Claim Popup - Enhanced or Basic */}
+        {flags.useEnhancedTaskPopup ? (
+          <EnhancedTaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        ) : (
+          <TaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        )}
     </div>
   );
 };
