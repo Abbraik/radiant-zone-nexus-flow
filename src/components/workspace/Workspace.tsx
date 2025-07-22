@@ -208,7 +208,7 @@ export const Workspace: React.FC = () => {
               {/* Goals & OKRs Sidebar */}
               <div className="xl:col-span-1">
                 <GoalTreeWidget 
-                  onTaskClaim={(taskId) => console.log('Claim task:', taskId)}
+                  onTaskClaim={handleTaskClaim}
                   onOKRSelect={(okr) => setSelectedOKR(okr)}
                 />
               </div>
@@ -235,7 +235,7 @@ export const Workspace: React.FC = () => {
         isOpen={!!selectedOKR}
         onClose={() => setSelectedOKR(null)}
         okr={selectedOKR}
-        onTaskClaim={(taskId) => console.log('Claim task from OKR:', taskId)}
+        onTaskClaim={handleTaskClaim}
       />
 
       <PairWorkOverlay
