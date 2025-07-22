@@ -200,6 +200,7 @@ export const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
                                             variant="ghost"
                                             onClick={(e) => {
                                               e.stopPropagation();
+                                              console.log('🔥 Claim button clicked for task:', task.id);
                                               onTaskClaim(task.id);
                                             }}
                                             className="text-teal-400 hover:text-teal-300 hover:bg-teal-500/20 px-2 text-xs"
