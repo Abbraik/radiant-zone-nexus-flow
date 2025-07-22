@@ -195,203 +195,168 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
           </div>
         </div>
 
-        {/* Goals & OKRs Section */}
-        <div className="space-y-3">
-          <button
-            onClick={() => setGoalsExpanded(!goalsExpanded)}
-            className="w-full flex items-center justify-between text-sm font-medium text-white hover:text-teal-300 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4" />
-              <span>Goals & OKRs</span>
-            </div>
-            {goalsExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          </button>
-
-          <AnimatePresence>
-            {goalsExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-2"
-              >
-                {mockGoals.slice(0, 2).map((goal) => (
-                  <motion.div
-                    key={goal.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="border border-white/10 rounded-lg overflow-hidden bg-glass/30"
-                  >
-                    {/* Goal Header */}
-                    <div
-                      onClick={() => toggleGoal(goal.id)}
-                      className="p-2 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {expandedGoals.has(goal.id) ? (
-                            <ChevronDown className="h-3 w-3 text-gray-400" />
-                          ) : (
-                            <ChevronRight className="h-3 w-3 text-gray-400" />
-                          )}
-                          {getStatusIcon(goal.status)}
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-xs font-medium text-white truncate">{goal.title}</h4>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="text-xs text-gray-400">{goal.progress}%</span>
-                          <div className="w-8">
-                            <Progress value={goal.progress} className="h-1" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* OKRs */}
-                    <AnimatePresence>
-                      {expandedGoals.has(goal.id) && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="p-2 space-y-2">
-                            {goal.okrs.slice(0, 2).map((okr) => (
-                              <div
-                                key={okr.id}
-                                className="p-2 rounded border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
-                              >
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center gap-1">
-                                    {getStatusIcon(okr.status)}
-                                    <h5 className="text-xs font-medium text-white truncate">{okr.title}</h5>
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                      setSelectedOKR(okr.id);
-                                      onOKRSelect?.(okr);
-                                    }}
-                                    className="text-xs text-blue-400 hover:text-blue-300 h-auto p-1"
-                                  >
-                                    View
-                                  </Button>
-                                </div>
-
-                                {/* Progress */}
-                                <div className="mb-2">
-                                  <div className="flex justify-between text-xs text-gray-400 mb-1">
-                                    <span>{okr.current}/{okr.target}</span>
-                                    <span>{Math.round((okr.current / okr.target) * 100)}%</span>
-                                  </div>
-                                  <Progress 
-                                    value={(okr.current / okr.target) * 100} 
-                                    className="h-1"
-                                  />
-                                </div>
-
-                                {/* Sample Tasks */}
-                                {okr.tasks.slice(0, 2).map((task) => (
-                                  <div
-                                    key={task.id}
-                                    className="flex items-center justify-between p-1 bg-white/5 rounded text-xs"
-                                  >
-                                    <div className="flex items-center gap-1">
-                                      <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(
-                                        task.status === 'completed' ? 'on-track' :
-                                        task.status === 'in-progress' ? 'at-risk' : 'off-track'
-                                      )}`} />
-                                      <span className="text-white truncate">{task.title}</span>
-                                    </div>
-                                    {task.status === 'available' && (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleTaskClaim(task.id)}
-                                        className="text-xs text-green-400 hover:text-green-300 h-auto p-1"
-                                      >
-                                        Claim
-                                      </Button>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-        
-        {/* Available Tasks Section */}
+        {/* Available Tasks & Goals Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-white">Available Tasks</h3>
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-blue-400" />
+              <h3 className="text-sm font-medium text-white">Tasks & Goals</h3>
+            </div>
             <span className="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-full">
               {availableTasks.length}
             </span>
           </div>
           
           <div className="space-y-2">
-            {availableTasks.slice(0, 3).map((task) => (
-              <motion.div
-                key={task.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="p-3 bg-glass/50 backdrop-blur-20 rounded-lg border border-white/10 hover:border-white/20 transition-all group"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <h4 className="text-sm font-medium text-white group-hover:text-teal-300 transition-colors">
-                      {task.title}
-                    </h4>
-                    <span className="text-xs text-gray-400 bg-white/10 px-1.5 py-0.5 rounded">
-                      {task.zone}
-                    </span>
-                  </div>
-                  
-                  <p className="text-xs text-gray-300 line-clamp-2">
-                    {task.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400">
-                      {task.loop_id && (task.type.includes('simulation') ? `Scenario ${task.loop_id}` : `Loop ${task.loop_id}`)}
-                    </span>
+            {/* Available Tasks with Goal Context */}
+            {availableTasks.slice(0, 3).map((task) => {
+              // Find related goal/OKR for this task
+              const relatedGoal = mockGoals.find(goal => 
+                goal.okrs.some(okr => okr.tasks.some(t => t.id === task.id))
+              );
+              const relatedOKR = relatedGoal?.okrs.find(okr => 
+                okr.tasks.some(t => t.id === task.id)
+              );
+
+              return (
+                <motion.div
+                  key={task.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="p-3 bg-glass/50 backdrop-blur-20 rounded-lg border border-white/10 hover:border-white/20 transition-all group"
+                >
+                  <div className="space-y-2">
+                    {/* Goal/OKR Context */}
+                    {relatedGoal && relatedOKR && (
+                      <div className="flex items-center gap-2 mb-2">
+                        {getStatusIcon(relatedOKR.status)}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs text-blue-300 truncate">{relatedGoal.title}</div>
+                          <div className="text-xs text-gray-400 truncate">{relatedOKR.title}</div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-gray-400">{Math.round((relatedOKR.current / relatedOKR.target) * 100)}%</span>
+                          <div className="w-8">
+                            <Progress value={(relatedOKR.current / relatedOKR.target) * 100} className="h-1" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Task Details */}
+                    <div className="flex items-start justify-between">
+                      <h4 className="text-sm font-medium text-white group-hover:text-teal-300 transition-colors">
+                        {task.title}
+                      </h4>
+                      <span className="text-xs text-gray-400 bg-white/10 px-1.5 py-0.5 rounded">
+                        {task.zone}
+                      </span>
+                    </div>
                     
-                    <FeatureFlagGuard flag="useTaskClaimPopup" fallback={
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleTaskClaim(task.id)}
-                        className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
-                      >
-                        Claim
-                      </Button>
-                    }>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleTaskClaim(task.id)}
-                        className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
-                      >
-                        Claim
-                      </Button>
-                    </FeatureFlagGuard>
+                    <p className="text-xs text-gray-300 line-clamp-2">
+                      {task.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400">
+                        {task.loop_id && (task.type.includes('simulation') ? `Scenario ${task.loop_id}` : `Loop ${task.loop_id}`)}
+                      </span>
+                      
+                      <FeatureFlagGuard flag="useTaskClaimPopup" fallback={
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleTaskClaim(task.id)}
+                          className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
+                        >
+                          Claim
+                        </Button>
+                      }>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleTaskClaim(task.id)}
+                          className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
+                        >
+                          Claim
+                        </Button>
+                      </FeatureFlagGuard>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
+
+            {/* Additional Goal Tasks (not in availableTasks) */}
+            {mockGoals.slice(0, 2).map((goal) => 
+              goal.okrs.map((okr) => 
+                okr.tasks
+                  .filter(task => task.status === 'available' && !availableTasks.some(at => at.id === task.id))
+                  .slice(0, 1)
+                  .map((task) => (
+                    <motion.div
+                      key={`goal-${task.id}`}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="p-3 bg-glass/30 backdrop-blur-20 rounded-lg border border-blue-400/20 hover:border-blue-400/40 transition-all group"
+                    >
+                      <div className="space-y-2">
+                        {/* Goal/OKR Context */}
+                        <div className="flex items-center gap-2 mb-2">
+                          {getStatusIcon(okr.status)}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs text-blue-300 truncate">{goal.title}</div>
+                            <div className="text-xs text-gray-400 truncate">{okr.title}</div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-400">{Math.round((okr.current / okr.target) * 100)}%</span>
+                            <div className="w-8">
+                              <Progress value={(okr.current / okr.target) * 100} className="h-1" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Task Details */}
+                        <div className="flex items-start justify-between">
+                          <h4 className="text-sm font-medium text-white group-hover:text-teal-300 transition-colors">
+                            {task.title}
+                          </h4>
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs ${getPriorityColor(task.priority)}`}
+                          >
+                            {task.priority}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <div className={`w-1.5 h-1.5 rounded-full ${getStatusColor(
+                              task.status === 'completed' ? 'on-track' :
+                              task.status === 'in-progress' ? 'at-risk' : 'off-track'
+                            )}`} />
+                            {task.assignee && (
+                              <Badge variant="outline" className="text-xs">
+                                <User className="h-2 w-2 mr-1" />
+                                {task.assignee}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleTaskClaim(task.id)}
+                            className="text-xs bg-teal-500/20 text-teal-300 border-teal-400/30 hover:bg-teal-500/30"
+                          >
+                            Claim
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+              )
+            )}
             
             {availableTasks.length > 3 && (
               <div className="text-center py-2">
