@@ -16,7 +16,12 @@ const defaultFeatureFlags: FeatureFlags = {
   newTaskDrivenUI: true, // New task-driven workspace - ENABLED
   cldStudio: true,
   advancedAnalytics: false,
-  mockDataMode: process.env.NODE_ENV === 'development'
+  mockDataMode: process.env.NODE_ENV === 'development',
+  realTimeCollab: true,
+  workspacePro: true,
+  aiCopilot: true,
+  automation: true,
+  pluginSystem: false
 };
 
 const initialState: UIState = {

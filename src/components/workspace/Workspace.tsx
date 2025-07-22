@@ -1,22 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
-import { WorkspaceSidebar } from './WorkspaceSidebar';
-import { WorkspaceHeader } from './WorkspaceHeader';
+import { WorkspaceProSidebar } from './WorkspaceProSidebar';
+import { WorkspaceProHeader } from './WorkspaceProHeader';
+import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
+import { useFeatureFlags } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 
 export const Workspace: React.FC = () => {
   const { myTasks, activeTask, availableTasks, completeTask, isCompletingTask } = useTasks();
+  const { flags } = useFeatureFlags();
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+
+  // Guard with feature flag
+  if (!flags.workspacePro) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="text-center p-8 bg-glass/70 backdrop-blur-20 rounded-2xl border border-white/10">
+          <h2 className="text-2xl font-semibold text-white mb-4">Workspace Pro</h2>
+          <p className="text-gray-300">This feature is currently disabled.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!activeTask) {
     return (
       <div className="h-screen w-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <WorkspaceHeader activeTask={null} myTasks={myTasks} />
+        <WorkspaceProHeader 
+          activeTask={null} 
+          myTasks={myTasks} 
+          onCopilotToggle={() => setIsCopilotOpen(true)}
+        />
         
         <div className="flex flex-1">
-          <WorkspaceSidebar 
+          <WorkspaceProSidebar 
             myTasks={myTasks} 
             availableTasks={availableTasks}
             activeTask={null}
@@ -51,10 +71,14 @@ export const Workspace: React.FC = () => {
 
   return (
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <WorkspaceHeader activeTask={activeTask} myTasks={myTasks} />
+      <WorkspaceProHeader 
+        activeTask={activeTask} 
+        myTasks={myTasks} 
+        onCopilotToggle={() => setIsCopilotOpen(true)}
+      />
       
       <div className="flex flex-1">
-        <WorkspaceSidebar 
+        <WorkspaceProSidebar 
           myTasks={myTasks} 
           availableTasks={availableTasks}
           activeTask={activeTask}
@@ -138,6 +162,13 @@ export const Workspace: React.FC = () => {
           </motion.div>
         </main>
       </div>
+      
+      {/* AI Copilot Drawer */}
+      <CopilotDrawer
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        activeTask={activeTask}
+      />
     </div>
   );
 };

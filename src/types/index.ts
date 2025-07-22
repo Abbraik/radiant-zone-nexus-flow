@@ -137,6 +137,11 @@ export interface FeatureFlags {
   cldStudio: boolean;
   advancedAnalytics: boolean;
   mockDataMode: boolean;
+  realTimeCollab: boolean;
+  workspacePro: boolean;
+  aiCopilot: boolean;
+  automation: boolean;
+  pluginSystem: boolean;
 }
 
 // UI State Types
