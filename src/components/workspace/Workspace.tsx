@@ -29,15 +29,15 @@ export const Workspace: React.FC = () => {
   const [isConfirmingClaim, setIsConfirmingClaim] = useState(false);
 
   const handleTaskClaim = (taskId: string) => {
-    console.log('handleTaskClaim called with taskId:', taskId);
-    console.log('Current claimModalOpen:', claimModalOpen);
-    console.log('Current selectedTaskId:', selectedTaskId);
+    console.log('🔥 handleTaskClaim called with taskId:', taskId);
+    console.log('🔥 Current modal state - isOpen:', claimModalOpen, 'selectedTaskId:', selectedTaskId);
     setSelectedTaskId(taskId);
     setClaimModalOpen(true);
-    console.log('Modal should be opening...');
+    console.log('🔥 Setting modal to open with taskId:', taskId);
   };
 
   const handleConfirmClaim = async (taskId: string) => {
+    console.log('🔥 Confirming claim for taskId:', taskId);
     setIsConfirmingClaim(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -45,6 +45,7 @@ export const Workspace: React.FC = () => {
     setIsConfirmingClaim(false);
     setClaimModalOpen(false);
     setSelectedTaskId(null);
+    console.log('🔥 Task claimed successfully');
   };
 
   // Debug: Log the feature flags
@@ -251,7 +252,11 @@ export const Workspace: React.FC = () => {
 
       <TaskClaimModal
         isOpen={claimModalOpen}
-        onClose={() => setClaimModalOpen(false)}
+        onClose={() => {
+          console.log('🔥 Closing modal');
+          setClaimModalOpen(false);
+          setSelectedTaskId(null);
+        }}
         taskId={selectedTaskId}
         onConfirmClaim={handleConfirmClaim}
         isConfirming={isConfirmingClaim}
