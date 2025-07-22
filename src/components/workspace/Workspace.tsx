@@ -250,6 +250,61 @@ export const Workspace: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
+      {/* DEBUGGING: Show current state */}
+      <div style={{
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        backgroundColor: 'red',
+        color: 'white',
+        padding: '10px',
+        zIndex: 999999,
+        fontSize: '12px'
+      }}>
+        Modal State: {claimModalOpen ? 'OPEN' : 'CLOSED'}<br/>
+        TaskID: {selectedTaskId || 'null'}
+      </div>
+
+      {/* SIMPLE MODAL TEST */}
+      {claimModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(255, 0, 0, 0.9)',
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '24px'
+        }}>
+          <div style={{
+            backgroundColor: 'black',
+            padding: '20px',
+            borderRadius: '8px'
+          }}>
+            SIMPLE MODAL IS WORKING!<br/>
+            Task ID: {selectedTaskId}<br/>
+            <button 
+              onClick={() => setClaimModalOpen(false)}
+              style={{
+                padding: '10px',
+                backgroundColor: 'white',
+                color: 'black',
+                border: 'none',
+                borderRadius: '4px',
+                marginTop: '10px'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <TaskClaimModal
         isOpen={claimModalOpen}
         onClose={() => {
