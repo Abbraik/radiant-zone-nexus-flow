@@ -240,15 +240,13 @@ export const Workspace: React.FC = () => {
       />
 
       {/* Task Claim Popup */}
-      <FeatureFlagGuard flag="useTaskClaimPopup">
-        <TaskClaimPopup
-          isOpen={showClaimPopup}
-          task={claimingTask}
-          onConfirm={confirmClaimTask}
-          onCancel={cancelClaimTask}
-          isLoading={isClaimingTask}
-        />
-      </FeatureFlagGuard>
+      <TaskClaimPopup
+        isOpen={showClaimPopup}
+        task={claimingTask}
+        onConfirm={confirmClaimTask}
+        onCancel={cancelClaimTask}
+        isLoading={isClaimingTask}
+      />
     </div>
   );
 };
