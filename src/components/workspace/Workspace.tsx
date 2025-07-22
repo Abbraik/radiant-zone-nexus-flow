@@ -48,6 +48,9 @@ export const Workspace: React.FC = () => {
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
 
+  // Debug console logs
+  console.log('Dialog render state:', { isGoalTreeOpen });
+
   // Debug: Log the feature flags
   console.log('Workspace feature flags:', flags);
   console.log('Cascade features enabled:', {
@@ -124,6 +127,19 @@ export const Workspace: React.FC = () => {
           </main>
         </div>
         
+        {/* Goals Tree Dialog */}
+        <Dialog open={isGoalTreeOpen} onOpenChange={setIsGoalTreeOpen}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto bg-gray-900/95 backdrop-blur-20 border-white/10">
+            <DialogHeader>
+              <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
+            </DialogHeader>
+            <GoalTreeWidget 
+              onTaskClaim={openClaimPopup}
+              onOKRSelect={(okr) => setSelectedOKR(okr)}
+            />
+          </DialogContent>
+        </Dialog>
+
         {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
         {flags.useEnhancedTaskPopup ? (
           <EnhancedTaskClaimPopup

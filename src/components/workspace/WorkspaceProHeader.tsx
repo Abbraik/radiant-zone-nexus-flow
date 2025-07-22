@@ -142,7 +142,10 @@ export const WorkspaceProHeader: React.FC<WorkspaceProHeaderProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={onGoalTreeToggle}
+          onClick={() => {
+            console.log('Goals button clicked');
+            onGoalTreeToggle();
+          }}
           className="text-green-400 hover:text-green-300 hover:bg-green-500/20"
         >
           <Target className="h-4 w-4 mr-2" />
