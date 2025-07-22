@@ -60,7 +60,7 @@ const App = () => (
                   </div>
                 </div>
               } />
-              <Route path="*" element={<Workspace />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </FeatureFlagGuard>
         </BrowserRouter>
