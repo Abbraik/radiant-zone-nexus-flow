@@ -8,6 +8,7 @@ import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
 import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
 import { GoalTreeWidget } from '../../modules/cascade/components/GoalTreeWidget';
 import { OKRPanel } from '../../modules/cascade/components/OKRPanel';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { PairWorkOverlay } from '../../modules/collab/components/PairWorkOverlay';
 import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
@@ -199,40 +200,28 @@ export const Workspace: React.FC = () => {
             </div>
 
             {/* Dynamic Widgets */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              
-              {/* Main Content Area */}
-              <div className="xl:col-span-2 space-y-6">
-                <AnimatePresence>
-                  {components.map((componentName) => (
-                    <DynamicWidget
-                      key={componentName}
-                      widgetName={componentName}
-                      task={activeTask}
-                    />
-                  ))}
-                </AnimatePresence>
+            <div className="space-y-6">
+              <AnimatePresence>
+                {components.map((componentName) => (
+                  <DynamicWidget
+                    key={componentName}
+                    widgetName={componentName}
+                    task={activeTask}
+                  />
+                ))}
+              </AnimatePresence>
 
-                {components.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-12"
-                  >
-                    <div className="p-6 bg-glass/50 backdrop-blur-20 rounded-2xl border border-white/10">
-                      <p className="text-gray-400">No widgets configured for this task type.</p>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Goals & OKRs Sidebar */}
-              <div className="xl:col-span-1">
-                <GoalTreeWidget 
-                  onTaskClaim={(taskId) => console.log('Claim task:', taskId)}
-                  onOKRSelect={(okr) => setSelectedOKR(okr)}
-                />
-              </div>
+              {components.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <div className="p-6 bg-glass/50 backdrop-blur-20 rounded-2xl border border-white/10">
+                    <p className="text-gray-400">No widgets configured for this task type.</p>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </main>
@@ -251,6 +240,19 @@ export const Workspace: React.FC = () => {
         taskId={activeTask?.id}
         taskTitle={activeTask?.title}
       />
+
+      {/* Goals Tree Dialog */}
+      <Dialog open={isGoalTreeOpen} onOpenChange={setIsGoalTreeOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto bg-gray-900/95 backdrop-blur-20 border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
+          </DialogHeader>
+          <GoalTreeWidget 
+            onTaskClaim={openClaimPopup}
+            onOKRSelect={(okr) => setSelectedOKR(okr)}
+          />
+        </DialogContent>
+      </Dialog>
 
       <OKRPanel
         isOpen={!!selectedOKR}
