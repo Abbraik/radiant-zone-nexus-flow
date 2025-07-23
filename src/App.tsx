@@ -29,7 +29,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <FeatureFlagGuard 
-              flag="useUltimateWorkspace"
+              flag="newTaskDrivenUI"
               fallback={
                 <FeatureFlagGuard 
                   flag="newTaskDrivenUI" 

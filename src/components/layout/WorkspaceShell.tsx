@@ -108,7 +108,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
           )}
 
           {/* Teams Chat */}
-          {flags.useCollabEngine && onTeamsToggle && (
+          {flags.realTimeCollab && onTeamsToggle && (
             <Button
               variant="ghost"
               size="sm"
@@ -120,7 +120,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
           )}
 
           {/* 3D Cascade */}
-          {flags.useCascade3D && onGoalTreeToggle && (
+          {flags.useCascadeBar && onGoalTreeToggle && (
             <Button
               variant="ghost"
               size="sm"
@@ -139,7 +139,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
           <div className="h-4 w-px bg-border-subtle" />
 
           {/* Feature Flag Chip */}
-          <FeatureFlagChip flag="useUltimateWorkspace" />
+          <FeatureFlagChip flag="newTaskDrivenUI" />
 
           {/* User Avatar */}
           <Avatar className="h-8 w-8">
@@ -192,7 +192,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
 
           {/* Center Actions */}
           <div className="flex items-center gap-4">
-            {flags.useCollabEngine && (
+            {flags.realTimeCollab && (
               <Button variant="ghost" size="sm" className="text-xs">
                 Start Pair Work
               </Button>
@@ -201,7 +201,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
 
           {/* Status Indicators */}
           <div className="flex items-center gap-3">
-            {flags.useOfflinePWA && (
+            {flags.mockDataMode && (
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success animate-pulse-subtle" />
                 <span className="text-xs text-foreground-subtle">Online</span>
