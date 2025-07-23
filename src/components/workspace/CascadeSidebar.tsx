@@ -24,6 +24,8 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
   isCollapsed = false,
   onToggleCollapse
 }) => {
+  console.log('CascadeSidebar render - isCollapsed:', isCollapsed);
+  
   const { flags } = useFeatureFlags();
   const [availableTasksExpanded, setAvailableTasksExpanded] = useState(true);
   const [alertsExpanded, setAlertsExpanded] = useState(true);
@@ -102,14 +104,17 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
       className="h-full bg-glass/70 backdrop-blur-20 border-r border-white/10 flex flex-col relative"
     >
       {/* Collapse Toggle Button */}
-      <div className="absolute -right-3 top-4 z-10">
+      <div className="absolute -right-3 top-4 z-50">
         <Button
           variant="ghost"
           size="sm"
-          onClick={onToggleCollapse}
-          className="w-6 h-6 p-0 bg-gray-800/80 border border-white/10 text-white hover:bg-gray-700/80 rounded-full"
+          onClick={() => {
+            console.log('Toggle button clicked, current isCollapsed:', isCollapsed);
+            onToggleCollapse?.();
+          }}
+          className="w-8 h-8 p-0 bg-gray-800/90 border border-white/20 text-white hover:bg-gray-700/90 rounded-full shadow-lg"
         >
-          {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
 

@@ -49,6 +49,8 @@ export const Workspace: React.FC = () => {
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  console.log('Workspace render - Sidebar collapsed state:', isSidebarCollapsed);
 
   // Debug console logs
   console.log('Dialog render state:', { isGoalTreeOpen });
@@ -93,7 +95,10 @@ export const Workspace: React.FC = () => {
               activeTask={null}
               onTaskClaim={openClaimPopup}
               isCollapsed={isSidebarCollapsed}
-              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              onToggleCollapse={() => {
+                console.log('Toggle collapse called, current state:', isSidebarCollapsed);
+                setIsSidebarCollapsed(!isSidebarCollapsed);
+              }}
             />
           </FeatureFlagGuard>
           
@@ -186,7 +191,10 @@ export const Workspace: React.FC = () => {
             activeTask={activeTask}
             onTaskClaim={openClaimPopup}
             isCollapsed={isSidebarCollapsed}
-            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onToggleCollapse={() => {
+              console.log('Toggle collapse called, current state:', isSidebarCollapsed);
+              setIsSidebarCollapsed(!isSidebarCollapsed);
+            }}
           />
         </FeatureFlagGuard>
         
