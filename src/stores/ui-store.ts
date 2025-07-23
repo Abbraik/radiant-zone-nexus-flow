@@ -26,7 +26,19 @@ const defaultFeatureFlags: FeatureFlags = {
   useCascadeBar: true,
   useTaskClaimPopup: true,
   useEnhancedTaskPopup: true,
-  useTeamsButton: true
+  useTeamsButton: true,
+  // Phase 1: Ultimate Workspace Foundation
+  useUltimateWorkspace: true,
+  useAIcopilot: true,
+  useDigitalTwin: false, // Phase 2
+  useCascade3D: false, // Phase 2
+  useCollabEngine: false, // Phase 2
+  use3DCLD: false, // Phase 3
+  useKnowledgeGraph: false, // Phase 2
+  useGamification: false, // Phase 3
+  useOfflinePWA: false, // Phase 3
+  usePluginEcosystem: false, // Phase 3
+  useSecuritySuite: false // Phase 3
 };
 
 const initialState: UIState = {

@@ -147,6 +147,18 @@ export interface FeatureFlags {
   useTaskClaimPopup: boolean;
   useEnhancedTaskPopup: boolean;
   useTeamsButton: boolean;
+  // Phase 1: Ultimate Workspace Foundation
+  useUltimateWorkspace: boolean;
+  useAIcopilot: boolean;
+  useDigitalTwin: boolean;
+  useCascade3D: boolean;
+  useCollabEngine: boolean;
+  use3DCLD: boolean;
+  useKnowledgeGraph: boolean;
+  useGamification: boolean;
+  useOfflinePWA: boolean;
+  usePluginEcosystem: boolean;
+  useSecuritySuite: boolean;
 }
 
 // UI State Types
