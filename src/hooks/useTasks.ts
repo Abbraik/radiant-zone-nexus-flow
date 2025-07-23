@@ -78,6 +78,46 @@ const mockTasksWithStatus: Task[] = [
     due_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
     created_at: new Date(),
     updated_at: new Date()
+  },
+  // Phase 2: 3D Enhanced Tasks
+  {
+    id: '6',
+    title: 'View 3D Goals Cascade',
+    description: 'Interactive 3D visualization of goal dependencies and progress',
+    zone: 'think',
+    type: 'view_cascade_3d',
+    components: ['Cascade3DViewer'],
+    status: 'available',
+    loop_id: 'Global',
+    due_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '7',
+    title: 'Monitor Digital Twin',
+    description: 'Real-time digital twin analysis with system performance metrics',
+    zone: 'monitor',
+    type: 'monitor_digital_twin',
+    components: ['DigitalTwinPreview', 'TrendSparklines'],
+    status: 'available',
+    loop_id: 'System',
+    due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '8',
+    title: 'Check System Health',
+    description: 'Monitor system health and performance with digital twin visualization',
+    zone: 'monitor',
+    type: 'check_system_health',
+    components: ['PulseBarOverview', 'LoopTable', 'DigitalTwinPreview'],
+    status: 'available',
+    loop_id: 'System',
+    due_at: new Date(Date.now() + 0.2 * 24 * 60 * 60 * 1000), // urgent - 5 hours
+    created_at: new Date(),
+    updated_at: new Date()
   }
 ];
 

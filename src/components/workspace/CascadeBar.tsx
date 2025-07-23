@@ -67,7 +67,7 @@ const CascadeBar: React.FC<CascadeBarProps> = ({ activeTask, onNodeClick }) => {
     >
       <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide">
         {cascadeNodes.map((node, index) => (
-          <React.Fragment key={node.id}>
+          <div key={node.id} className="flex items-center space-x-2">
             {/* Node */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -94,7 +94,7 @@ const CascadeBar: React.FC<CascadeBarProps> = ({ activeTask, onNodeClick }) => {
             {index < cascadeNodes.length - 1 && (
               <ChevronRight className="h-4 w-4 text-white/40 flex-shrink-0" />
             )}
-          </React.Fragment>
+          </div>
         ))}
 
         {/* Active indicator */}
