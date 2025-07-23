@@ -128,20 +128,20 @@ export const EnhancedHeader: React.FC = () => {
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="h-16 relative z-50 bg-glass-backdrop/60 backdrop-blur-xl border-b border-border/10"
       >
-        <div className="h-full flex items-center justify-between px-4 lg:px-8 max-w-7xl mx-auto">
+        <div className="h-full flex items-center justify-between px-3 lg:px-6 max-w-full mx-auto">
           {/* Logo */}
           <motion.div 
-            className="flex items-center gap-4"
+            className="flex items-center gap-2 flex-shrink-0"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <NavLink to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary via-primary-hover to-accent shadow-lg flex items-center justify-center animate-glow">
                 <span className="text-white font-bold text-sm">R</span>
               </div>
-              <div className="hidden sm:block">
-                <div className="font-bold text-foreground text-lg tracking-tight">
+              <div className="hidden md:block">
+                <div className="font-bold text-foreground text-base tracking-tight">
                   RGS {isUltimateWorkspace ? 'Ultimate' : 'MVUI'}
                 </div>
                 <div className="text-xs text-foreground-subtle">
@@ -153,7 +153,7 @@ export const EnhancedHeader: React.FC = () => {
             {/* Task Selector for Ultimate Workspace */}
             {isUltimateWorkspace && activeTask && myTasks.length > 1 && (
               <Select value={activeTask.id}>
-                <SelectTrigger className="w-48 bg-glass-secondary/60 border-border/20 text-foreground">
+                <SelectTrigger className="w-40 md:w-48 bg-glass-secondary/60 border-border/20 text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -174,7 +174,7 @@ export const EnhancedHeader: React.FC = () => {
 
           {/* Desktop Navigation */}
           <motion.nav 
-            className="hidden lg:flex items-center bg-glass-primary/40 backdrop-blur-md rounded-2xl p-1 border border-border/20 shadow-elevation"
+            className="hidden lg:flex items-center bg-glass-primary/40 backdrop-blur-md rounded-2xl p-1 border border-border/20 shadow-elevation flex-1 justify-center max-w-2xl mx-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -189,7 +189,7 @@ export const EnhancedHeader: React.FC = () => {
                   key={item.id}
                   to={item.path}
                   onClick={() => !isUltimateWorkspace && handleZoneChange(item.id as Zone)}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                  className={`relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                     isActive
                       ? 'text-primary-foreground shadow-lg'
                       : 'text-foreground-muted hover:text-foreground'
@@ -204,7 +204,7 @@ export const EnhancedHeader: React.FC = () => {
                     />
                   )}
                   <Icon className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10">{item.label}</span>
+                  <span className="relative z-10 whitespace-nowrap">{item.label}</span>
                   {item.badge && (
                     <Badge variant="secondary" className="relative z-10 text-xs ml-1">
                       {item.badge}
@@ -217,7 +217,7 @@ export const EnhancedHeader: React.FC = () => {
 
           {/* Right Side Actions */}
           <motion.div 
-            className="flex items-center gap-3"
+            className="flex items-center gap-2 flex-shrink-0"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
@@ -225,34 +225,34 @@ export const EnhancedHeader: React.FC = () => {
             {/* Ultimate Workspace Quick Actions */}
             {isUltimateWorkspace && location.pathname === '/workspace' && isEnabled('realTimeCollab') && (
               <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
-                <MessageSquare className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Teams</span>
+                <MessageSquare className="w-4 h-4 md:mr-1" />
+                <span className="hidden md:inline">Teams</span>
               </Button>
             )}
 
             {isUltimateWorkspace && location.pathname === '/workspace' && (
               <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300 hover:bg-green-500/20">
-                <Target className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Goals</span>
+                <Target className="w-4 h-4 md:mr-1" />
+                <span className="hidden md:inline">Goals</span>
               </Button>
             )}
 
             {isUltimateWorkspace && location.pathname === '/workspace' && isEnabled('aiCopilot') && (
               <Button variant="ghost" size="sm" className="text-teal-400 hover:text-teal-300 hover:bg-teal-500/20">
-                <Bot className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Copilot</span>
+                <Bot className="w-4 h-4 md:mr-1" />
+                <span className="hidden md:inline">Copilot</span>
               </Button>
             )}
 
             {/* Task Count Badge for Ultimate Workspace */}
             {isUltimateWorkspace && (location.pathname === '/workspace' || location.pathname === '/dashboard') && myTasks.length > 0 && (
-              <Badge variant="secondary" className="bg-glass-secondary/60 text-foreground-muted">
+              <Badge variant="secondary" className="bg-glass-secondary/60 text-foreground-muted hidden sm:flex">
                 {myTasks.length} task{myTasks.length !== 1 ? 's' : ''}
               </Badge>
             )}
 
             {/* Feature Flag Chip */}
-            <div className="hidden sm:block">
+            <div className="hidden md:block">
               <FeatureFlagChip flag="newRgsUI" />
             </div>
 
@@ -267,14 +267,14 @@ export const EnhancedHeader: React.FC = () => {
                   : 'bg-glass-secondary/60 text-foreground-muted hover:bg-glass-secondary/80'
               }`}
             >
-              <Briefcase className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">
+              <Briefcase className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">
                 {isUltimateWorkspace ? 'Legacy UI' : 'Ultimate'}
               </span>
             </Button>
 
             {/* Role Badge */}
-            <div className="hidden lg:block bg-glass-secondary/60 backdrop-blur-sm rounded-2xl px-4 py-1.5 border border-border/20">
+            <div className="hidden xl:block bg-glass-secondary/60 backdrop-blur-sm rounded-2xl px-3 py-1.5 border border-border/20">
               <span className="text-xs font-medium text-foreground-muted">Champion</span>
             </div>
             
