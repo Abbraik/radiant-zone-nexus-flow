@@ -18,6 +18,7 @@ import CascadeSidebar from './CascadeSidebar';
 import TaskClaimPopup from './TaskClaimPopup';
 import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from './EnhancedTaskCard';
+import { taskRegistry } from '../../config/taskRegistry';
 
 export const Workspace: React.FC = () => {
   const { 
@@ -162,9 +163,6 @@ export const Workspace: React.FC = () => {
     );
   }
 
-  // Import the task registry to get current component mapping
-  const { taskRegistry } = require('../../config/taskRegistry');
-  
   // Get the current components from registry (this ensures we use the latest config)
   const currentComponents = taskRegistry[activeTask.type] || activeTask.components || [];
   const components = currentComponents;
