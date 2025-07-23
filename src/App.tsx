@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Shell } from "./components/layout/Shell";
 import { FeatureFlagGuard, FeatureFlagProvider } from "./components/layout/FeatureFlagProvider";
 import { WorkspaceShell } from "./components/layout/WorkspaceShell";
+import { EnhancedHeader } from "./components/layout/EnhancedHeader";
 import { Workspace } from "./components/workspace/Workspace";
 import { WorkspaceHeader } from "./components/workspace/WorkspaceHeader";
 import { ErrorBoundary } from "./components/common/ErrorBoundary";
@@ -16,6 +17,10 @@ import { MonitorZone } from "./pages/MonitorZone";
 import { InnovateLearnZone } from "./pages/InnovateLearnZone";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import AchievementsPage from "./pages/AchievementsPage";
+import PluginsPage from "./pages/PluginsPage";
+import OfflinePage from "./pages/OfflinePage";
+import SecurityPage from "./pages/SecurityPage";
 import { createQueryClient } from "./services/api";
 
 const queryClient = createQueryClient();
@@ -34,7 +39,8 @@ const App = () => (
                 <FeatureFlagGuard 
                   flag="newTaskDrivenUI" 
                   fallback={
-                    <Shell>
+                    <div className="min-h-screen">
+                      <EnhancedHeader />
                       <FeatureFlagGuard 
                         flag="newRgsUI" 
                         fallback={
@@ -53,7 +59,7 @@ const App = () => (
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </FeatureFlagGuard>
-                    </Shell>
+                    </div>
                   }
                 >
                   <Routes>
@@ -72,17 +78,30 @@ const App = () => (
                 </FeatureFlagGuard>
               }
             >
-              {/* Phase 1: Ultimate Workspace */}
-              <Routes>
-                <Route path="/" element={<Workspace />} />
-                <Route path="/workspace" element={<Workspace />} />
-                <Route path="/dashboard" element={
-                  <WorkspaceShell>
-                    <Dashboard />
-                  </WorkspaceShell>
-                } />
-                <Route path="*" element={<Workspace />} />
-              </Routes>
+              {/* Ultimate Workspace Mode */}
+              <div className="min-h-screen">
+                <EnhancedHeader />
+                <Routes>
+                  <Route path="/" element={<Workspace />} />
+                  <Route path="/workspace" element={<Workspace />} />
+                  <Route path="/dashboard" element={
+                    <div className="pt-4">
+                      <Dashboard />
+                    </div>
+                  } />
+                  {/* Phase 3 Pages */}
+                  <Route path="/achievements" element={<AchievementsPage />} />
+                  <Route path="/plugins" element={<PluginsPage />} />
+                  <Route path="/offline" element={<OfflinePage />} />
+                  <Route path="/security" element={<SecurityPage />} />
+                  {/* Legacy Zone Access */}
+                  <Route path="/think" element={<ThinkZone />} />
+                  <Route path="/act" element={<ActZone />} />
+                  <Route path="/monitor" element={<MonitorZone />} />
+                  <Route path="/innovate" element={<InnovateLearnZone />} />
+                  <Route path="*" element={<Workspace />} />
+                </Routes>
+              </div>
             </FeatureFlagGuard>
           </BrowserRouter>
         </FeatureFlagProvider>
