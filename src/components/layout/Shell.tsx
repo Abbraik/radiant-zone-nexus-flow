@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Header } from './Header';
+import { EnhancedHeader } from './EnhancedHeader';
 import { FeatureFlagProvider } from './FeatureFlagProvider';
 
 interface ShellProps {
@@ -11,7 +11,7 @@ export const Shell: React.FC<ShellProps> = ({ children }) => {
   return (
     <FeatureFlagProvider>
       <div className="h-screen w-full flex flex-col bg-background overflow-hidden">
-        <Header />
+        <EnhancedHeader />
         
         <motion.main
           initial={{ opacity: 0, y: 20 }}

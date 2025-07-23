@@ -15,13 +15,19 @@ import {
   Star,
   Wifi,
   Menu,
-  X
+  X,
+  Bot,
+  Users,
+  Target,
+  MessageSquare
 } from 'lucide-react';
 import { useUIStore } from '../../stores/ui-store';
 import { FeatureFlagChip, useFeatureFlags } from './FeatureFlagProvider';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useTasks } from '../../hooks/useTasks';
 import type { Zone } from '../../types';
 
 interface NavigationItem {
@@ -90,6 +96,7 @@ export const EnhancedHeader: React.FC = () => {
   const { currentZone, setCurrentZone } = useUIStore();
   const { updateFlag, isEnabled } = useFeatureFlags();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { myTasks, activeTask } = useTasks();
 
   const isUltimateWorkspace = isEnabled('newTaskDrivenUI');
 
@@ -124,7 +131,7 @@ export const EnhancedHeader: React.FC = () => {
         <div className="h-full flex items-center justify-between px-4 lg:px-8 max-w-7xl mx-auto">
           {/* Logo */}
           <motion.div 
-            className="flex items-center gap-3"
+            className="flex items-center gap-4"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
@@ -142,6 +149,27 @@ export const EnhancedHeader: React.FC = () => {
                 </div>
               </div>
             </NavLink>
+
+            {/* Task Selector for Ultimate Workspace */}
+            {isUltimateWorkspace && activeTask && myTasks.length > 1 && (
+              <Select value={activeTask.id}>
+                <SelectTrigger className="w-48 bg-glass-secondary/60 border-border/20 text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {myTasks.map((task) => (
+                    <SelectItem key={task.id} value={task.id}>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {task.zone}
+                        </Badge>
+                        <span className="truncate">{task.title}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -194,6 +222,35 @@ export const EnhancedHeader: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
+            {/* Ultimate Workspace Quick Actions */}
+            {isUltimateWorkspace && location.pathname === '/workspace' && isEnabled('realTimeCollab') && (
+              <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20">
+                <MessageSquare className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">Teams</span>
+              </Button>
+            )}
+
+            {isUltimateWorkspace && location.pathname === '/workspace' && (
+              <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300 hover:bg-green-500/20">
+                <Target className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">Goals</span>
+              </Button>
+            )}
+
+            {isUltimateWorkspace && location.pathname === '/workspace' && isEnabled('aiCopilot') && (
+              <Button variant="ghost" size="sm" className="text-teal-400 hover:text-teal-300 hover:bg-teal-500/20">
+                <Bot className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">Copilot</span>
+              </Button>
+            )}
+
+            {/* Task Count Badge for Ultimate Workspace */}
+            {isUltimateWorkspace && (location.pathname === '/workspace' || location.pathname === '/dashboard') && myTasks.length > 0 && (
+              <Badge variant="secondary" className="bg-glass-secondary/60 text-foreground-muted">
+                {myTasks.length} task{myTasks.length !== 1 ? 's' : ''}
+              </Badge>
+            )}
+
             {/* Feature Flag Chip */}
             <div className="hidden sm:block">
               <FeatureFlagChip flag="newRgsUI" />

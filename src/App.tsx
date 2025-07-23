@@ -6,9 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Shell } from "./components/layout/Shell";
 import { FeatureFlagGuard, FeatureFlagProvider } from "./components/layout/FeatureFlagProvider";
 import { WorkspaceShell } from "./components/layout/WorkspaceShell";
-import { EnhancedHeader } from "./components/layout/EnhancedHeader";
 import { Workspace } from "./components/workspace/Workspace";
-import { WorkspaceHeader } from "./components/workspace/WorkspaceHeader";
 import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import { ThinkZone } from "./pages/ThinkZone";
@@ -39,8 +37,7 @@ const App = () => (
                 <FeatureFlagGuard 
                   flag="newTaskDrivenUI" 
                   fallback={
-                    <div className="min-h-screen">
-                      <EnhancedHeader />
+                    <Shell>
                       <FeatureFlagGuard 
                         flag="newRgsUI" 
                         fallback={
@@ -57,30 +54,22 @@ const App = () => (
                           <Route path="/monitor" element={<MonitorZone />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
                           <Route path="*" element={<NotFound />} />
-                        </Routes>
+                         </Routes>
                       </FeatureFlagGuard>
-                    </div>
+                    </Shell>
                   }
                 >
                   <Routes>
                     <Route path="/" element={<Workspace />} />
                     <Route path="/workspace" element={<Workspace />} />
-                    <Route path="/dashboard" element={
-                      <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-                        <WorkspaceHeader activeTask={null} myTasks={[]} isDashboard={true} />
-                        <div className="flex-1 overflow-auto">
-                          <Dashboard />
-                        </div>
-                      </div>
-                    } />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="*" element={<Workspace />} />
                   </Routes>
                 </FeatureFlagGuard>
               }
             >
               {/* Ultimate Workspace Mode */}
-              <div className="min-h-screen">
-                <EnhancedHeader />
+              <Shell>
                 <Routes>
                   <Route path="/" element={<Workspace />} />
                   <Route path="/workspace" element={<Workspace />} />
@@ -99,9 +88,9 @@ const App = () => (
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />
                   <Route path="/innovate" element={<InnovateLearnZone />} />
-                  <Route path="*" element={<Workspace />} />
+                   <Route path="*" element={<Workspace />} />
                 </Routes>
-              </div>
+              </Shell>
             </FeatureFlagGuard>
           </BrowserRouter>
         </FeatureFlagProvider>

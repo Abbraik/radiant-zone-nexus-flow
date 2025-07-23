@@ -74,20 +74,8 @@ export const Workspace: React.FC = () => {
 
   if (!activeTask) {
     return (
-      <div className="h-screen w-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <WorkspaceProHeader 
-          activeTask={null} 
-          myTasks={myTasks} 
-          onCopilotToggle={() => setIsCopilotOpen(true)}
-          onTeamsToggle={() => setIsTeamsOpen(true)}
-          onGoalTreeToggle={() => setIsGoalTreeOpen(true)}
-          onPairWorkStart={(partnerId) => {
-            setPairWorkPartner(partnerId);
-            setIsPairWorkOpen(true);
-          }}
-        />
-        
-        <div className="flex flex-1">
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="flex">
           <FeatureFlagGuard 
             flag="useCascadeBar" 
             fallback={
@@ -177,20 +165,8 @@ export const Workspace: React.FC = () => {
   });
 
   return (
-    <div className="h-screen w-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <WorkspaceProHeader 
-        activeTask={activeTask} 
-        myTasks={myTasks} 
-        onCopilotToggle={() => setIsCopilotOpen(true)}
-        onTeamsToggle={() => setIsTeamsOpen(true)}
-        onGoalTreeToggle={() => setIsGoalTreeOpen(true)}
-        onPairWorkStart={(partnerId) => {
-          setPairWorkPartner(partnerId);
-          setIsPairWorkOpen(true);
-        }}
-      />
-      
-      <div className="flex flex-1">
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="flex">
         <FeatureFlagGuard 
           flag="useCascadeBar" 
           fallback={
