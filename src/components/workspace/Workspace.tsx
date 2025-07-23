@@ -162,7 +162,21 @@ export const Workspace: React.FC = () => {
     );
   }
 
-  const components = activeTask.components || [];
+  // Import the task registry to get current component mapping
+  const { taskRegistry } = require('../../config/taskRegistry');
+  
+  // Get the current components from registry (this ensures we use the latest config)
+  const currentComponents = taskRegistry[activeTask.type] || activeTask.components || [];
+  const components = currentComponents;
+  
+  console.log('Workspace activeTask:', { 
+    id: activeTask.id, 
+    type: activeTask.type, 
+    zone: activeTask.zone, 
+    originalComponents: activeTask.components,
+    currentComponents: components,
+    registryMapping: taskRegistry[activeTask.type]
+  });
 
   return (
     <div className="h-screen w-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">

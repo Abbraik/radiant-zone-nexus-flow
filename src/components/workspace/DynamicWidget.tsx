@@ -57,6 +57,9 @@ const LoadingSkeleton = () => (
 );
 
 export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }) => {
+  // Debug logging
+  console.log('DynamicWidget render:', { widgetName, taskZone: task.zone, taskType: task.type });
+  
   // Check if this is a zone workspace request
   if (widgetName === 'ZoneWorkspace') {
     switch (task.zone) {
