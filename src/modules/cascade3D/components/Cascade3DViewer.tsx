@@ -164,7 +164,7 @@ const CascadeNode: React.FC<{
       ) : (
         <Box
           ref={meshRef}
-          args={nodeSize}
+          args={nodeSize as [number, number, number]}
           onClick={() => onSelect(node.id)}
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}

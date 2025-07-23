@@ -20,7 +20,7 @@ interface DigitalTwinPreviewProps {
 
 // Animated response curve based on SRT
 const ResponseCurve: React.FC<{ srt: number; tension: string }> = ({ srt, tension }) => {
-  const lineRef = useRef<THREE.Line>(null);
+  const lineRef = useRef<any>(null);
   
   // Generate curve points based on SRT
   const points = React.useMemo(() => {
@@ -143,7 +143,7 @@ const ResourceGauge: React.FC<{ utilization: number }> = ({ utilization }) => {
       
       {/* Utilization arc */}
       <mesh ref={ringRef} rotation={[0, 0, -Math.PI / 2]}>
-        <torusGeometry args={[0.3, 0.03, 8, Math.max(1, Math.floor(32 * (angle / (Math.PI * 2))))} />
+        <torusGeometry args={[0.3, 0.03, 8, Math.max(1, Math.floor(32 * (angle / (Math.PI * 2))))]} />
         <meshBasicMaterial color={getUtilizationColor(utilization)} />
       </mesh>
       
