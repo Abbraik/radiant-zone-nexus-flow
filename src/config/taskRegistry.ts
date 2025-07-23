@@ -8,25 +8,25 @@ export interface TaskType {
 }
 
 export const taskRegistry: Record<string, string[]> = {
-  // Think Zone Tasks
-  define_tension: ['TensionSelector', 'SRTRangeSlider'],
-  analyze_sprint: ['SprintAnalyzer', 'TensionChips'],
-  set_srt_range: ['SRTRangeSlider', 'PolicySelector'],
+  // Think Zone Tasks - Use zone workspace for full experience
+  define_tension: ['ZoneWorkspace'],
+  analyze_sprint: ['ZoneWorkspace'], 
+  set_srt_range: ['ZoneWorkspace'],
   
-  // Act Zone Tasks  
-  publish_bundle: ['InterventionPicker', 'BundlePreview', 'SmartRolesPanel'],
-  assign_roles: ['SmartRolesPanel', 'RACIMatrix'],
-  schedule_interventions: ['InterventionScheduler', 'DependencyGraph'],
+  // Act Zone Tasks - Use zone workspace for full experience
+  publish_bundle: ['ZoneWorkspace'],
+  assign_roles: ['ZoneWorkspace'],
+  schedule_interventions: ['ZoneWorkspace'],
   
-  // Monitor Zone Tasks
-  review_tri: ['LoopTable', 'TRIDetailDrawer'],
-  check_system_health: ['PulseBarOverview', 'LoopTable', 'DigitalTwinPreview'],
-  analyze_trends: ['TrendSparklines', 'AdvancedAnalytics'],
+  // Monitor Zone Tasks - Use zone workspace for full experience
+  review_tri: ['ZoneWorkspace'],
+  check_system_health: ['ZoneWorkspace'],
+  analyze_trends: ['ZoneWorkspace'],
   
-  // Innovate-Learn Zone Tasks
-  run_simulation: ['SimulationParams', 'SimulationPreview'],
-  capture_insight: ['InsightFeed', 'ExperimentStudio'],
-  export_knowledge: ['KnowledgeGraph', 'OrsExporter'],
+  // Innovate-Learn Zone Tasks - Use zone workspace for full experience
+  run_simulation: ['ZoneWorkspace'],
+  capture_insight: ['ZoneWorkspace'],
+  export_knowledge: ['ZoneWorkspace'],
   
   // Phase 2: 3D Enhanced Tasks
   view_cascade_3d: ['Cascade3DViewer'],

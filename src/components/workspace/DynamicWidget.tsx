@@ -2,6 +2,10 @@ import React, { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Task } from '../../hooks/useTasks';
 import { Skeleton } from '../ui/skeleton';
+import { ThinkZoneWorkspace } from '../zones/ThinkZoneWorkspace';
+import { ActZoneWorkspace } from '../zones/ActZoneWorkspace';
+import { MonitorZoneWorkspace } from '../zones/MonitorZoneWorkspace';
+import { InnovateLearnZoneWorkspace } from '../zones/InnovateLearnZoneWorkspace';
 
 interface DynamicWidgetProps {
   widgetName: string;
@@ -53,6 +57,26 @@ const LoadingSkeleton = () => (
 );
 
 export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }) => {
+  // Check if this is a zone workspace request
+  if (widgetName === 'ZoneWorkspace') {
+    switch (task.zone) {
+      case 'think':
+        return <ThinkZoneWorkspace />;
+      case 'act':
+        return <ActZoneWorkspace />;
+      case 'monitor':
+        return <MonitorZoneWorkspace />;
+      case 'innovate-learn':
+        return <InnovateLearnZoneWorkspace />;
+      default:
+        return (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-400">Unknown zone: {task.zone}</p>
+          </div>
+        );
+    }
+  }
+
   const WidgetComponent = widgetComponents[widgetName as keyof typeof widgetComponents];
 
   if (!WidgetComponent) {
