@@ -174,7 +174,7 @@ export const EnhancedHeader: React.FC = () => {
 
           {/* Desktop Navigation */}
           <motion.nav 
-            className="hidden lg:flex items-center bg-gray-800/40 backdrop-blur-md rounded-2xl p-1 border border-white/10 shadow-2xl flex-1 justify-center max-w-2xl mx-4"
+            className="hidden lg:flex items-center bg-gray-800/40 backdrop-blur-md rounded-2xl p-1 border border-white/10 shadow-2xl justify-center min-w-fit"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
