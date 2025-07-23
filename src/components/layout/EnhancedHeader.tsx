@@ -50,8 +50,7 @@ const zoneTabs: NavigationItem[] = [
 
 // Ultimate Workspace Navigation
 const workspaceNavigation: NavigationItem[] = [
-  { id: 'home', label: 'Home', icon: Home, path: '/', description: 'Landing page' },
-  { id: 'workspace', label: 'Workspace', icon: Briefcase, path: '/workspace', description: 'Task management hub' },
+  { id: 'workspace', label: 'Home', icon: Home, path: '/workspace', description: 'Main workspace hub' },
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard', description: 'Analytics & insights' },
   { 
     id: 'achievements', 
@@ -181,7 +180,8 @@ export const EnhancedHeader: React.FC = () => {
           >
             {visibleNavigation.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path || 
+              const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
+                (item.id !== 'workspace' && location.pathname === item.path) ||
                 (item.id === currentZone && !isUltimateWorkspace);
               
               return (
@@ -315,7 +315,8 @@ export const EnhancedHeader: React.FC = () => {
             {/* Navigation Items */}
             {visibleNavigation.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
+                (item.id !== 'workspace' && location.pathname === item.path);
               
               return (
                 <NavLink
