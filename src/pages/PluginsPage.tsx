@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Package, Download, Zap, Code, Users } from 'lucide-react';
-import { PluginMarketplace } from '../../modules/plugins/components/PluginMarketplace';
+import { PluginMarketplace } from '../modules/plugins/components/PluginMarketplace';
 
 const PluginsPage: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(true);

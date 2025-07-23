@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Wifi, Smartphone, Download, Globe } from 'lucide-react';
-import { OfflinePWAPanel } from '../../modules/offline/components/OfflinePWAPanel';
+import { OfflinePWAPanel } from '../modules/offline/components/OfflinePWAPanel';
 
 const OfflinePage: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(true);

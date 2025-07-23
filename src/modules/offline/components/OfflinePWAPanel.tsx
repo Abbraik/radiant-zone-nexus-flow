@@ -1,89 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Wifi, 
-  WifiOff, 
-  Download, 
-  Upload, 
-  RefreshCw, 
-  Clock, 
-  CheckCircle,
-  AlertCircle,
-  Smartphone,
-  Globe,
-  Database
-} from 'lucide-react';
+import { Wifi, WifiOff, RefreshCw, Download, Smartphone, Globe, Check, Clock, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 
 interface SyncStatus {
   isOnline: boolean;
   lastSync: Date;
   pendingActions: number;
-  dataSize: string;
+  cacheSize: string;
   syncProgress: number;
   isInstalled: boolean;
 }
 
 interface OfflineAction {
   id: string;
-  type: 'task_update' | 'intervention' | 'metric_log' | 'collaboration';
+  type: 'task_update' | 'comment_add' | 'file_upload' | 'settings_change';
   description: string;
   timestamp: Date;
-  status: 'pending' | 'syncing' | 'synced' | 'error';
+  status: 'pending' | 'syncing' | 'synced' | 'failed';
 }
+
+const mockSyncStatus: SyncStatus = {
+  isOnline: true,
+  lastSync: new Date(),
+  pendingActions: 3,
+  cacheSize: '12.4 MB',
+  syncProgress: 75,
+  isInstalled: false
+};
 
 const mockOfflineActions: OfflineAction[] = [
   {
-    id: 'action-1',
+    id: '1',
     type: 'task_update',
-    description: 'Updated task "Process Optimization" progress to 75%',
-    timestamp: new Date(Date.now() - 3600000),
+    description: 'Updated task "Review governance framework"',
+    timestamp: new Date(Date.now() - 15 * 60 * 1000),
     status: 'pending'
   },
   {
-    id: 'action-2',
-    type: 'intervention',
-    description: 'Created intervention for Loop B resource allocation',
-    timestamp: new Date(Date.now() - 1800000),
-    status: 'pending'
-  },
-  {
-    id: 'action-3',
-    type: 'metric_log',
-    description: 'Logged TRI improvement metrics',
-    timestamp: new Date(Date.now() - 900000),
+    id: '2',
+    type: 'comment_add',
+    description: 'Added comment to "Budget approval process"',
+    timestamp: new Date(Date.now() - 30 * 60 * 1000),
     status: 'synced'
   },
   {
-    id: 'action-4',
-    type: 'collaboration',
-    description: 'Added comment to team discussion',
-    timestamp: new Date(Date.now() - 600000),
+    id: '3',
+    type: 'file_upload',
+    description: 'Uploaded document "Policy_v2.pdf"',
+    timestamp: new Date(Date.now() - 45 * 60 * 1000),
     status: 'pending'
   }
 ];
 
-// Service Worker registration and management
 class OfflineService {
   private static instance: OfflineService;
-  private isRegistered = false;
-
+  
   static getInstance(): OfflineService {
     if (!OfflineService.instance) {
       OfflineService.instance = new OfflineService();
     }
     return OfflineService.instance;
   }
-
+  
   async register(): Promise<boolean> {
     if ('serviceWorker' in navigator) {
       try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service Worker registered:', registration);
-        this.isRegistered = true;
+        await navigator.serviceWorker.register('/sw.js');
         return true;
       } catch (error) {
         console.error('Service Worker registration failed:', error);
@@ -92,7 +79,7 @@ class OfflineService {
     }
     return false;
   }
-
+  
   async enableNotifications(): Promise<boolean> {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission();
@@ -100,51 +87,55 @@ class OfflineService {
     }
     return false;
   }
-
+  
   async getCacheSize(): Promise<string> {
     if ('storage' in navigator && 'estimate' in navigator.storage) {
       const estimate = await navigator.storage.estimate();
-      const usage = estimate.usage || 0;
-      return this.formatBytes(usage);
+      const used = estimate.usage || 0;
+      return `${(used / 1024 / 1024).toFixed(1)} MB`;
     }
-    return '0 MB';
+    return 'Unknown';
   }
-
-  private formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
+  
   async clearCache(): Promise<void> {
     if ('caches' in window) {
       const cacheNames = await caches.keys();
       await Promise.all(cacheNames.map(name => caches.delete(name)));
     }
   }
-
+  
   isOnline(): boolean {
     return navigator.onLine;
   }
 }
 
-// PWA Installation Component
-const PWAInstaller: React.FC<{
-  onInstall: () => void;
-  isInstalled: boolean;
-}> = ({ onInstall, isInstalled }) => {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+const PWAInstaller: React.FC = () => {
+  const [deferredPrompt, setDeferredPrompt] = React.useState<any>(null);
+  const [isInstalled, setIsInstalled] = React.useState(false);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
+  React.useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -152,373 +143,319 @@ const PWAInstaller: React.FC<{
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
-        onInstall();
+        setDeferredPrompt(null);
       }
-      setDeferredPrompt(null);
     }
   };
 
   if (isInstalled) {
     return (
-      <Card className="glass-secondary border-border-subtle/20">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-success" />
-            <div>
-              <div className="text-sm font-medium text-foreground">PWA Installed</div>
-              <div className="text-xs text-foreground-subtle">Ready for offline use</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-2 text-success">
+        <Check className="h-4 w-4" />
+        <span className="text-sm">PWA Installed</span>
+      </div>
     );
   }
 
-  return (
-    <Card className="glass-secondary border-border-subtle/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Smartphone className="h-4 w-4" />
-          Install RGS Workspace
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-xs text-foreground-subtle mb-3">
-          Install as a Progressive Web App for better performance and offline access.
-        </p>
-        <div className="flex gap-2">
-          <Button size="sm" onClick={handleInstall} disabled={!deferredPrompt}>
-            <Download className="h-3 w-3 mr-1" />
-            Install App
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  if (deferredPrompt) {
+    return (
+      <Button onClick={handleInstall} variant="outline" size="sm">
+        <Download className="h-4 w-4 mr-2" />
+        Install App
+      </Button>
+    );
+  }
+
+  return null;
 };
 
-// Offline Actions List
-const OfflineActionsList: React.FC<{
+const OfflineActionsList: React.FC<{ 
   actions: OfflineAction[];
-  onSync: () => void;
-}> = ({ actions, onSync }) => {
-  const getActionIcon = (type: string) => {
+  onSyncAll: () => void;
+}> = ({ actions, onSyncAll }) => {
+  const getActionIcon = (type: OfflineAction['type']) => {
     switch (type) {
-      case 'task_update': return <CheckCircle className="h-4 w-4" />;
-      case 'intervention': return <RefreshCw className="h-4 w-4" />;
-      case 'metric_log': return <Database className="h-4 w-4" />;
-      case 'collaboration': return <Globe className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'task_update': return RefreshCw;
+      case 'comment_add': return Clock;
+      case 'file_upload': return Download;
+      case 'settings_change': return RefreshCw;
+      default: return RefreshCw;
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: OfflineAction['status']) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="outline" className="text-warning border-warning bg-warning/10">Pending</Badge>;
+        return <Badge variant="secondary">Pending</Badge>;
       case 'syncing':
-        return <Badge variant="outline" className="text-info border-info bg-info/10">Syncing</Badge>;
+        return <Badge variant="outline">Syncing</Badge>;
       case 'synced':
-        return <Badge variant="outline" className="text-success border-success bg-success/10">Synced</Badge>;
-      case 'error':
-        return <Badge variant="destructive">Error</Badge>;
+        return <Badge variant="default" className="bg-success text-success-foreground">Synced</Badge>;
+      case 'failed':
+        return <Badge variant="destructive">Failed</Badge>;
       default:
-        return null;
+        return <Badge variant="secondary">Unknown</Badge>;
     }
   };
 
-  const pendingActions = actions.filter(a => a.status === 'pending');
+  const pendingActions = actions.filter(action => action.status === 'pending');
 
   return (
-    <Card className="glass-secondary border-border-subtle/20">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Offline Actions
-          </CardTitle>
-          {pendingActions.length > 0 && (
-            <Button size="sm" onClick={onSync}>
-              <RefreshCw className="h-3 w-3 mr-1" />
-              Sync All
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        {actions.length === 0 ? (
-          <div className="text-center py-4 text-foreground-subtle text-xs">
-            No offline actions
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {actions.map((action) => (
-              <motion.div
-                key={action.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-start gap-3 p-3 rounded-lg bg-glass-primary/30"
-              >
-                <div className="text-foreground-subtle mt-0.5">
-                  {getActionIcon(action.type)}
-                </div>
-                <div className="flex-1">
-                  <div className="text-xs text-foreground mb-1">
-                    {action.description}
-                  </div>
-                  <div className="text-xs text-foreground-subtle">
-                    {action.timestamp.toLocaleTimeString()}
-                  </div>
-                </div>
-                {getStatusBadge(action.status)}
-              </motion.div>
-            ))}
-          </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-medium">Offline Actions</h3>
+        {pendingActions.length > 0 && (
+          <Button onClick={onSyncAll} size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Sync All
+          </Button>
         )}
-      </CardContent>
-    </Card>
+      </div>
+      
+      <div className="space-y-2">
+        {actions.map((action) => {
+          const Icon = getActionIcon(action.type);
+          return (
+            <div key={action.id} className="flex items-center gap-3 p-3 rounded-lg bg-background-secondary">
+              <Icon className="h-4 w-4 text-foreground-subtle" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{action.description}</p>
+                <p className="text-xs text-foreground-subtle">
+                  {action.timestamp.toLocaleTimeString()}
+                </p>
+              </div>
+              {getStatusBadge(action.status)}
+            </div>
+          );
+        })}
+      </div>
+      
+      {actions.length === 0 && (
+        <div className="text-center py-6 text-foreground-subtle">
+          <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+          <p>No offline actions recorded</p>
+        </div>
+      )}
+    </div>
   );
 };
 
-// Main Offline PWA Panel
-export const OfflinePWAPanel: React.FC<{
+interface OfflinePWAPanelProps {
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>({
-    isOnline: navigator.onLine,
-    lastSync: new Date(Date.now() - 900000),
-    pendingActions: 3,
-    dataSize: '12.3 MB',
-    syncProgress: 0,
-    isInstalled: false
-  });
-  const [offlineActions, setOfflineActions] = useState<OfflineAction[]>(mockOfflineActions);
-  const [isInstalling, setIsInstalling] = useState(false);
+}
 
-  const offlineService = OfflineService.getInstance();
+export const OfflinePWAPanel: React.FC<OfflinePWAPanelProps> = ({ isOpen, onClose }) => {
+  const [syncStatus, setSyncStatus] = React.useState<SyncStatus>(mockSyncStatus);
+  const [offlineActions, setOfflineActions] = React.useState<OfflineAction[]>(mockOfflineActions);
+  const [isInitialized, setIsInitialized] = React.useState(false);
 
-  useEffect(() => {
-    const handleOnline = () => setSyncStatus(prev => ({ ...prev, isOnline: true }));
-    const handleOffline = () => setSyncStatus(prev => ({ ...prev, isOnline: false }));
+  React.useEffect(() => {
+    const offlineService = OfflineService.getInstance();
+    
+    const initializeOfflineFeatures = async () => {
+      try {
+        await offlineService.register();
+        const cacheSize = await offlineService.getCacheSize();
+        setSyncStatus(prev => ({
+          ...prev,
+          cacheSize,
+          isOnline: offlineService.isOnline()
+        }));
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Failed to initialize offline features:', error);
+      }
+    };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const handleOnlineStatus = () => {
+      setSyncStatus(prev => ({
+        ...prev,
+        isOnline: navigator.onLine
+      }));
+    };
+
+    initializeOfflineFeatures();
+    
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOnlineStatus);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnlineStatus);
+      window.removeEventListener('offline', handleOnlineStatus);
     };
   }, []);
 
-  const handleInstallPWA = async () => {
-    setIsInstalling(true);
-    const success = await offlineService.register();
-    if (success) {
-      await offlineService.enableNotifications();
-      setSyncStatus(prev => ({ ...prev, isInstalled: true }));
-    }
-    setIsInstalling(false);
-  };
+  const handleSyncAll = async () => {
+    setOfflineActions(prev => 
+      prev.map(action => 
+        action.status === 'pending' 
+          ? { ...action, status: 'syncing' as const }
+          : action
+      )
+    );
 
-  const handleSyncActions = () => {
-    // Simulate syncing
-    const pendingActions = offlineActions.filter(a => a.status === 'pending');
-    
-    pendingActions.forEach((action, index) => {
-      setTimeout(() => {
-        setOfflineActions(prev => prev.map(a => 
-          a.id === action.id ? { ...a, status: 'syncing' as const } : a
-        ));
-        
-        setTimeout(() => {
-          setOfflineActions(prev => prev.map(a => 
-            a.id === action.id ? { ...a, status: 'synced' as const } : a
-          ));
-        }, 1000);
-      }, index * 500);
-    });
-
-    setSyncStatus(prev => ({ 
-      ...prev, 
-      lastSync: new Date(),
-      pendingActions: 0 
-    }));
+    // Simulate sync process
+    setTimeout(() => {
+      setOfflineActions(prev => 
+        prev.map(action => 
+          action.status === 'syncing' 
+            ? { ...action, status: 'synced' as const }
+            : action
+        )
+      );
+      setSyncStatus(prev => ({
+        ...prev,
+        lastSync: new Date(),
+        pendingActions: 0
+      }));
+    }, 2000);
   };
 
   const handleClearCache = async () => {
+    const offlineService = OfflineService.getInstance();
     await offlineService.clearCache();
-    setSyncStatus(prev => ({ ...prev, dataSize: '0 MB' }));
+    const newCacheSize = await offlineService.getCacheSize();
+    setSyncStatus(prev => ({
+      ...prev,
+      cacheSize: newCacheSize
+    }));
   };
 
   if (!isOpen) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="fixed inset-4 z-50 glass rounded-3xl border border-border-subtle/30 flex flex-col overflow-hidden"
-    >
-      {/* Header */}
-      <div className="p-6 border-b border-border-subtle/20">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            {syncStatus.isOnline ? (
-              <Wifi className="h-7 w-7 text-success" />
-            ) : (
-              <WifiOff className="h-7 w-7 text-warning" />
-            )}
-            Offline & PWA
-          </h1>
-          <Button variant="ghost" onClick={onClose}>
-            <Globe className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Connection Status */}
-          <Card className="glass-secondary border-border-subtle/20">
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
-                {syncStatus.isOnline ? (
-                  <>
-                    <Wifi className="h-4 w-4 text-success" />
-                    Online
-                  </>
-                ) : (
-                  <>
-                    <WifiOff className="h-4 w-4 text-warning" />
-                    Offline Mode
-                  </>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-xs text-foreground-subtle">Last Sync</div>
-                  <div className="text-sm font-medium">
-                    {syncStatus.lastSync.toLocaleTimeString()}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-foreground-subtle">Cache Size</div>
-                  <div className="text-sm font-medium">{syncStatus.dataSize}</div>
-                </div>
-              </div>
-
-              {syncStatus.pendingActions > 0 && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-warning/10 border border-warning/20">
-                  <AlertCircle className="h-4 w-4 text-warning" />
-                  <span className="text-xs text-warning">
-                    {syncStatus.pendingActions} actions pending sync
-                  </span>
-                </div>
+    <div className="container mx-auto px-6 py-8 max-w-4xl">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Connection Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {syncStatus.isOnline ? (
+                <Wifi className="h-5 w-5 text-success" />
+              ) : (
+                <WifiOff className="h-5 w-5 text-destructive" />
               )}
-
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  onClick={handleSyncActions}
-                  disabled={!syncStatus.isOnline || syncStatus.pendingActions === 0}
-                >
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Sync Now
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleClearCache}>
-                  Clear Cache
-                </Button>
+              Connection Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span>Status</span>
+              <Badge variant={syncStatus.isOnline ? 'default' : 'destructive'}>
+                {syncStatus.isOnline ? 'Online' : 'Offline'}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span>Last Sync</span>
+              <span className="text-sm text-foreground-subtle">
+                {syncStatus.lastSync.toLocaleTimeString()}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span>Pending Actions</span>
+              <Badge variant={syncStatus.pendingActions > 0 ? 'secondary' : 'outline'}>
+                {syncStatus.pendingActions}
+              </Badge>
+            </div>
+            
+            {syncStatus.syncProgress < 100 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Sync Progress</span>
+                  <span>{syncStatus.syncProgress}%</span>
+                </div>
+                <Progress value={syncStatus.syncProgress} />
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* PWA Installation */}
-          <PWAInstaller 
-            onInstall={handleInstallPWA}
-            isInstalled={syncStatus.isInstalled}
-          />
+        {/* PWA Installation */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Smartphone className="h-5 w-5" />
+              Progressive Web App
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span>Install Status</span>
+              <PWAInstaller />
+            </div>
+            
+            <Separator />
+            
+            <div className="space-y-3">
+              <h4 className="font-medium">Mobile Features</h4>
+              <ul className="space-y-2 text-sm text-foreground-subtle">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  Offline access to cached data
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  Background sync when online
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  Push notifications
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  Native app experience
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Offline Actions */}
-          <div className="lg:col-span-2">
+        {/* Performance Metrics */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Performance</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span>Cache Size</span>
+              <span className="text-sm font-medium">{syncStatus.cacheSize}</span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span>Service Worker</span>
+              <Badge variant={isInitialized ? 'default' : 'secondary'}>
+                {isInitialized ? 'Active' : 'Inactive'}
+              </Badge>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleClearCache}
+              className="w-full"
+            >
+              Clear Cache
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Offline Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
             <OfflineActionsList 
-              actions={offlineActions}
-              onSync={handleSyncActions}
+              actions={offlineActions} 
+              onSyncAll={handleSyncAll}
             />
-          </div>
-
-          {/* Performance Metrics */}
-          <Card className="glass-secondary border-border-subtle/20">
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Database className="h-4 w-4" />
-                Performance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-foreground-subtle">Cache Efficiency</span>
-                  <span>87%</span>
-                </div>
-                <Progress value={87} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-foreground-subtle">Offline Capability</span>
-                  <span>94%</span>
-                </div>
-                <Progress value={94} className="h-2" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border-subtle/20">
-                <div>
-                  <div className="text-xs text-foreground-subtle">Load Time</div>
-                  <div className="text-sm font-medium">1.2s</div>
-                </div>
-                <div>
-                  <div className="text-xs text-foreground-subtle">Offline Features</div>
-                  <div className="text-sm font-medium">12/15</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Mobile Optimization */}
-          <Card className="glass-secondary border-border-subtle/20">
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Smartphone className="h-4 w-4" />
-                Mobile Ready
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-foreground-subtle">Touch Optimized</span>
-                  <CheckCircle className="h-4 w-4 text-success" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-foreground-subtle">Responsive Design</span>
-                  <CheckCircle className="h-4 w-4 text-success" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-foreground-subtle">Push Notifications</span>
-                  <CheckCircle className="h-4 w-4 text-success" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-foreground-subtle">Gesture Support</span>
-                  <CheckCircle className="h-4 w-4 text-success" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </motion.div>
+    </div>
   );
 };

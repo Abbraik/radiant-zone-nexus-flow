@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, FileText } from 'lucide-react';
-import { SecuritySuite } from '../../modules/security/components/SecuritySuite';
+import { SecuritySuite } from '../modules/security/components/SecuritySuite';
 
 const SecurityPage: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(true);

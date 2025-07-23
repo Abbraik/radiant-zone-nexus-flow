@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Star, Trophy, Award, Target, Zap } from 'lucide-react';
-import { GamificationDashboard } from '../../modules/gamification/components/GamificationDashboard';
+import { GamificationDashboard } from '../modules/gamification/components/GamificationDashboard';
 
 const AchievementsPage: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(true);

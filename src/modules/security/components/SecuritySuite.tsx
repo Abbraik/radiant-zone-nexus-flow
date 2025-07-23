@@ -1,489 +1,388 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Shield, 
-  Lock, 
-  Eye, 
-  UserCheck, 
-  AlertTriangle, 
-  CheckCircle,
-  Key,
-  FileText,
-  Clock,
-  Users,
-  Database,
-  Settings
-} from 'lucide-react';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, Lock, Eye, FileText, AlertTriangle, CheckCircle, Users, Activity, Key, Database } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-interface SecurityEvent {
-  id: string;
-  type: 'login' | 'permission_change' | 'data_access' | 'policy_update' | 'suspicious_activity';
-  user: string;
-  action: string;
-  timestamp: Date;
-  risk: 'low' | 'medium' | 'high';
-  location: string;
-  device: string;
-}
-
-interface ComplianceCheck {
+interface SecurityMetric {
   id: string;
   name: string;
-  status: 'compliant' | 'warning' | 'violation';
-  lastCheck: Date;
-  nextCheck: Date;
+  value: number;
+  maxValue: number;
+  status: 'good' | 'warning' | 'critical';
   description: string;
 }
 
-interface SecuritySettings {
-  mfaEnabled: boolean;
-  sessionTimeout: number;
-  auditLogging: boolean;
-  encryptionLevel: string;
-  accessControl: string;
-  dataRetention: number;
+interface AuditEntry {
+  id: string;
+  timestamp: Date;
+  user: string;
+  action: string;
+  resource: string;
+  ip: string;
+  userAgent: string;
+  status: 'success' | 'failed' | 'warning';
 }
 
-const mockSecurityEvents: SecurityEvent[] = [
-  {
-    id: 'event-1',
-    type: 'login',
-    user: 'sarah.chen@company.com',
-    action: 'Successful SSO login',
-    timestamp: new Date(Date.now() - 300000),
-    risk: 'low',
-    location: 'New York, US',
-    device: 'Chrome on Windows'
-  },
-  {
-    id: 'event-2',
-    type: 'permission_change',
-    user: 'admin@company.com',
-    action: 'Updated user roles for governance team',
-    timestamp: new Date(Date.now() - 1800000),
-    risk: 'medium',
-    location: 'San Francisco, US',
-    device: 'Edge on Windows'
-  },
-  {
-    id: 'event-3',
-    type: 'data_access',
-    user: 'mike.johnson@company.com',
-    action: 'Exported TRI analytics report',
-    timestamp: new Date(Date.now() - 3600000),
-    risk: 'low',
-    location: 'London, UK',
-    device: 'Safari on macOS'
-  },
-  {
-    id: 'event-4',
-    type: 'suspicious_activity',
-    user: 'unknown',
-    action: 'Failed login attempts (5x)',
-    timestamp: new Date(Date.now() - 7200000),
-    risk: 'high',
-    location: 'Unknown',
-    device: 'Unknown'
-  }
-];
+interface ComplianceItem {
+  id: string;
+  standard: string;
+  requirement: string;
+  status: 'compliant' | 'partial' | 'non-compliant';
+  lastAudit: Date;
+  nextAudit: Date;
+}
 
-const mockComplianceChecks: ComplianceCheck[] = [
+interface Threat {
+  id: string;
+  type: 'malware' | 'phishing' | 'unauthorized_access' | 'data_breach';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  timestamp: Date;
+  status: 'detected' | 'investigating' | 'resolved' | 'false_positive';
+  affectedUsers?: number;
+}
+
+const mockSecurityMetrics: SecurityMetric[] = [
   {
-    id: 'gdpr',
-    name: 'GDPR Compliance',
-    status: 'compliant',
-    lastCheck: new Date(Date.now() - 86400000),
-    nextCheck: new Date(Date.now() + 86400000 * 29),
-    description: 'Data protection and privacy regulations'
+    id: '1',
+    name: 'Password Strength',
+    value: 85,
+    maxValue: 100,
+    status: 'good',
+    description: 'Average password strength across all users'
   },
   {
-    id: 'sox',
-    name: 'SOX Compliance',
-    status: 'compliant',
-    lastCheck: new Date(Date.now() - 172800000),
-    nextCheck: new Date(Date.now() + 86400000 * 90),
-    description: 'Financial reporting and governance standards'
-  },
-  {
-    id: 'iso27001',
-    name: 'ISO 27001',
+    id: '2',
+    name: 'Two-Factor Authentication',
+    value: 72,
+    maxValue: 100,
     status: 'warning',
-    lastCheck: new Date(Date.now() - 604800000),
-    nextCheck: new Date(Date.now() + 86400000 * 7),
-    description: 'Information security management'
+    description: 'Percentage of users with 2FA enabled'
   },
   {
-    id: 'hipaa',
-    name: 'HIPAA',
-    status: 'violation',
-    lastCheck: new Date(Date.now() - 1209600000),
-    nextCheck: new Date(Date.now() + 86400000 * 3),
-    description: 'Health information privacy and security'
+    id: '3',
+    name: 'Data Encryption',
+    value: 100,
+    maxValue: 100,
+    status: 'good',
+    description: 'Data encryption coverage'
+  },
+  {
+    id: '4',
+    name: 'Access Control',
+    value: 94,
+    maxValue: 100,
+    status: 'good',
+    description: 'Proper access controls implementation'
   }
 ];
 
-const mockSecuritySettings: SecuritySettings = {
-  mfaEnabled: true,
-  sessionTimeout: 8,
-  auditLogging: true,
-  encryptionLevel: 'AES-256',
-  accessControl: 'RBAC',
-  dataRetention: 90
-};
+const mockAuditEntries: AuditEntry[] = [
+  {
+    id: '1',
+    timestamp: new Date(Date.now() - 5 * 60 * 1000),
+    user: 'sarah.chen@company.com',
+    action: 'LOGIN',
+    resource: 'Workspace Dashboard',
+    ip: '192.168.1.100',
+    userAgent: 'Chrome 120.0.0.0',
+    status: 'success'
+  },
+  {
+    id: '2',
+    timestamp: new Date(Date.now() - 15 * 60 * 1000),
+    user: 'marcus.johnson@company.com',
+    action: 'FILE_DOWNLOAD',
+    resource: 'governance-policy.pdf',
+    ip: '192.168.1.105',
+    userAgent: 'Firefox 121.0.0.0',
+    status: 'success'
+  },
+  {
+    id: '3',
+    timestamp: new Date(Date.now() - 30 * 60 * 1000),
+    user: 'unknown@suspicious.com',
+    action: 'LOGIN_ATTEMPT',
+    resource: 'Admin Panel',
+    ip: '45.123.456.789',
+    userAgent: 'Bot/1.0',
+    status: 'failed'
+  }
+];
 
-// Security Event Component
-const SecurityEventCard: React.FC<{ event: SecurityEvent }> = ({ event }) => {
-  const getEventIcon = (type: string) => {
-    switch (type) {
-      case 'login': return <UserCheck className="h-4 w-4" />;
-      case 'permission_change': return <Settings className="h-4 w-4" />;
-      case 'data_access': return <Database className="h-4 w-4" />;
-      case 'policy_update': return <FileText className="h-4 w-4" />;
-      case 'suspicious_activity': return <AlertTriangle className="h-4 w-4" />;
-      default: return <Shield className="h-4 w-4" />;
-    }
-  };
+const mockComplianceItems: ComplianceItem[] = [
+  {
+    id: '1',
+    standard: 'SOC 2',
+    requirement: 'Access Control Management',
+    status: 'compliant',
+    lastAudit: new Date('2024-01-15'),
+    nextAudit: new Date('2024-07-15')
+  },
+  {
+    id: '2',
+    standard: 'GDPR',
+    requirement: 'Data Protection Impact Assessment',
+    status: 'partial',
+    lastAudit: new Date('2024-02-01'),
+    nextAudit: new Date('2024-05-01')
+  },
+  {
+    id: '3',
+    standard: 'ISO 27001',
+    requirement: 'Information Security Management',
+    status: 'compliant',
+    lastAudit: new Date('2024-01-20'),
+    nextAudit: new Date('2024-07-20')
+  }
+];
 
-  const getRiskBadge = (risk: string) => {
-    switch (risk) {
-      case 'high':
-        return <Badge variant="destructive" className="text-xs">High Risk</Badge>;
-      case 'medium':
-        return <Badge variant="outline" className="text-xs text-warning border-warning">Medium</Badge>;
-      case 'low':
-        return <Badge variant="outline" className="text-xs text-success border-success">Low Risk</Badge>;
-      default:
-        return null;
-    }
-  };
+const mockThreats: Threat[] = [
+  {
+    id: '1',
+    type: 'unauthorized_access',
+    severity: 'high',
+    description: 'Multiple failed login attempts detected from suspicious IP',
+    timestamp: new Date(Date.now() - 30 * 60 * 1000),
+    status: 'investigating',
+    affectedUsers: 0
+  },
+  {
+    id: '2',
+    type: 'phishing',
+    severity: 'medium',
+    description: 'Suspicious email campaign targeting user credentials',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    status: 'resolved',
+    affectedUsers: 3
+  }
+];
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex items-start gap-3 p-3 rounded-lg bg-glass-primary/30 border border-border-subtle/20"
-    >
-      <div className={`p-2 rounded-lg ${
-        event.risk === 'high' ? 'bg-destructive/20 text-destructive' :
-        event.risk === 'medium' ? 'bg-warning/20 text-warning' :
-        'bg-success/20 text-success'
-      }`}>
-        {getEventIcon(event.type)}
-      </div>
-      
-      <div className="flex-1">
-        <div className="flex items-start justify-between mb-1">
-          <div className="text-sm font-medium text-foreground">
-            {event.action}
+const SecurityMetricsCard: React.FC<{ metrics: SecurityMetric[] }> = ({ metrics }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <Shield className="h-5 w-5" />
+        Security Overview
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="space-y-6">
+      {metrics.map((metric) => (
+        <div key={metric.id} className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">{metric.name}</span>
+            <Badge variant={
+              metric.status === 'good' ? 'default' : 
+              metric.status === 'warning' ? 'secondary' : 'destructive'
+            }>
+              {metric.value}%
+            </Badge>
           </div>
-          {getRiskBadge(event.risk)}
+          <Progress 
+            value={(metric.value / metric.maxValue) * 100} 
+            className="h-2"
+          />
+          <p className="text-xs text-foreground-subtle">{metric.description}</p>
         </div>
-        
-        <div className="text-xs text-foreground-subtle space-y-1">
-          <div>User: {event.user}</div>
-          <div>Location: {event.location} • {event.device}</div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {event.timestamp.toLocaleString()}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
+      ))}
+    </CardContent>
+  </Card>
+);
 
-// Compliance Dashboard
-const ComplianceDashboard: React.FC<{ checks: ComplianceCheck[] }> = ({ checks }) => {
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'compliant': return <CheckCircle className="h-4 w-4 text-success" />;
-      case 'warning': return <AlertTriangle className="h-4 w-4 text-warning" />;
-      case 'violation': return <AlertTriangle className="h-4 w-4 text-destructive" />;
-      default: return <Clock className="h-4 w-4 text-foreground-subtle" />;
-    }
-  };
-
-  const complianceScore = Math.round(
-    (checks.filter(c => c.status === 'compliant').length / checks.length) * 100
-  );
-
-  return (
-    <Card className="glass-secondary border-border-subtle/20">
-      <CardHeader>
-        <CardTitle className="text-sm flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          Compliance Dashboard
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Overall Score */}
-        <div>
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-foreground-subtle">Compliance Score</span>
-            <span className="font-medium">{complianceScore}%</span>
-          </div>
-          <Progress value={complianceScore} className="h-3" />
-        </div>
-
-        {/* Individual Checks */}
-        <div className="space-y-3">
-          {checks.map((check) => (
-            <div key={check.id} className="flex items-center justify-between p-3 rounded-lg bg-glass-primary/30">
-              <div className="flex items-center gap-3">
-                {getStatusIcon(check.status)}
-                <div>
-                  <div className="text-sm font-medium text-foreground">{check.name}</div>
-                  <div className="text-xs text-foreground-subtle">{check.description}</div>
-                </div>
+const AuditTrailCard: React.FC<{ entries: AuditEntry[] }> = ({ entries }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <Eye className="h-5 w-5" />
+        Audit Trail
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-3">
+        {entries.map((entry) => (
+          <div key={entry.id} className="flex items-start gap-3 p-3 rounded-lg bg-background-secondary">
+            <div className={`w-2 h-2 rounded-full mt-2 ${
+              entry.status === 'success' ? 'bg-success' :
+              entry.status === 'warning' ? 'bg-warning' : 'bg-destructive'
+            }`} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium">{entry.action}</span>
+                <Badge variant={
+                  entry.status === 'success' ? 'default' :
+                  entry.status === 'warning' ? 'secondary' : 'destructive'
+                }>
+                  {entry.status}
+                </Badge>
               </div>
-              <div className="text-right">
-                <div className="text-xs text-foreground-subtle">
-                  Next: {check.nextCheck.toLocaleDateString()}
-                </div>
-              </div>
+              <p className="text-xs text-foreground-subtle truncate">
+                {entry.user} • {entry.resource} • {entry.ip}
+              </p>
+              <p className="text-xs text-foreground-subtle">
+                {entry.timestamp.toLocaleString()}
+              </p>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
 
-// Security Settings Panel
-const SecuritySettingsPanel: React.FC<{
-  settings: SecuritySettings;
-  onSettingChange: (key: keyof SecuritySettings, value: any) => void;
-}> = ({ settings, onSettingChange }) => {
-  return (
-    <Card className="glass-secondary border-border-subtle/20">
-      <CardHeader>
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Settings className="h-4 w-4" />
-          Security Configuration
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* MFA Toggle */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm font-medium text-foreground">Multi-Factor Authentication</div>
-            <div className="text-xs text-foreground-subtle">Require 2FA for all users</div>
+const ComplianceCard: React.FC<{ items: ComplianceItem[] }> = ({ items }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <FileText className="h-5 w-5" />
+        Compliance Status
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        {items.map((item) => (
+          <div key={item.id} className="p-3 rounded-lg bg-background-secondary">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-medium">{item.standard}</span>
+              <Badge variant={
+                item.status === 'compliant' ? 'default' :
+                item.status === 'partial' ? 'secondary' : 'destructive'
+              }>
+                {item.status}
+              </Badge>
+            </div>
+            <p className="text-sm text-foreground-subtle mb-2">{item.requirement}</p>
+            <div className="flex justify-between text-xs text-foreground-subtle">
+              <span>Last: {item.lastAudit.toLocaleDateString()}</span>
+              <span>Next: {item.nextAudit.toLocaleDateString()}</span>
+            </div>
           </div>
-          <Switch
-            checked={settings.mfaEnabled}
-            onCheckedChange={(checked) => onSettingChange('mfaEnabled', checked)}
-          />
-        </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
 
-        {/* Audit Logging */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-sm font-medium text-foreground">Audit Logging</div>
-            <div className="text-xs text-foreground-subtle">Log all user activities</div>
-          </div>
-          <Switch
-            checked={settings.auditLogging}
-            onCheckedChange={(checked) => onSettingChange('auditLogging', checked)}
-          />
-        </div>
+const ThreatMonitoringCard: React.FC<{ threats: Threat[] }> = ({ threats }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <AlertTriangle className="h-5 w-5" />
+        Threat Monitoring
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-3">
+        {threats.map((threat) => (
+          <Alert key={threat.id} className={
+            threat.severity === 'critical' ? 'border-destructive' :
+            threat.severity === 'high' ? 'border-warning' : ''
+          }>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium capitalize">{threat.type.replace('_', ' ')}</span>
+                <div className="flex gap-2">
+                  <Badge variant={
+                    threat.severity === 'critical' ? 'destructive' :
+                    threat.severity === 'high' ? 'secondary' : 'outline'
+                  }>
+                    {threat.severity}
+                  </Badge>
+                  <Badge variant={
+                    threat.status === 'resolved' ? 'default' :
+                    threat.status === 'investigating' ? 'secondary' : 'outline'
+                  }>
+                    {threat.status}
+                  </Badge>
+                </div>
+              </div>
+              <p className="text-sm mb-2">{threat.description}</p>
+              <div className="flex justify-between text-xs text-foreground-subtle">
+                <span>{threat.timestamp.toLocaleString()}</span>
+                {threat.affectedUsers !== undefined && (
+                  <span>{threat.affectedUsers} users affected</span>
+                )}
+              </div>
+            </AlertDescription>
+          </Alert>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
 
-        {/* Security Metrics */}
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border-subtle/20">
-          <div>
-            <div className="text-xs text-foreground-subtle">Session Timeout</div>
-            <div className="text-sm font-medium">{settings.sessionTimeout}h</div>
-          </div>
-          <div>
-            <div className="text-xs text-foreground-subtle">Encryption</div>
-            <div className="text-sm font-medium">{settings.encryptionLevel}</div>
-          </div>
-          <div>
-            <div className="text-xs text-foreground-subtle">Access Control</div>
-            <div className="text-sm font-medium">{settings.accessControl}</div>
-          </div>
-          <div>
-            <div className="text-xs text-foreground-subtle">Data Retention</div>
-            <div className="text-sm font-medium">{settings.dataRetention} days</div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-// Main Security Suite Component
-export const SecuritySuite: React.FC<{
+interface SecuritySuiteProps {
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
-  const [securityEvents] = useState<SecurityEvent[]>(mockSecurityEvents);
-  const [complianceChecks] = useState<ComplianceCheck[]>(mockComplianceChecks);
-  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>(mockSecuritySettings);
-  const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'compliance' | 'settings'>('overview');
+}
 
-  const handleSettingChange = (key: keyof SecuritySettings, value: any) => {
-    setSecuritySettings(prev => ({ ...prev, [key]: value }));
-  };
-
-  const securityScore = 85; // Mock security score
-  const highRiskEvents = securityEvents.filter(e => e.risk === 'high').length;
-  const complianceViolations = complianceChecks.filter(c => c.status === 'violation').length;
+export const SecuritySuite: React.FC<SecuritySuiteProps> = ({ isOpen, onClose }) => {
+  const [activeTab, setActiveTab] = React.useState('overview');
 
   if (!isOpen) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="fixed inset-4 z-50 glass rounded-3xl border border-border-subtle/30 flex flex-col overflow-hidden"
-    >
-      {/* Header */}
-      <div className="p-6 border-b border-border-subtle/20">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <Shield className="h-7 w-7 text-primary" />
-            Security & Compliance
-          </h1>
-          <Button variant="ghost" onClick={onClose}>
-            <Shield className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="container mx-auto px-6 py-8 max-w-7xl">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="audit">Audit Trail</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="threats">Threats</TabsTrigger>
+        </TabsList>
 
-        {/* Tabs */}
-        <div className="flex gap-2">
-          {[
-            { key: 'overview', label: 'Overview' },
-            { key: 'events', label: 'Audit Log' },
-            { key: 'compliance', label: 'Compliance' },
-            { key: 'settings', label: 'Settings' }
-          ].map((tab) => (
-            <Button
-              key={tab.key}
-              variant={activeTab === tab.key ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setActiveTab(tab.key as any)}
+        <AnimatePresence mode="wait">
+          <TabsContent key={activeTab} value="overview" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6"
             >
-              {tab.label}
-            </Button>
-          ))}
-        </div>
-      </div>
+              <SecurityMetricsCard metrics={mockSecurityMetrics} />
+              <ThreatMonitoringCard threats={mockThreats} />
+            </motion.div>
+          </TabsContent>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
-        {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Security Score */}
-            <Card className="glass-secondary border-border-subtle/20">
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
-                  Security Score
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-2">{securityScore}%</div>
-                  <Progress value={securityScore} className="h-3 mb-4" />
-                  <div className="grid grid-cols-2 gap-4 text-xs">
-                    <div>
-                      <div className="font-medium text-destructive">{highRiskEvents}</div>
-                      <div className="text-foreground-subtle">High Risk Events</div>
-                    </div>
-                    <div>
-                      <div className="font-medium text-warning">{complianceViolations}</div>
-                      <div className="text-foreground-subtle">Compliance Issues</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent key={activeTab} value="audit" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-4xl mx-auto"
+            >
+              <AuditTrailCard entries={mockAuditEntries} />
+            </motion.div>
+          </TabsContent>
 
-            {/* Quick Stats */}
-            <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-              <Card className="glass-secondary border-border-subtle/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <UserCheck className="h-8 w-8 text-success" />
-                    <div>
-                      <div className="text-lg font-bold text-foreground">247</div>
-                      <div className="text-xs text-foreground-subtle">Active Users</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          <TabsContent key={activeTab} value="compliance" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-4xl mx-auto"
+            >
+              <ComplianceCard items={mockComplianceItems} />
+            </motion.div>
+          </TabsContent>
 
-              <Card className="glass-secondary border-border-subtle/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Lock className="h-8 w-8 text-info" />
-                    <div>
-                      <div className="text-lg font-bold text-foreground">98.5%</div>
-                      <div className="text-xs text-foreground-subtle">MFA Adoption</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-secondary border-border-subtle/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Database className="h-8 w-8 text-accent" />
-                    <div>
-                      <div className="text-lg font-bold text-foreground">2.3TB</div>
-                      <div className="text-xs text-foreground-subtle">Encrypted Data</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-secondary border-border-subtle/20">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Eye className="h-8 w-8 text-warning" />
-                    <div>
-                      <div className="text-lg font-bold text-foreground">1,247</div>
-                      <div className="text-xs text-foreground-subtle">Audit Events</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'events' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">Security Events</h2>
-              <Badge variant="outline" className="text-xs">
-                Last 24 hours
-              </Badge>
-            </div>
-            {securityEvents.map((event) => (
-              <SecurityEventCard key={event.id} event={event} />
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'compliance' && (
-          <ComplianceDashboard checks={complianceChecks} />
-        )}
-
-        {activeTab === 'settings' && (
-          <SecuritySettingsPanel
-            settings={securitySettings}
-            onSettingChange={handleSettingChange}
-          />
-        )}
-      </div>
-    </motion.div>
+          <TabsContent key={activeTab} value="threats" className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-4xl mx-auto"
+            >
+              <ThreatMonitoringCard threats={mockThreats} />
+            </motion.div>
+          </TabsContent>
+        </AnimatePresence>
+      </Tabs>
+    </div>
   );
 };
