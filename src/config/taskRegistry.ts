@@ -20,13 +20,17 @@ export const taskRegistry: Record<string, string[]> = {
   
   // Monitor Zone Tasks
   review_tri: ['LoopTable', 'TRIDetailDrawer'],
-  check_system_health: ['PulseBarOverview', 'LoopTable'],
+  check_system_health: ['PulseBarOverview', 'LoopTable', 'DigitalTwinPreview'],
   analyze_trends: ['TrendSparklines', 'AdvancedAnalytics'],
   
   // Innovate-Learn Zone Tasks
   run_simulation: ['SimulationParams', 'SimulationPreview'],
   capture_insight: ['InsightFeed', 'ExperimentStudio'],
-  export_knowledge: ['KnowledgeGraph', 'OrsExporter']
+  export_knowledge: ['KnowledgeGraph', 'OrsExporter'],
+  
+  // Phase 2: 3D Enhanced Tasks
+  view_cascade_3d: ['Cascade3DViewer'],
+  monitor_digital_twin: ['DigitalTwinPreview', 'TrendSparklines']
 };
 
 export const mockTasks: TaskType[] = [
@@ -61,5 +65,21 @@ export const mockTasks: TaskType[] = [
     zone: 'innovate-learn',
     type: 'run_simulation', 
     components: taskRegistry.run_simulation
+  },
+  {
+    id: '5',
+    title: 'View 3D Goals Cascade',
+    description: 'Interactive 3D visualization of goal dependencies and progress',
+    zone: 'think',
+    type: 'view_cascade_3d',
+    components: taskRegistry.view_cascade_3d
+  },
+  {
+    id: '6',
+    title: 'Monitor Digital Twin',
+    description: 'Real-time digital twin analysis with system performance metrics',
+    zone: 'monitor',
+    type: 'monitor_digital_twin',
+    components: taskRegistry.monitor_digital_twin
   }
 ];

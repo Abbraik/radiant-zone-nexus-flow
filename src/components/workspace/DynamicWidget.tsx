@@ -34,7 +34,11 @@ const widgetComponents = {
   InsightFeed: lazy(() => import('../widgets/InsightFeed')),
   ExperimentStudio: lazy(() => import('../widgets/ExperimentStudio')),
   KnowledgeGraph: lazy(() => import('../widgets/KnowledgeGraph')),
-  OrsExporter: lazy(() => import('../widgets/OrsExporter'))
+  OrsExporter: lazy(() => import('../widgets/OrsExporter')),
+  
+  // Phase 2: 3D Components
+  Cascade3DViewer: lazy(() => import('../widgets/Cascade3DWidget')),
+  DigitalTwinPreview: lazy(() => import('../widgets/DigitalTwinWidget'))
 };
 
 const LoadingSkeleton = () => (
@@ -87,6 +91,9 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
       case 'SimulationParams':
       case 'SimulationPreview':
         return { ...baseProps, scenarioId: task.loop_id };
+      case 'Cascade3DViewer':
+      case 'DigitalTwinPreview':
+        return baseProps;
       default:
         return baseProps;
     }
