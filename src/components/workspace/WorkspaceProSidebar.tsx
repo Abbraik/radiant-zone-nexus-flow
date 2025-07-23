@@ -201,7 +201,7 @@ export const WorkspaceProSidebar: React.FC<WorkspaceProSidebarProps> = ({
                     </div>
                     
                     <div className="space-y-2">
-                      {availableTasks.slice(0, 3).map((task) => (
+                      {availableTasks.slice(0, 5).map((task) => (
                         <motion.div
                           key={task.id}
                           className="p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
@@ -227,6 +227,14 @@ export const WorkspaceProSidebar: React.FC<WorkspaceProSidebarProps> = ({
                           </div>
                         </motion.div>
                       ))}
+                      
+                      {availableTasks.length > 5 && (
+                        <div className="text-center pt-2">
+                          <span className="text-xs text-gray-400">
+                            +{availableTasks.length - 5} more tasks
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
