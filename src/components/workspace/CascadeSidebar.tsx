@@ -119,7 +119,7 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
           </div>
           
           <div className="space-y-2">
-            {availableTasks.slice(0, 3).map((task) => (
+            {availableTasks.map((task) => (
               <motion.div
                 key={task.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -168,14 +168,6 @@ const CascadeSidebar: React.FC<CascadeSidebarProps> = ({
                 </div>
               </motion.div>
             ))}
-            
-            {availableTasks.length > 3 && (
-              <div className="text-center py-2">
-                <Button variant="ghost" size="sm" className="text-xs text-gray-400 hover:text-white">
-                  View {availableTasks.length - 3} more tasks
-                </Button>
-              </div>
-            )}
           </div>
         </div>
 

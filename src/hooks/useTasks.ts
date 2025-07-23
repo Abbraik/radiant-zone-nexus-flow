@@ -132,6 +132,8 @@ export const useTasks = () => {
     queryFn: async (): Promise<Task[]> => {
       // In real implementation, this would be a Supabase query
       await new Promise(resolve => setTimeout(resolve, 500)); // simulate API delay
+      console.log('useTasks: Loading tasks...', mockTasksWithStatus);
+      console.log('useTasks: Task titles:', mockTasksWithStatus.map(t => t.title));
       return mockTasksWithStatus;
     }
   });
@@ -141,6 +143,7 @@ export const useTasks = () => {
   );
   
   const availableTasks = allTasks.filter(task => task.status === 'available');
+  console.log('useTasks: Available tasks:', availableTasks.map(t => ({ id: t.id, title: t.title })));
   
   const activeTask = myTasks[0] || null;
 
