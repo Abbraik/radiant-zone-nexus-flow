@@ -72,90 +72,90 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
   };
 
   return (
-    <div className={`relative ${className}`} style={{ height }}>
+    <div className={`relative w-full ${className}`} style={{ height }}>
       {/* Timeline axis */}
-      <div className="absolute top-8 left-8 right-8 h-2 bg-white/20 rounded-full shadow-lg">
+      <div className="absolute top-8 left-6 right-6 h-0.5 bg-white/30 rounded-full">
         {/* Current time indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute top-0 w-1 h-8 bg-teal-400 rounded-full transform -translate-x-0.5 -translate-y-3 shadow-lg shadow-teal-400/50"
-          style={{ left: `${Math.min(Math.max(getEventPosition(now), 2), 98)}%` }}
+          className="absolute w-0.5 h-4 bg-teal-400 transform -translate-x-0.5 -translate-y-2 shadow-md"
+          style={{ left: `${Math.min(Math.max(getEventPosition(now), 1), 99)}%` }}
         >
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-semibold whitespace-nowrap drop-shadow-sm">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-medium whitespace-nowrap">
             NOW
           </div>
         </motion.div>
       </div>
 
       {/* Events */}
-      <div className="absolute top-16 left-8 right-8 overflow-hidden" style={{ height: height - 100 }}>
+      <div className="absolute top-12 left-6 right-6 overflow-hidden" style={{ height: height - 60 }}>
         {sortedEvents.map((event, index) => {
-          const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 88);
-          const width = getEventWidth(event);
-          const maxWidth = 88 - leftPos;
+          const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 85);
+          const eventWidth = getEventWidth(event);
+          const maxWidth = 85 - leftPos;
+          const finalWidth = Math.min(Math.max(eventWidth, 12), maxWidth);
           const trackIndex = index % 3;
 
           return (
             <motion.div
               key={event.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className={`absolute rounded-lg p-2 cursor-pointer hover:z-10 transition-all duration-200 hover:scale-105 bg-white/10 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className={`absolute rounded-lg p-3 cursor-pointer transition-all duration-200 hover:scale-105 hover:z-10 bg-white/8 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
               style={{
                 left: `${leftPos}%`,
-                width: `${Math.min(Math.max(width, 10), maxWidth)}%`,
-                top: `${trackIndex * 35}px`,
-                minWidth: '100px',
-                maxWidth: `${maxWidth}%`
+                width: `${finalWidth}%`,
+                top: `${trackIndex * 32}px`,
+                minWidth: '100px'
               }}
             >
               {/* Event progress bar */}
-              <div className={`h-3 rounded-full mb-3 ${getStatusColor(event.status)} shadow-lg`}>
+              <div className={`h-2 rounded-full mb-2 ${getStatusColor(event.status)}`}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${event.progress}%` }}
-                  transition={{ duration: 1, delay: index * 0.1 }}
-                  className="h-full bg-white/40 rounded-full backdrop-blur-sm"
+                  transition={{ duration: 0.8, delay: index * 0.05 }}
+                  className="h-full bg-white/30 rounded-full"
                 />
               </div>
 
               {/* Event content */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 shadow-inner border border-white/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg drop-shadow-sm">{getTypeIcon(event.type)}</span>
-                  <Badge variant="outline" className="text-xs bg-white/20 border-white/30 text-white font-medium">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="text-sm">{getTypeIcon(event.type)}</span>
+                  <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-1 py-0">
                     {event.type}
                   </Badge>
-                  <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 font-semibold">
+                  <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-1 py-0 ml-auto">
                     {event.progress}%
                   </Badge>
                 </div>
 
-                <h4 className="text-sm font-semibold text-white mb-2 truncate drop-shadow-sm">
+                <h4 className="text-sm font-medium text-white truncate leading-tight">
                   {event.title}
                 </h4>
 
-                <div className="text-xs text-gray-200 font-medium">
+                <div className="text-xs text-gray-300">
                   {format(new Date(event.startDate), 'MMM dd')}
                   {event.endDate && ` - ${format(new Date(event.endDate), 'MMM dd')}`}
                 </div>
 
                 {event.assignees.length > 0 && (
-                  <div className="flex -space-x-1 mt-3">
-                    {event.assignees.slice(0, 3).map((assignee, idx) => (
+                  <div className="flex -space-x-1 mt-1">
+                    {event.assignees.slice(0, 2).map((assignee, idx) => (
                       <div
                         key={assignee}
-                        className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-400/30 to-cyan-500/30 border-2 border-white/40 flex items-center justify-center text-xs font-semibold text-white shadow-lg"
+                        className="w-5 h-5 rounded-full bg-teal-400/30 border border-white/30 flex items-center justify-center text-xs font-medium text-white"
                         title={assignee}
                       >
                         {assignee.charAt(0).toUpperCase()}
                       </div>
                     ))}
-                    {event.assignees.length > 3 && (
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-500 to-gray-600 border-2 border-white/40 flex items-center justify-center text-xs font-bold text-white shadow-lg">
-                        +{event.assignees.length - 3}
+                    {event.assignees.length > 2 && (
+                      <div className="w-5 h-5 rounded-full bg-gray-500/30 border border-white/30 flex items-center justify-center text-xs font-medium text-white">
+                        +{event.assignees.length - 2}
                       </div>
                     )}
                   </div>
@@ -167,9 +167,9 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
       </div>
 
       {/* Time labels */}
-      <div className="absolute bottom-2 left-8 right-8 flex justify-between text-sm text-gray-200 font-semibold">
-        <span className="drop-shadow-sm">{format(minDate, 'MMM dd')}</span>
-        <span className="drop-shadow-sm">{format(maxDate, 'MMM dd')}</span>
+      <div className="absolute bottom-2 left-6 right-6 flex justify-between text-xs text-gray-300 font-medium">
+        <span>{format(minDate, 'MMM dd, yyyy')}</span>
+        <span>{format(maxDate, 'MMM dd, yyyy')}</span>
       </div>
     </div>
   );
