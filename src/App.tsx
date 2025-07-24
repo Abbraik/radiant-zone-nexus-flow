@@ -84,11 +84,7 @@ const App = () => (
                   <Route path="/plugins" element={<PluginsPage />} />
                   <Route path="/offline" element={<OfflinePage />} />
                   <Route path="/security" element={<SecurityPage />} />
-                  <Route path="/mission-control" element={
-                    <FeatureFlagGuard flag="useMissionControl" fallback={<Workspace />}>
-                      <MissionControl />
-                    </FeatureFlagGuard>
-                  } />
+                  <Route path="/mission-control" element={<MissionControl />} />
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ThinkZone />} />
                   <Route path="/act" element={<ActZone />} />
