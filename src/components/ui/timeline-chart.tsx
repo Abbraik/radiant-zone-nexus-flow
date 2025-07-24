@@ -65,10 +65,10 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
   };
 
   const getEventWidth = (event: TimelineEvent) => {
-    if (!event.endDate) return 2; // Point event
+    if (!event.endDate) return 8; // Point event - smaller width
     const startPos = getEventPosition(new Date(event.startDate));
     const endPos = getEventPosition(new Date(event.endDate));
-    return Math.max(endPos - startPos, 2);
+    return Math.max(endPos - startPos, 8);
   };
 
   return (
@@ -101,12 +101,13 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className={`absolute rounded-xl p-3 cursor-pointer hover:z-10 transition-all duration-200 hover:scale-105 bg-white/10 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
+              className={`absolute rounded-xl p-2 cursor-pointer hover:z-10 transition-all duration-200 hover:scale-105 bg-white/10 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
               style={{
-                left: `${leftPos}%`,
-                width: `${Math.max(width, 15)}%`,
-                top: `${trackIndex * 50}px`,
-                minWidth: '140px'
+                left: `${Math.min(leftPos, 85)}%`,
+                width: `${Math.min(Math.max(width, 12), 100 - Math.min(leftPos, 85))}%`,
+                top: `${trackIndex * 40}px`,
+                minWidth: '120px',
+                maxWidth: `${100 - Math.min(leftPos, 85)}%`
               }}
             >
               {/* Event progress bar */}
