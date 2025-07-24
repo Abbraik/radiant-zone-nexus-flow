@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
+import { WorkspaceProHeader } from './WorkspaceProHeader';
+import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
+import { TeamsDrawer } from '../../modules/teams/components/TeamsDrawer';
+import { GoalTreeWidget } from '../../modules/cascade/components/GoalTreeWidget';
+import { OKRPanel } from '../../modules/cascade/components/OKRPanel';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { PairWorkOverlay } from '../../modules/collab/components/PairWorkOverlay';
 import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
-import { AlertCircle } from 'lucide-react';
+import { Button } from '../ui/button';
+import { CheckCircle, AlertCircle } from 'lucide-react';
+import { OKR } from '../../modules/collab/data/mockData';
 import CascadeSidebar from './CascadeSidebar';
 import TaskClaimPopup from './TaskClaimPopup';
 import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup';
@@ -33,6 +42,18 @@ export const Workspace: React.FC = () => {
     isClaimingTask 
   });
   const { flags } = useFeatureFlags();
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
+  const [isGoalTreeOpen, setIsGoalTreeOpen] = useState(false);
+  const [selectedOKR, setSelectedOKR] = useState<OKR | null>(null);
+  const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
+  const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  console.log('Workspace render - Sidebar collapsed state:', isSidebarCollapsed);
+
+  // Debug console logs
+  console.log('Dialog render state:', { isGoalTreeOpen });
 
   // Debug: Log the feature flags
   console.log('Workspace feature flags:', flags);
@@ -41,6 +62,18 @@ export const Workspace: React.FC = () => {
     useTaskClaimPopup: flags.useTaskClaimPopup,
     useTeamsButton: flags.useTeamsButton
   });
+
+  // Guard with feature flag - temporarily disabled to ensure access
+  // if (!flags.workspacePro) {
+  //   return (
+  //     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  //       <div className="text-center p-8 bg-glass/70 backdrop-blur-20 rounded-2xl border border-white/10">
+  //         <h2 className="text-2xl font-semibold text-white mb-4">Workspace Pro</h2>
+  //         <p className="text-gray-300">This feature is currently disabled.</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (!activeTask) {
     return (
@@ -61,8 +94,11 @@ export const Workspace: React.FC = () => {
               availableTasks={availableTasks}
               activeTask={null}
               onTaskClaim={openClaimPopup}
-              isCollapsed={false}
-              onToggleCollapse={() => {}}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => {
+                console.log('Toggle collapse called, current state:', isSidebarCollapsed);
+                setIsSidebarCollapsed(!isSidebarCollapsed);
+              }}
             />
           </FeatureFlagGuard>
           
@@ -88,6 +124,19 @@ export const Workspace: React.FC = () => {
           </main>
         </div>
         
+        {/* Goals Tree Dialog */}
+        <Dialog open={isGoalTreeOpen} onOpenChange={setIsGoalTreeOpen}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto bg-gray-900/95 backdrop-blur-20 border-white/10">
+            <DialogHeader>
+              <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
+            </DialogHeader>
+            <GoalTreeWidget 
+              onTaskClaim={openClaimPopup}
+              onOKRSelect={(okr) => setSelectedOKR(okr)}
+            />
+          </DialogContent>
+        </Dialog>
+
         {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
         {flags.useEnhancedTaskPopup ? (
           <EnhancedTaskClaimPopup
@@ -125,6 +174,19 @@ export const Workspace: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Header */}
+      <WorkspaceProHeader
+        activeTask={activeTask}
+        myTasks={myTasks}
+        onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
+        onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
+        onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
+        onPairWorkStart={(partnerId) => {
+          setPairWorkPartner(partnerId);
+          setIsPairWorkOpen(true);
+        }}
+      />
+      
       <div className="flex">
         <FeatureFlagGuard 
           flag="useCascadeBar" 
@@ -141,8 +203,11 @@ export const Workspace: React.FC = () => {
             availableTasks={availableTasks}
             activeTask={activeTask}
             onTaskClaim={openClaimPopup}
-            isCollapsed={false}
-            onToggleCollapse={() => {}}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => {
+              console.log('Toggle collapse called, current state:', isSidebarCollapsed);
+              setIsSidebarCollapsed(!isSidebarCollapsed);
+            }}
           />
         </FeatureFlagGuard>
         
@@ -191,25 +256,66 @@ export const Workspace: React.FC = () => {
           </motion.div>
         </main>
       </div>
+      
+      {/* Overlays & Drawers */}
+      <CopilotDrawer
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        activeTask={activeTask}
+      />
+      
+      <TeamsDrawer
+        isOpen={isTeamsOpen}
+        onClose={() => setIsTeamsOpen(false)}
+        taskId={activeTask?.id}
+        taskTitle={activeTask?.title}
+      />
 
-      {/* Task Claim Popup - Enhanced or Basic */}
-      {flags.useEnhancedTaskPopup ? (
-        <EnhancedTaskClaimPopup
-          isOpen={showClaimPopup}
-          task={claimingTask}
-          onConfirm={confirmClaimTask}
-          onCancel={cancelClaimTask}
-          isLoading={isClaimingTask}
-        />
-      ) : (
-        <TaskClaimPopup
-          isOpen={showClaimPopup}
-          task={claimingTask}
-          onConfirm={confirmClaimTask}
-          onCancel={cancelClaimTask}
-          isLoading={isClaimingTask}
-        />
-      )}
+      {/* Goals Tree Dialog */}
+      <Dialog open={isGoalTreeOpen} onOpenChange={setIsGoalTreeOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto bg-gray-900/95 backdrop-blur-20 border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
+          </DialogHeader>
+          <GoalTreeWidget 
+            onTaskClaim={openClaimPopup}
+            onOKRSelect={(okr) => setSelectedOKR(okr)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <OKRPanel
+        isOpen={!!selectedOKR}
+        onClose={() => setSelectedOKR(null)}
+        okr={selectedOKR}
+        onTaskClaim={(taskId) => console.log('Claim task from OKR:', taskId)}
+      />
+
+      <PairWorkOverlay
+        isOpen={isPairWorkOpen}
+        onClose={() => setIsPairWorkOpen(false)}
+        partnerId={pairWorkPartner || undefined}
+        taskTitle={activeTask?.title}
+      />
+
+        {/* Task Claim Popup - Enhanced or Basic */}
+        {flags.useEnhancedTaskPopup ? (
+          <EnhancedTaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        ) : (
+          <TaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        )}
     </div>
   );
 };

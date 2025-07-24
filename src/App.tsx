@@ -5,7 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Shell } from "./components/layout/Shell";
 import { FeatureFlagGuard, FeatureFlagProvider } from "./components/layout/FeatureFlagProvider";
-import { WorkspaceWithShell } from "./components/workspace/WorkspaceWithShell";
+import { WorkspaceShell } from "./components/layout/WorkspaceShell";
+import { Workspace } from "./components/workspace/Workspace";
 import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import { ThinkZone } from "./pages/ThinkZone";
@@ -60,10 +61,10 @@ const App = () => (
                   }
                 >
                   <Routes>
-                    <Route path="/" element={<WorkspaceWithShell />} />
-                    <Route path="/workspace" element={<WorkspaceWithShell />} />
+                    <Route path="/" element={<Workspace />} />
+                    <Route path="/workspace" element={<Workspace />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="*" element={<WorkspaceWithShell />} />
+                    <Route path="*" element={<Workspace />} />
                   </Routes>
                 </FeatureFlagGuard>
               }
@@ -71,8 +72,8 @@ const App = () => (
               {/* Ultimate Workspace Mode */}
               <Shell>
                 <Routes>
-                  <Route path="/" element={<WorkspaceWithShell />} />
-                  <Route path="/workspace" element={<WorkspaceWithShell />} />
+                  <Route path="/" element={<Workspace />} />
+                  <Route path="/workspace" element={<Workspace />} />
                   <Route path="/dashboard" element={
                     <div className="pt-4">
                       <Dashboard />
@@ -89,7 +90,7 @@ const App = () => (
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />
                   <Route path="/innovate" element={<InnovateLearnZone />} />
-                   <Route path="*" element={<WorkspaceWithShell />} />
+                   <Route path="*" element={<Workspace />} />
                 </Routes>
               </Shell>
             </FeatureFlagGuard>
