@@ -174,6 +174,19 @@ export const Workspace: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Header */}
+      <WorkspaceProHeader
+        activeTask={activeTask}
+        myTasks={myTasks}
+        onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
+        onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
+        onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
+        onPairWorkStart={(partnerId) => {
+          setPairWorkPartner(partnerId);
+          setIsPairWorkOpen(true);
+        }}
+      />
+      
       <div className="flex">
         <FeatureFlagGuard 
           flag="useCascadeBar" 
