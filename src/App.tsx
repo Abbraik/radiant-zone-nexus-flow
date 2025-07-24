@@ -16,9 +16,7 @@ import { InnovateLearnZone } from "./pages/InnovateLearnZone";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-import PluginsPage from "./pages/PluginsPage";
-import OfflinePage from "./pages/OfflinePage";
-import SecurityPage from "./pages/SecurityPage";
+import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
 
@@ -79,11 +77,11 @@ const App = () => (
                       <Dashboard />
                     </div>
                   } />
-                  {/* Phase 3 Pages */}
-                  
-                  <Route path="/plugins" element={<PluginsPage />} />
-                  <Route path="/offline" element={<OfflinePage />} />
-                  <Route path="/security" element={<SecurityPage />} />
+                  {/* Admin Pages */}
+                  <Route path="/admin" element={<AdminPage />} />
+                  <Route path="/plugins" element={<AdminPage />} />
+                  <Route path="/offline" element={<AdminPage />} />
+                  <Route path="/security" element={<AdminPage />} />
                   <Route path="/mission-control" element={<MissionControl />} />
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ThinkZone />} />
