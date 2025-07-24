@@ -8,7 +8,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Gauge } from '../components/ui/gauge';
 import { AlertTicker } from '../components/ui/alert-ticker';
 import { DigitalTwinThumbnail } from '../components/ui/digital-twin-thumbnail';
-import { TimelineChart } from '../components/ui/timeline-chart';
+import { ModernTimeline } from '../components/ui/modern-timeline';
 import { ResourceHeatmap } from '../components/ui/resource-heatmap';
 import { GoalTreeMinimap } from '../components/ui/goal-tree-minimap';
 import { useMissionControlData, useMissionControlActions } from './missionControl/useMissionControlData';
@@ -213,7 +213,7 @@ const MissionControl: React.FC = () => {
             {isLoading ? (
               <Skeleton className="w-full h-48" />
             ) : data?.timeline && data.timeline.length > 0 ? (
-              <TimelineChart
+              <ModernTimeline
                 events={data.timeline}
                 height={192}
                 className="w-full"
