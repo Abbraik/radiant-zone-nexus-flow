@@ -8,7 +8,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Gauge } from '../components/ui/gauge';
 import { AlertTicker } from '../components/ui/alert-ticker';
 import { DigitalTwinThumbnail } from '../components/ui/digital-twin-thumbnail';
-import { ModernTimeline } from '../components/ui/modern-timeline';
+import { TimelineChart } from '../components/ui/timeline-chart-gantt';
 import { ResourceHeatmap } from '../components/ui/resource-heatmap';
 import { GoalTreeMinimap } from '../components/ui/goal-tree-minimap';
 import { useMissionControlData, useMissionControlActions } from './missionControl/useMissionControlData';
@@ -213,10 +213,24 @@ const MissionControl: React.FC = () => {
             {isLoading ? (
               <Skeleton className="w-full h-48" />
             ) : data?.timeline && data.timeline.length > 0 ? (
-              <ModernTimeline
-                events={data.timeline}
-                height={192}
-                className="w-full"
+              <TimelineChart
+                sprints={data.timeline.map(event => ({
+                  id: event.id,
+                  name: event.title,
+                  startDate: event.startDate.toISOString(),
+                  endDate: event.endDate ? event.endDate.toISOString() : new Date(new Date(event.startDate).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                  phase: event.type === 'sprint' ? 'act' : event.type === 'milestone' ? 'monitor' : event.type === 'review' ? 'think' : 'innovate',
+                  progress: event.progress
+                }))}
+                upcomingDeadlines={data.timeline.filter(event => event.type === 'deadline').map(event => ({
+                  taskId: event.id,
+                  title: event.title,
+                  dueDate: event.startDate.toISOString(),
+                  phase: 'act',
+                  priority: event.priority
+                }))}
+                onSprintClick={(sprintId) => console.log('Sprint clicked:', sprintId)}
+                onDeadlineClick={(taskId) => console.log('Deadline clicked:', taskId)}
               />
             ) : (
               <div className="h-48 bg-background/30 rounded-xl flex items-center justify-center">
