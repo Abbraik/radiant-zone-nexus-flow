@@ -61,51 +61,86 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
     (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
   );
 
+  // Calculate timeline span for horizontal positioning
+  const now = new Date();
+  const dates = sortedEvents.flatMap(event => [
+    new Date(event.startDate),
+    event.endDate ? new Date(event.endDate) : new Date(event.startDate)
+  ]);
+  const minDate = new Date(Math.min(now.getTime(), ...dates.map(d => d.getTime())));
+  const maxDate = new Date(Math.max(now.getTime(), ...dates.map(d => d.getTime())));
+  const timeSpan = maxDate.getTime() - minDate.getTime();
+
+  const getEventPosition = (date: Date) => {
+    return ((date.getTime() - minDate.getTime()) / timeSpan) * 85; // 85% to leave margins
+  };
+
   return (
     <div className={`w-full ${className}`} style={{ height }}>
-      <div className="relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar">
-        {/* Timeline spine */}
-        <div className="absolute left-8 top-4 bottom-4 w-0.5 bg-gradient-to-b from-teal-400/50 to-transparent rounded-full" />
+      <div className="relative h-full overflow-x-auto overflow-y-hidden">
+        {/* Horizontal timeline axis */}
+        <div className="absolute top-12 left-8 right-8 h-0.5 bg-gradient-to-r from-teal-400/50 via-teal-400/30 to-transparent rounded-full" />
+        
+        {/* Current time indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute top-10 w-0.5 h-6 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50"
+          style={{ left: `${Math.min(Math.max(getEventPosition(now) + 8, 8), 93)}%` }}
+        >
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-medium whitespace-nowrap">
+            NOW
+          </div>
+        </motion.div>
         
         {/* Events */}
-        <div className="space-y-4 pl-16 pr-4 py-4">
-          {sortedEvents.map((event, index) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="relative"
-            >
-              {/* Timeline dot */}
-              <div className="absolute -left-12 top-3 w-4 h-4 rounded-full bg-white/10 border-2 border-teal-400/50 flex items-center justify-center backdrop-blur-sm">
-                <div className="w-2 h-2 rounded-full bg-teal-400" />
-              </div>
+        <div className="absolute top-16 left-8 right-8 h-full">
+          {sortedEvents.map((event, index) => {
+            const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 85);
+            const trackIndex = index % 2; // Use 2 tracks for better spacing
 
-              {/* Event card */}
-              <div className={`relative bg-gradient-to-br ${getStatusColor(event.status)} backdrop-blur-xl border rounded-xl p-4 group hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl`}>
+            return (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className={`absolute bg-gradient-to-br ${getStatusColor(event.status)} backdrop-blur-xl border rounded-xl p-3 group transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105`}
+                style={{
+                  left: `${leftPos}%`,
+                  top: `${trackIndex * 60 + 10}px`,
+                  width: '200px',
+                  minHeight: '120px'
+                }}
+              >
                 {/* Priority indicator */}
                 <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl">
                   <div className={getPriorityIndicator(event.priority)} />
                 </div>
 
+                {/* Timeline connection dot */}
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-white/20 border-2 border-teal-400/50 backdrop-blur-sm">
+                  <div className="w-1 h-1 rounded-full bg-teal-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                </div>
+
                 {/* Content */}
-                <div className="pl-3 space-y-3">
+                <div className="pl-3 space-y-2">
                   {/* Header */}
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       {getTypeIcon(event.type)}
-                      <h4 className="font-semibold text-white truncate text-sm">
-                        {event.title}
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {getStatusIcon(event.status)}
-                      <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-2 py-1">
-                        {event.progress}%
+                      <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-2 py-1 flex-shrink-0">
+                        {event.type}
                       </Badge>
                     </div>
+                    <div className="flex items-center gap-1">
+                      {getStatusIcon(event.status)}
+                    </div>
                   </div>
+
+                  <h4 className="font-semibold text-white text-sm leading-tight">
+                    {event.title}
+                  </h4>
 
                   {/* Progress bar */}
                   <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
@@ -117,48 +152,53 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                     />
                   </div>
 
-                  {/* Details */}
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <div className="flex items-center gap-4 text-gray-300 min-w-0">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">
-                          {format(new Date(event.startDate), 'MMM dd')}
-                          {event.endDate && ` - ${format(new Date(event.endDate), 'MMM dd')}`}
-                        </span>
-                      </div>
-                      <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-2 py-1 flex-shrink-0">
-                        {event.type}
-                      </Badge>
-                    </div>
-
-                    {/* Assignees */}
-                    {event.assignees.length > 0 && (
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Users className="w-3 h-3 text-gray-400" />
-                        <div className="flex -space-x-1">
-                          {event.assignees.slice(0, 3).map((assignee, idx) => (
-                            <div
-                              key={assignee}
-                              className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-400/30 to-cyan-500/30 border-2 border-white/40 flex items-center justify-center text-xs font-medium text-white"
-                              title={assignee}
-                            >
-                              {assignee.charAt(0).toUpperCase()}
-                            </div>
-                          ))}
-                          {event.assignees.length > 3 && (
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-500/30 to-gray-600/30 border-2 border-white/40 flex items-center justify-center text-xs font-medium text-white">
-                              +{event.assignees.length - 3}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-2 py-1">
+                      {event.progress}%
+                    </Badge>
                   </div>
+
+                  {/* Date */}
+                  <div className="flex items-center gap-1 text-xs text-gray-300">
+                    <Calendar className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">
+                      {format(new Date(event.startDate), 'MMM dd')}
+                      {event.endDate && ` - ${format(new Date(event.endDate), 'MMM dd')}`}
+                    </span>
+                  </div>
+
+                  {/* Assignees */}
+                  {event.assignees.length > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Users className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                      <div className="flex -space-x-1">
+                        {event.assignees.slice(0, 3).map((assignee, idx) => (
+                          <div
+                            key={assignee}
+                            className="w-5 h-5 rounded-full bg-gradient-to-br from-teal-400/30 to-cyan-500/30 border border-white/40 flex items-center justify-center text-xs font-medium text-white"
+                            title={assignee}
+                          >
+                            {assignee.charAt(0).toUpperCase()}
+                          </div>
+                        ))}
+                        {event.assignees.length > 3 && (
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-gray-500/30 to-gray-600/30 border border-white/40 flex items-center justify-center text-xs font-medium text-white">
+                            +{event.assignees.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Time labels */}
+        <div className="absolute bottom-4 left-8 right-8 flex justify-between text-xs text-gray-300 font-medium">
+          <span className="truncate">{format(minDate, 'MMM dd, yyyy')}</span>
+          <span className="truncate">{format(maxDate, 'MMM dd, yyyy')}</span>
         </div>
 
         {/* Empty state */}
@@ -171,23 +211,6 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
           </div>
         )}
       </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(20, 184, 166, 0.5);
-          border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(20, 184, 166, 0.7);
-        }
-      `}</style>
     </div>
   );
 };
