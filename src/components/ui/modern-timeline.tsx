@@ -72,7 +72,15 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
   const timeSpan = maxDate.getTime() - minDate.getTime();
 
   const getEventPosition = (date: Date) => {
-    return ((date.getTime() - minDate.getTime()) / timeSpan) * 85; // 85% to leave margins
+    if (timeSpan === 0) return 10; // Fallback for single event
+    return 10 + ((date.getTime() - minDate.getTime()) / timeSpan) * 80; // 10% margin on each side
+  };
+
+  const getEventWidth = (event: TimelineEvent) => {
+    if (!event.endDate) return 0; // Point event
+    const startPos = getEventPosition(new Date(event.startDate));
+    const endPos = getEventPosition(new Date(event.endDate));
+    return Math.max(endPos - startPos, 0);
   };
 
   return (
@@ -86,7 +94,7 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           className="absolute top-14 w-0.5 h-6 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50 z-10"
-          style={{ left: `${Math.min(Math.max(getEventPosition(now) + 8, 8), 93)}%` }}
+          style={{ left: `${getEventPosition(now)}%` }}
         >
           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-semibold whitespace-nowrap bg-teal-400/20 px-2 py-1 rounded-full backdrop-blur-sm border border-teal-400/30">
             NOW
@@ -94,10 +102,10 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
         </motion.div>
         
         {/* Events */}
-        <div className="absolute top-0 left-8 right-8 h-full">
+        <div className="absolute top-0 left-0 right-0 h-full">
           {sortedEvents.map((event, index) => {
-            const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 80);
-            const trackIndex = index % 2; // Alternate between top and bottom tracks
+            const eventStartPos = getEventPosition(new Date(event.startDate));
+            const trackIndex = index % 2;
             const isTopTrack = trackIndex === 0;
 
             return (
@@ -108,7 +116,7 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                 transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
                 className={`absolute bg-gradient-to-br ${getStatusColor(event.status)} backdrop-blur-xl border rounded-lg p-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer`}
                 style={{
-                  left: `${leftPos}%`,
+                  left: `calc(${eventStartPos}% - 90px)`, // Center the card on the date
                   top: isTopTrack ? '20px' : '80px',
                   width: '180px',
                   height: '100px'
@@ -119,9 +127,9 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                   <div className={getPriorityIndicator(event.priority)} />
                 </div>
 
-                {/* Timeline connection line */}
+                {/* Timeline connection line - positioned to align with date */}
                 <div 
-                  className="absolute w-0.5 bg-white/30 z-0"
+                  className="absolute w-0.5 bg-white/40 z-0"
                   style={{
                     left: '50%',
                     [isTopTrack ? 'bottom' : 'top']: '-20px',
@@ -130,9 +138,9 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                   }}
                 />
 
-                {/* Timeline connection dot */}
+                {/* Timeline connection dot - aligned with timeline axis */}
                 <div 
-                  className="absolute w-3 h-3 rounded-full bg-white/20 border-2 border-teal-400 backdrop-blur-sm z-10"
+                  className="absolute w-3 h-3 rounded-full bg-teal-400/30 border-2 border-teal-400 backdrop-blur-sm z-10"
                   style={{
                     left: '50%',
                     [isTopTrack ? 'bottom' : 'top']: '-26px',
@@ -207,17 +215,29 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                     )}
                   </div>
                 </div>
+
+                {/* Date label positioned below each event */}
+                <div 
+                  className="absolute text-xs text-gray-300 font-medium bg-gray-800/50 px-2 py-1 rounded border border-white/10 backdrop-blur-sm whitespace-nowrap"
+                  style={{
+                    left: '50%',
+                    bottom: isTopTrack ? '-45px' : '110px',
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  {format(new Date(event.startDate), 'MMM dd, yyyy')}
+                </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Time labels */}
-        <div className="absolute bottom-4 left-8 right-8 flex justify-between text-xs text-gray-300 font-medium">
-          <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm">
+        {/* Time range labels */}
+        <div className="absolute bottom-4 left-8 right-8 flex justify-between text-xs text-gray-400 font-medium">
+          <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm opacity-60">
             {format(minDate, 'MMM dd, yyyy')}
           </span>
-          <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm">
+          <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm opacity-60">
             {format(maxDate, 'MMM dd, yyyy')}
           </span>
         </div>
