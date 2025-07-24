@@ -101,6 +101,41 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
           </div>
         </motion.div>
         
+        {/* Timeline dots positioned on the timeline axis */}
+        <div className="absolute top-0 left-0 right-0 h-full">
+          {sortedEvents.map((event, index) => {
+            const eventStartPos = getEventPosition(new Date(event.startDate));
+            
+            return (
+              <div key={`dot-${event.id}`}>
+                {/* Timeline dot positioned on the axis */}
+                <div 
+                  className="absolute w-3 h-3 rounded-full bg-teal-400/30 border-2 border-teal-400 backdrop-blur-sm z-20"
+                  style={{
+                    left: `${eventStartPos}%`,
+                    top: '14.5px', // Positioned on the timeline axis
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  <div className="w-1 h-1 rounded-full bg-teal-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                </div>
+
+                {/* Date label positioned below the dot on timeline */}
+                <div 
+                  className="absolute text-xs text-gray-300 font-medium bg-gray-800/50 px-2 py-1 rounded border border-white/10 backdrop-blur-sm whitespace-nowrap z-10"
+                  style={{
+                    left: `${eventStartPos}%`,
+                    top: '30px',
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  {format(new Date(event.startDate), 'MMM dd')}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
         {/* Events */}
         <div className="absolute top-0 left-0 right-0 h-full">
           {sortedEvents.map((event, index) => {
@@ -117,9 +152,9 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                 className={`absolute bg-gradient-to-br ${getStatusColor(event.status)} backdrop-blur-xl border rounded-lg p-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer`}
                 style={{
                   left: `calc(${eventStartPos}% - 90px)`, // Center the card on the date
-                  top: isTopTrack ? '20px' : '80px',
+                  top: isTopTrack ? '55px' : '120px', // Adjusted to account for date labels
                   width: '180px',
-                  height: '100px'
+                  height: '90px'
                 }}
               >
                 {/* Priority indicator */}
@@ -127,28 +162,16 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                   <div className={getPriorityIndicator(event.priority)} />
                 </div>
 
-                {/* Timeline connection line - positioned to align with date */}
+                {/* Timeline connection line - connects to dot on timeline */}
                 <div 
                   className="absolute w-0.5 bg-white/40 z-0"
                   style={{
                     left: '50%',
-                    [isTopTrack ? 'bottom' : 'top']: '-20px',
-                    height: '20px',
+                    [isTopTrack ? 'bottom' : 'top']: isTopTrack ? '90px' : '-25px',
+                    height: isTopTrack ? '25px' : '40px',
                     transform: 'translateX(-50%)'
                   }}
                 />
-
-                {/* Timeline connection dot - aligned with timeline axis */}
-                <div 
-                  className="absolute w-3 h-3 rounded-full bg-teal-400/30 border-2 border-teal-400 backdrop-blur-sm z-10"
-                  style={{
-                    left: '50%',
-                    [isTopTrack ? 'bottom' : 'top']: '-26px',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  <div className="w-1 h-1 rounded-full bg-teal-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                </div>
 
                 {/* Content */}
                 <div className="pl-3 h-full flex flex-col justify-between">
@@ -181,20 +204,11 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-xs text-gray-300">
-                        <Calendar className="w-2.5 h-2.5" />
-                        <span className="truncate text-xs">
-                          {format(new Date(event.startDate), 'MMM dd')}
-                        </span>
-                      </div>
                       <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-1 py-0">
                         {event.progress}%
                       </Badge>
-                    </div>
-
-                    {/* Assignees */}
-                    {event.assignees.length > 0 && (
-                      <div className="flex items-center gap-1 pt-1">
+                      {/* Assignees */}
+                      {event.assignees.length > 0 && (
                         <div className="flex -space-x-1">
                           {event.assignees.slice(0, 2).map((assignee, idx) => (
                             <div
@@ -211,21 +225,9 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
                             </div>
                           )}
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-
-                {/* Date label positioned below each event */}
-                <div 
-                  className="absolute text-xs text-gray-300 font-medium bg-gray-800/50 px-2 py-1 rounded border border-white/10 backdrop-blur-sm whitespace-nowrap"
-                  style={{
-                    left: '50%',
-                    bottom: isTopTrack ? '-45px' : '110px',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  {format(new Date(event.startDate), 'MMM dd, yyyy')}
                 </div>
               </motion.div>
             );
@@ -235,10 +237,10 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
         {/* Time range labels */}
         <div className="absolute bottom-4 left-8 right-8 flex justify-between text-xs text-gray-400 font-medium">
           <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm opacity-60">
-            {format(minDate, 'MMM dd, yyyy')}
+            Timeline Range
           </span>
           <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm opacity-60">
-            {format(maxDate, 'MMM dd, yyyy')}
+            {format(minDate, 'MMM yyyy')} - {format(maxDate, 'MMM yyyy')}
           </span>
         </div>
 
