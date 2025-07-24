@@ -61,30 +61,11 @@ const workspaceNavigation: NavigationItem[] = [
     description: 'Real-time system overview'
   },
   { 
-    id: 'plugins', 
-    label: 'Plugins', 
-    icon: Package, 
-    path: '/plugins', 
-    description: 'Extension marketplace',
-    requiresFeature: 'usePluginEcosystem',
-    badge: 'New'
-  },
-  { 
-    id: 'offline', 
-    label: 'Offline & PWA', 
-    icon: Wifi, 
-    path: '/offline', 
-    description: 'Progressive web app',
-    requiresFeature: 'useOfflinePWA',
-    badge: 'New'
-  },
-  { 
-    id: 'security', 
-    label: 'Security', 
-    icon: Shield, 
-    path: '/security', 
-    description: 'Compliance & audit',
-    requiresFeature: 'useSecuritySuite',
+    id: 'admin', 
+    label: 'Admin', 
+    icon: Settings, 
+    path: '/admin', 
+    description: 'System administration',
     badge: 'New'
   }
 ];
