@@ -74,13 +74,13 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
   return (
     <div className={`relative w-full ${className}`} style={{ height }}>
       {/* Timeline axis */}
-      <div className="absolute top-8 left-6 right-6 h-0.5 bg-white/30 rounded-full">
+      <div className="absolute top-12 left-4 right-4 h-0.5 bg-white/30 rounded-full">
         {/* Current time indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute w-0.5 h-4 bg-teal-400 transform -translate-x-0.5 -translate-y-2 shadow-md"
-          style={{ left: `${Math.min(Math.max(getEventPosition(now), 1), 99)}%` }}
+          className="absolute w-0.5 h-4 bg-teal-400 transform -translate-x-0.5 -translate-y-2"
+          style={{ left: `${Math.min(Math.max(getEventPosition(now), 2), 98)}%` }}
         >
           <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-medium whitespace-nowrap">
             NOW
@@ -89,13 +89,13 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
       </div>
 
       {/* Events */}
-      <div className="absolute top-12 left-6 right-6 overflow-hidden" style={{ height: height - 60 }}>
+      <div className="absolute top-16 left-4 right-4" style={{ height: height - 80 }}>
         {sortedEvents.map((event, index) => {
-          const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 85);
+          const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 80);
           const eventWidth = getEventWidth(event);
-          const maxWidth = 85 - leftPos;
-          const finalWidth = Math.min(Math.max(eventWidth, 12), maxWidth);
-          const trackIndex = index % 3;
+          const availableWidth = 80 - leftPos;
+          const finalWidth = Math.min(Math.max(eventWidth, 15), availableWidth);
+          const trackIndex = index % 2; // Use only 2 tracks for better vertical spacing
 
           return (
             <motion.div
@@ -103,12 +103,13 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`absolute rounded-lg p-3 cursor-pointer transition-all duration-200 hover:scale-105 hover:z-10 bg-white/8 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
+              className={`absolute rounded-lg p-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:z-10 bg-white/8 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
               style={{
                 left: `${leftPos}%`,
                 width: `${finalWidth}%`,
-                top: `${trackIndex * 32}px`,
-                minWidth: '100px'
+                top: `${trackIndex * 45 + 10}px`,
+                minWidth: '120px',
+                maxWidth: `${availableWidth}%`
               }}
             >
               {/* Event progress bar */}
@@ -125,10 +126,10 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
               <div className="space-y-1">
                 <div className="flex items-center gap-1 mb-1">
                   <span className="text-sm">{getTypeIcon(event.type)}</span>
-                  <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-1 py-0">
+                  <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-1 py-0 flex-shrink-0">
                     {event.type}
                   </Badge>
-                  <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-1 py-0 ml-auto">
+                  <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-1 py-0 ml-auto flex-shrink-0">
                     {event.progress}%
                   </Badge>
                 </div>
@@ -137,25 +138,25 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
                   {event.title}
                 </h4>
 
-                <div className="text-xs text-gray-300">
+                <div className="text-xs text-gray-300 truncate">
                   {format(new Date(event.startDate), 'MMM dd')}
                   {event.endDate && ` - ${format(new Date(event.endDate), 'MMM dd')}`}
                 </div>
 
                 {event.assignees.length > 0 && (
-                  <div className="flex -space-x-1 mt-1">
-                    {event.assignees.slice(0, 2).map((assignee, idx) => (
+                  <div className="flex -space-x-1 mt-1 overflow-hidden">
+                    {event.assignees.slice(0, 3).map((assignee, idx) => (
                       <div
                         key={assignee}
-                        className="w-5 h-5 rounded-full bg-teal-400/30 border border-white/30 flex items-center justify-center text-xs font-medium text-white"
+                        className="w-5 h-5 rounded-full bg-teal-400/30 border border-white/30 flex items-center justify-center text-xs font-medium text-white flex-shrink-0"
                         title={assignee}
                       >
                         {assignee.charAt(0).toUpperCase()}
                       </div>
                     ))}
-                    {event.assignees.length > 2 && (
-                      <div className="w-5 h-5 rounded-full bg-gray-500/30 border border-white/30 flex items-center justify-center text-xs font-medium text-white">
-                        +{event.assignees.length - 2}
+                    {event.assignees.length > 3 && (
+                      <div className="w-5 h-5 rounded-full bg-gray-500/30 border border-white/30 flex items-center justify-center text-xs font-medium text-white flex-shrink-0">
+                        +{event.assignees.length - 3}
                       </div>
                     )}
                   </div>
@@ -167,9 +168,9 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
       </div>
 
       {/* Time labels */}
-      <div className="absolute bottom-2 left-6 right-6 flex justify-between text-xs text-gray-300 font-medium">
-        <span>{format(minDate, 'MMM dd, yyyy')}</span>
-        <span>{format(maxDate, 'MMM dd, yyyy')}</span>
+      <div className="absolute bottom-4 left-4 right-4 flex justify-between text-xs text-gray-300 font-medium">
+        <span className="truncate">{format(minDate, 'MMM dd, yyyy')}</span>
+        <span className="truncate">{format(maxDate, 'MMM dd, yyyy')}</span>
       </div>
     </div>
   );
