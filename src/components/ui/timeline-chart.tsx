@@ -74,26 +74,27 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
   return (
     <div className={`relative ${className}`} style={{ height }}>
       {/* Timeline axis */}
-      <div className="absolute top-6 left-4 right-4 h-1 bg-white/20 rounded-full shadow-lg">
+      <div className="absolute top-8 left-8 right-8 h-2 bg-white/20 rounded-full shadow-lg">
         {/* Current time indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute top-0 w-1 h-6 bg-teal-400 rounded-full transform -translate-x-0.5 -translate-y-3 shadow-lg shadow-teal-400/50"
-          style={{ left: `${getEventPosition(now)}%` }}
+          className="absolute top-0 w-1 h-8 bg-teal-400 rounded-full transform -translate-x-0.5 -translate-y-3 shadow-lg shadow-teal-400/50"
+          style={{ left: `${Math.min(Math.max(getEventPosition(now), 2), 98)}%` }}
         >
-          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-semibold whitespace-nowrap drop-shadow-sm">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-semibold whitespace-nowrap drop-shadow-sm">
             NOW
           </div>
         </motion.div>
       </div>
 
       {/* Events */}
-      <div className="absolute top-12 left-4 right-4" style={{ height: height - 80 }}>
+      <div className="absolute top-16 left-8 right-8 overflow-hidden" style={{ height: height - 100 }}>
         {sortedEvents.map((event, index) => {
-          const leftPos = getEventPosition(new Date(event.startDate));
+          const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 88);
           const width = getEventWidth(event);
-          const trackIndex = index % 3; // Spread across 3 tracks with better spacing
+          const maxWidth = 88 - leftPos;
+          const trackIndex = index % 3;
 
           return (
             <motion.div
@@ -101,13 +102,13 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className={`absolute rounded-xl p-2 cursor-pointer hover:z-10 transition-all duration-200 hover:scale-105 bg-white/10 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
+              className={`absolute rounded-lg p-2 cursor-pointer hover:z-10 transition-all duration-200 hover:scale-105 bg-white/10 backdrop-blur-sm border shadow-lg ${getPriorityColor(event.priority)}`}
               style={{
-                left: `${Math.min(leftPos, 85)}%`,
-                width: `${Math.min(Math.max(width, 12), 100 - Math.min(leftPos, 85))}%`,
-                top: `${trackIndex * 40}px`,
-                minWidth: '120px',
-                maxWidth: `${100 - Math.min(leftPos, 85)}%`
+                left: `${leftPos}%`,
+                width: `${Math.min(Math.max(width, 10), maxWidth)}%`,
+                top: `${trackIndex * 35}px`,
+                minWidth: '100px',
+                maxWidth: `${maxWidth}%`
               }}
             >
               {/* Event progress bar */}
@@ -166,7 +167,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
       </div>
 
       {/* Time labels */}
-      <div className="absolute bottom-2 left-4 right-4 flex justify-between text-sm text-gray-200 font-semibold">
+      <div className="absolute bottom-2 left-8 right-8 flex justify-between text-sm text-gray-200 font-semibold">
         <span className="drop-shadow-sm">{format(minDate, 'MMM dd')}</span>
         <span className="drop-shadow-sm">{format(maxDate, 'MMM dd')}</span>
       </div>
