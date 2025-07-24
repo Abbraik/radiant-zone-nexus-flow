@@ -164,7 +164,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
       <div className="flex gap-6">
         {/* Main Gantt Chart */}
         <div className="flex-1 overflow-x-auto" ref={chartRef}>
-          <div className="relative" style={{ width: Math.max(chartWidth, 600), height: 300 }}>
+          <div className="relative w-full" style={{ minWidth: Math.max(chartWidth, 600), height: 300 }}>
             {/* Time Axis */}
             <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/20">
               {ticks.map((tick, index) => (
