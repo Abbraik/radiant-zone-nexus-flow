@@ -110,9 +110,9 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
-            className="relative w-full max-w-2xl"
+            className="relative w-full max-w-2xl max-h-[calc(100vh-2rem)] flex flex-col"
           >
-            <div className="glass rounded-2xl p-6 border border-border/50 shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto relative z-[999999]">
+            <div className="glass rounded-2xl p-6 border border-border/50 shadow-2xl overflow-y-auto flex-1 relative z-[999999]">
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-start gap-4">
