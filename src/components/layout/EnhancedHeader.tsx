@@ -58,8 +58,7 @@ const workspaceNavigation: NavigationItem[] = [
     label: 'Mission Control', 
     icon: Activity, 
     path: '/mission-control', 
-    description: 'Real-time system overview',
-    requiresFeature: 'useMissionControl'
+    description: 'Real-time system overview'
   },
   { 
     id: 'plugins', 
