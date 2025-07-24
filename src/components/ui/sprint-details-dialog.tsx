@@ -98,7 +98,7 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/90 backdrop-blur-md z-[9999]"
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
             onClick={onClose}
           />
           
@@ -108,9 +108,9 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10000] w-full max-w-2xl"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl"
           >
-            <div className="glass rounded-2xl p-6 border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl">
+            <div className="glass rounded-2xl p-6 border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-start gap-4">
