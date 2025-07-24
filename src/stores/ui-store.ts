@@ -38,7 +38,8 @@ const defaultFeatureFlags: FeatureFlags = {
   useGamification: true, // Phase 3 - ENABLED
   useOfflinePWA: true, // Phase 3 - ENABLED
   usePluginEcosystem: true, // Phase 3 - ENABLED
-  useSecuritySuite: true // Phase 3 - ENABLED
+  useSecuritySuite: true, // Phase 3 - ENABLED
+  useMissionControl: true // Mission Control Dashboard - ENABLED
 };
 
 const initialState: UIState = {

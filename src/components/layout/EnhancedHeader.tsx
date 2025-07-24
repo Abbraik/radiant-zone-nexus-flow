@@ -19,7 +19,8 @@ import {
   Bot,
   Users,
   Target,
-  MessageSquare
+  MessageSquare,
+  Activity
 } from 'lucide-react';
 import { useUIStore } from '../../stores/ui-store';
 import { FeatureFlagChip, useFeatureFlags } from './FeatureFlagProvider';
@@ -52,6 +53,14 @@ const zoneTabs: NavigationItem[] = [
 const workspaceNavigation: NavigationItem[] = [
   { id: 'workspace', label: 'Home', icon: Home, path: '/workspace', description: 'Main workspace hub' },
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard', description: 'Analytics & insights' },
+  { 
+    id: 'mission-control', 
+    label: 'Mission Control', 
+    icon: Activity, 
+    path: '/mission-control', 
+    description: 'Real-time system overview',
+    requiresFeature: 'useMissionControl'
+  },
   { 
     id: 'plugins', 
     label: 'Plugins', 

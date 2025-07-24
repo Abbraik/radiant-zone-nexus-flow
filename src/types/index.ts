@@ -159,6 +159,7 @@ export interface FeatureFlags {
   useOfflinePWA: boolean;
   usePluginEcosystem: boolean;
   useSecuritySuite: boolean;
+  useMissionControl: boolean;
 }
 
 // UI State Types

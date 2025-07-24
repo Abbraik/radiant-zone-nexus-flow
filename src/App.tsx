@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 import PluginsPage from "./pages/PluginsPage";
 import OfflinePage from "./pages/OfflinePage";
 import SecurityPage from "./pages/SecurityPage";
+import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
 
 const queryClient = createQueryClient();
@@ -83,6 +84,11 @@ const App = () => (
                   <Route path="/plugins" element={<PluginsPage />} />
                   <Route path="/offline" element={<OfflinePage />} />
                   <Route path="/security" element={<SecurityPage />} />
+                  <Route path="/mission-control" element={
+                    <FeatureFlagGuard flag="useMissionControl" fallback={<Workspace />}>
+                      <MissionControl />
+                    </FeatureFlagGuard>
+                  } />
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ThinkZone />} />
                   <Route path="/act" element={<ActZone />} />
