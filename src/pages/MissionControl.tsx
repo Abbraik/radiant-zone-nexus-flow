@@ -8,6 +8,9 @@ import { Skeleton } from '../components/ui/skeleton';
 import { Gauge } from '../components/ui/gauge';
 import { AlertTicker } from '../components/ui/alert-ticker';
 import { DigitalTwinThumbnail } from '../components/ui/digital-twin-thumbnail';
+import { TimelineChart } from '../components/ui/timeline-chart';
+import { ResourceHeatmap } from '../components/ui/resource-heatmap';
+import { GoalTreeMinimap } from '../components/ui/goal-tree-minimap';
 import { useMissionControlData, useMissionControlActions } from './missionControl/useMissionControlData';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -206,18 +209,19 @@ const MissionControl: React.FC = () => {
         >
           <Card className="bg-glass/70 backdrop-blur-20 border-border/50 p-6">
             <h3 className="text-xl font-medium text-foreground mb-4">Mission Timeline</h3>
-            <div className="h-48 bg-background/30 rounded-xl flex items-center justify-center">
-              {isLoading ? (
-                <Skeleton className="w-full h-full" />
-              ) : (
-                <div className="text-center">
-                  <p className="text-muted-foreground mb-2">Interactive Gantt Chart - Coming in Phase 3</p>
-                  <p className="text-xs text-muted-foreground">
-                    {data?.timeline.length} events planned
-                  </p>
-                </div>
-              )}
-            </div>
+            {isLoading ? (
+              <Skeleton className="w-full h-48" />
+            ) : data?.timeline && data.timeline.length > 0 ? (
+              <TimelineChart
+                events={data.timeline}
+                height={192}
+                className="w-full"
+              />
+            ) : (
+              <div className="h-48 bg-background/30 rounded-xl flex items-center justify-center">
+                <p className="text-muted-foreground">No timeline events available</p>
+              </div>
+            )}
           </Card>
         </motion.div>
 
@@ -230,12 +234,18 @@ const MissionControl: React.FC = () => {
         >
           <Card className="bg-glass/70 backdrop-blur-20 border-border/50 p-6 h-full">
             <h3 className="text-xl font-medium text-foreground mb-4">Resources & Budget</h3>
-            <div className="h-32 bg-background/30 rounded-xl flex items-center justify-center mb-4">
-              <p className="text-muted-foreground">Resource Heatmap - Coming in Phase 3</p>
-            </div>
-            <div className="h-20 bg-background/30 rounded-xl flex items-center justify-center">
-              <p className="text-muted-foreground">Budget Sparklines - Coming in Phase 3</p>
-            </div>
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-32" />
+                <Skeleton className="h-20" />
+              </div>
+            ) : data?.resources && data.resources.length > 0 ? (
+              <ResourceHeatmap resources={data.resources} />
+            ) : (
+              <div className="h-32 bg-background/30 rounded-xl flex items-center justify-center">
+                <p className="text-muted-foreground">No resource data available</p>
+              </div>
+            )}
           </Card>
         </motion.div>
 
@@ -276,9 +286,21 @@ const MissionControl: React.FC = () => {
         >
           <Card className="bg-glass/70 backdrop-blur-20 border-border/50 p-4 h-full">
             <h3 className="text-lg font-medium text-foreground mb-4">Strategic Compass</h3>
-            <div className="h-32 bg-background/30 rounded-xl flex items-center justify-center cursor-pointer hover:bg-background/50 transition-colors">
-              <p className="text-xs text-muted-foreground text-center">3D Goal Tree<br />Coming in Phase 3</p>
-            </div>
+            {isLoading ? (
+              <Skeleton className="w-full h-32" />
+            ) : data?.goalTree && data.goalTree.length > 0 ? (
+              <div className="flex justify-center">
+                <GoalTreeMinimap
+                  goalTree={data.goalTree}
+                  onNodeClick={(node) => console.log('Open goal details:', node.id)}
+                  size={150}
+                />
+              </div>
+            ) : (
+              <div className="h-32 bg-background/30 rounded-xl flex items-center justify-center">
+                <p className="text-xs text-muted-foreground text-center">No goal data available</p>
+              </div>
+            )}
           </Card>
         </motion.div>
       </div>
