@@ -218,9 +218,14 @@ const MissionControl: React.FC = () => {
                   id: event.id,
                   name: event.title,
                   startDate: event.startDate.toISOString(),
-                  endDate: event.endDate ? event.endDate.toISOString() : new Date(new Date(event.startDate).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                  endDate: event.endDate ? event.endDate.toISOString() : new Date(new Date(event.startDate).getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
                   phase: event.type === 'sprint' ? 'act' : event.type === 'milestone' ? 'monitor' : event.type === 'review' ? 'think' : 'innovate',
-                  progress: event.progress
+                  progress: event.progress,
+                  description: event.description,
+                  objectives: event.objectives,
+                  team: event.team,
+                  status: event.status as any,
+                  milestones: event.milestones
                 }))}
                 upcomingDeadlines={data.timeline.filter(event => event.type === 'deadline').map(event => ({
                   taskId: event.id,

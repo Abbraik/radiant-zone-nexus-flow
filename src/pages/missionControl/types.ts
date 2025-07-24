@@ -55,6 +55,14 @@ export interface TimelineEvent {
   progress: number; // 0-100
   assignees: string[];
   priority: 'low' | 'medium' | 'high' | 'critical';
+  objectives?: string[];
+  team?: string[];
+  milestones?: {
+    id: string;
+    title: string;
+    dueDate: string;
+    completed: boolean;
+  }[];
 }
 
 export interface ResourceMetric {

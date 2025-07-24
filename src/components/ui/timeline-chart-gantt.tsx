@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format, addDays, startOfWeek, differenceInDays, parseISO, isWithinInterval } from 'date-fns';
 import { Plus, Minus, Calendar, Clock, Target, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SprintDetailsDialog } from './sprint-details-dialog';
 
 // Design tokens
 export const tokens = {
@@ -23,6 +24,16 @@ interface Sprint {
   endDate: string;   // ISO
   phase: 'think' | 'act' | 'monitor' | 'innovate';
   progress?: number;
+  description?: string;
+  objectives?: string[];
+  team?: string[];
+  status?: 'planning' | 'active' | 'completed' | 'blocked';
+  milestones?: {
+    id: string;
+    title: string;
+    dueDate: string;
+    completed: boolean;
+  }[];
 }
 
 interface Deadline {
@@ -57,6 +68,8 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
 }) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [tooltip, setTooltip] = useState<Tooltip>({ show: false, x: 0, y: 0, content: null });
+  const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
   const getPhaseColor = (phase: string) => {
@@ -134,6 +147,17 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
     setTooltip({ show: false, x: 0, y: 0, content: null });
   };
 
+  const handleSprintClick = (sprint: Sprint) => {
+    setSelectedSprint(sprint);
+    setIsDialogOpen(true);
+    setTooltip({ show: false, x: 0, y: 0, content: null }); // Hide tooltip when opening dialog
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedSprint(null);
+  };
+
   const zoomIn = () => setZoomLevel(prev => Math.min(prev * 1.5, 4));
   const zoomOut = () => setZoomLevel(prev => Math.max(prev / 1.5, 0.5));
 
@@ -206,8 +230,8 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
                     aria-label={`Sprint ${sprint.name}: ${format(parseISO(sprint.startDate), 'MMM dd')} to ${format(parseISO(sprint.endDate), 'MMM dd')}`}
                     onMouseEnter={(e) => handleSprintHover(e, sprint)}
                     onMouseLeave={handleMouseLeave}
-                    onClick={() => onSprintClick?.(sprint.id)}
-                    onKeyDown={(e) => e.key === 'Enter' && onSprintClick?.(sprint.id)}
+                    onClick={() => handleSprintClick(sprint)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSprintClick(sprint)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -335,6 +359,13 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Sprint Details Dialog */}
+      <SprintDetailsDialog
+        sprint={selectedSprint}
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+      />
     </div>
   );
 };

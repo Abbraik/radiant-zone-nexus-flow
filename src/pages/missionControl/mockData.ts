@@ -151,15 +151,43 @@ export const mockPredictions: AIPrediction[] = [
 export const mockTimeline: TimelineEvent[] = [
   {
     id: 'event-1',
-    title: 'Sprint 12 Planning',
-    description: 'Cross-team sprint planning session',
+    title: 'Sprint 12: User Experience Enhancement',
+    description: 'Focus on improving user interface and accessibility features across all platforms. This sprint includes redesigning key workflows and implementing user feedback from the previous quarter.',
     startDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-    endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+    endDate: new Date(Date.now() + 16 * 24 * 60 * 60 * 1000),
     type: 'sprint',
     status: 'planned',
     progress: 0,
-    assignees: ['team-alpha', 'team-beta'],
-    priority: 'high'
+    assignees: ['team-alpha', 'ux-team'],
+    priority: 'high',
+    objectives: [
+      'Redesign the main dashboard interface',
+      'Implement accessibility features for screen readers',
+      'Optimize mobile responsiveness',
+      'Conduct user testing sessions',
+      'Update design system components'
+    ],
+    team: ['Sarah Chen', 'Marcus Johnson', 'Emily Rodriguez', 'Alex Kim'],
+    milestones: [
+      {
+        id: 'm1',
+        title: 'Design mockups completed',
+        dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        completed: false
+      },
+      {
+        id: 'm2',
+        title: 'Accessibility audit completed',
+        dueDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString(),
+        completed: false
+      },
+      {
+        id: 'm3',
+        title: 'User testing session conducted',
+        dueDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(),
+        completed: false
+      }
+    ]
   },
   {
     id: 'event-2',
@@ -173,14 +201,43 @@ export const mockTimeline: TimelineEvent[] = [
   },
   {
     id: 'event-3',
-    title: 'Feature Release Alpha',
-    startDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    endDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+    title: 'Sprint 11: Performance Optimization',
+    description: 'Current sprint focused on improving system performance and reducing load times across all modules.',
+    startDate: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+    endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
     type: 'sprint',
     status: 'active',
-    progress: 78,
-    assignees: ['team-alpha'],
-    priority: 'high'
+    progress: 73,
+    assignees: ['team-beta', 'infrastructure'],
+    priority: 'critical',
+    objectives: [
+      'Optimize database queries and indexes',
+      'Implement caching strategies',
+      'Reduce bundle sizes for frontend applications',
+      'Setup performance monitoring dashboards',
+      'Conduct load testing'
+    ],
+    team: ['David Wilson', 'Lisa Park', 'James Thompson'],
+    milestones: [
+      {
+        id: 'm4',
+        title: 'Database optimization completed',
+        dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        completed: true
+      },
+      {
+        id: 'm5',
+        title: 'Caching implementation done',
+        dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        completed: true
+      },
+      {
+        id: 'm6',
+        title: 'Load testing completed',
+        dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+        completed: false
+      }
+    ]
   }
 ];
 
