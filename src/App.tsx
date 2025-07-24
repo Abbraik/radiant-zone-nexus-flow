@@ -15,7 +15,7 @@ import { MonitorZone } from "./pages/MonitorZone";
 import { InnovateLearnZone } from "./pages/InnovateLearnZone";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import AchievementsPage from "./pages/AchievementsPage";
+
 import PluginsPage from "./pages/PluginsPage";
 import OfflinePage from "./pages/OfflinePage";
 import SecurityPage from "./pages/SecurityPage";
@@ -79,7 +79,7 @@ const App = () => (
                     </div>
                   } />
                   {/* Phase 3 Pages */}
-                  <Route path="/achievements" element={<AchievementsPage />} />
+                  
                   <Route path="/plugins" element={<PluginsPage />} />
                   <Route path="/offline" element={<OfflinePage />} />
                   <Route path="/security" element={<SecurityPage />} />

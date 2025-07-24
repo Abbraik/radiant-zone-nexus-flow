@@ -53,15 +53,6 @@ const workspaceNavigation: NavigationItem[] = [
   { id: 'workspace', label: 'Home', icon: Home, path: '/workspace', description: 'Main workspace hub' },
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard', description: 'Analytics & insights' },
   { 
-    id: 'achievements', 
-    label: 'Achievements', 
-    icon: Star, 
-    path: '/achievements', 
-    description: 'Gamification center',
-    requiresFeature: 'useGamification',
-    badge: 'New'
-  },
-  { 
     id: 'plugins', 
     label: 'Plugins', 
     icon: Package, 
