@@ -41,24 +41,24 @@ const MissionControl: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
       <motion.header 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="h-16 bg-background border-b border-border px-6 flex items-center justify-between"
+        className="h-16 bg-gray-900/50 backdrop-blur-20 border-b border-white/10 px-6 flex items-center justify-between"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center">
             <Activity className="w-5 h-5 text-teal-400" />
           </div>
-          <h1 className="text-2xl font-semibold text-foreground">Mission Control</h1>
+          <h1 className="text-2xl font-semibold text-white">Mission Control</h1>
           {isFetching && (
             <RefreshCw className="w-4 h-4 text-teal-400 animate-spin" />
           )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-gray-300">
             Last updated: {data?.systemStatus.lastSync ? 
               formatDistanceToNow(data.systemStatus.lastSync, { addSuffix: true }) : 
               'Loading...'
@@ -91,9 +91,9 @@ const MissionControl: React.FC = () => {
           transition={{ delay: 0.1 }}
           className="col-span-1 md:col-span-2"
         >
-          <Card className="bg-card border-border p-6 h-full">
+          <Card className="bg-glass/70 backdrop-blur-20 border-white/10 p-6 h-full">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-medium text-foreground">System Health</h2>
+              <h2 className="text-xl font-medium text-white">System Health</h2>
               <BarChart3 className="w-5 h-5 text-teal-400" />
             </div>
             
@@ -127,15 +127,15 @@ const MissionControl: React.FC = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 + index * 0.1 }}
-                      className="text-center p-3 rounded-xl bg-muted/10 hover:bg-muted/20 transition-colors"
+                      className="text-center p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                     >
                       <IconComponent className="w-5 h-5 text-teal-400 mx-auto mb-2" />
-                      <div className="text-lg font-semibold text-foreground">{kpi.value}</div>
-                      <div className="text-xs text-muted-foreground">{kpi.label}</div>
+                      <div className="text-lg font-semibold text-white">{kpi.value}</div>
+                      <div className="text-xs text-gray-300">{kpi.label}</div>
                       {kpi.changePercent && (
                         <div className={`text-xs mt-1 ${
                           kpi.trend === 'up' ? 'text-teal-400' : 
-                          kpi.trend === 'down' ? 'text-destructive' : 'text-muted-foreground'
+                          kpi.trend === 'down' ? 'text-destructive' : 'text-gray-400'
                         }`}>
                           {kpi.changePercent > 0 ? '+' : ''}{kpi.changePercent}%
                         </div>
@@ -155,8 +155,8 @@ const MissionControl: React.FC = () => {
           transition={{ delay: 0.2 }}
           className="col-span-1 md:col-span-2"
         >
-          <Card className="bg-card border-border p-4 h-full">
-            <h3 className="text-xl font-medium text-foreground mb-4">Real-Time Alerts</h3>
+          <Card className="bg-glass/70 backdrop-blur-20 border-white/10 p-4 h-full">
+            <h3 className="text-xl font-medium text-white mb-4">Real-Time Alerts</h3>
             
             {isLoading ? (
               <div className="space-y-3">
@@ -173,14 +173,14 @@ const MissionControl: React.FC = () => {
                 className="max-h-64 overflow-hidden"
               />
             ) : (
-              <div className="flex items-center justify-center h-32 text-muted-foreground">
+              <div className="flex items-center justify-center h-32 text-gray-400">
                 No alerts at this time
               </div>
             )}
             
             {/* AI Predictions */}
             <div className="mt-6 pt-4 border-t border-border/30">
-              <h4 className="text-sm font-medium text-foreground mb-3">AI Predictions</h4>
+              <h4 className="text-sm font-medium text-white mb-3">AI Predictions</h4>
               <div className="space-y-2">
                 {isLoading ? (
                   Array.from({ length: 3 }).map((_, index) => (
@@ -189,7 +189,7 @@ const MissionControl: React.FC = () => {
                 ) : (
                   data?.predictions.map((item, index) => (
                     <div key={item.id} className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground flex-1">{item.prediction}</span>
+                      <span className="text-gray-300 flex-1">{item.prediction}</span>
                       <Badge variant="outline" className="ml-2">
                         {item.confidence}%
                       </Badge>
@@ -208,8 +208,8 @@ const MissionControl: React.FC = () => {
           transition={{ delay: 0.3 }}
           className="col-span-1 md:col-span-2 lg:col-span-4"
         >
-          <Card className="bg-card border-border p-6">
-            <h3 className="text-xl font-medium text-foreground mb-4">Mission Timeline</h3>
+          <Card className="bg-glass/70 backdrop-blur-20 border-white/10 p-6">
+            <h3 className="text-xl font-medium text-white mb-4">Mission Timeline</h3>
             {isLoading ? (
               <Skeleton className="w-full h-48" />
             ) : data?.timeline && data.timeline.length > 0 ? (
@@ -220,7 +220,7 @@ const MissionControl: React.FC = () => {
               />
             ) : (
               <div className="h-48 bg-background/30 rounded-xl flex items-center justify-center">
-                <p className="text-muted-foreground">No timeline events available</p>
+                <p className="text-gray-400">No timeline events available</p>
               </div>
             )}
           </Card>
@@ -233,8 +233,8 @@ const MissionControl: React.FC = () => {
           transition={{ delay: 0.4 }}
           className="col-span-1 md:col-span-2"
         >
-          <Card className="bg-card border-border p-6 h-full">
-            <h3 className="text-xl font-medium text-foreground mb-4">Resources & Budget</h3>
+          <Card className="bg-glass/70 backdrop-blur-20 border-white/10 p-6 h-full">
+            <h3 className="text-xl font-medium text-white mb-4">Resources & Budget</h3>
             {isLoading ? (
               <div className="space-y-4">
                 <Skeleton className="h-32" />
@@ -244,7 +244,7 @@ const MissionControl: React.FC = () => {
               <ResourceHeatmap resources={data.resources} />
             ) : (
               <div className="h-32 bg-background/30 rounded-xl flex items-center justify-center">
-                <p className="text-muted-foreground">No resource data available</p>
+                <p className="text-gray-400">No resource data available</p>
               </div>
             )}
           </Card>
@@ -257,8 +257,8 @@ const MissionControl: React.FC = () => {
           transition={{ delay: 0.5 }}
           className="col-span-1"
         >
-          <Card className="bg-card border-border p-4 h-full">
-            <h3 className="text-lg font-medium text-foreground mb-4">Digital Twins</h3>
+          <Card className="bg-glass/70 backdrop-blur-20 border-white/10 p-4 h-full">
+            <h3 className="text-lg font-medium text-white mb-4">Digital Twins</h3>
             <div className="grid grid-cols-2 gap-2">
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, index) => (
@@ -285,8 +285,8 @@ const MissionControl: React.FC = () => {
           transition={{ delay: 0.6 }}
           className="col-span-1"
         >
-          <Card className="bg-card border-border p-4 h-full">
-            <h3 className="text-lg font-medium text-foreground mb-4">Strategic Compass</h3>
+          <Card className="bg-glass/70 backdrop-blur-20 border-white/10 p-4 h-full">
+            <h3 className="text-lg font-medium text-white mb-4">Strategic Compass</h3>
             {isLoading ? (
               <Skeleton className="w-full h-32" />
             ) : data?.goalTree && data.goalTree.length > 0 ? (
@@ -299,7 +299,7 @@ const MissionControl: React.FC = () => {
               </div>
             ) : (
               <div className="h-32 bg-background/30 rounded-xl flex items-center justify-center">
-                <p className="text-xs text-muted-foreground text-center">No goal data available</p>
+                <p className="text-xs text-gray-400 text-center">No goal data available</p>
               </div>
             )}
           </Card>
@@ -311,10 +311,10 @@ const MissionControl: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="h-12 bg-background border-t border-border flex items-center justify-between px-6"
+        className="h-12 bg-gray-900/50 backdrop-blur-20 border-t border-white/10 flex items-center justify-between px-6"
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">Online:</span>
+          <span className="text-sm text-gray-300">Online:</span>
           <div className="flex -space-x-2">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
@@ -350,7 +350,7 @@ const MissionControl: React.FC = () => {
             <div className={`w-2 h-2 rounded-full ${
               data?.systemStatus.online ? 'bg-teal-400' : 'bg-destructive'
             }`} />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-gray-300">
               {data?.systemStatus.online ? 'All systems operational' : 'System offline'}
             </span>
           </div>
