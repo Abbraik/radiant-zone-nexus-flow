@@ -92,28 +92,26 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[999999] flex items-center justify-center p-4"
-        >
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center">
           {/* Backdrop */}
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="absolute inset-0 bg-background/90 backdrop-blur-md"
             onClick={onClose}
           />
           
-          {/* Dialog */}
+          {/* Dialog Container */}
           <motion.div
-            initial={{ scale: 0.95, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", duration: 0.3 }}
-            className="relative w-full max-w-2xl mx-auto my-8"
-            style={{ maxHeight: 'calc(100vh - 4rem)' }}
+            className="relative z-[999999] w-full max-w-2xl mx-4 max-h-[90vh] bg-background border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
           >
-            <div className="glass rounded-2xl p-6 border border-border/50 shadow-2xl h-full overflow-y-auto relative z-[999999]">
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto max-h-[90vh] p-6">
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-start gap-4">
@@ -303,7 +301,7 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
