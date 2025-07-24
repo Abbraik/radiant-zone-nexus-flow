@@ -90,25 +90,27 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
   const daysRemaining = differenceInDays(endDate, new Date());
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
-        <>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+        >
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/90 backdrop-blur-md z-[9998]"
+          <div
+            className="absolute inset-0 bg-background/90 backdrop-blur-md"
             onClick={onClose}
           />
           
           {/* Dialog */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ scale: 0.95, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-full max-w-2xl px-4"
+            className="relative w-full max-w-2xl"
           >
             <div className="glass rounded-2xl p-6 border border-border/50 shadow-2xl max-h-[90vh] overflow-y-auto">
               {/* Header */}
@@ -300,7 +302,7 @@ export const SprintDetailsDialog: React.FC<SprintDetailsDialogProps> = ({
               </div>
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
