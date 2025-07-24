@@ -1,10 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Gauge, Activity, AlertTriangle, Clock, BarChart3, Zap, CheckSquare, RefreshCw } from 'lucide-react';
+import { Activity, AlertTriangle, Clock, BarChart3, Zap, CheckSquare, RefreshCw } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
+import { Gauge } from '../components/ui/gauge';
+import { AlertTicker } from '../components/ui/alert-ticker';
+import { DigitalTwinThumbnail } from '../components/ui/digital-twin-thumbnail';
 import { useMissionControlData, useMissionControlActions } from './missionControl/useMissionControlData';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -87,7 +90,7 @@ const MissionControl: React.FC = () => {
           <Card className="bg-glass/70 backdrop-blur-20 border-border/50 p-6 h-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-medium text-foreground">System Health</h2>
-              <Gauge className="w-5 h-5 text-primary" />
+              <BarChart3 className="w-5 h-5 text-primary" />
             </div>
             
             {/* Health Gauge */}
@@ -95,37 +98,13 @@ const MissionControl: React.FC = () => {
               {isLoading ? (
                 <Skeleton className="w-48 h-48 rounded-full" />
               ) : (
-                <div className="w-48 h-48 rounded-full border-8 border-muted/20 flex items-center justify-center relative">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-foreground">
-                      {data?.globalHealth.overall ?? 0}%
-                    </div>
-                    <div className="text-sm text-muted-foreground">Overall Health</div>
-                  </div>
-                  {/* Simple progress ring */}
-                  <svg className="absolute inset-0 w-48 h-48 -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      className="text-primary/30"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeDasharray={`${2 * Math.PI * 45}`}
-                      strokeDashoffset={`${2 * Math.PI * 45 * (1 - (data?.globalHealth.overall ?? 0) / 100)}`}
-                      className="text-primary transition-all duration-1000"
-                    />
-                  </svg>
-                </div>
+                <Gauge
+                  value={data?.globalHealth.overall ?? 0}
+                  size={200}
+                  thickness={8}
+                  label="Overall Health"
+                  showValue={true}
+                />
               )}
             </div>
 
@@ -174,48 +153,26 @@ const MissionControl: React.FC = () => {
         >
           <Card className="bg-glass/50 backdrop-blur-20 border-border/50 p-4 h-full">
             <h3 className="text-xl font-medium text-foreground mb-4">Real-Time Alerts</h3>
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, index) => (
+            
+            {isLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, index) => (
                   <Skeleton key={index} className="h-16 rounded-lg" />
-                ))
-              ) : (
-                data?.alerts.slice(0, 6).map((alert, index) => (
-                  <motion.div
-                    key={alert.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                    className="p-3 rounded-lg bg-background/50 border border-border/30 hover:bg-background/70 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant={
-                            alert.type === 'error' ? 'destructive' :
-                            alert.type === 'warning' ? 'secondary' :
-                            alert.type === 'success' ? 'default' : 'outline'
-                          } className="text-xs">
-                            {alert.severity}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{alert.source}</span>
-                        </div>
-                        <p className="text-sm text-foreground font-medium">{alert.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{alert.message}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatDistanceToNow(alert.timestamp, { addSuffix: true })}
-                        </p>
-                      </div>
-                      <div className={`w-2 h-2 rounded-full ml-2 mt-2 ${
-                        alert.type === 'error' ? 'bg-destructive' :
-                        alert.type === 'warning' ? 'bg-warning' :
-                        alert.type === 'success' ? 'bg-emerald-500' : 'bg-primary'
-                      }`} />
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            ) : data?.alerts && data.alerts.length > 0 ? (
+              <AlertTicker
+                alerts={data.alerts}
+                autoScroll={true}
+                pauseOnHover={true}
+                maxVisible={4}
+                className="max-h-64 overflow-hidden"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-32 text-muted-foreground">
+                No alerts at this time
+              </div>
+            )}
             
             {/* AI Predictions */}
             <div className="mt-6 pt-4 border-t border-border/30">
@@ -294,27 +251,16 @@ const MissionControl: React.FC = () => {
             <div className="grid grid-cols-2 gap-2">
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, index) => (
-                  <Skeleton key={index} className="h-16 rounded-lg" />
+                  <Skeleton key={index} className="h-20 rounded-lg" />
                 ))
               ) : (
                 data?.digitalTwins.slice(0, 4).map((twin, index) => (
-                  <motion.div 
+                  <DigitalTwinThumbnail
                     key={twin.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    className="h-16 bg-background/30 rounded-lg flex flex-col items-center justify-center hover:bg-background/50 transition-colors cursor-pointer p-2"
-                  >
-                    <span className="text-xs text-foreground font-medium">{twin.name}</span>
-                    <div className="flex items-center gap-1 mt-1">
-                      <div className={`w-1.5 h-1.5 rounded-full ${
-                        twin.status === 'running' ? 'bg-emerald-500' :
-                        twin.status === 'completed' ? 'bg-blue-500' :
-                        twin.status === 'paused' ? 'bg-yellow-500' : 'bg-destructive'
-                      }`} />
-                      <span className="text-xs text-muted-foreground">{twin.status}</span>
-                    </div>
-                  </motion.div>
+                    twin={twin}
+                    onClick={() => console.log('Open twin details:', twin.id)}
+                    className="h-20"
+                  />
                 ))
               )}
             </div>
