@@ -79,116 +79,133 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
     <div className={`w-full ${className}`} style={{ height }}>
       <div className="relative h-full overflow-x-auto overflow-y-hidden">
         {/* Horizontal timeline axis */}
-        <div className="absolute top-12 left-8 right-8 h-0.5 bg-gradient-to-r from-teal-400/50 via-teal-400/30 to-transparent rounded-full" />
+        <div className="absolute top-16 left-8 right-8 h-0.5 bg-gradient-to-r from-teal-400/50 via-teal-400/70 to-teal-400/50 rounded-full" />
         
         {/* Current time indicator */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute top-10 w-0.5 h-6 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50"
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute top-14 w-0.5 h-6 bg-teal-400 rounded-full shadow-lg shadow-teal-400/50 z-10"
           style={{ left: `${Math.min(Math.max(getEventPosition(now) + 8, 8), 93)}%` }}
         >
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-medium whitespace-nowrap">
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-teal-300 font-semibold whitespace-nowrap bg-teal-400/20 px-2 py-1 rounded-full backdrop-blur-sm border border-teal-400/30">
             NOW
           </div>
         </motion.div>
         
         {/* Events */}
-        <div className="absolute top-16 left-8 right-8 h-full">
+        <div className="absolute top-0 left-8 right-8 h-full">
           {sortedEvents.map((event, index) => {
-            const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 85);
-            const trackIndex = index % 2; // Use 2 tracks for better spacing
+            const leftPos = Math.min(Math.max(getEventPosition(new Date(event.startDate)), 0), 80);
+            const trackIndex = index % 2; // Alternate between top and bottom tracks
+            const isTopTrack = trackIndex === 0;
 
             return (
               <motion.div
                 key={event.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className={`absolute bg-gradient-to-br ${getStatusColor(event.status)} backdrop-blur-xl border rounded-xl p-3 group transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105`}
+                initial={{ opacity: 0, y: isTopTrack ? -20 : 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
+                className={`absolute bg-gradient-to-br ${getStatusColor(event.status)} backdrop-blur-xl border rounded-lg p-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer`}
                 style={{
                   left: `${leftPos}%`,
-                  top: `${trackIndex * 60 + 10}px`,
-                  width: '200px',
-                  minHeight: '120px'
+                  top: isTopTrack ? '20px' : '80px',
+                  width: '180px',
+                  height: '100px'
                 }}
               >
                 {/* Priority indicator */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl">
+                <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg">
                   <div className={getPriorityIndicator(event.priority)} />
                 </div>
 
+                {/* Timeline connection line */}
+                <div 
+                  className="absolute w-0.5 bg-white/30 z-0"
+                  style={{
+                    left: '50%',
+                    [isTopTrack ? 'bottom' : 'top']: '-20px',
+                    height: '20px',
+                    transform: 'translateX(-50%)'
+                  }}
+                />
+
                 {/* Timeline connection dot */}
-                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-white/20 border-2 border-teal-400/50 backdrop-blur-sm">
+                <div 
+                  className="absolute w-3 h-3 rounded-full bg-white/20 border-2 border-teal-400 backdrop-blur-sm z-10"
+                  style={{
+                    left: '50%',
+                    [isTopTrack ? 'bottom' : 'top']: '-26px',
+                    transform: 'translateX(-50%)'
+                  }}
+                >
                   <div className="w-1 h-1 rounded-full bg-teal-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                 </div>
 
                 {/* Content */}
-                <div className="pl-3 space-y-2">
+                <div className="pl-3 h-full flex flex-col justify-between">
                   {/* Header */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      {getTypeIcon(event.type)}
-                      <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-2 py-1 flex-shrink-0">
-                        {event.type}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-1">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1">
+                        {getTypeIcon(event.type)}
+                        <Badge variant="secondary" className="text-xs bg-teal-400/20 border-teal-400/30 text-teal-200 px-1 py-0">
+                          {event.type}
+                        </Badge>
+                      </div>
                       {getStatusIcon(event.status)}
                     </div>
+
+                    <h4 className="font-semibold text-white text-xs leading-tight line-clamp-2">
+                      {event.title}
+                    </h4>
                   </div>
 
-                  <h4 className="font-semibold text-white text-sm leading-tight">
-                    {event.title}
-                  </h4>
-
-                  {/* Progress bar */}
-                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${event.progress}%` }}
-                      transition={{ duration: 1, delay: index * 0.1 }}
-                      className="h-full bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-2 py-1">
-                      {event.progress}%
-                    </Badge>
-                  </div>
-
-                  {/* Date */}
-                  <div className="flex items-center gap-1 text-xs text-gray-300">
-                    <Calendar className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate">
-                      {format(new Date(event.startDate), 'MMM dd')}
-                      {event.endDate && ` - ${format(new Date(event.endDate), 'MMM dd')}`}
-                    </span>
-                  </div>
-
-                  {/* Assignees */}
-                  {event.assignees.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Users className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                      <div className="flex -space-x-1">
-                        {event.assignees.slice(0, 3).map((assignee, idx) => (
-                          <div
-                            key={assignee}
-                            className="w-5 h-5 rounded-full bg-gradient-to-br from-teal-400/30 to-cyan-500/30 border border-white/40 flex items-center justify-center text-xs font-medium text-white"
-                            title={assignee}
-                          >
-                            {assignee.charAt(0).toUpperCase()}
-                          </div>
-                        ))}
-                        {event.assignees.length > 3 && (
-                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-gray-500/30 to-gray-600/30 border border-white/40 flex items-center justify-center text-xs font-medium text-white">
-                            +{event.assignees.length - 3}
-                          </div>
-                        )}
-                      </div>
+                  {/* Progress section */}
+                  <div className="space-y-1">
+                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${event.progress}%` }}
+                        transition={{ duration: 1, delay: index * 0.1 }}
+                        className="h-full bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full"
+                      />
                     </div>
-                  )}
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-xs text-gray-300">
+                        <Calendar className="w-2.5 h-2.5" />
+                        <span className="truncate text-xs">
+                          {format(new Date(event.startDate), 'MMM dd')}
+                        </span>
+                      </div>
+                      <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white px-1 py-0">
+                        {event.progress}%
+                      </Badge>
+                    </div>
+
+                    {/* Assignees */}
+                    {event.assignees.length > 0 && (
+                      <div className="flex items-center gap-1 pt-1">
+                        <div className="flex -space-x-1">
+                          {event.assignees.slice(0, 2).map((assignee, idx) => (
+                            <div
+                              key={assignee}
+                              className="w-4 h-4 rounded-full bg-gradient-to-br from-teal-400/40 to-cyan-500/40 border border-white/50 flex items-center justify-center text-xs font-medium text-white"
+                              title={assignee}
+                            >
+                              {assignee.charAt(0).toUpperCase()}
+                            </div>
+                          ))}
+                          {event.assignees.length > 2 && (
+                            <div className="w-4 h-4 rounded-full bg-gradient-to-br from-gray-500/40 to-gray-600/40 border border-white/50 flex items-center justify-center text-xs font-medium text-white">
+                              +{event.assignees.length - 2}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             );
@@ -197,8 +214,12 @@ export const ModernTimeline: React.FC<ModernTimelineProps> = ({
 
         {/* Time labels */}
         <div className="absolute bottom-4 left-8 right-8 flex justify-between text-xs text-gray-300 font-medium">
-          <span className="truncate">{format(minDate, 'MMM dd, yyyy')}</span>
-          <span className="truncate">{format(maxDate, 'MMM dd, yyyy')}</span>
+          <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm">
+            {format(minDate, 'MMM dd, yyyy')}
+          </span>
+          <span className="bg-white/5 px-2 py-1 rounded border border-white/10 backdrop-blur-sm">
+            {format(maxDate, 'MMM dd, yyyy')}
+          </span>
         </div>
 
         {/* Empty state */}
