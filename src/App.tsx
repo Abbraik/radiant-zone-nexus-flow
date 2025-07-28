@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import { Workspace } from "./components/workspace/Workspace";
 import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import { ThinkZone } from "./pages/ThinkZone";
+import { ThinkZoneStudio } from "./pages/ThinkZoneStudio";
 import { ActZone } from "./pages/ActZone";
 import { MonitorZone } from "./pages/MonitorZone";
 import { InnovateLearnZone } from "./pages/InnovateLearnZone";
@@ -49,6 +51,7 @@ const App = () => (
                         <Routes>
                           <Route path="/" element={<Index />} />
                           <Route path="/think" element={<ThinkZone />} />
+                          <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
                           <Route path="/act" element={<ActZone />} />
                           <Route path="/monitor" element={<MonitorZone />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
@@ -85,6 +88,7 @@ const App = () => (
                   <Route path="/mission-control" element={<MissionControl />} />
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ThinkZone />} />
+                  <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />
                   <Route path="/innovate" element={<InnovateLearnZone />} />

@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Play, Target, Database, Zap, Users, Lightbulb } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -109,6 +111,7 @@ const CustomSlider: React.FC<{
 };
 
 export const ThinkZoneWorkspace: React.FC = () => {
+  const navigate = useNavigate();
   const { data: sprints } = useMockSprints();
   const [formData, setFormData] = useState<ThinkFormData>({
     tension: 'medium',
@@ -126,6 +129,10 @@ export const ThinkZoneWorkspace: React.FC = () => {
       return;
     }
     console.log('Starting sprint with data:', { ...formData, signal: selectedSignal });
+  };
+
+  const handleLaunchStudio = () => {
+    navigate('/think-zone-studio');
   };
 
   return (
@@ -337,6 +344,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
 
                 <Button 
                   variant="outline" 
+                  onClick={handleLaunchStudio}
                   className="w-full text-teal-300 border-teal-300 hover:bg-teal-300 hover:text-slate-900 transition-all duration-200"
                 >
                   <Lightbulb className="w-4 h-4 mr-2" />
