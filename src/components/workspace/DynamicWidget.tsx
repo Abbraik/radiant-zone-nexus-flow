@@ -42,7 +42,10 @@ const widgetComponents = {
   
   // Phase 2: 3D Components
   Cascade3DViewer: lazy(() => import('../widgets/Cascade3DWidget')),
-  DigitalTwinPreview: lazy(() => import('../widgets/DigitalTwinWidget'))
+  DigitalTwinPreview: lazy(() => import('../widgets/DigitalTwinWidget')),
+  
+  // Think Zone Components
+  ScenarioPlanner: lazy(() => import('../widgets/ScenarioPlanner'))
 };
 
 const LoadingSkeleton = () => (
