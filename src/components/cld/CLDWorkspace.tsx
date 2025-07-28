@@ -18,92 +18,92 @@ export const CLDWorkspace: React.FC = () => {
     description: 'A comprehensive system model showing population and development dynamics',
     nodes: [
       {
-        id: 'population_development_cycle',
-        label: 'Population & Development Cycle',
+        id: 'environment_quality',
+        label: 'Environmental Quality',
+        type: 'auxiliary',
+        position: { x: 50, y: 250 },
+        value: 40,
+        category: 'context'
+      },
+      {
+        id: 'social_outcomes',
+        label: 'Social Outcomes',
         type: 'stock',
-        position: { x: 500, y: 250 },
-        value: 100,
-        category: 'core'
+        position: { x: 250, y: 280 },
+        value: 60,
+        category: 'outcome'
       },
       {
         id: 'population_size_composition',
         label: 'Population Size & Composition',
         type: 'stock',
-        position: { x: 400, y: 100 },
+        position: { x: 250, y: 150 },
         value: 85,
         category: 'stock'
       },
       {
         id: 'natural_growth_rate',
         label: 'Natural Growth Rate',
-        type: 'flow',
-        position: { x: 600, y: 100 },
+        type: 'auxiliary',
+        position: { x: 420, y: 60 },
         value: 2.1,
         category: 'rate'
+      },
+      {
+        id: 'production_process',
+        label: 'Production Process',
+        type: 'auxiliary',
+        position: { x: 600, y: 110 },
+        value: 80,
+        category: 'flow'
+      },
+      {
+        id: 'population_development_cycle',
+        label: 'Population & Development Cycle',
+        type: 'stock',
+        position: { x: 450, y: 180 },
+        value: 100,
+        category: 'core'
+      },
+      {
+        id: 'resource_market_supply',
+        label: 'Resource Market Supply',
+        type: 'stock',
+        position: { x: 450, y: 280 },
+        value: 65,
+        category: 'flow'
       },
       {
         id: 'economic_model',
         label: 'Economic Model',
         type: 'auxiliary',
-        position: { x: 800, y: 200 },
+        position: { x: 700, y: 180 },
         value: 75,
         category: 'model'
       },
       {
-        id: 'resource_market_supply',
-        label: 'Resource Market Supply',
-        type: 'flow',
-        position: { x: 600, y: 300 },
-        value: 65,
-        category: 'flow'
-      },
-      {
         id: 'resource_market_demand',
         label: 'Resource Market Demand',
-        type: 'flow',
-        position: { x: 400, y: 300 },
+        type: 'auxiliary',
+        position: { x: 700, y: 280 },
         value: 70,
         category: 'flow'
       },
       {
-        id: 'production_process',
-        label: 'Production Process',
-        type: 'flow',
-        position: { x: 600, y: 450 },
-        value: 80,
-        category: 'flow'
-      },
-      {
-        id: 'social_outcomes',
-        label: 'Social Outcomes',
+        id: 'external_trade',
+        label: 'External Trade & Global Market',
         type: 'auxiliary',
-        position: { x: 200, y: 200 },
-        value: 60,
-        category: 'outcome'
+        position: { x: 850, y: 250 },
+        value: 45,
+        category: 'flow'
       },
       {
         id: 'income_level',
         label: 'Income & Living Standards',
         type: 'auxiliary',
-        position: { x: 200, y: 400 },
+        position: { x: 450, y: 450 },
         value: 55,
         category: 'indicator'
-      },
-      {
-        id: 'external_trade',
-        label: 'External Trade & Global Market',
-        type: 'flow',
-        position: { x: 800, y: 400 },
-        value: 45,
-        category: 'flow'
-      },
-      {
-        id: 'environment_quality',
-        label: 'Environmental Quality',
-        type: 'auxiliary',
-        position: { x: 100, y: 100 },
-        value: 40,
-        category: 'context'
       }
     ],
     links: [
