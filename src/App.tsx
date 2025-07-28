@@ -12,6 +12,7 @@ import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import { ThinkZone } from "./pages/ThinkZone";
 import { ThinkZoneStudio } from "./pages/ThinkZoneStudio";
+import { ScenarioPlannerPage } from "./pages/ScenarioPlanner";
 import { ActZone } from "./pages/ActZone";
 import { MonitorZone } from "./pages/MonitorZone";
 import { InnovateLearnZone } from "./pages/InnovateLearnZone";
@@ -89,6 +90,7 @@ const App = () => (
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ThinkZone />} />
                   <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
+                  <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />
                   <Route path="/innovate" element={<InnovateLearnZone />} />
