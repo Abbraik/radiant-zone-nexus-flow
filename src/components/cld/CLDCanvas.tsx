@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -9,7 +9,11 @@ import {
   RotateCcw,
   RotateCw,
   Copy,
-  Trash2
+  Trash2,
+  Hand,
+  Square,
+  Circle,
+  Minus
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { CLDNode, CLDLink, CLDPosition } from '../../types/cld';
@@ -46,11 +50,15 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [showGrid, setShowGrid] = useState(true);
   const [snapToGrid, setSnapToGrid] = useState(true);
+  const [tool, setTool] = useState<'select' | 'pan' | 'connect'>('select');
   const [draggedNode, setDraggedNode] = useState<string | null>(null);
   const [connecting, setConnecting] = useState<{ sourceId: string; polarity: 'positive' | 'negative' } | null>(null);
   const [previewLine, setPreviewLine] = useState<{ start: CLDPosition; end: CLDPosition } | null>(null);
   const [contextMenu, setContextMenu] = useState<{ position: CLDPosition; nodeId?: string; linkId?: string } | null>(null);
   const [hoveredNode, setHoveredNode] = useState<CLDNode | null>(null);
+  const [isPanning, setIsPanning] = useState(false);
+  const [multiSelectBox, setMultiSelectBox] = useState<{ start: CLDPosition; end: CLDPosition } | null>(null);
+  const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
 
   const gridSize = 16;
 
@@ -72,9 +80,74 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
   }, [pan, zoom]);
 
   const handleCanvasDoubleClick = useCallback((e: React.MouseEvent) => {
-    const position = snapPosition(getCanvasPosition(e.clientX, e.clientY));
-    onNodeAdd(position);
-  }, [getCanvasPosition, snapPosition, onNodeAdd]);
+    if (tool === 'select') {
+      const position = snapPosition(getCanvasPosition(e.clientX, e.clientY));
+      onNodeAdd(position);
+    }
+  }, [getCanvasPosition, snapPosition, onNodeAdd, tool]);
+
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    if (tool === 'pan' || (e.shiftKey && tool === 'select')) {
+      setIsPanning(true);
+      return;
+    }
+    
+    if (tool === 'select' && !e.shiftKey) {
+      // Start multi-select box
+      const position = getCanvasPosition(e.clientX, e.clientY);
+      setMultiSelectBox({ start: position, end: position });
+    }
+  }, [tool, getCanvasPosition]);
+
+  const handleConnectorDrag = useCallback((clientX: number, clientY: number) => {
+    if (!connecting || !previewLine) return;
+    const position = getCanvasPosition(clientX, clientY);
+    setPreviewLine(prev => prev ? { ...prev, end: position } : null);
+  }, [connecting, previewLine, getCanvasPosition]);
+
+  const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
+    if (isPanning) {
+      setPan(prev => ({
+        x: prev.x + e.movementX,
+        y: prev.y + e.movementY
+      }));
+      return;
+    }
+
+    if (multiSelectBox) {
+      const position = getCanvasPosition(e.clientX, e.clientY);
+      setMultiSelectBox(prev => prev ? { ...prev, end: position } : null);
+    }
+
+    if (connecting) {
+      handleConnectorDrag(e.clientX, e.clientY);
+    }
+  }, [isPanning, multiSelectBox, connecting, getCanvasPosition, handleConnectorDrag]);
+
+  const handleCanvasMouseUp = useCallback(() => {
+    setIsPanning(false);
+    
+    if (multiSelectBox) {
+      // Select nodes within the box
+      const { start, end } = multiSelectBox;
+      const minX = Math.min(start.x, end.x);
+      const maxX = Math.max(start.x, end.x);
+      const minY = Math.min(start.y, end.y);
+      const maxY = Math.max(start.y, end.y);
+      
+      const selectedNodeIds = new Set(
+        nodes
+          .filter(node => 
+            node.position.x >= minX && node.position.x <= maxX &&
+            node.position.y >= minY && node.position.y <= maxY
+          )
+          .map(node => node.id)
+      );
+      
+      setSelectedNodes(selectedNodeIds);
+      setMultiSelectBox(null);
+    }
+  }, [multiSelectBox, nodes]);
 
   const handleNodeDragStart = useCallback((nodeId: string) => {
     setDraggedNode(nodeId);
@@ -95,12 +168,6 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
     const position = getCanvasPosition(clientX, clientY);
     setPreviewLine({ start: position, end: position });
   }, [getCanvasPosition]);
-
-  const handleConnectorDrag = useCallback((clientX: number, clientY: number) => {
-    if (!connecting || !previewLine) return;
-    const position = getCanvasPosition(clientX, clientY);
-    setPreviewLine(prev => prev ? { ...prev, end: position } : null);
-  }, [connecting, previewLine, getCanvasPosition]);
 
   const handleConnectorEnd = useCallback((targetNodeId?: string) => {
     if (connecting && targetNodeId && targetNodeId !== connecting.sourceId) {
@@ -138,8 +205,19 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
 
   const zoomIn = useCallback(() => setZoom(prev => Math.min(prev * 1.2, 3)), []);
   const zoomOut = useCallback(() => setZoom(prev => Math.max(prev / 1.2, 0.3)), []);
+  const resetView = useCallback(() => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, []);
 
-  // Keyboard shortcuts
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY * -0.001;
+    const newZoom = Math.min(Math.max(zoom + delta, 0.1), 5);
+    setZoom(newZoom);
+  }, [zoom]);
+
+  // Enhanced keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
@@ -153,26 +231,67 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
             e.preventDefault();
             zoomOut();
             break;
+          case '0':
+            e.preventDefault();
+            resetView();
+            break;
+        }
+      } else {
+        switch (e.key.toLowerCase()) {
+          case 'v':
+            setTool('select');
+            break;
+          case 'h':
+            setTool('pan');
+            break;
+          case 'c':
+            setTool('connect');
+            break;
+          case 'g':
+            setShowGrid(!showGrid);
+            break;
+          case 's':
+            if (!e.ctrlKey && !e.metaKey) {
+              setSnapToGrid(!snapToGrid);
+            }
+            break;
+          case 'escape':
+            setTool('select');
+            setConnecting(null);
+            setPreviewLine(null);
+            setSelectedNodes(new Set());
+            break;
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [zoomIn, zoomOut]);
+  }, [zoomIn, zoomOut, resetView, showGrid, snapToGrid]);
 
   return (
     <div className="relative w-full h-full bg-slate-900 overflow-hidden">
       {/* Canvas */}
       <div
         ref={canvasRef}
-        className="relative w-full h-full cursor-crosshair"
+        className={`relative w-full h-full overflow-hidden ${
+          tool === 'pan' ? 'cursor-grab' : 
+          isPanning ? 'cursor-grabbing' : 
+          tool === 'connect' ? 'cursor-crosshair' : 'cursor-default'
+        }`}
         onDoubleClick={handleCanvasDoubleClick}
         onContextMenu={(e) => handleRightClick(e)}
+        onMouseDown={handleCanvasMouseDown}
+        onMouseMove={handleCanvasMouseMove}
+        onMouseUp={handleCanvasMouseUp}
+        onWheel={handleWheel}
         onClick={() => {
-          onNodeSelect(null);
-          onLinkSelect(null);
-          setContextMenu(null);
+          if (!multiSelectBox && !isPanning) {
+            onNodeSelect(null);
+            onLinkSelect(null);
+            setContextMenu(null);
+            setSelectedNodes(new Set());
+          }
         }}
       >
         {/* Grid Background */}
@@ -189,11 +308,25 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
           />
         )}
 
+        {/* Multi-select box */}
+        {multiSelectBox && (
+          <div
+            className="absolute border-2 border-teal-400 bg-teal-400/10 pointer-events-none z-50"
+            style={{
+              left: Math.min(multiSelectBox.start.x, multiSelectBox.end.x) * zoom + pan.x,
+              top: Math.min(multiSelectBox.start.y, multiSelectBox.end.y) * zoom + pan.y,
+              width: Math.abs(multiSelectBox.end.x - multiSelectBox.start.x) * zoom,
+              height: Math.abs(multiSelectBox.end.y - multiSelectBox.start.y) * zoom,
+            }}
+          />
+        )}
+
         {/* Canvas Content */}
         <div
           className="absolute inset-0"
           style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transformOrigin: '0 0'
           }}
         >
           {/* Links */}
@@ -279,61 +412,104 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
 
           {/* Nodes */}
           {nodes.map(node => {
-            const isSelected = selectedNode?.id === node.id;
+            const isSelected = selectedNode?.id === node.id || selectedNodes.has(node.id);
             const isDragged = draggedNode === node.id;
-            const dimmed = selectedNode && selectedNode.id !== node.id;
+            const dimmed = (selectedNode && selectedNode.id !== node.id && !selectedNodes.has(node.id)) || 
+                          (selectedNodes.size > 0 && !selectedNodes.has(node.id) && !selectedNode);
 
             return (
               <motion.div
                 key={node.id}
                 className={`
                   absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer
-                  bg-slate-800/90 backdrop-blur-sm border-2 rounded-lg p-3 min-w-24 text-center
-                  transition-all duration-200
+                  bg-slate-800/95 backdrop-blur-md border-2 rounded-xl p-4 min-w-28 text-center
+                  transition-all duration-300 ease-out group
                   ${isSelected 
-                    ? 'border-teal-500 shadow-lg shadow-teal-500/25' 
-                    : 'border-slate-600 hover:border-slate-500'
+                    ? 'border-teal-400 shadow-xl shadow-teal-400/30 bg-slate-700/95' 
+                    : 'border-slate-500/50 hover:border-slate-400 hover:shadow-lg hover:shadow-slate-400/20'
                   }
-                  ${dimmed ? 'opacity-50' : 'opacity-100'}
-                  ${isDragged ? 'z-50' : 'z-10'}
+                  ${dimmed ? 'opacity-40' : 'opacity-100'}
+                  ${isDragged ? 'z-50 rotate-1 scale-105' : 'z-10'}
+                  ${tool === 'select' ? 'hover:scale-105' : ''}
                 `}
                 style={{
                   left: node.position.x,
                   top: node.position.y
                 }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: dimmed ? 0.5 : 1 }}
-                whileHover={{ scale: isDragged ? 1 : 1.05 }}
-                drag
+                initial={{ scale: 0, opacity: 0, y: -20 }}
+                animate={{ 
+                  scale: 1, 
+                  opacity: dimmed ? 0.4 : 1,
+                  y: 0,
+                  rotate: isDragged ? 1 : 0
+                }}
+                whileHover={{ 
+                  scale: isDragged || tool !== 'select' ? 1 : 1.05,
+                  transition: { duration: 0.2 }
+                }}
+                drag={tool === 'select'}
                 dragMomentum={false}
+                dragElastic={0.1}
                 onDragStart={() => handleNodeDragStart(node.id)}
-                onDrag={(_, info) => handleNodeDrag(node.id, info.point.x, info.point.y)}
+                onDrag={(_, info: PanInfo) => {
+                  if (tool === 'select') {
+                    handleNodeDrag(node.id, info.point.x, info.point.y);
+                  }
+                }}
                 onDragEnd={handleNodeDragEnd}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNodeSelect(node);
+                  if (e.ctrlKey || e.metaKey) {
+                    setSelectedNodes(prev => {
+                      const newSet = new Set(prev);
+                      if (newSet.has(node.id)) {
+                        newSet.delete(node.id);
+                      } else {
+                        newSet.add(node.id);
+                      }
+                      return newSet;
+                    });
+                  } else {
+                    onNodeSelect(node);
+                    setSelectedNodes(new Set());
+                  }
                 }}
                 onContextMenu={(e) => handleRightClick(e, node.id)}
                 onMouseEnter={() => setHoveredNode(node)}
                 onMouseLeave={() => setHoveredNode(null)}
               >
-                <div className="text-white text-sm font-medium">{node.label}</div>
+                <div className="text-white text-sm font-semibold leading-tight">{node.label}</div>
                 {node.description && (
-                  <div className="text-gray-400 text-xs mt-1">{node.description}</div>
+                  <div className="text-slate-300 text-xs mt-2 opacity-80">{node.description}</div>
                 )}
+                
+                {/* Node type indicator */}
+                <div className={`absolute -top-2 -left-2 w-4 h-4 rounded-full border-2 border-slate-700
+                  ${node.type === 'stock' ? 'bg-blue-500' :
+                    node.type === 'flow' ? 'bg-green-500' :
+                    node.type === 'auxiliary' ? 'bg-yellow-500' :
+                    'bg-purple-500'
+                  }`} 
+                />
 
-                {/* Connection ports */}
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full opacity-0 hover:opacity-100 transition-opacity"
+                {/* Connection ports - only show on hover or when connecting */}
+                <div className={`absolute -top-2 -right-2 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-700
+                  transition-all duration-200 cursor-crosshair
+                  ${tool === 'connect' || connecting ? 'opacity-100 scale-100' : 'opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100'}`}
                      onMouseDown={(e) => {
                        e.stopPropagation();
                        handleConnectorStart(node.id, 'positive', e.clientX, e.clientY);
                      }}
+                     title="Positive connection"
                 />
-                <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-500 rounded-full opacity-0 hover:opacity-100 transition-opacity"
+                <div className={`absolute -bottom-2 -right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-700
+                  transition-all duration-200 cursor-crosshair
+                  ${tool === 'connect' || connecting ? 'opacity-100 scale-100' : 'opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100'}`}
                      onMouseDown={(e) => {
                        e.stopPropagation();
                        handleConnectorStart(node.id, 'negative', e.clientX, e.clientY);
                      }}
+                     title="Negative connection"
                 />
               </motion.div>
             );
@@ -341,13 +517,46 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="absolute top-4 left-4 flex gap-2">
+      {/* Enhanced Toolbar */}
+      <div className="absolute top-4 left-4 flex gap-1 bg-slate-800/95 backdrop-blur-md rounded-xl p-2 border border-slate-600/50">
+        {/* Tool Selection */}
+        <Button
+          variant={tool === 'select' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setTool('select')}
+          className={`${tool === 'select' ? 'bg-teal-600 border-teal-500' : 'bg-transparent border-slate-600'} text-white hover:bg-slate-700`}
+          title="Select Tool (V)"
+        >
+          <MousePointer className="w-4 h-4" />
+        </Button>
+        <Button
+          variant={tool === 'pan' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setTool('pan')}
+          className={`${tool === 'pan' ? 'bg-teal-600 border-teal-500' : 'bg-transparent border-slate-600'} text-white hover:bg-slate-700`}
+          title="Pan Tool (H)"
+        >
+          <Hand className="w-4 h-4" />
+        </Button>
+        <Button
+          variant={tool === 'connect' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setTool('connect')}
+          className={`${tool === 'connect' ? 'bg-teal-600 border-teal-500' : 'bg-transparent border-slate-600'} text-white hover:bg-slate-700`}
+          title="Connection Tool (C)"
+        >
+          <Minus className="w-4 h-4 rotate-45" />
+        </Button>
+        
+        <div className="w-px h-6 bg-slate-600 mx-1" />
+        
+        {/* View Controls */}
         <Button
           variant="outline"
           size="sm"
           onClick={zoomIn}
-          className="bg-slate-800/90 backdrop-blur-sm border-slate-600 text-white hover:bg-slate-700"
+          className="bg-transparent border-slate-600 text-white hover:bg-slate-700"
+          title="Zoom In (+)"
         >
           <ZoomIn className="w-4 h-4" />
         </Button>
@@ -355,15 +564,30 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
           variant="outline"
           size="sm"
           onClick={zoomOut}
-          className="bg-slate-800/90 backdrop-blur-sm border-slate-600 text-white hover:bg-slate-700"
+          className="bg-transparent border-slate-600 text-white hover:bg-slate-700"
+          title="Zoom Out (-)"
         >
           <ZoomOut className="w-4 h-4" />
         </Button>
         <Button
           variant="outline"
           size="sm"
+          onClick={resetView}
+          className="bg-transparent border-slate-600 text-white hover:bg-slate-700"
+          title="Reset View (0)"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </Button>
+        
+        <div className="w-px h-6 bg-slate-600 mx-1" />
+        
+        {/* Grid Controls */}
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setShowGrid(!showGrid)}
-          className={`bg-slate-800/90 backdrop-blur-sm border-slate-600 text-white hover:bg-slate-700 ${showGrid ? 'bg-teal-600' : ''}`}
+          className={`bg-transparent border-slate-600 text-white hover:bg-slate-700 ${showGrid ? 'bg-teal-600/20 border-teal-500' : ''}`}
+          title="Toggle Grid (G)"
         >
           <Grid className="w-4 h-4" />
         </Button>
@@ -371,10 +595,16 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
           variant="outline"
           size="sm"
           onClick={() => setSnapToGrid(!snapToGrid)}
-          className={`bg-slate-800/90 backdrop-blur-sm border-slate-600 text-white hover:bg-slate-700 ${snapToGrid ? 'bg-teal-600' : ''}`}
+          className={`bg-transparent border-slate-600 text-white hover:bg-slate-700 ${snapToGrid ? 'bg-teal-600/20 border-teal-500' : ''}`}
+          title="Snap to Grid (S)"
         >
-          <MousePointer className="w-4 h-4" />
+          <Square className="w-3 h-3" />
         </Button>
+      </div>
+
+      {/* Zoom Indicator */}
+      <div className="absolute top-4 right-4 bg-slate-800/95 backdrop-blur-md rounded-lg px-3 py-1 border border-slate-600/50">
+        <span className="text-white text-sm font-mono">{Math.round(zoom * 100)}%</span>
       </div>
 
       {/* Node Tooltip */}
