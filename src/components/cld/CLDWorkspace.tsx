@@ -13,12 +13,199 @@ export const CLDWorkspace: React.FC = () => {
   
   // Model state
   const [model, setModel] = useState<CLDModel>({
-    id: 'model-1',
-    name: 'System Dynamics Model',
-    nodes: [],
-    links: [],
+    id: 'default-population-model',
+    name: 'Population & Development System',
+    description: 'A comprehensive system model showing population and development dynamics',
+    nodes: [
+      {
+        id: 'population_development_cycle',
+        label: 'Population & Development Cycle',
+        type: 'stock',
+        position: { x: 500, y: 250 },
+        value: 100,
+        category: 'core'
+      },
+      {
+        id: 'population_size_composition',
+        label: 'Population Size & Composition',
+        type: 'stock',
+        position: { x: 400, y: 100 },
+        value: 85,
+        category: 'stock'
+      },
+      {
+        id: 'natural_growth_rate',
+        label: 'Natural Growth Rate',
+        type: 'flow',
+        position: { x: 600, y: 100 },
+        value: 2.1,
+        category: 'rate'
+      },
+      {
+        id: 'economic_model',
+        label: 'Economic Model',
+        type: 'auxiliary',
+        position: { x: 800, y: 200 },
+        value: 75,
+        category: 'model'
+      },
+      {
+        id: 'resource_market_supply',
+        label: 'Resource Market Supply',
+        type: 'flow',
+        position: { x: 600, y: 300 },
+        value: 65,
+        category: 'flow'
+      },
+      {
+        id: 'resource_market_demand',
+        label: 'Resource Market Demand',
+        type: 'flow',
+        position: { x: 400, y: 300 },
+        value: 70,
+        category: 'flow'
+      },
+      {
+        id: 'production_process',
+        label: 'Production Process',
+        type: 'flow',
+        position: { x: 600, y: 450 },
+        value: 80,
+        category: 'flow'
+      },
+      {
+        id: 'social_outcomes',
+        label: 'Social Outcomes',
+        type: 'auxiliary',
+        position: { x: 200, y: 200 },
+        value: 60,
+        category: 'outcome'
+      },
+      {
+        id: 'income_level',
+        label: 'Income & Living Standards',
+        type: 'auxiliary',
+        position: { x: 200, y: 400 },
+        value: 55,
+        category: 'indicator'
+      },
+      {
+        id: 'external_trade',
+        label: 'External Trade & Global Market',
+        type: 'flow',
+        position: { x: 800, y: 400 },
+        value: 45,
+        category: 'flow'
+      },
+      {
+        id: 'environment_quality',
+        label: 'Environmental Quality',
+        type: 'auxiliary',
+        position: { x: 100, y: 100 },
+        value: 40,
+        category: 'context'
+      }
+    ],
+    links: [
+      {
+        id: 'link-1',
+        sourceId: 'population_size_composition',
+        targetId: 'social_outcomes',
+        polarity: 'positive',
+        strength: 0.8,
+        label: 'Population drives social needs'
+      },
+      {
+        id: 'link-2',
+        sourceId: 'natural_growth_rate',
+        targetId: 'population_size_composition',
+        polarity: 'positive',
+        strength: 0.9,
+        label: 'Growth increases population'
+      },
+      {
+        id: 'link-3',
+        sourceId: 'economic_model',
+        targetId: 'resource_market_supply',
+        polarity: 'positive',
+        strength: 0.7,
+        label: 'Economy affects supply'
+      },
+      {
+        id: 'link-4',
+        sourceId: 'resource_market_supply',
+        targetId: 'resource_market_demand',
+        polarity: 'positive',
+        strength: 0.6,
+        label: 'Supply influences demand'
+      },
+      {
+        id: 'link-5',
+        sourceId: 'resource_market_demand',
+        targetId: 'economic_model',
+        polarity: 'positive',
+        strength: 0.8,
+        label: 'Demand drives economy'
+      },
+      {
+        id: 'link-6',
+        sourceId: 'production_process',
+        targetId: 'resource_market_supply',
+        polarity: 'positive',
+        strength: 0.9,
+        label: 'Production increases supply'
+      },
+      {
+        id: 'link-7',
+        sourceId: 'production_process',
+        targetId: 'resource_market_demand',
+        polarity: 'negative',
+        strength: 0.5,
+        label: 'Production consumes resources'
+      },
+      {
+        id: 'link-8',
+        sourceId: 'social_outcomes',
+        targetId: 'income_level',
+        polarity: 'positive',
+        strength: 0.8,
+        label: 'Social progress improves income'
+      },
+      {
+        id: 'link-9',
+        sourceId: 'income_level',
+        targetId: 'social_outcomes',
+        polarity: 'positive',
+        strength: 0.7,
+        label: 'Income enables social investment'
+      },
+      {
+        id: 'link-10',
+        sourceId: 'external_trade',
+        targetId: 'resource_market_supply',
+        polarity: 'positive',
+        strength: 0.6,
+        label: 'Trade adds to supply'
+      },
+      {
+        id: 'link-11',
+        sourceId: 'environment_quality',
+        targetId: 'social_outcomes',
+        polarity: 'positive',
+        strength: 0.7,
+        label: 'Environment affects wellbeing'
+      },
+      {
+        id: 'link-12',
+        sourceId: 'income_level',
+        targetId: 'environment_quality',
+        polarity: 'negative',
+        strength: 0.4,
+        label: 'Income growth impacts environment'
+      }
+    ],
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   });
 
   // UI state
