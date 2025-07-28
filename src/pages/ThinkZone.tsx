@@ -388,6 +388,7 @@ export const ThinkZone: React.FC = () => {
                     {/* Open CLD Studio */}
                     <Button 
                       variant="outline" 
+                      onClick={() => window.location.href = '/think-zone-studio'}
                       className="w-full text-teal-300 border-teal-300 hover:bg-teal-300 hover:text-slate-900 transition-all duration-200"
                     >
                       <Lightbulb className="w-4 h-4 mr-2" />
