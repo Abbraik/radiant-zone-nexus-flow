@@ -12,110 +12,109 @@ export interface Task extends TaskType {
   updated_at: Date;
 }
 
-// Enhanced mock data with specific examples
+// Enhanced mock data with population and development context
 const mockTasksWithStatus: Task[] = [
   {
     id: '1',
-    title: 'Define tension for Loop A',
-    description: 'Set up tension parameters for the current sprint cycle',
+    title: 'Configure Population Development Meta-Loop',
+    description: 'Set up the foundational meta-loop that orchestrates all population and development dynamics',
     zone: 'think',
     type: 'define_tension',
     components: ['TensionSelector', 'SRTRangeSlider'],
     status: 'available',
-    loop_id: 'A',
-    due_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+    loop_id: 'loop-meta',
+    due_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
     created_at: new Date(),
     updated_at: new Date()
   },
   {
     id: '2',
-    title: 'Publish bundle B',
-    description: 'Create and validate intervention bundle for Loop B',
-    zone: 'act',
-    type: 'publish_bundle',
-    components: ['InterventionPicker', 'BundlePreview', 'SmartRolesPanel'],
+    title: 'Analyze Fertility Rate Dynamics',
+    description: 'Review natural population growth patterns and fertility rate determinants',
+    zone: 'think',
+    type: 'define_tension',
+    components: ['TensionSelector', 'SRTRangeSlider'],
     status: 'available',
-    loop_id: 'B',
-    due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
+    loop_id: 'loop-1',
+    due_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
     created_at: new Date(),
     updated_at: new Date()
   },
   {
     id: '3',
-    title: 'Review TRI for Loop C',
-    description: 'Monitor system health and TRI performance metrics',
-    zone: 'monitor',
-    type: 'review_tri',
-    components: ['LoopTable', 'TRIDetailDrawer'],
+    title: 'Optimize Resource Market Interventions',
+    description: 'Design intervention bundle for population-resource market balance',
+    zone: 'act',
+    type: 'publish_bundle',
+    components: ['InterventionPicker', 'BundlePreview', 'SmartRolesPanel'],
     status: 'available',
-    loop_id: 'C',
-    due_at: new Date(Date.now() + 0.5 * 24 * 60 * 60 * 1000), // critical - 12 hours
+    loop_id: 'loop-2',
+    due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
     created_at: new Date(),
     updated_at: new Date()
   },
   {
     id: '4',
-    title: 'Run simulation for Scenario X',
-    description: 'Test system resilience with parameter variations',
-    zone: 'innovate-learn',
-    type: 'run_simulation',
-    components: ['SimulationParams', 'SimulationPreview'],
+    title: 'Monitor Economic Stability Metrics',
+    description: 'Track economic stability indicators and population growth correlation',
+    zone: 'monitor',
+    type: 'review_tri',
+    components: ['LoopTable', 'TRIDetailDrawer'],
     status: 'available',
-    loop_id: 'X',
-    due_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
+    loop_id: 'loop-6',
+    due_at: new Date(Date.now() + 0.5 * 24 * 60 * 60 * 1000), // critical - 12 hours
     created_at: new Date(),
     updated_at: new Date()
   },
   {
     id: '5',
-    title: 'Capture insight from Loop C test',
-    description: 'Document and save insights from recent testing',
+    title: 'Simulate Migration Pattern Scenarios',
+    description: 'Test various migration and economic opportunity scenarios for system resilience',
+    zone: 'innovate-learn',
+    type: 'run_simulation',
+    components: ['SimulationParams', 'SimulationPreview'],
+    status: 'available',
+    loop_id: 'loop-9',
+    due_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: '6',
+    title: 'Capture Environmental Quality Insights',
+    description: 'Document learnings from environmental quality and economic balance testing',
     zone: 'innovate-learn',
     type: 'capture_insight',
     components: ['InsightFeed', 'ExperimentStudio'],
     status: 'available',
-    loop_id: 'C',
-    due_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  // Phase 2: 3D Enhanced Tasks
-  {
-    id: '6',
-    title: 'View 3D Goals Cascade',
-    description: 'Interactive 3D visualization of goal dependencies and progress',
-    zone: 'think',
-    type: 'view_cascade_3d',
-    components: ['Cascade3DViewer'],
-    status: 'available',
-    loop_id: 'Global',
-    due_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+    loop_id: 'loop-4',
+    due_at: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days
     created_at: new Date(),
     updated_at: new Date()
   },
   {
     id: '7',
-    title: 'Monitor Digital Twin',
-    description: 'Real-time digital twin analysis with system performance metrics',
-    zone: 'monitor',
-    type: 'monitor_digital_twin',
-    components: ['DigitalTwinPreview', 'TrendSparklines'],
+    title: 'View Population Development 3D Cascade',
+    description: 'Interactive 3D visualization of population and development goal dependencies',
+    zone: 'think',
+    type: 'view_cascade_3d',
+    components: ['Cascade3DViewer'],
     status: 'available',
-    loop_id: 'System',
-    due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+    loop_id: 'loop-meta',
+    due_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
     created_at: new Date(),
     updated_at: new Date()
   },
   {
     id: '8',
-    title: 'Check System Health',
-    description: 'Monitor system health and performance with digital twin visualization',
+    title: 'Monitor Social Structure Digital Twin',
+    description: 'Real-time digital twin analysis of social structure evolution and outcomes',
     zone: 'monitor',
-    type: 'check_system_health',
-    components: ['PulseBarOverview', 'LoopTable', 'DigitalTwinPreview'],
+    type: 'monitor_digital_twin',
+    components: ['DigitalTwinPreview', 'TrendSparklines'],
     status: 'available',
-    loop_id: 'System',
-    due_at: new Date(Date.now() + 0.2 * 24 * 60 * 60 * 1000), // urgent - 5 hours
+    loop_id: 'loop-10',
+    due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
     created_at: new Date(),
     updated_at: new Date()
   }
