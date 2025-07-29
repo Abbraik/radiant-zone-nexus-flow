@@ -49,6 +49,7 @@ import { Card } from '../ui/card';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import SequentialProgressBar from '../widgets/SequentialProgressBar';
 import { toast } from '../../hooks/use-toast';
+import { EnhancedRACIMatrixEditor } from '../widgets/EnhancedRACIMatrixEditor';
 
 // Mock interventions for population & development
 const populationInterventions = [
@@ -476,44 +477,7 @@ const DependencyConfigurator: React.FC<{
   );
 };
 
-// RACI Assignment Component
-const RACIAssignment: React.FC<{
-  bundleItems: BundleItem[];
-}> = ({ bundleItems }) => {
-  return (
-    <Card className="p-4 bg-white/5 border-white/10">
-      <div className="flex items-center gap-2 mb-4">
-        <Users className="h-5 w-5 text-green-400" />
-        <h4 className="text-white font-medium">Role Assignment</h4>
-      </div>
-      
-      <div className="space-y-3">
-        {mockRoles.map((person) => (
-          <div key={person.id} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className={`${person.color} text-white text-sm`}>
-                  {person.avatar}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="text-white text-sm font-medium">{person.name}</div>
-                <div className="text-gray-400 text-xs">{person.title}</div>
-              </div>
-            </div>
-            <Badge variant="outline" className="text-xs">
-              {person.role}
-            </Badge>
-          </div>
-        ))}
-      </div>
-      
-      <div className="mt-4 text-xs text-gray-400">
-        Assignments based on historical patterns. Click to modify.
-      </div>
-    </Card>
-  );
-};
+// Enhanced RACI Assignment Component - now just a wrapper for our enhanced editor
 
 export const EnhancedActZoneWorkspace: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -524,6 +488,7 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
   const [sprintStartDate, setSprintStartDate] = useState('');
   const [sprintEndDate, setSprintEndDate] = useState('');
   const [selectedDependencyFrom, setSelectedDependencyFrom] = useState<string>('');
+  const [raciAssignments, setRaciAssignments] = useState<any[]>([]); // Store RACI assignments
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -616,13 +581,18 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
     }
   };
 
+  // Handle RACI assignments change
+  const handleRaciAssignmentsChange = (assignments: any[]) => {
+    setRaciAssignments(assignments);
+  };
+
   const canProceed = () => {
     switch (currentStep) {
       case 1: return true; // Context review
       case 2: return bundleItems.length > 0; // Assemble interventions
       case 3: return true; // Preview impact
       case 4: return true; // Configure dependencies (optional)
-      case 5: return true; // Assign roles
+      case 5: return raciAssignments.length > 0; // Assign roles - now requires RACI assignments
       case 6: return sprintStartDate && sprintEndDate; // Schedule sprint
       case 7: return true; // Validate compliance
       case 8: return bundleItems.length > 0; // Publish bundle
@@ -825,7 +795,14 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <RACIAssignment bundleItems={bundleItems} />
+                <EnhancedRACIMatrixEditor
+                  interventions={bundleItems.map(item => ({
+                    id: item.intervention.id,
+                    name: item.intervention.name,
+                    category: item.intervention.category
+                  }))}
+                  onAssignmentsChange={handleRaciAssignmentsChange}
+                />
               </motion.div>
             )}
 
