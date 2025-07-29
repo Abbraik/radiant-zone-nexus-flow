@@ -11,130 +11,145 @@ import { useToast } from '../ui/use-toast';
 export const CLDWorkspace: React.FC = () => {
   const { toast } = useToast();
   
-  // Model state - Arabic Population & Development System
+  // Model state - Population & Development System Layout
   const [model, setModel] = useState<CLDModel>({
-    id: 'arabic-population-model',
-    name: 'دورة السكان والتنمية',
-    description: 'نموذج شامل يظهر ديناميكيات السكان والتنمية',
+    id: 'population-development-model',
+    name: 'Population & Development System',
+    description: 'A comprehensive system model showing population and development dynamics',
     nodes: [
-      // Left green nodes
+      // Left green node
       { 
         id: '1', 
-        label: 'جودة البيئة', 
+        label: 'Environmental Quality', 
         type: 'auxiliary', 
         position: { x: 80, y: 280 }, 
         value: 65,
-        category: 'environment'
+        category: 'environment',
+        color: '#10b981'
       },
       
-      // Top area - teal/cyan nodes
+      // Top area - teal/cyan node
       { 
         id: '2', 
-        label: 'جلال الوعي البيئي', 
+        label: 'Environmental Awareness', 
         type: 'auxiliary', 
         position: { x: 420, y: 80 }, 
         value: 70,
-        category: 'awareness'
+        category: 'awareness',
+        color: '#06b6d4'
       },
+      
+      // Top right green node
       { 
         id: '3', 
-        label: 'المؤسسات في سوق الموارد', 
+        label: 'Resource Market Institutions', 
         type: 'auxiliary', 
         position: { x: 620, y: 140 }, 
         value: 75,
-        category: 'institutions'
+        category: 'institutions',
+        color: '#10b981'
       },
       
       // Center area - dark nodes
       { 
         id: '4', 
-        label: 'النتائج الاجتماعية', 
+        label: 'Social Outcomes', 
         type: 'stock', 
         position: { x: 220, y: 280 }, 
         value: 80,
-        category: 'social'
+        category: 'social',
+        color: '#064e3b'
       },
       { 
         id: '5', 
-        label: 'كفادة سوق الموارد', 
+        label: 'Resource Market Efficiency', 
         type: 'stock', 
         position: { x: 520, y: 280 }, 
         value: 85,
-        category: 'market'
+        category: 'market',
+        color: '#064e3b'
       },
       { 
         id: '6', 
-        label: 'الطلب في سوق الموارد', 
+        label: 'Resource Market Demand', 
         type: 'auxiliary', 
         position: { x: 720, y: 280 }, 
         value: 90,
-        category: 'demand'
+        category: 'demand',
+        color: '#064e3b'
       },
       
       // Right green node
       { 
         id: '7', 
-        label: 'جودة البيئة', 
+        label: 'Environmental Quality', 
         type: 'auxiliary', 
         position: { x: 880, y: 280 }, 
         value: 65,
-        category: 'environment'
+        category: 'environment',
+        color: '#10b981'
       },
       
       // Bottom left node
       { 
         id: '8', 
-        label: 'حجم السكان ومعدلاتهم', 
+        label: 'Population Size & Composition', 
         type: 'stock', 
         position: { x: 180, y: 450 }, 
         value: 95,
-        category: 'population'
+        category: 'population',
+        color: '#064e3b'
       },
       
       // Bottom center area - blue nodes
       { 
         id: '9', 
-        label: 'الطلب في سوق السلع والخدمات', 
+        label: 'Goods & Services Market Demand', 
         type: 'auxiliary', 
         position: { x: 320, y: 520 }, 
         value: 85,
-        category: 'demand'
+        category: 'demand',
+        color: '#3b82f6'
       },
       { 
         id: '10', 
-        label: 'العرض في سوق السلع والخدمات', 
+        label: 'Goods & Services Market Supply', 
         type: 'auxiliary', 
         position: { x: 520, y: 520 }, 
         value: 88,
-        category: 'supply'
+        category: 'supply',
+        color: '#3b82f6'
       },
       { 
         id: '11', 
-        label: 'سوق عادل', 
+        label: 'Fair Market', 
         type: 'auxiliary', 
         position: { x: 420, y: 620 }, 
         value: 82,
-        category: 'market'
+        category: 'market',
+        color: '#3b82f6'
       },
       
       // Bottom center node
       { 
         id: '12', 
-        label: 'استثمار سوق السلع والخدمات', 
+        label: 'Goods & Services Market Investment', 
         type: 'stock', 
         position: { x: 420, y: 450 }, 
         value: 78,
-        category: 'investment'
+        category: 'investment',
+        color: '#064e3b'
       },
       
       // Bottom yellow node
       { 
         id: '13', 
-        label: 'مستوى الدخل', 
+        label: 'Income Level', 
         type: 'auxiliary', 
         position: { x: 420, y: 720 }, 
         value: 60,
-        category: 'income'
+        category: 'income',
+        color: '#eab308'
       }
     ],
     links: [

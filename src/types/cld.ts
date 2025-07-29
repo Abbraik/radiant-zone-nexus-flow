@@ -16,6 +16,7 @@ export interface CLDNode {
   volatility?: number;
   tracked?: boolean;
   category?: string;
+  color?: string;
   metadata?: Record<string, any>;
 }
 

@@ -477,10 +477,10 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
                 key={node.id}
                 className={`
                   absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer
-                  bg-slate-800/95 backdrop-blur-md border-2 rounded-xl p-4 min-w-28 text-center
+                  backdrop-blur-md border-2 rounded-xl p-4 min-w-28 text-center
                   transition-all duration-300 ease-out group
                   ${isSelected 
-                    ? 'border-teal-400 shadow-xl shadow-teal-400/30 bg-slate-700/95' 
+                    ? 'border-teal-400 shadow-xl shadow-teal-400/30' 
                     : 'border-slate-500/50 hover:border-slate-400 hover:shadow-lg hover:shadow-slate-400/20'
                   }
                   ${dimmed ? 'opacity-40' : 'opacity-100'}
@@ -489,7 +489,9 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
                 `}
                 style={{
                   left: node.position.x,
-                  top: node.position.y
+                  top: node.position.y,
+                  backgroundColor: node.color || '#1e293b',
+                  borderColor: isSelected ? '#14b8a6' : (node.color ? `${node.color}80` : '#64748b80')
                 }}
                 initial={{ scale: 0, opacity: 0, y: -20 }}
                 animate={{ 
