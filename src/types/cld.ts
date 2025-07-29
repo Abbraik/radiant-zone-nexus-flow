@@ -19,11 +19,14 @@ export interface CLDNode {
   metadata?: Record<string, any>;
 }
 
+export type CLDLineType = 'straight' | 'curved' | 'elbow';
+
 export interface CLDLink {
   id: string;
   sourceId: string;
   targetId: string;
   polarity: 'positive' | 'negative';
+  lineType?: CLDLineType;
   strength?: number;
   delay?: number;
   label?: string;

@@ -339,6 +339,62 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
               const isSelected = selectedLink?.id === link.id;
               const strokeColor = link.polarity === 'positive' ? '#10b981' : '#ef4444';
               const strokeWidth = isSelected ? 3 : 2;
+              const lineType = link.lineType || 'straight';
+
+              // Calculate path based on line type
+              const getLinePath = () => {
+                const x1 = sourceNode.position.x;
+                const y1 = sourceNode.position.y;
+                const x2 = targetNode.position.x;
+                const y2 = targetNode.position.y;
+
+                switch (lineType) {
+                  case 'curved': {
+                    const midX = (x1 + x2) / 2;
+                    const midY = (y1 + y2) / 2;
+                    const dx = x2 - x1;
+                    const dy = y2 - y1;
+                    const offset = Math.sqrt(dx * dx + dy * dy) * 0.2;
+                    const ctrlX = midX - dy / Math.sqrt(dx * dx + dy * dy) * offset;
+                    const ctrlY = midY + dx / Math.sqrt(dx * dx + dy * dy) * offset;
+                    return `M ${x1} ${y1} Q ${ctrlX} ${ctrlY} ${x2} ${y2}`;
+                  }
+                  case 'elbow': {
+                    const midX = (x1 + x2) / 2;
+                    return `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+                  }
+                  default: // straight
+                    return `M ${x1} ${y1} L ${x2} ${y2}`;
+                }
+              };
+
+              const getLabelPosition = () => {
+                const x1 = sourceNode.position.x;
+                const y1 = sourceNode.position.y;
+                const x2 = targetNode.position.x;
+                const y2 = targetNode.position.y;
+
+                switch (lineType) {
+                  case 'curved': {
+                    const midX = (x1 + x2) / 2;
+                    const midY = (y1 + y2) / 2;
+                    const dx = x2 - x1;
+                    const dy = y2 - y1;
+                    const offset = Math.sqrt(dx * dx + dy * dy) * 0.1;
+                    return {
+                      x: midX - dy / Math.sqrt(dx * dx + dy * dy) * offset,
+                      y: midY + dx / Math.sqrt(dx * dx + dy * dy) * offset
+                    };
+                  }
+                  case 'elbow': {
+                    return { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
+                  }
+                  default:
+                    return { x: (x1 + x2) / 2, y: (y1 + y2) / 2 };
+                }
+              };
+
+              const labelPos = getLabelPosition();
 
               return (
                 <motion.g
@@ -352,21 +408,20 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
                   }}
                   onContextMenu={(e) => handleRightClick(e, undefined, link.id)}
                 >
-                  <line
-                    x1={sourceNode.position.x}
-                    y1={sourceNode.position.y}
-                    x2={targetNode.position.x}
-                    y2={targetNode.position.y}
+                  <path
+                    d={getLinePath()}
                     stroke={strokeColor}
                     strokeWidth={strokeWidth}
                     strokeDasharray={link.polarity === 'negative' ? '5,5' : undefined}
+                    fill="none"
                     markerEnd="url(#arrowhead)"
+                    className="transition-all duration-200"
                   />
                   
                   {/* Link label */}
                   <text
-                    x={(sourceNode.position.x + targetNode.position.x) / 2}
-                    y={(sourceNode.position.y + targetNode.position.y) / 2}
+                    x={labelPos.x}
+                    y={labelPos.y}
                     fill="white"
                     fontSize="12"
                     textAnchor="middle"

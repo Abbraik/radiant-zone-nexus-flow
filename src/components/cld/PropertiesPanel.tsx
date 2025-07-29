@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from '../ui/switch';
 import { Slider } from '../ui/slider';
 import { Separator } from '../ui/separator';
-import { CLDNode, CLDLink } from '../../types/cld';
+import { CLDNode, CLDLink, CLDLineType } from '../../types/cld';
 
 interface PropertiesPanelProps {
   selectedNode: CLDNode | null;
@@ -305,6 +305,23 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <SelectContent className="bg-slate-700 border-slate-600">
                   <SelectItem value="positive" className="text-white">Positive (+)</SelectItem>
                   <SelectItem value="negative" className="text-white">Negative (-)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-white">Line Type</Label>
+              <Select
+                value={formData.lineType || 'straight'}
+                onValueChange={(value) => handleFieldChange('lineType', value)}
+              >
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white focus:border-teal-500">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectItem value="straight" className="text-white">Straight</SelectItem>
+                  <SelectItem value="curved" className="text-white">Curved</SelectItem>
+                  <SelectItem value="elbow" className="text-white">Elbow</SelectItem>
                 </SelectContent>
               </Select>
             </div>
