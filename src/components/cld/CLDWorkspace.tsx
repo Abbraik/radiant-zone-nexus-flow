@@ -17,45 +17,45 @@ export const CLDWorkspace: React.FC = () => {
     name: 'Population & Development System',
     description: 'A comprehensive system model showing population and development dynamics',
     nodes: [
-      // Left green node
+      // Left green node - perfectly aligned
       { 
         id: '1', 
         label: 'Environmental Quality', 
         type: 'auxiliary', 
-        position: { x: 80, y: 280 }, 
+        position: { x: 100, y: 300 }, 
         value: 65,
         category: 'environment',
         color: '#10b981'
       },
       
-      // Top area - teal/cyan node
+      // Top center - teal/cyan node
       { 
         id: '2', 
         label: 'Environmental Awareness', 
         type: 'auxiliary', 
-        position: { x: 420, y: 80 }, 
+        position: { x: 500, y: 100 }, 
         value: 70,
         category: 'awareness',
         color: '#06b6d4'
       },
       
-      // Top right green node
+      // Top right green node - symmetric to left
       { 
         id: '3', 
         label: 'Resource Market Institutions', 
         type: 'auxiliary', 
-        position: { x: 620, y: 140 }, 
+        position: { x: 700, y: 200 }, 
         value: 75,
         category: 'institutions',
         color: '#10b981'
       },
       
-      // Center area - dark nodes
+      // Center row - perfectly aligned horizontally
       { 
         id: '4', 
         label: 'Social Outcomes', 
         type: 'stock', 
-        position: { x: 220, y: 280 }, 
+        position: { x: 250, y: 300 }, 
         value: 80,
         category: 'social',
         color: '#064e3b'
@@ -64,7 +64,7 @@ export const CLDWorkspace: React.FC = () => {
         id: '5', 
         label: 'Resource Market Efficiency', 
         type: 'stock', 
-        position: { x: 520, y: 280 }, 
+        position: { x: 500, y: 300 }, 
         value: 85,
         category: 'market',
         color: '#064e3b'
@@ -73,40 +73,51 @@ export const CLDWorkspace: React.FC = () => {
         id: '6', 
         label: 'Resource Market Demand', 
         type: 'auxiliary', 
-        position: { x: 720, y: 280 }, 
+        position: { x: 750, y: 300 }, 
         value: 90,
         category: 'demand',
         color: '#064e3b'
       },
       
-      // Right green node
+      // Right green node - symmetric to left
       { 
         id: '7', 
         label: 'Environmental Quality', 
         type: 'auxiliary', 
-        position: { x: 880, y: 280 }, 
+        position: { x: 900, y: 300 }, 
         value: 65,
         category: 'environment',
         color: '#10b981'
       },
       
-      // Bottom left node
+      // Bottom left - aligned with structure
       { 
         id: '8', 
         label: 'Population Size & Composition', 
         type: 'stock', 
-        position: { x: 180, y: 450 }, 
+        position: { x: 200, y: 500 }, 
         value: 95,
         category: 'population',
         color: '#064e3b'
       },
       
-      // Bottom center area - blue nodes
+      // Bottom center investment node - perfectly centered
+      { 
+        id: '12', 
+        label: 'Goods & Services Market Investment', 
+        type: 'stock', 
+        position: { x: 500, y: 500 }, 
+        value: 78,
+        category: 'investment',
+        color: '#064e3b'
+      },
+      
+      // Bottom blue nodes - symmetric arrangement
       { 
         id: '9', 
         label: 'Goods & Services Market Demand', 
         type: 'auxiliary', 
-        position: { x: 320, y: 520 }, 
+        position: { x: 350, y: 600 }, 
         value: 85,
         category: 'demand',
         color: '#3b82f6'
@@ -115,38 +126,29 @@ export const CLDWorkspace: React.FC = () => {
         id: '10', 
         label: 'Goods & Services Market Supply', 
         type: 'auxiliary', 
-        position: { x: 520, y: 520 }, 
+        position: { x: 650, y: 600 }, 
         value: 88,
         category: 'supply',
         color: '#3b82f6'
       },
+      
+      // Bottom center blue node - perfectly centered
       { 
         id: '11', 
         label: 'Fair Market', 
         type: 'auxiliary', 
-        position: { x: 420, y: 620 }, 
+        position: { x: 500, y: 700 }, 
         value: 82,
         category: 'market',
         color: '#3b82f6'
       },
       
-      // Bottom center node
-      { 
-        id: '12', 
-        label: 'Goods & Services Market Investment', 
-        type: 'stock', 
-        position: { x: 420, y: 450 }, 
-        value: 78,
-        category: 'investment',
-        color: '#064e3b'
-      },
-      
-      // Bottom yellow node
+      // Bottom yellow node - centered below everything
       { 
         id: '13', 
         label: 'Income Level', 
         type: 'auxiliary', 
-        position: { x: 420, y: 720 }, 
+        position: { x: 500, y: 800 }, 
         value: 60,
         category: 'income',
         color: '#eab308'
