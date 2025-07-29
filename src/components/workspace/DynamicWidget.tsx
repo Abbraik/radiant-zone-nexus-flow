@@ -67,6 +67,7 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
   if (widgetName === 'ZoneWorkspace') {
     switch (task.zone) {
       case 'think':
+        console.log('DynamicWidget: Rendering enhanced ThinkZoneWorkspace for think task');
         return <ThinkZoneWorkspace />;
       case 'act':
         return <ActZoneWorkspace />;
