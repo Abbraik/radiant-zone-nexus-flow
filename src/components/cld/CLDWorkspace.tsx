@@ -11,198 +11,156 @@ import { useToast } from '../ui/use-toast';
 export const CLDWorkspace: React.FC = () => {
   const { toast } = useToast();
   
-  // Model state
+  // Model state - Arabic Population & Development System
   const [model, setModel] = useState<CLDModel>({
-    id: 'default-population-model',
-    name: 'Population & Development System',
-    description: 'A comprehensive system model showing population and development dynamics',
+    id: 'arabic-population-model',
+    name: 'دورة السكان والتنمية',
+    description: 'نموذج شامل يظهر ديناميكيات السكان والتنمية',
     nodes: [
-      {
-        id: 'environment_quality',
-        label: 'Environmental Quality',
-        type: 'auxiliary',
-        position: { x: 50, y: 250 },
-        value: 40,
-        category: 'context'
-      },
-      {
-        id: 'social_outcomes',
-        label: 'Social Outcomes',
-        type: 'stock',
-        position: { x: 250, y: 280 },
-        value: 60,
-        category: 'outcome'
-      },
-      {
-        id: 'population_size_composition',
-        label: 'Population Size & Composition',
-        type: 'stock',
-        position: { x: 250, y: 150 },
-        value: 85,
-        category: 'stock'
-      },
-      {
-        id: 'natural_growth_rate',
-        label: 'Natural Growth Rate',
-        type: 'auxiliary',
-        position: { x: 420, y: 60 },
-        value: 2.1,
-        category: 'rate'
-      },
-      {
-        id: 'production_process',
-        label: 'Production Process',
-        type: 'auxiliary',
-        position: { x: 600, y: 110 },
-        value: 80,
-        category: 'flow'
-      },
-      {
-        id: 'population_development_cycle',
-        label: 'Population & Development Cycle',
-        type: 'stock',
-        position: { x: 450, y: 180 },
-        value: 100,
-        category: 'core'
-      },
-      {
-        id: 'resource_market_supply',
-        label: 'Resource Market Supply',
-        type: 'stock',
-        position: { x: 450, y: 280 },
+      // Left green nodes
+      { 
+        id: '1', 
+        label: 'جودة البيئة', 
+        type: 'auxiliary', 
+        position: { x: 80, y: 280 }, 
         value: 65,
-        category: 'flow'
+        category: 'environment'
       },
-      {
-        id: 'economic_model',
-        label: 'Economic Model',
-        type: 'auxiliary',
-        position: { x: 700, y: 180 },
-        value: 75,
-        category: 'model'
-      },
-      {
-        id: 'resource_market_demand',
-        label: 'Resource Market Demand',
-        type: 'auxiliary',
-        position: { x: 700, y: 280 },
+      
+      // Top area - teal/cyan nodes
+      { 
+        id: '2', 
+        label: 'جلال الوعي البيئي', 
+        type: 'auxiliary', 
+        position: { x: 420, y: 80 }, 
         value: 70,
-        category: 'flow'
+        category: 'awareness'
       },
-      {
-        id: 'external_trade',
-        label: 'External Trade & Global Market',
-        type: 'auxiliary',
-        position: { x: 850, y: 250 },
-        value: 45,
-        category: 'flow'
+      { 
+        id: '3', 
+        label: 'المؤسسات في سوق الموارد', 
+        type: 'auxiliary', 
+        position: { x: 620, y: 140 }, 
+        value: 75,
+        category: 'institutions'
       },
-      {
-        id: 'income_level',
-        label: 'Income & Living Standards',
-        type: 'auxiliary',
-        position: { x: 450, y: 450 },
-        value: 55,
-        category: 'indicator'
+      
+      // Center area - dark nodes
+      { 
+        id: '4', 
+        label: 'النتائج الاجتماعية', 
+        type: 'stock', 
+        position: { x: 220, y: 280 }, 
+        value: 80,
+        category: 'social'
+      },
+      { 
+        id: '5', 
+        label: 'كفادة سوق الموارد', 
+        type: 'stock', 
+        position: { x: 520, y: 280 }, 
+        value: 85,
+        category: 'market'
+      },
+      { 
+        id: '6', 
+        label: 'الطلب في سوق الموارد', 
+        type: 'auxiliary', 
+        position: { x: 720, y: 280 }, 
+        value: 90,
+        category: 'demand'
+      },
+      
+      // Right green node
+      { 
+        id: '7', 
+        label: 'جودة البيئة', 
+        type: 'auxiliary', 
+        position: { x: 880, y: 280 }, 
+        value: 65,
+        category: 'environment'
+      },
+      
+      // Bottom left node
+      { 
+        id: '8', 
+        label: 'حجم السكان ومعدلاتهم', 
+        type: 'stock', 
+        position: { x: 180, y: 450 }, 
+        value: 95,
+        category: 'population'
+      },
+      
+      // Bottom center area - blue nodes
+      { 
+        id: '9', 
+        label: 'الطلب في سوق السلع والخدمات', 
+        type: 'auxiliary', 
+        position: { x: 320, y: 520 }, 
+        value: 85,
+        category: 'demand'
+      },
+      { 
+        id: '10', 
+        label: 'العرض في سوق السلع والخدمات', 
+        type: 'auxiliary', 
+        position: { x: 520, y: 520 }, 
+        value: 88,
+        category: 'supply'
+      },
+      { 
+        id: '11', 
+        label: 'سوق عادل', 
+        type: 'auxiliary', 
+        position: { x: 420, y: 620 }, 
+        value: 82,
+        category: 'market'
+      },
+      
+      // Bottom center node
+      { 
+        id: '12', 
+        label: 'استثمار سوق السلع والخدمات', 
+        type: 'stock', 
+        position: { x: 420, y: 450 }, 
+        value: 78,
+        category: 'investment'
+      },
+      
+      // Bottom yellow node
+      { 
+        id: '13', 
+        label: 'مستوى الدخل', 
+        type: 'auxiliary', 
+        position: { x: 420, y: 720 }, 
+        value: 60,
+        category: 'income'
       }
     ],
     links: [
-      {
-        id: 'link-1',
-        sourceId: 'population_size_composition',
-        targetId: 'social_outcomes',
-        polarity: 'positive',
-        strength: 0.8,
-        label: 'Population drives social needs'
-      },
-      {
-        id: 'link-2',
-        sourceId: 'natural_growth_rate',
-        targetId: 'population_size_composition',
-        polarity: 'positive',
-        strength: 0.9,
-        label: 'Growth increases population'
-      },
-      {
-        id: 'link-3',
-        sourceId: 'economic_model',
-        targetId: 'resource_market_supply',
-        polarity: 'positive',
-        strength: 0.7,
-        label: 'Economy affects supply'
-      },
-      {
-        id: 'link-4',
-        sourceId: 'resource_market_supply',
-        targetId: 'resource_market_demand',
-        polarity: 'positive',
-        strength: 0.6,
-        label: 'Supply influences demand'
-      },
-      {
-        id: 'link-5',
-        sourceId: 'resource_market_demand',
-        targetId: 'economic_model',
-        polarity: 'positive',
-        strength: 0.8,
-        label: 'Demand drives economy'
-      },
-      {
-        id: 'link-6',
-        sourceId: 'production_process',
-        targetId: 'resource_market_supply',
-        polarity: 'positive',
-        strength: 0.9,
-        label: 'Production increases supply'
-      },
-      {
-        id: 'link-7',
-        sourceId: 'production_process',
-        targetId: 'resource_market_demand',
-        polarity: 'negative',
-        strength: 0.5,
-        label: 'Production consumes resources'
-      },
-      {
-        id: 'link-8',
-        sourceId: 'social_outcomes',
-        targetId: 'income_level',
-        polarity: 'positive',
-        strength: 0.8,
-        label: 'Social progress improves income'
-      },
-      {
-        id: 'link-9',
-        sourceId: 'income_level',
-        targetId: 'social_outcomes',
-        polarity: 'positive',
-        strength: 0.7,
-        label: 'Income enables social investment'
-      },
-      {
-        id: 'link-10',
-        sourceId: 'external_trade',
-        targetId: 'resource_market_supply',
-        polarity: 'positive',
-        strength: 0.6,
-        label: 'Trade adds to supply'
-      },
-      {
-        id: 'link-11',
-        sourceId: 'environment_quality',
-        targetId: 'social_outcomes',
-        polarity: 'positive',
-        strength: 0.7,
-        label: 'Environment affects wellbeing'
-      },
-      {
-        id: 'link-12',
-        sourceId: 'income_level',
-        targetId: 'environment_quality',
-        polarity: 'negative',
-        strength: 0.4,
-        label: 'Income growth impacts environment'
-      }
+      // Main flow connections
+      { id: 'l1', sourceId: '1', targetId: '4', polarity: 'positive', strength: 0.8, lineType: 'curved', label: 'Environment affects social outcomes' },
+      { id: 'l2', sourceId: '4', targetId: '2', polarity: 'positive', strength: 0.7, lineType: 'curved', label: 'Social outcomes increase awareness' },
+      { id: 'l3', sourceId: '2', targetId: '3', polarity: 'positive', strength: 0.9, lineType: 'curved', label: 'Awareness strengthens institutions' },
+      { id: 'l4', sourceId: '3', targetId: '5', polarity: 'positive', strength: 0.8, lineType: 'curved', label: 'Institutions improve market efficiency' },
+      { id: 'l5', sourceId: '5', targetId: '6', polarity: 'positive', strength: 0.7, lineType: 'curved', label: 'Market efficiency affects demand' },
+      { id: 'l6', sourceId: '6', targetId: '7', polarity: 'positive', strength: 0.6, lineType: 'curved', label: 'Resource demand impacts environment' },
+      
+      // Return flows
+      { id: 'l7', sourceId: '4', targetId: '8', polarity: 'positive', strength: 0.9, lineType: 'curved', label: 'Social outcomes affect population' },
+      { id: 'l8', sourceId: '8', targetId: '12', polarity: 'positive', strength: 0.8, lineType: 'curved', label: 'Population drives investment' },
+      { id: 'l9', sourceId: '12', targetId: '9', polarity: 'positive', strength: 0.7, lineType: 'curved', label: 'Investment creates demand' },
+      { id: 'l10', sourceId: '9', targetId: '11', polarity: 'positive', strength: 0.8, lineType: 'curved', label: 'Demand influences market fairness' },
+      { id: 'l11', sourceId: '11', targetId: '10', polarity: 'positive', strength: 0.9, lineType: 'curved', label: 'Fair market increases supply' },
+      { id: 'l12', sourceId: '10', targetId: '5', polarity: 'positive', strength: 0.8, lineType: 'curved', label: 'Supply feeds back to market' },
+      
+      // Bottom connections
+      { id: 'l13', sourceId: '11', targetId: '13', polarity: 'positive', strength: 0.7, lineType: 'curved', label: 'Fair market improves income' },
+      { id: 'l14', sourceId: '13', targetId: '8', polarity: 'positive', strength: 0.6, lineType: 'curved', label: 'Income affects population dynamics' },
+      
+      // Outer loop connections
+      { id: 'l15', sourceId: '7', targetId: '1', polarity: 'positive', strength: 0.5, lineType: 'curved', label: 'Environmental feedback loop' },
+      { id: 'l16', sourceId: '3', targetId: '8', polarity: 'positive', strength: 0.6, lineType: 'curved', label: 'Institutions support population' }
     ],
     createdAt: new Date(),
     updatedAt: new Date(),
