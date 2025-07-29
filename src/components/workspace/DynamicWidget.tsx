@@ -4,6 +4,7 @@ import { Task } from '../../hooks/useTasks';
 import { Skeleton } from '../ui/skeleton';
 import { ThinkZoneWorkspace } from '../zones/ThinkZoneWorkspace';
 import { ActZoneWorkspace } from '../zones/ActZoneWorkspace';
+import { EnhancedActZoneWorkspace } from '../zones/EnhancedActZoneWorkspace';
 import { MonitorZoneWorkspace } from '../zones/MonitorZoneWorkspace';
 import { InnovateLearnZoneWorkspace } from '../zones/InnovateLearnZoneWorkspace';
 
@@ -69,8 +70,8 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
       case 'think':
         console.log('DynamicWidget: Rendering enhanced ThinkZoneWorkspace for think task');
         return <ThinkZoneWorkspace />;
-      case 'act':
-        return <ActZoneWorkspace />;
+        case 'act':
+          return <EnhancedActZoneWorkspace />;
       case 'monitor':
         return <MonitorZoneWorkspace />;
       case 'innovate-learn':
