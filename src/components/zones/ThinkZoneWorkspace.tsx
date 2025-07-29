@@ -2,13 +2,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Play, Target, Database, Zap, Users, Lightbulb } from 'lucide-react';
+import { ChevronDown, Play, Target, Database, Zap, Users, Lightbulb, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
 import { useMockSprints } from '../../hooks/use-mock-data';
+import EnhancedLoopSelector from '../widgets/EnhancedLoopSelector';
+import EnhancedTensionSelector from '../widgets/EnhancedTensionSelector';
+import DEBandConfigurator from '../widgets/DEBandConfigurator';
+import EnhancedSRTSlider from '../widgets/EnhancedSRTSlider';
+import SequentialProgressBar from '../widgets/SequentialProgressBar';
 import type { TensionLevel, LeverageType, ThinkFormData } from '../../types';
 
 const leverageOptions = [
@@ -118,17 +123,56 @@ export const ThinkZoneWorkspace: React.FC = () => {
     srt: 12,
     leverage: 'medium-leverage'
   });
+  
+  // Step management
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedLoop, setSelectedLoop] = useState<string | null>(null);
   const [selectedSignal, setSelectedSignal] = useState('');
+  const [deBandConfig, setDEBandConfig] = useState({ lower: 20, upper: 80 });
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Step configuration
+  const steps = [
+    { id: 'loop', title: 'Select Loop', completed: !!selectedLoop, active: currentStep === 1 },
+    { id: 'tension', title: 'Tension Signal', completed: !!selectedSignal, active: currentStep === 2 },
+    { id: 'deband', title: 'DE-Band', completed: currentStep > 3, active: currentStep === 3 },
+    { id: 'srt', title: 'SRT Horizon', completed: currentStep > 4, active: currentStep === 4 },
+    { id: 'leverage', title: 'Leverage Point', completed: currentStep > 5, active: currentStep === 5 },
+  ];
 
   const currentSprint = sprints?.[0];
   const weekProgress = currentSprint ? (currentSprint.week / currentSprint.totalWeeks) * 100 : 33;
 
-  const handleSubmit = () => {
-    if (!selectedSignal) {
-      return;
+  const handleNext = () => {
+    if (canProceed()) {
+      setCurrentStep(currentStep + 1);
     }
-    console.log('Starting sprint with data:', { ...formData, signal: selectedSignal });
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1: return !!selectedLoop;
+      case 2: return !!selectedSignal;
+      case 3: return true; // DE-Band is always configurable
+      case 4: return true; // SRT is always set
+      case 5: return !!formData.leverage;
+      default: return false;
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log('Starting sprint with data:', { 
+      ...formData, 
+      loop: selectedLoop,
+      signal: selectedSignal,
+      deBand: deBandConfig
+    });
   };
 
   const handleLaunchStudio = () => {
@@ -199,90 +243,161 @@ export const ThinkZoneWorkspace: React.FC = () => {
           </p>
         </div>
 
-        {/* Core Input Section */}
+        {/* Progress Bar */}
+        <SequentialProgressBar steps={steps} className="mb-8" />
+
+        {/* Sequential Content */}
         <div className="space-y-8">
-          {/* Tension Signal Selector */}
-          <div className="space-y-3">
-            <Label className="text-lg font-medium text-white">Tension Signal</Label>
-            <Select value={selectedSignal} onValueChange={setSelectedSignal}>
-              <SelectTrigger className="w-full bg-white/10 text-white border-white/20 rounded-lg p-3 focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                <SelectValue placeholder="Select a signal..." />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-600">
-                {tensionSignals.map((signal) => (
-                  <SelectItem key={signal.value} value={signal.value} className="text-white hover:bg-slate-700">
-                    {signal.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-gray-400">
-              Choose the metric that indicates system drift.
-            </p>
-          </div>
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div
+                key="loop-selection"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+              >
+                <EnhancedLoopSelector
+                  value={selectedLoop || undefined}
+                  onChange={setSelectedLoop}
+                  onComplete={() => setCurrentStep(2)}
+                />
+              </motion.div>
+            )}
 
-          {/* SRT Horizon Slider */}
-          <div className="space-y-4">
-            <Label className="text-lg font-medium text-white">Target Horizon (months)</Label>
-            <div className="px-3">
-              <CustomSlider
-                value={formData.srt}
-                onChange={(value) => setFormData(prev => ({ ...prev, srt: value }))}
-              />
-            </div>
-          </div>
+            {currentStep === 2 && (
+              <motion.div
+                key="tension-selection"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+              >
+                <EnhancedTensionSelector
+                  value={selectedSignal}
+                  onChange={setSelectedSignal}
+                  onComplete={() => setCurrentStep(3)}
+                />
+              </motion.div>
+            )}
 
-          {/* Leverage Point Picker */}
-          <div className="space-y-4">
-            <Label className="text-lg font-medium text-white">Choose a Leverage Point</Label>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {leverageOptions.map((option) => {
-                const Icon = option.icon;
-                const isSelected = formData.leverage === option.value;
-                
-                return (
-                  <motion.button
-                    key={option.value}
-                    onClick={() => setFormData(prev => ({ ...prev, leverage: option.value }))}
-                    className={`
-                      min-w-[140px] bg-white/10 rounded-xl p-4 flex flex-col items-center cursor-pointer
-                      border-2 transition-all duration-200
-                      ${isSelected 
-                        ? 'border-teal-500 -translate-y-1 shadow-lg shadow-teal-500/25' 
-                        : 'border-transparent hover:border-white/30 hover:-translate-y-0.5'
-                      }
-                    `}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Icon className="w-8 h-8 text-teal-400 mb-2" />
-                    <span className="text-white text-base font-medium mb-1">{option.label}</span>
-                    <span className="text-gray-400 text-sm text-center leading-tight">
-                      {option.description}
-                    </span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </div>
+            {currentStep === 3 && (
+              <motion.div
+                key="deband-config"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+              >
+                <DEBandConfigurator
+                  lowerBound={deBandConfig.lower}
+                  upperBound={deBandConfig.upper}
+                  onChange={setDEBandConfig}
+                  onComplete={() => setCurrentStep(4)}
+                  currentValue={67}
+                  unit="score"
+                />
+              </motion.div>
+            )}
+
+            {currentStep === 4 && (
+              <motion.div
+                key="srt-horizon"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+              >
+                <EnhancedSRTSlider
+                  value={formData.srt}
+                  onChange={(value) => setFormData(prev => ({ ...prev, srt: value }))}
+                  onComplete={() => setCurrentStep(5)}
+                />
+              </motion.div>
+            )}
+
+            {currentStep === 5 && (
+              <motion.div
+                key="leverage-selection"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
+              >
+                <Label className="text-lg font-medium text-white">Choose a Leverage Point</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {leverageOptions.map((option) => {
+                    const Icon = option.icon;
+                    const isSelected = formData.leverage === option.value;
+                    
+                    return (
+                      <motion.button
+                        key={option.value}
+                        onClick={() => setFormData(prev => ({ ...prev, leverage: option.value }))}
+                        className={`
+                          bg-white/10 rounded-xl p-4 flex flex-col items-center cursor-pointer
+                          border-2 transition-all duration-200
+                          ${isSelected 
+                            ? 'border-teal-500 -translate-y-1 shadow-lg shadow-teal-500/25' 
+                            : 'border-transparent hover:border-white/30 hover:-translate-y-0.5'
+                          }
+                        `}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Icon className="w-8 h-8 text-teal-400 mb-2" />
+                        <span className="text-white text-base font-medium mb-1">{option.label}</span>
+                        <span className="text-gray-400 text-sm text-center leading-tight">
+                          {option.description}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Primary Action Bar */}
+        {/* Navigation Bar */}
         <motion.div
           className="sticky bottom-0 flex items-center justify-between pt-6 border-t border-white/10"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <motion.button
-            onClick={handleSubmit}
-            className="bg-teal-500 hover:bg-teal-600 text-white rounded-full py-3 px-10 text-lg font-semibold flex items-center gap-3 shadow-lg transition-all duration-200"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Play className="w-5 h-5" />
-            Start Sprint
-          </motion.button>
+          <div className="flex items-center gap-3">
+            {currentStep > 1 && (
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                Back
+              </Button>
+            )}
+            
+            {currentStep < 5 ? (
+              <Button
+                onClick={handleNext}
+                disabled={!canProceed()}
+                className="bg-teal-500 hover:bg-teal-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Continue
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={!formData.leverage}
+                className="bg-teal-500 hover:bg-teal-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Start Sprint
+              </Button>
+            )}
+          </div>
           
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
