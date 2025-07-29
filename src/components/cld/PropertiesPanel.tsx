@@ -312,7 +312,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             <div className="space-y-3">
               <Label className="text-white">Line Type</Label>
               <Select
-                value={formData.lineType || 'straight'}
+                value={formData.lineType || 'curved'}
                 onValueChange={(value) => handleFieldChange('lineType', value)}
               >
                 <SelectTrigger className="bg-slate-700 border-slate-600 text-white focus:border-teal-500">

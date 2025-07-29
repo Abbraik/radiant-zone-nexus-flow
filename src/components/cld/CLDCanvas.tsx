@@ -339,7 +339,7 @@ export const CLDCanvas: React.FC<CLDCanvasProps> = ({
               const isSelected = selectedLink?.id === link.id;
               const strokeColor = link.polarity === 'positive' ? '#10b981' : '#ef4444';
               const strokeWidth = isSelected ? 3 : 2;
-              const lineType = link.lineType || 'straight';
+              const lineType = link.lineType || 'curved';
 
               // Calculate path based on line type
               const getLinePath = () => {
