@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Play, Target, Database, Zap, Users, Lightbulb, ArrowRight } from 'lucide-react';
+import { ChevronDown, Play, Target, Database, Zap, Users, Lightbulb, ArrowRight, BarChart, Activity } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -14,6 +14,10 @@ import EnhancedTensionSelector from '../widgets/EnhancedTensionSelector';
 import DEBandConfigurator from '../widgets/DEBandConfigurator';
 import EnhancedSRTSlider from '../widgets/EnhancedSRTSlider';
 import SequentialProgressBar from '../widgets/SequentialProgressBar';
+import LeveragePointPicker from '../widgets/LeveragePointPicker';
+import LoopMetadataForm from '../widgets/LoopMetadataForm';
+import DataExplorerWidget from '../widgets/DataExplorerWidget';
+import Enhanced3DDigitalTwin from '../widgets/Enhanced3DDigitalTwin';
 import type { TensionLevel, LeverageType, ThinkFormData } from '../../types';
 
 const leverageOptions = [
@@ -129,15 +133,21 @@ export const ThinkZoneWorkspace: React.FC = () => {
   const [selectedLoop, setSelectedLoop] = useState<string | null>(null);
   const [selectedSignal, setSelectedSignal] = useState('');
   const [deBandConfig, setDEBandConfig] = useState({ lower: 20, upper: 80 });
+  const [selectedLeveragePoint, setSelectedLeveragePoint] = useState('');
+  const [loopMetadata, setLoopMetadata] = useState({});
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showDataExplorer, setShowDataExplorer] = useState(false);
+  const [showDigitalTwin, setShowDigitalTwin] = useState(false);
 
-  // Step configuration
+  // Step configuration - expanded to 7 steps for Phase 2
   const steps = [
     { id: 'loop', title: 'Select Loop', completed: !!selectedLoop, active: currentStep === 1 },
     { id: 'tension', title: 'Tension Signal', completed: !!selectedSignal, active: currentStep === 2 },
     { id: 'deband', title: 'DE-Band', completed: currentStep > 3, active: currentStep === 3 },
     { id: 'srt', title: 'SRT Horizon', completed: currentStep > 4, active: currentStep === 4 },
-    { id: 'leverage', title: 'Leverage Point', completed: currentStep > 5, active: currentStep === 5 },
+    { id: 'leverage', title: 'Leverage Point', completed: !!selectedLeveragePoint, active: currentStep === 5 },
+    { id: 'metadata', title: 'Metadata', completed: currentStep > 6, active: currentStep === 6 },
+    { id: 'validate', title: 'Validate', completed: currentStep > 7, active: currentStep === 7 },
   ];
 
   const currentSprint = sprints?.[0];
@@ -161,7 +171,9 @@ export const ThinkZoneWorkspace: React.FC = () => {
       case 2: return !!selectedSignal;
       case 3: return true; // DE-Band is always configurable
       case 4: return true; // SRT is always set
-      case 5: return !!formData.leverage;
+      case 5: return !!selectedLeveragePoint;
+      case 6: return true; // Metadata is optional but can proceed
+      case 7: return true; // Validation step
       default: return false;
     }
   };
@@ -171,7 +183,9 @@ export const ThinkZoneWorkspace: React.FC = () => {
       ...formData, 
       loop: selectedLoop,
       signal: selectedSignal,
-      deBand: deBandConfig
+      deBand: deBandConfig,
+      leveragePoint: selectedLeveragePoint,
+      metadata: loopMetadata
     });
   };
 
@@ -323,38 +337,109 @@ export const ThinkZoneWorkspace: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-4"
               >
-                <Label className="text-lg font-medium text-white">Choose a Leverage Point</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {leverageOptions.map((option) => {
-                    const Icon = option.icon;
-                    const isSelected = formData.leverage === option.value;
-                    
-                    return (
-                      <motion.button
-                        key={option.value}
-                        onClick={() => setFormData(prev => ({ ...prev, leverage: option.value }))}
-                        className={`
-                          bg-white/10 rounded-xl p-4 flex flex-col items-center cursor-pointer
-                          border-2 transition-all duration-200
-                          ${isSelected 
-                            ? 'border-teal-500 -translate-y-1 shadow-lg shadow-teal-500/25' 
-                            : 'border-transparent hover:border-white/30 hover:-translate-y-0.5'
-                          }
-                        `}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Icon className="w-8 h-8 text-teal-400 mb-2" />
-                        <span className="text-white text-base font-medium mb-1">{option.label}</span>
-                        <span className="text-gray-400 text-sm text-center leading-tight">
-                          {option.description}
-                        </span>
-                      </motion.button>
-                    );
-                  })}
+                <LeveragePointPicker
+                  value={selectedLeveragePoint}
+                  onChange={setSelectedLeveragePoint}
+                  onComplete={() => setCurrentStep(6)}
+                />
+              </motion.div>
+            )}
+
+            {currentStep === 6 && (
+              <motion.div
+                key="metadata-form"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+              >
+                <LoopMetadataForm
+                  value={loopMetadata}
+                  onChange={setLoopMetadata}
+                  onComplete={() => setCurrentStep(7)}
+                />
+              </motion.div>
+            )}
+
+            {currentStep === 7 && (
+              <motion.div
+                key="validation-step"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6"
+              >
+                <div>
+                  <Label className="text-lg font-medium text-white mb-4 block">
+                    Validate & Launch
+                  </Label>
+                  <p className="text-sm text-gray-400 mb-6">
+                    Review your configuration, explore historical data, and simulate outcomes before launching the sprint.
+                  </p>
                 </div>
+
+                {/* Validation Options */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowDataExplorer(!showDataExplorer)}
+                    className="h-24 flex flex-col items-center justify-center border-teal-500 text-teal-300 hover:bg-teal-500 hover:text-white"
+                  >
+                    <BarChart className="w-6 h-6 mb-2" />
+                    <span>Explore Historical Data</span>
+                    <span className="text-xs opacity-70">Validate parameters against past trends</span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowDigitalTwin(!showDigitalTwin)}
+                    className="h-24 flex flex-col items-center justify-center border-teal-500 text-teal-300 hover:bg-teal-500 hover:text-white"
+                  >
+                    <Activity className="w-6 h-6 mb-2" />
+                    <span>Digital Twin Preview</span>
+                    <span className="text-xs opacity-70">Simulate system dynamics</span>
+                  </Button>
+                </div>
+
+                {/* Data Explorer */}
+                <AnimatePresence>
+                  {showDataExplorer && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <DataExplorerWidget
+                        selectedSignal={selectedSignal}
+                        onComplete={() => setShowDataExplorer(false)}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Digital Twin */}
+                <AnimatePresence>
+                  {showDigitalTwin && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Enhanced3DDigitalTwin
+                        tensionLevel={70}
+                        srtHorizon={formData.srt}
+                        leveragePoint={selectedLeveragePoint}
+                        onParameterChange={(params) => {
+                          setFormData(prev => ({ ...prev, srt: params.srt }));
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
@@ -378,7 +463,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
               </Button>
             )}
             
-            {currentStep < 5 ? (
+            {currentStep < 7 ? (
               <Button
                 onClick={handleNext}
                 disabled={!canProceed()}
@@ -390,7 +475,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
             ) : (
               <Button
                 onClick={handleSubmit}
-                disabled={!formData.leverage}
+                disabled={!selectedLeveragePoint}
                 className="bg-teal-500 hover:bg-teal-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Play className="w-5 h-5 mr-2" />
