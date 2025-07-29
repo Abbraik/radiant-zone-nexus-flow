@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Play, 
   Pause, 
@@ -10,7 +11,8 @@ import {
   Info,
   Settings,
   TrendingUp,
-  Activity
+  Activity,
+  Map
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -41,6 +43,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   simulationRunning,
   simulationResults
 }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<CLDNode & CLDLink>>({});
   const [validation, setValidation] = useState<{ [key: string]: string }>({});
   const [showSimulationOverlay, setShowSimulationOverlay] = useState(false);
@@ -132,6 +135,15 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 Run Simulation
               </>
             )}
+          </Button>
+          
+          <Button
+            onClick={() => navigate('/scenario-planner')}
+            variant="outline"
+            className="w-full border-slate-600 text-white hover:bg-slate-700"
+          >
+            <Map className="w-4 h-4 mr-2" />
+            Scenario Planning Studio
           </Button>
           
           {simulationResults && (
