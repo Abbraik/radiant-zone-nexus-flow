@@ -19,7 +19,7 @@ interface DataExplorerWidgetProps {
 }
 
 const DataExplorerWidget: React.FC<DataExplorerWidgetProps> = ({ 
-  selectedSignal = 'customer_satisfaction',
+  selectedSignal = 'fertility_rate',
   onComplete 
 }) => {
   const [viewMode, setViewMode] = useState<'table' | 'chart'>('chart');
@@ -30,9 +30,10 @@ const DataExplorerWidget: React.FC<DataExplorerWidgetProps> = ({
   // Generate mock historical data
   const generateHistoricalData = (signal: string, range: string): DataPoint[] => {
     const points = range === '1m' ? 30 : range === '3m' ? 90 : range === '6m' ? 180 : 365;
-    const baseValue = signal === 'customer_satisfaction' ? 7.5 : 
-                     signal === 'system_performance' ? 250 : 
-                     signal === 'team_velocity' ? 45 : 65;
+    const baseValue = signal === 'fertility_rate' ? 2.1 : 
+                     signal === 'population_growth_rate' ? 1.5 : 
+                     signal === 'resource_consumption_per_capita' ? 7.2 :
+                     signal === 'environmental_pressure_index' ? 6.0 : 5.8;
     
     const data: DataPoint[] = [];
     const now = new Date();

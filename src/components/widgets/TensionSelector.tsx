@@ -11,10 +11,10 @@ interface TensionSelectorProps {
 }
 
 const tensionOptions = [
-  { value: 'high', label: 'High Tension', description: 'Critical system stress requiring immediate intervention' },
-  { value: 'medium', label: 'Medium Tension', description: 'Moderate pressure with manageable impacts' },
-  { value: 'low', label: 'Low Tension', description: 'Minor variations within normal parameters' },
-  { value: 'escalating', label: 'Escalating', description: 'Growing pressure requiring proactive measures' }
+  { value: 'high', label: 'High Tension', description: 'Critical population pressure requiring immediate intervention' },
+  { value: 'medium', label: 'Medium Tension', description: 'Moderate demographic stress with manageable impacts' },
+  { value: 'low', label: 'Low Tension', description: 'Minor population variations within sustainable parameters' },
+  { value: 'escalating', label: 'Escalating', description: 'Growing demographic pressure requiring proactive measures' }
 ];
 
 const TensionSelector: React.FC<TensionSelectorProps> = ({ task, loopId }) => {

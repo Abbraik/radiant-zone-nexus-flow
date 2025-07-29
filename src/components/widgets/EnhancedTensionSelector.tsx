@@ -14,45 +14,113 @@ interface EnhancedTensionSelectorProps {
 
 const tensionSignals = [
   { 
-    value: 'customer_satisfaction', 
-    label: 'Customer Satisfaction Score',
-    unit: 'score',
-    current: 7.2,
-    target: 8.5,
-    breachCount: 3
+    value: 'fertility_rate', 
+    label: 'Total Fertility Rate',
+    unit: 'births/woman',
+    current: 2.3,
+    target: 2.1,
+    breachCount: 8,
+    description: 'Key indicator for natural population growth dynamics'
   },
   { 
-    value: 'system_performance', 
-    label: 'System Performance Metrics',
-    unit: 'ms',
-    current: 245,
-    target: 200,
-    breachCount: 7
-  },
-  { 
-    value: 'team_velocity', 
-    label: 'Team Velocity',
-    unit: 'points',
-    current: 42,
-    target: 50,
-    breachCount: 2
-  },
-  { 
-    value: 'technical_debt', 
-    label: 'Technical Debt Index',
-    unit: 'score',
-    current: 6.8,
-    target: 4.0,
-    breachCount: 12
-  },
-  { 
-    value: 'user_engagement', 
-    label: 'User Engagement Rate',
+    value: 'population_growth_rate', 
+    label: 'Annual Population Growth Rate',
     unit: '%',
-    current: 68,
-    target: 75,
-    breachCount: 5
+    current: 1.8,
+    target: 1.2,
+    breachCount: 12,
+    description: 'Primary signal for population and development meta-loop'
   },
+  { 
+    value: 'resource_consumption_per_capita', 
+    label: 'Resource Consumption Per Capita',
+    unit: 'units/person',
+    current: 8.4,
+    target: 6.5,
+    breachCount: 15,
+    description: 'Critical for population-resource market balance'
+  },
+  { 
+    value: 'economic_dependency_ratio', 
+    label: 'Economic Dependency Ratio',
+    unit: 'ratio',
+    current: 0.67,
+    target: 0.55,
+    breachCount: 6,
+    description: 'Measures economic model sustainability vs population structure'
+  },
+  { 
+    value: 'environmental_pressure_index', 
+    label: 'Environmental Pressure Index',
+    unit: 'index',
+    current: 7.2,
+    target: 5.0,
+    breachCount: 9,
+    description: 'Environmental quality degradation from population pressure'
+  },
+  { 
+    value: 'labor_market_saturation', 
+    label: 'Labor Market Saturation',
+    unit: '%',
+    current: 78,
+    target: 85,
+    breachCount: 4,
+    description: 'Production process efficiency and workforce balance'
+  },
+  { 
+    value: 'inflation_rate', 
+    label: 'Core Inflation Rate',
+    unit: '%',
+    current: 4.2,
+    target: 2.5,
+    breachCount: 11,
+    description: 'Economic stability indicator for population-driven demand'
+  },
+  { 
+    value: 'trade_balance_ratio', 
+    label: 'Trade Balance Ratio',
+    unit: 'ratio',
+    current: -0.08,
+    target: 0.02,
+    breachCount: 7,
+    description: 'Global influence loop - external trade dependencies'
+  },
+  { 
+    value: 'social_cohesion_index', 
+    label: 'Social Cohesion Index',
+    unit: 'index',
+    current: 6.1,
+    target: 7.5,
+    breachCount: 5,
+    description: 'Social outcomes and community stability measures'
+  },
+  { 
+    value: 'migration_flow_rate', 
+    label: 'Net Migration Flow Rate',
+    unit: 'people/1000',
+    current: 12.4,
+    target: 8.0,
+    breachCount: 13,
+    description: 'Migration and economic opportunities balance'
+  },
+  { 
+    value: 'social_mobility_index', 
+    label: 'Social Mobility Index',
+    unit: 'index',
+    current: 4.8,
+    target: 6.5,
+    breachCount: 3,
+    description: 'Social structure evolution and opportunity distribution'
+  },
+  { 
+    value: 'urban_density_pressure', 
+    label: 'Urban Density Pressure',
+    unit: 'people/km²',
+    current: 2840,
+    target: 2200,
+    breachCount: 10,
+    description: 'Urbanization stress on infrastructure and resources'
+  }
 ];
 
 const EnhancedTensionSelector: React.FC<EnhancedTensionSelectorProps> = ({ 

@@ -48,11 +48,13 @@ const leverageOptions = [
 ];
 
 const tensionSignals = [
-  { value: 'customer_satisfaction', label: 'Customer Satisfaction Score' },
-  { value: 'system_performance', label: 'System Performance Metrics' },
-  { value: 'team_velocity', label: 'Team Velocity' },
-  { value: 'technical_debt', label: 'Technical Debt Index' },
-  { value: 'user_engagement', label: 'User Engagement Rate' },
+  { value: 'fertility_rate', label: 'Total Fertility Rate' },
+  { value: 'population_growth_rate', label: 'Population Growth Rate' },
+  { value: 'resource_consumption_per_capita', label: 'Resource Consumption Per Capita' },
+  { value: 'economic_dependency_ratio', label: 'Economic Dependency Ratio' },
+  { value: 'environmental_pressure_index', label: 'Environmental Pressure Index' },
+  { value: 'migration_flow_rate', label: 'Migration Flow Rate' },
+  { value: 'social_cohesion_index', label: 'Social Cohesion Index' },
 ];
 
 // Custom Slider Component
