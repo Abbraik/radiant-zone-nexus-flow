@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bridge, ArrowRight, CheckCircle, Clock, Target, Users, BarChart3, AlertCircle } from 'lucide-react';
+import { Link, ArrowRight, CheckCircle, Clock, Target, Users, BarChart3, AlertCircle } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -153,7 +153,7 @@ export const MonitorZoneBridge: React.FC<MonitorZoneBridgeProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-500/20 rounded-lg">
-              <Bridge className="h-6 w-6 text-orange-400" />
+              <Link className="h-6 w-6 text-orange-400" />
             </div>
             <div>
               <h3 className="text-xl font-semibold text-white">Monitor Zone Bridge</h3>
@@ -173,7 +173,7 @@ export const MonitorZoneBridge: React.FC<MonitorZoneBridgeProps> = ({
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   className="w-4 h-4 mr-2"
                 >
-                  <Bridge className="w-4 h-4" />
+                  <Link className="w-4 h-4" />
                 </motion.div>
               ) : (
                 <ArrowRight className="w-4 h-4 mr-2" />
@@ -198,7 +198,7 @@ export const MonitorZoneBridge: React.FC<MonitorZoneBridgeProps> = ({
                   transition={{ duration: 1.5, repeat: Infinity }}
                   className="w-16 h-16 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center"
                 >
-                  <Bridge className="w-8 h-8 text-orange-400" />
+                  <Link className="w-8 h-8 text-orange-400" />
                 </motion.div>
                 <div className="text-white font-medium">Creating Monitor Tasks</div>
                 <div className="text-sm text-gray-400">

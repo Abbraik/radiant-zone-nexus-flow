@@ -511,7 +511,7 @@ export const AuditTrailSystem: React.FC<AuditTrailSystemProps> = ({
                   </div>
                 </div>
               </motion.div>
-            )))}
+            ))}
           </AnimatePresence>
           
           {filteredEvents.length === 0 && (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, MessageCircle, Eye, Edit, Cursor, Clock, Bell } from 'lucide-react';
+import { Users, MessageCircle, Eye, Edit, MousePointer, Clock, Bell } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Badge } from '../ui/badge';
@@ -253,7 +253,7 @@ export const RealTimeCollaborationEngine: React.FC<RealTimeCollaborationEnginePr
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   >
                     <div className="flex items-center gap-1">
-                      <Cursor className={`w-4 h-4 text-white`} style={{ color: collaborator.color.replace('bg-', '') === 'teal-500' ? '#14b8a6' : collaborator.color.replace('bg-', '') === 'purple-500' ? '#a855f7' : '#3b82f6' }} />
+                      <MousePointer className={`w-4 h-4 text-white`} style={{ color: collaborator.color.replace('bg-', '') === 'teal-500' ? '#14b8a6' : collaborator.color.replace('bg-', '') === 'purple-500' ? '#a855f7' : '#3b82f6' }} />
                       <div className={`text-xs text-white px-2 py-1 rounded ${collaborator.color}`}>
                         {collaborator.name.split(' ')[0]}
                       </div>
