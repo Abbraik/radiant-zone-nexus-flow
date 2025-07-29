@@ -84,14 +84,19 @@ export const useTaskPopupLogic = (task: Task | null): TaskPopupLogic => {
 
   const recentActivity = [
     {
-      icon: '⏰',
-      text: 'DE-Band breach detected',
+      icon: '📊',
+      text: 'Population growth rate breach detected',
       time: '1h ago'
     },
     {
-      icon: '🚀',
-      text: 'Sprint started',
+      icon: '🎯',
+      text: 'Balance Population & Development sprint started',
       time: '3d ago'
+    },
+    {
+      icon: '🔄',
+      text: 'Meta-loop analysis completed',
+      time: '5h ago'
     }
   ];
 

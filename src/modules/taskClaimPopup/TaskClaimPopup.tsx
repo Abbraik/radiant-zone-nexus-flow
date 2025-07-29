@@ -141,7 +141,7 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                       <AvatarFallback className="bg-purple-500 text-white text-xs">🎯</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-white truncate">Stabilize Fertility Rate</div>
+                      <div className="text-sm font-medium text-white truncate">Balance Population & Development</div>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex-1">
                           <Progress value={goalProgress} className="h-1.5" />
@@ -152,7 +152,7 @@ const TaskClaimPopup: React.FC<TaskClaimPopupProps> = ({
                     <ChevronRight className="h-4 w-4 text-gray-400" />
                     <div className="flex items-center gap-2">
                       <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30 text-xs">
-                        Loop {task.loop_id || 'A'}
+                        {task.loop_id === 'meta' ? 'Meta Loop' : `Loop ${task.loop_id || 'A'}`}
                       </Badge>
                       <div className="flex items-center gap-1">
                         <div className="w-12">
