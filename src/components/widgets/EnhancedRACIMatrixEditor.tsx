@@ -11,6 +11,21 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Checkbox } from '../ui/checkbox';
 
+interface ExternalEntity {
+  id: string;
+  name: string;
+  type: 'partner' | 'regulatory' | 'contractor' | 'advisory' | 'vendor' | 'community';
+  description: string;
+  contactPerson: string;
+  email: string;
+  phone?: string;
+  relationship: string;
+  avatar: string;
+  color: string;
+  status: 'active' | 'pending' | 'inactive';
+  lastContact: string;
+}
+
 interface TeamMember {
   id: string;
   name: string;
@@ -34,7 +49,8 @@ interface CustomRole {
 
 interface RACIAssignment {
   memberId: string;
-  roles: string[]; // Now supports multiple roles
+  memberType: 'internal' | 'external'; // Track if assignment is internal or external
+  roles: string[];
   confidence: number;
   reason: string;
 }
@@ -51,7 +67,80 @@ interface RoleTemplate {
   defaultAssignments: Record<string, string[]>; // intervention category -> role names
 }
 
-// Enhanced mock team members with contact info
+// Mock external entities
+const mockExternalEntities: ExternalEntity[] = [
+  {
+    id: 'ext-1',
+    name: 'Ministry of Health',
+    type: 'regulatory',
+    description: 'Government regulatory oversight body',
+    contactPerson: 'Dr. Jennifer Liu',
+    email: 'jennifer.liu@health.gov',
+    phone: '+1 (555) 0101',
+    relationship: 'Regulatory approval and compliance oversight',
+    avatar: '🏛️',
+    color: 'bg-red-500',
+    status: 'active',
+    lastContact: '1 week ago'
+  },
+  {
+    id: 'ext-2',
+    name: 'Community Health Partners',
+    type: 'partner',
+    description: 'Local healthcare delivery network',
+    contactPerson: 'Marcus Johnson',
+    email: 'marcus.j@chpartners.org',
+    phone: '+1 (555) 0102',
+    relationship: 'Implementation partner for community outreach',
+    avatar: '🤝',
+    color: 'bg-cyan-500',
+    status: 'active',
+    lastContact: '3 days ago'
+  },
+  {
+    id: 'ext-3',
+    name: 'DataTech Analytics',
+    type: 'contractor',
+    description: 'Data analysis and monitoring contractor',
+    contactPerson: 'Sarah Kim',
+    email: 'sarah.kim@datatech.com',
+    phone: '+1 (555) 0103',
+    relationship: 'Data collection and analysis services',
+    avatar: '📊',
+    color: 'bg-emerald-500',
+    status: 'active',
+    lastContact: '2 days ago'
+  },
+  {
+    id: 'ext-4',
+    name: 'Citizens Advisory Board',
+    type: 'advisory',
+    description: 'Community representation and feedback',
+    contactPerson: 'Roberto Gonzalez',
+    email: 'roberto.g@citizens.org',
+    relationship: 'Community input and stakeholder representation',
+    avatar: '👥',
+    color: 'bg-amber-500',
+    status: 'active',
+    lastContact: '1 week ago'
+  },
+  {
+    id: 'ext-5',
+    name: 'Public Affairs Consulting',
+    type: 'vendor',
+    description: 'Communications and public relations',
+    contactPerson: 'Emma Wilson',
+    email: 'emma.w@paconsulting.com',
+    phone: '+1 (555) 0105',
+    relationship: 'Public communications and stakeholder engagement',
+    avatar: '📢',
+    color: 'bg-pink-500',
+    status: 'pending',
+    lastContact: '2 weeks ago'
+  }
+];
+
+// Enhanced mock team members
 const mockTeamMembers: TeamMember[] = [
   {
     id: 'tm-1',
@@ -183,11 +272,13 @@ const roleTemplates: RoleTemplate[] = [
 interface EnhancedRACIMatrixEditorProps {
   interventions: Array<{ id: string; name: string; category: string; }>;
   onAssignmentsChange: (assignments: InterventionRACIMap[]) => void;
+  externalEntities?: ExternalEntity[];
 }
 
 export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> = ({
   interventions,
-  onAssignmentsChange
+  onAssignmentsChange,
+  externalEntities = mockExternalEntities
 }) => {
   const [assignments, setAssignments] = useState<InterventionRACIMap[]>([]);
   const [customRoles, setCustomRoles] = useState<CustomRole[]>(defaultRoles);
@@ -196,6 +287,8 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [draggedMember, setDraggedMember] = useState<string | null>(null);
   const [showRoleEditor, setShowRoleEditor] = useState(false);
+  const [showExternalEntities, setShowExternalEntities] = useState(true);
+  const [activeTab, setActiveTab] = useState<'internal' | 'external' | 'all'>('all');
   const [newRole, setNewRole] = useState({ name: '', color: 'bg-indigo-500', description: '' });
 
   // Validation: Check for required roles
@@ -254,6 +347,7 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
           } else {
             assignments.push({
               memberId: bestMember.id,
+              memberType: 'internal',
               roles: [roleId],
               confidence: 85,
               reason: `Template-based assignment for ${intervention.category} intervention`
@@ -272,8 +366,8 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
     onAssignmentsChange(newAssignments);
   };
 
-  // Toggle role assignment
-  const toggleRole = (interventionId: string, memberId: string, roleId: string) => {
+  // Toggle role assignment (enhanced for external entities)
+  const toggleRole = (interventionId: string, memberId: string, roleId: string, memberType: 'internal' | 'external' = 'internal') => {
     const newAssignments = [...assignments];
     const interventionIndex = newAssignments.findIndex(a => a.interventionId === interventionId);
 
@@ -297,9 +391,10 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
         // Create new assignment
         newAssignments[interventionIndex].assignments.push({
           memberId,
+          memberType,
           roles: [roleId],
           confidence: 75,
-          reason: 'Manual assignment'
+          reason: `Manual assignment - ${memberType}`
         });
       }
     } else {
@@ -308,9 +403,10 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
         interventionId,
         assignments: [{
           memberId,
+          memberType,
           roles: [roleId],
           confidence: 75,
-          reason: 'Manual assignment'
+          reason: `Manual assignment - ${memberType}`
         }]
       });
     }
@@ -344,11 +440,42 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
     setShowRoleEditor(false);
   };
 
-  // Bulk assignment functions
-  const assignRoleToAllInterventions = (roleId: string, memberId: string) => {
+  // Bulk assignment functions (enhanced for external entities)
+  const assignRoleToAllInterventions = (roleId: string, memberId: string, memberType: 'internal' | 'external' = 'internal') => {
     interventions.forEach(intervention => {
-      toggleRole(intervention.id, memberId, roleId);
+      toggleRole(intervention.id, memberId, roleId, memberType);
     });
+  };
+
+  // Get all stakeholders (internal + external)
+  const getAllStakeholders = () => {
+    const internal = mockTeamMembers.map(m => ({ ...m, type: 'internal' as const }));
+    const external = externalEntities.map(e => ({ 
+      ...e, 
+      type: 'external' as const,
+      name: e.contactPerson,
+      organizationName: e.name,
+      title: e.type.charAt(0).toUpperCase() + e.type.slice(1) + ' Rep'
+    }));
+    
+    switch (activeTab) {
+      case 'internal': return internal;
+      case 'external': return external;
+      case 'all': default: return [...internal, ...external];
+    }
+  };
+
+  // Get entity type badge color
+  const getEntityTypeBadge = (type: string) => {
+    const typeColors: Record<string, string> = {
+      'partner': 'bg-blue-500/20 text-blue-300 border-blue-500',
+      'regulatory': 'bg-red-500/20 text-red-300 border-red-500',
+      'contractor': 'bg-green-500/20 text-green-300 border-green-500',
+      'advisory': 'bg-yellow-500/20 text-yellow-300 border-yellow-500',
+      'vendor': 'bg-purple-500/20 text-purple-300 border-purple-500',
+      'community': 'bg-orange-500/20 text-orange-300 border-orange-500'
+    };
+    return typeColors[type] || 'bg-gray-500/20 text-gray-300 border-gray-500';
   };
 
   const validation = validateAssignments();
@@ -473,8 +600,25 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
           )}
         </AnimatePresence>
 
-        {/* Templates & Quick Actions */}
+        {/* Stakeholder View Tabs */}
         <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Label className="text-white text-sm">View:</Label>
+            <div className="flex items-center gap-1 p-1 bg-white/10 rounded-lg">
+              {(['all', 'internal', 'external'] as const).map(tab => (
+                <Button
+                  key={tab}
+                  variant={activeTab === tab ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setActiveTab(tab)}
+                  className={`text-xs ${activeTab === tab ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white'}`}
+                >
+                  {tab === 'all' ? 'All Stakeholders' : tab === 'internal' ? 'Internal Team' : 'External Entities'}
+                </Button>
+              ))}
+            </div>
+          </div>
+
           <div className="flex items-center gap-3">
             <Label className="text-white text-sm">Template:</Label>
             <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
@@ -510,34 +654,80 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
           )}
         </div>
 
-        {/* Team Member Palette */}
+        {/* Stakeholder Palette */}
         <div className="space-y-3">
-          <h4 className="text-white font-medium">Team Members (Drag to Assign)</h4>
-          <div className="flex flex-wrap gap-3">
-            {mockTeamMembers.map(member => (
-              <motion.div
-                key={member.id}
-                draggable
-                onDragStart={() => setDraggedMember(member.id)}
-                onDragEnd={() => setDraggedMember(null)}
-                className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10 cursor-move hover:bg-white/10 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileDrag={{ scale: 0.95 }}
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className={`${member.color} text-white text-sm`}>
-                    {member.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="text-white text-sm font-medium">{member.name}</div>
-                  <div className="text-gray-400 text-xs">{member.title}</div>
+          <h4 className="text-white font-medium">Stakeholders (Drag to Assign)</h4>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            
+            {/* Internal Team Members */}
+            {(activeTab === 'all' || activeTab === 'internal') && (
+              <div className="space-y-2">
+                <h5 className="text-gray-300 text-sm font-medium">Internal Team</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {mockTeamMembers.map(member => (
+                    <motion.div
+                      key={member.id}
+                      draggable
+                      onDragStart={() => setDraggedMember(member.id)}
+                      onDragEnd={() => setDraggedMember(null)}
+                      className="flex items-center gap-2 p-2 bg-white/5 rounded-lg border border-white/10 cursor-move hover:bg-white/10 transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileDrag={{ scale: 0.95 }}
+                    >
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className={`${member.color} text-white text-xs`}>
+                          {member.avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white text-xs font-medium truncate">{member.name}</div>
+                        <div className="text-gray-400 text-xs truncate">{member.title}</div>
+                      </div>
+                      <Badge variant="outline" className={`${member.workload > 85 ? 'text-red-400 border-red-400' : 'text-green-400 border-green-400'} text-xs`}>
+                        {member.workload}%
+                      </Badge>
+                    </motion.div>
+                  ))}
                 </div>
-                <Badge variant="outline" className={`${member.workload > 85 ? 'text-red-400 border-red-400' : 'text-green-400 border-green-400'}`}>
-                  {member.workload}%
-                </Badge>
-              </motion.div>
-            ))}
+              </div>
+            )}
+
+            {/* External Entities */}
+            {(activeTab === 'all' || activeTab === 'external') && (
+              <div className="space-y-2">
+                <h5 className="text-gray-300 text-sm font-medium">External Entities</h5>
+                <div className="grid grid-cols-1 gap-2">
+                  {externalEntities.map(entity => (
+                    <motion.div
+                      key={entity.id}
+                      draggable
+                      onDragStart={() => setDraggedMember(entity.id)}
+                      onDragEnd={() => setDraggedMember(null)}
+                      className="flex items-center gap-2 p-2 bg-white/5 rounded-lg border border-white/10 cursor-move hover:bg-white/10 transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileDrag={{ scale: 0.95 }}
+                      title={`${entity.name} - ${entity.description}`}
+                    >
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className={`${entity.color} text-white text-xs`}>
+                          {entity.avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white text-xs font-medium truncate">{entity.contactPerson}</div>
+                        <div className="text-gray-400 text-xs truncate">{entity.name}</div>
+                      </div>
+                      <Badge variant="outline" className={`${getEntityTypeBadge(entity.type)} text-xs`}>
+                        {entity.type}
+                      </Badge>
+                      <Badge variant="outline" className={`${entity.status === 'active' ? 'text-green-400 border-green-400' : entity.status === 'pending' ? 'text-yellow-400 border-yellow-400' : 'text-gray-400 border-gray-400'} text-xs`}>
+                        {entity.status}
+                      </Badge>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -588,23 +778,52 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
                     {customRoles.map(role => (
                       <td key={role.id} className="p-3">
                         <div className="space-y-2">
-                          {mockTeamMembers.map(member => {
+                          {/* Internal Team Members */}
+                          {(activeTab === 'all' || activeTab === 'internal') && mockTeamMembers.map(member => {
                             const memberRoles = getMemberRoles(intervention.id, member.id);
                             const hasRole = memberRoles.includes(role.id);
                             
                             return (
-                              <div key={member.id} className="flex items-center gap-2">
+                              <div key={`internal-${member.id}`} className="flex items-center gap-2 p-1 rounded">
                                 <Checkbox
                                   checked={hasRole}
-                                  onCheckedChange={() => toggleRole(intervention.id, member.id, role.id)}
+                                  onCheckedChange={() => toggleRole(intervention.id, member.id, role.id, 'internal')}
                                   className="border-white/30"
                                 />
-                                <Avatar className="h-6 w-6">
+                                <Avatar className="h-5 w-5">
                                   <AvatarFallback className={`${member.color} text-white text-xs`}>
                                     {member.avatar}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className="text-white text-xs">{member.name.split(' ')[0]}</span>
+                                <span className="text-white text-xs truncate">{member.name.split(' ')[0]}</span>
+                              </div>
+                            );
+                          })}
+                          
+                          {/* External Entities */}
+                          {(activeTab === 'all' || activeTab === 'external') && externalEntities.map(entity => {
+                            const memberRoles = getMemberRoles(intervention.id, entity.id);
+                            const hasRole = memberRoles.includes(role.id);
+                            
+                            return (
+                              <div key={`external-${entity.id}`} className="flex items-center gap-2 p-1 rounded bg-white/5 border border-white/10">
+                                <Checkbox
+                                  checked={hasRole}
+                                  onCheckedChange={() => toggleRole(intervention.id, entity.id, role.id, 'external')}
+                                  className="border-white/30"
+                                />
+                                <Avatar className="h-5 w-5">
+                                  <AvatarFallback className={`${entity.color} text-white text-xs`}>
+                                    {entity.avatar}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-white text-xs truncate">{entity.contactPerson.split(' ')[0]}</div>
+                                  <div className="text-gray-400 text-xs truncate">{entity.name}</div>
+                                </div>
+                                <Badge variant="outline" className={`${getEntityTypeBadge(entity.type)} text-xs`}>
+                                  {entity.type.substring(0, 3)}
+                                </Badge>
                               </div>
                             );
                           })}
