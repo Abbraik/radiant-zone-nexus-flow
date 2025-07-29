@@ -280,7 +280,13 @@ export const EnhancedRACIMatrixEditor: React.FC<EnhancedRACIMatrixEditorProps> =
   onAssignmentsChange,
   externalEntities = mockExternalEntities
 }) => {
-  const [assignments, setAssignments] = useState<InterventionRACIMap[]>([]);
+  // Initialize with empty assignments - roles filled only by drag and drop
+  const [assignments, setAssignments] = useState<InterventionRACIMap[]>(
+    interventions.map(intervention => ({
+      interventionId: intervention.id,
+      assignments: []
+    }))
+  );
   const [customRoles, setCustomRoles] = useState<CustomRole[]>(defaultRoles);
   const [showAIRecommendations, setShowAIRecommendations] = useState(true);
   const [editingRole, setEditingRole] = useState<string | null>(null);
