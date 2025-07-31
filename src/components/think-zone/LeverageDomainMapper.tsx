@@ -293,6 +293,7 @@ export const LeverageDomainMapper: React.FC<LeverageDomainMapperProps> = ({
             Select Leverage Point (Ordered by Impact)
           </h4>
           
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {leveragePoints
             .sort((a, b) => b.rank - a.rank)
             .map((point) => {
@@ -408,6 +409,7 @@ export const LeverageDomainMapper: React.FC<LeverageDomainMapperProps> = ({
                 </motion.div>
               );
             })}
+          </div>
         </div>
 
         {/* Selected Point Details */}
