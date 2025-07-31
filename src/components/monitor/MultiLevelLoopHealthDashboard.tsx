@@ -1,20 +1,42 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Globe, 
-  Building2, 
-  Settings, 
-  TrendingUp, 
-  TrendingDown, 
+  Search,
+  Bell,
+  User,
+  Settings,
+  Globe,
+  Building2,
+  Cog,
+  TrendingUp,
+  TrendingDown,
   Minus,
   AlertTriangle,
-  ChevronDown,
-  ChevronRight
+  Eye,
+  Plus,
+  Download,
+  Share,
+  Filter,
+  BarChart3,
+  Activity,
+  Target,
+  Zap,
+  Clock,
+  Users,
+  ChevronRight,
+  ExternalLink,
+  Play,
+  Pause,
+  RotateCcw
 } from 'lucide-react';
-import { Card } from '../ui/card';
+import { Card, CardContent, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { EnhancedLoop, LoopLayer, LayerMetrics } from '../../types/monitor';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Progress } from '../ui/progress';
+import { EnhancedLoop, LoopLayer } from '../../types/monitor';
 
 interface MultiLevelLoopHealthDashboardProps {
   loops?: EnhancedLoop[];
@@ -22,18 +44,19 @@ interface MultiLevelLoopHealthDashboardProps {
   onLayerToggle?: (layer: LoopLayer) => void;
 }
 
-// Mock data for enhanced loops with multi-level architecture
+// Enhanced mock data with additional properties for the new dashboard
 const mockEnhancedLoops: EnhancedLoop[] = [
-  // Macro Loops
+  // Macro Loops (11 loops)
   {
     id: 'macro-1',
     name: 'Population & Development',
+    description: 'Comprehensive population growth and development dynamics',
     layer: 'macro',
     type: 'reinforcing',
     triScore: 7.8,
     deBand: 'green',
     srtHorizon: 52,
-    trend: [7.2, 7.4, 7.6, 7.8, 7.8],
+    trend: [7.2, 7.4, 7.6, 7.8, 7.8, 8.0],
     status: 'healthy',
     lastCheck: '2 hours ago',
     nextCheck: '4 hours',
@@ -42,6 +65,7 @@ const mockEnhancedLoops: EnhancedLoop[] = [
       systemScope: 'population',
       policyImpact: 85,
       stakeholderCount: 12000,
+      cldThumbnail: '/api/placeholder/200/120'
     },
     alertThresholds: { triLower: 6.0, triUpper: 9.0, deBandBreach: true, srtOverrun: true },
     createdAt: new Date(),
@@ -50,12 +74,13 @@ const mockEnhancedLoops: EnhancedLoop[] = [
   {
     id: 'macro-2',
     name: 'Environmental Quality',
+    description: 'Ecosystem health and environmental sustainability metrics',
     layer: 'macro',
     type: 'balancing',
     triScore: 6.2,
     deBand: 'yellow',
     srtHorizon: 26,
-    trend: [6.8, 6.5, 6.3, 6.1, 6.2],
+    trend: [6.8, 6.5, 6.3, 6.1, 6.2, 6.1],
     status: 'warning',
     lastCheck: '1 hour ago',
     nextCheck: '3 hours',
@@ -64,8 +89,32 @@ const mockEnhancedLoops: EnhancedLoop[] = [
       systemScope: 'environment',
       policyImpact: 72,
       stakeholderCount: 8500,
+      cldThumbnail: '/api/placeholder/200/120'
     },
     alertThresholds: { triLower: 5.0, triUpper: 8.0, deBandBreach: true, srtOverrun: true },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'macro-3',
+    name: 'Economic Resilience',
+    layer: 'macro',
+    type: 'reinforcing',
+    triScore: 8.1,
+    deBand: 'green',
+    srtHorizon: 78,
+    trend: [7.8, 7.9, 8.0, 8.1, 8.1, 8.2],
+    status: 'healthy',
+    lastCheck: '3 hours ago',
+    nextCheck: '6 hours',
+    layerData: {
+      leveragePoints: ['Innovation Investment', 'Market Diversification', 'Skills Development'],
+      systemScope: 'economy',
+      policyImpact: 91,
+      stakeholderCount: 15000,
+      cldThumbnail: '/api/placeholder/200/120'
+    },
+    alertThresholds: { triLower: 7.0, triUpper: 9.5, deBandBreach: true, srtOverrun: true },
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -79,14 +128,14 @@ const mockEnhancedLoops: EnhancedLoop[] = [
     triScore: 8.1,
     deBand: 'green',
     srtHorizon: 12,
-    trend: [7.8, 7.9, 8.0, 8.1, 8.1],
+    trend: [7.8, 7.9, 8.0, 8.1, 8.1, 8.2],
     status: 'healthy',
     lastCheck: '30 minutes ago',
     nextCheck: '2 hours',
     layerData: {
       processType: 'budget',
-      throughputRate: 95, // % of bundles processed on time
-      averageDeviation: 8, // % deviation from planned
+      throughputRate: 95,
+      averageDeviation: 8,
       pilotSuccessRate: 87,
       resourceUtilization: 92,
     },
@@ -103,7 +152,7 @@ const mockEnhancedLoops: EnhancedLoop[] = [
     triScore: 5.8,
     deBand: 'yellow',
     srtHorizon: 8,
-    trend: [6.2, 6.0, 5.9, 5.8, 5.8],
+    trend: [6.2, 6.0, 5.9, 5.8, 5.8, 5.7],
     status: 'warning',
     lastCheck: '45 minutes ago',
     nextCheck: '1 hour',
@@ -128,15 +177,15 @@ const mockEnhancedLoops: EnhancedLoop[] = [
     triScore: 7.5,
     deBand: 'green',
     srtHorizon: 2,
-    trend: [7.2, 7.3, 7.4, 7.5, 7.5],
+    trend: [7.2, 7.3, 7.4, 7.5, 7.5, 7.6],
     status: 'healthy',
     lastCheck: '15 minutes ago',
     nextCheck: '45 minutes',
     layerData: {
       taskType: 'review',
       reworkPercentage: 12,
-      averageCompletionTime: 4.5, // hours
-      alertFrequency: 0.2, // per week
+      averageCompletionTime: 4.5,
+      alertFrequency: 0.2,
       bottleneckIndicators: ['Document Quality', 'Reviewer Availability'],
     },
     alertThresholds: { triLower: 6.5, triUpper: 8.5, deBandBreach: true, srtOverrun: true },
@@ -152,7 +201,7 @@ const mockEnhancedLoops: EnhancedLoop[] = [
     triScore: 4.8,
     deBand: 'red',
     srtHorizon: 3,
-    trend: [5.5, 5.2, 5.0, 4.9, 4.8],
+    trend: [5.5, 5.2, 5.0, 4.9, 4.8, 4.7],
     status: 'critical',
     lastCheck: '10 minutes ago',
     nextCheck: '20 minutes',
@@ -169,219 +218,592 @@ const mockEnhancedLoops: EnhancedLoop[] = [
   },
 ];
 
-const LayerIcon = ({ layer }: { layer: LoopLayer }) => {
-  const icons = {
-    macro: Globe,
-    meso: Building2,
-    micro: Settings,
-  };
-  const Icon = icons[layer];
-  return <Icon className="w-5 h-5" />;
+// Sparkline Component
+const Sparkline: React.FC<{ data: number[]; status: string; className?: string }> = ({ 
+  data, 
+  status, 
+  className = "w-20 h-8" 
+}) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  
+  const points = data.map((value, index) => {
+    const x = (index / (data.length - 1)) * 100;
+    const y = 100 - ((value - min) / range) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+
+  const strokeColor = status === 'healthy' ? 'rgb(34, 197, 94)' : 
+                     status === 'warning' ? 'rgb(234, 179, 8)' : 'rgb(239, 68, 68)';
+
+  return (
+    <div className={className}>
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <motion.polyline
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="2"
+          points={points}
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+        />
+      </svg>
+    </div>
+  );
 };
 
-const LayerPanel: React.FC<{
-  layer: LoopLayer;
-  loops: EnhancedLoop[];
-  metrics: LayerMetrics;
-  expanded: boolean;
-  onToggle: () => void;
-  onLoopSelect?: (loop: EnhancedLoop) => void;
-}> = ({ layer, loops, metrics, expanded, onToggle, onLoopSelect }) => {
-  const layerColors = {
-    macro: 'from-blue-500/20 to-purple-500/20',
-    meso: 'from-green-500/20 to-teal-500/20',
-    micro: 'from-orange-500/20 to-red-500/20',
-  };
+// DE-Band Gauge Component
+const DEBandGauge: React.FC<{ value: number; band: string; className?: string }> = ({ 
+  value, 
+  band, 
+  className = "w-16 h-8" 
+}) => {
+  const percentage = Math.min(Math.max((value / 10) * 100, 0), 100);
+  const color = band === 'green' ? 'rgb(34, 197, 94)' : 
+                band === 'yellow' ? 'rgb(234, 179, 8)' : 
+                band === 'orange' ? 'rgb(251, 146, 60)' : 'rgb(239, 68, 68)';
 
-  const TrendIcon = ({ direction }: { direction: string }) => {
-    if (direction === 'improving') return <TrendingUp className="w-4 h-4 text-green-400" />;
-    if (direction === 'declining') return <TrendingDown className="w-4 h-4 text-red-400" />;
-    return <Minus className="w-4 h-4 text-gray-400" />;
-  };
+  return (
+    <div className={className}>
+      <svg width="100%" height="100%" viewBox="0 0 100 50">
+        <path
+          d="M 10 40 A 40 40 0 0 1 90 40"
+          fill="none"
+          stroke="rgb(55, 65, 81)"
+          strokeWidth="4"
+        />
+        <motion.path
+          d={`M 10 40 A 40 40 0 0 1 ${10 + (80 * percentage / 100)} ${40 - Math.sin((percentage / 100) * Math.PI) * 40}`}
+          fill="none"
+          stroke={color}
+          strokeWidth="4"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+        <circle cx={10 + (80 * percentage / 100)} cy={40 - Math.sin((percentage / 100) * Math.PI) * 40} r="3" fill={color} />
+      </svg>
+    </div>
+  );
+};
+
+// Top Navigation Bar Component
+const TopNavigationBar: React.FC<{
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  role: string;
+  onRoleChange: (role: string) => void;
+  alertCount: number;
+}> = ({ searchQuery, onSearchChange, role, onRoleChange, alertCount }) => {
+  return (
+    <motion.div 
+      className="h-16 bg-background/80 backdrop-blur-xl border-b border-border flex items-center px-6 gap-4"
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Global Search */}
+      <div className="relative flex-1 max-w-md">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+        <Input
+          placeholder="Search loops, bundles, or tasks... (⌘K)"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-10 bg-muted/50 border-muted-foreground/20"
+        />
+      </div>
+
+      {/* Role Switcher */}
+      <Select value={role} onValueChange={onRoleChange}>
+        <SelectTrigger className="w-48 bg-muted/50">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="c-suite">C-Suite View</SelectItem>
+          <SelectItem value="analyst">Analyst View</SelectItem>
+          <SelectItem value="ops-manager">Ops Manager View</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Alerts */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" className="relative">
+              <Bell className="w-5 h-5" />
+              {alertCount > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-2 -right-2 px-1 min-w-[1.25rem] h-5 text-xs"
+                >
+                  {alertCount}
+                </Badge>
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{alertCount} active alerts</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      {/* User Menu */}
+      <Button variant="ghost" size="sm">
+        <User className="w-5 h-5" />
+      </Button>
+
+      {/* Settings */}
+      <Button variant="ghost" size="sm">
+        <Settings className="w-5 h-5" />
+      </Button>
+    </motion.div>
+  );
+};
+
+// Macro Loop Card Component
+const MacroLoopCard: React.FC<{
+  loop: EnhancedLoop;
+  isSelected: boolean;
+  onSelect: () => void;
+  onHover: (hovering: boolean) => void;
+}> = ({ loop, isSelected, onSelect, onHover }) => {
+  const Icon = loop.type === 'reinforcing' ? RotateCcw : Target;
 
   return (
     <motion.div
-      className={`bg-gradient-to-br ${layerColors[layer]} backdrop-blur-xl rounded-xl border border-white/10`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      className={`relative p-4 rounded-xl border backdrop-blur-sm cursor-pointer transition-all ${
+        isSelected 
+          ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20' 
+          : 'border-border/50 bg-background/50 hover:border-primary/50 hover:bg-background/80'
+      }`}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onSelect}
+      onHoverStart={() => onHover(true)}
+      onHoverEnd={() => onHover(false)}
+      layout
     >
-      <div className="p-4">
-        <button
-          onClick={onToggle}
-          className="w-full flex items-center justify-between text-left"
-        >
-          <div className="flex items-center gap-3">
-            <LayerIcon layer={layer} />
-            <div>
-              <h3 className="text-white font-semibold capitalize">{layer} Loops</h3>
-              <p className="text-gray-300 text-sm">
-                {metrics.totalLoops} loops • Avg TRI: {metrics.averageTriScore.toFixed(1)}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex gap-2">
-              <Badge variant="outline" className="text-green-400 border-green-400/30">
-                {metrics.healthyCount}
-              </Badge>
-              <Badge variant="outline" className="text-yellow-400 border-yellow-400/30">
-                {metrics.warningCount}
-              </Badge>
-              <Badge variant="outline" className="text-red-400 border-red-400/30">
-                {metrics.criticalCount}
-              </Badge>
-            </div>
-            <TrendIcon direction={metrics.trendDirection} />
-            {expanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-          </div>
-        </button>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-muted-foreground" />
+          <div className={`w-2 h-2 rounded-full ${
+            loop.deBand === 'green' ? 'bg-green-500' :
+            loop.deBand === 'yellow' ? 'bg-yellow-500' :
+            loop.deBand === 'orange' ? 'bg-orange-500' : 'bg-red-500'
+          }`} />
+        </div>
+        {loop.status === 'critical' && (
+          <AlertTriangle className="w-4 h-4 text-destructive" />
+        )}
+      </div>
 
-        {expanded && (
+      {/* Loop Name */}
+      <h3 className="font-semibold text-sm mb-2 leading-tight">{loop.name}</h3>
+
+      {/* Sparkline */}
+      <div className="mb-3">
+        <Sparkline data={loop.trend} status={loop.status} className="w-full h-6" />
+      </div>
+
+      {/* DE-Band Gauge */}
+      <div className="flex items-center justify-between">
+        <DEBandGauge value={loop.triScore} band={loop.deBand} />
+        <span className="text-sm font-medium">{loop.triScore}</span>
+      </div>
+
+      {/* CLD Thumbnail Overlay (on hover) */}
+      <AnimatePresence>
+        {isSelected && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            className="mt-4 space-y-2"
+            className="absolute inset-0 bg-background/95 rounded-xl p-4 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            {loops.map((loop) => (
-              <motion.div
-                key={loop.id}
-                className="p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 cursor-pointer transition-all"
-                whileHover={{ scale: 1.02 }}
-                onClick={() => onLoopSelect?.(loop)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-3 h-3 rounded-full ${
-                        loop.deBand === 'green' ? 'bg-green-500' :
-                        loop.deBand === 'yellow' ? 'bg-yellow-500' :
-                        loop.deBand === 'orange' ? 'bg-orange-500' : 'bg-red-500'
-                      }`}
-                    />
-                    <div>
-                      <h4 className="text-white font-medium text-sm">{loop.name}</h4>
-                      <p className="text-gray-400 text-xs">Last check: {loop.lastCheck}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {loop.status === 'critical' && (
-                      <AlertTriangle className="w-4 h-4 text-red-400" />
-                    )}
-                    <span className="text-white font-medium text-sm">{loop.triScore}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+            <div className="text-center">
+              <div className="w-20 h-12 bg-muted rounded mb-2 mx-auto flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground">CLD Thumbnail</p>
+            </div>
           </motion.div>
         )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+// Meso Loop Tile Component
+const MesoLoopTile: React.FC<{
+  loop: EnhancedLoop;
+  onSelect: () => void;
+}> = ({ loop, onSelect }) => {
+  const data = loop.layerData as any;
+  const Icon = Building2;
+
+  return (
+    <motion.div
+      className="p-4 bg-background/50 rounded-lg border border-border/50 hover:border-primary/50 cursor-pointer transition-all"
+      whileHover={{ scale: 1.02 }}
+      onClick={onSelect}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-muted-foreground" />
+          <h4 className="font-medium text-sm">{loop.name}</h4>
+        </div>
+        <div className="flex items-center gap-1">
+          {loop.trend.slice(-2)[1] > loop.trend.slice(-2)[0] ? (
+            <TrendingUp className="w-3 h-3 text-green-500" />
+          ) : loop.trend.slice(-2)[1] < loop.trend.slice(-2)[0] ? (
+            <TrendingDown className="w-3 h-3 text-red-500" />
+          ) : (
+            <Minus className="w-3 h-3 text-muted-foreground" />
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex justify-between text-xs">
+          <span className="text-muted-foreground">Success Rate</span>
+          <span className="font-medium">{data.throughputRate}%</span>
+        </div>
+        <Progress value={data.throughputRate} className="h-1" />
       </div>
     </motion.div>
   );
 };
 
+// Micro Loop Gauge Component
+const MicroLoopGauge: React.FC<{
+  loop: EnhancedLoop;
+  onSelect: () => void;
+}> = ({ loop, onSelect }) => {
+  const data = loop.layerData as any;
+  const pulseScore = Math.floor(Math.random() * 100); // Mock pulse score
+
+  return (
+    <motion.div
+      className="p-3 bg-background/50 rounded-lg border border-border/50 hover:border-primary/50 cursor-pointer transition-all"
+      whileHover={{ scale: 1.02 }}
+      onClick={onSelect}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Cog className="w-3 h-3 text-muted-foreground" />
+          <h5 className="font-medium text-xs">{loop.name}</h5>
+        </div>
+        {loop.status === 'critical' && (
+          <AlertTriangle className="w-3 h-3 text-destructive" />
+        )}
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <DEBandGauge value={loop.triScore} band={loop.deBand} className="w-8 h-4" />
+          <Badge variant="outline" className="text-xs px-1 py-0">
+            {pulseScore}
+          </Badge>
+        </div>
+        <span className="text-xs font-medium">{data.averageCompletionTime}h</span>
+      </div>
+
+      {loop.status === 'critical' && (
+        <div className="mt-2 flex gap-1">
+          <Button size="sm" variant="outline" className="text-xs h-6 px-2">
+            Quick Fix
+          </Button>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+// Right Sidebar Component
+const RightSidebar: React.FC<{
+  selectedLoop?: EnhancedLoop;
+  onClose: () => void;
+}> = ({ selectedLoop, onClose }) => {
+  if (!selectedLoop) return null;
+
+  return (
+    <motion.div
+      className="w-80 bg-background/80 backdrop-blur-xl border-l border-border p-6 overflow-y-auto"
+      initial={{ x: '100%', opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: '100%', opacity: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h3 className="font-semibold text-lg">{selectedLoop.name}</h3>
+          <p className="text-sm text-muted-foreground capitalize">
+            {selectedLoop.layer} • {selectedLoop.type}
+          </p>
+        </div>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          ×
+        </Button>
+      </div>
+
+      {/* CLD Viewer */}
+      <Card className="mb-6">
+        <CardHeader>
+          <h4 className="font-medium text-sm">Causal Loop Diagram</h4>
+        </CardHeader>
+        <CardContent>
+          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
+            <BarChart3 className="w-8 h-8 text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Key Parameters */}
+      <Card className="mb-6">
+        <CardHeader>
+          <h4 className="font-medium text-sm">Key Parameters</h4>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">TRI Score</span>
+            <span className="font-medium">{selectedLoop.triScore}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">DE-Band</span>
+            <Badge variant={selectedLoop.deBand === 'green' ? 'default' : 'destructive'}>
+              {selectedLoop.deBand}
+            </Badge>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">SRT Horizon</span>
+            <span className="font-medium">{selectedLoop.srtHorizon}w</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance Charts */}
+      <Card className="mb-6">
+        <CardHeader>
+          <h4 className="font-medium text-sm">Performance Trend</h4>
+        </CardHeader>
+        <CardContent>
+          <Sparkline data={selectedLoop.trend} status={selectedLoop.status} className="w-full h-16" />
+        </CardContent>
+      </Card>
+
+      {/* Action Panel */}
+      <Card>
+        <CardHeader>
+          <h4 className="font-medium text-sm">Actions</h4>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <Button className="w-full" size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Think Sprint
+          </Button>
+          <Button variant="outline" className="w-full" size="sm">
+            <Zap className="w-4 h-4 mr-2" />
+            AI Recommendations
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="flex-1">
+              <Download className="w-4 h-4 mr-1" />
+              Export
+            </Button>
+            <Button variant="outline" size="sm" className="flex-1">
+              <Share className="w-4 h-4 mr-1" />
+              Share
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+// Main Dashboard Component
 export const MultiLevelLoopHealthDashboard: React.FC<MultiLevelLoopHealthDashboardProps> = ({
   loops = mockEnhancedLoops,
   onLoopSelect,
   onLayerToggle,
 }) => {
-  const [expandedLayers, setExpandedLayers] = useState<Set<LoopLayer>>(new Set(['macro']));
+  const [searchQuery, setSearchQuery] = useState('');
+  const [role, setRole] = useState('analyst');
+  const [selectedLoop, setSelectedLoop] = useState<EnhancedLoop | null>(null);
+  const [hoveredLoop, setHoveredLoop] = useState<string | null>(null);
 
-  const layerMetrics = useMemo(() => {
-    const metrics: Record<LoopLayer, LayerMetrics> = {
-      macro: { layer: 'macro', totalLoops: 0, healthyCount: 0, warningCount: 0, criticalCount: 0, averageTriScore: 0, breachedLoops: 0, trendDirection: 'stable' },
-      meso: { layer: 'meso', totalLoops: 0, healthyCount: 0, warningCount: 0, criticalCount: 0, averageTriScore: 0, breachedLoops: 0, trendDirection: 'stable' },
-      micro: { layer: 'micro', totalLoops: 0, healthyCount: 0, warningCount: 0, criticalCount: 0, averageTriScore: 0, breachedLoops: 0, trendDirection: 'stable' },
-    };
-
-    loops.forEach((loop) => {
-      const layerMetric = metrics[loop.layer];
-      layerMetric.totalLoops++;
-      layerMetric.averageTriScore += loop.triScore;
-      
-      if (loop.status === 'healthy') layerMetric.healthyCount++;
-      else if (loop.status === 'warning') layerMetric.warningCount++;
-      else if (loop.status === 'critical') layerMetric.criticalCount++;
-      
-      if (loop.deBand === 'red' || loop.deBand === 'orange') layerMetric.breachedLoops++;
-      
-      // Simple trend calculation based on recent trend data
-      const trendData = loop.trend;
-      if (trendData.length >= 2) {
-        const recent = trendData.slice(-2);
-        if (recent[1] > recent[0]) layerMetric.trendDirection = 'improving';
-        else if (recent[1] < recent[0]) layerMetric.trendDirection = 'declining';
-      }
-    });
-
-    // Calculate averages
-    Object.values(metrics).forEach((metric) => {
-      if (metric.totalLoops > 0) {
-        metric.averageTriScore = metric.averageTriScore / metric.totalLoops;
-      }
-    });
-
-    return metrics;
-  }, [loops]);
-
-  const toggleLayer = (layer: LoopLayer) => {
-    setExpandedLayers((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(layer)) {
-        newSet.delete(layer);
-      } else {
-        newSet.add(layer);
-      }
-      return newSet;
-    });
-    onLayerToggle?.(layer);
-  };
+  const filteredLoops = useMemo(() => {
+    return loops.filter(loop => 
+      loop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      loop.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [loops, searchQuery]);
 
   const loopsByLayer = useMemo(() => {
     return {
-      macro: loops.filter((loop) => loop.layer === 'macro'),
-      meso: loops.filter((loop) => loop.layer === 'meso'),
-      micro: loops.filter((loop) => loop.layer === 'micro'),
+      macro: filteredLoops.filter(loop => loop.layer === 'macro'),
+      meso: filteredLoops.filter(loop => loop.layer === 'meso'),
+      micro: filteredLoops.filter(loop => loop.layer === 'micro'),
     };
+  }, [filteredLoops]);
+
+  const alertCount = useMemo(() => {
+    return loops.filter(loop => loop.status === 'critical' || loop.deBand === 'red').length;
   }, [loops]);
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-white">Multi-Level Loop Health</h2>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setExpandedLayers(new Set(['macro', 'meso', 'micro']))}
-            className="border-white/30 text-white"
-          >
-            Expand All
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setExpandedLayers(new Set())}
-            className="border-white/30 text-white"
-          >
-            Collapse All
-          </Button>
-        </div>
-      </div>
+  const handleLoopSelect = (loop: EnhancedLoop) => {
+    setSelectedLoop(loop);
+    onLoopSelect?.(loop);
+  };
 
-      <div className="grid gap-4">
-        {(['macro', 'meso', 'micro'] as LoopLayer[]).map((layer) => (
-          <LayerPanel
-            key={layer}
-            layer={layer}
-            loops={loopsByLayer[layer]}
-            metrics={layerMetrics[layer]}
-            expanded={expandedLayers.has(layer)}
-            onToggle={() => toggleLayer(layer)}
-            onLoopSelect={onLoopSelect}
-          />
-        ))}
+  return (
+    <div className="h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col">
+      {/* Top Navigation */}
+      <TopNavigationBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        role={role}
+        onRoleChange={setRole}
+        alertCount={alertCount}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Three-Pane Main Grid */}
+        <div className="flex-1 grid grid-cols-12 gap-6 p-6">
+          {/* Primary Column - Macro Loop Panel */}
+          <div className="col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold flex items-center gap-2">
+                  <Globe className="w-5 h-5" />
+                  Macro Loops
+                </h2>
+                <Badge variant="outline" className="text-sm">
+                  {loopsByLayer.macro.length} active
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-4 gap-4">
+                {loopsByLayer.macro.map((loop, index) => (
+                  <motion.div
+                    key={loop.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <MacroLoopCard
+                      loop={loop}
+                      isSelected={selectedLoop?.id === loop.id}
+                      onSelect={() => handleLoopSelect(loop)}
+                      onHover={(hovering) => setHoveredLoop(hovering ? loop.id : null)}
+                    />
+                  </motion.div>
+                ))}
+                
+                {/* All Loops Summary Card */}
+                <motion.div
+                  className="p-4 rounded-xl border-2 border-dashed border-border/50 bg-muted/20 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
+                  whileHover={{ scale: 1.02 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: loopsByLayer.macro.length * 0.1 }}
+                >
+                  <Activity className="w-6 h-6 text-muted-foreground mb-2" />
+                  <span className="text-sm font-medium">All Loops</span>
+                  <span className="text-xs text-muted-foreground">Overview</span>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Secondary Column */}
+          <div className="col-span-5 space-y-6">
+            {/* Meso Loop Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Meso Loops
+                </h3>
+                <Badge variant="outline" className="text-xs">
+                  {loopsByLayer.meso.length} active
+                </Badge>
+              </div>
+
+              <div className="space-y-3">
+                {loopsByLayer.meso.map((loop, index) => (
+                  <motion.div
+                    key={loop.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <MesoLoopTile
+                      loop={loop}
+                      onSelect={() => handleLoopSelect(loop)}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Micro Loop Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Cog className="w-4 h-4" />
+                  Micro Loops
+                </h3>
+                <Badge variant="outline" className="text-xs">
+                  {loopsByLayer.micro.length} active
+                </Badge>
+              </div>
+
+              <div className="space-y-3">
+                {loopsByLayer.micro.map((loop, index) => (
+                  <motion.div
+                    key={loop.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <MicroLoopGauge
+                      loop={loop}
+                      onSelect={() => handleLoopSelect(loop)}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <AnimatePresence>
+          {selectedLoop && (
+            <RightSidebar
+              selectedLoop={selectedLoop}
+              onClose={() => setSelectedLoop(null)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
