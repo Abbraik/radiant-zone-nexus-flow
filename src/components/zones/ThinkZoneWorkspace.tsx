@@ -38,6 +38,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
   });
   const [leveragePoint, setLeveragePoint] = useState<any>(null);
   const [macroVision, setMacroVision] = useState({ text: '', isValid: false });
+  const [sprintCreated, setSprintCreated] = useState(false);
   const [showLearning, setShowLearning] = useState(false);
 
   const steps: ThinkZoneStep[] = [
@@ -87,7 +88,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
       description: 'Review configuration and create sprint',
       component: 'Review',
       required: false,
-      completed: false
+      completed: sprintCreated
     }
   ];
 
@@ -130,6 +131,10 @@ export const ThinkZoneWorkspace: React.FC = () => {
   const handleCreateSprint = async (bundle: any) => {
     // Mock sprint creation
     await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Mark the review step as completed
+    setSprintCreated(true);
+    
     toast({
       title: "Sprint Created",
       description: "Your Think Zone configuration is now a sprint!"
