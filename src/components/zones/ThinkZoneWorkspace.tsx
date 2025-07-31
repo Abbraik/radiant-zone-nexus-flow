@@ -251,8 +251,6 @@ export const ThinkZoneWorkspace: React.FC = () => {
               srtHorizon={parameterConfig.srtHorizon}
               leveragePoint={leveragePoint}
               macroVision={reviewMacroVision}
-              onStartSprint={() => handleCreateSprint(bundle)}
-              onGoToActZone={() => handleGoToActZone(`sprint-${Date.now()}`)}
             />
             
             <SprintHandoffManager

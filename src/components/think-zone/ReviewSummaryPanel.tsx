@@ -58,8 +58,6 @@ interface ReviewSummaryPanelProps {
     text: string;
     isValid: boolean;
   };
-  onStartSprint: () => void;
-  onGoToActZone: () => void;
 }
 
 export const ReviewSummaryPanel: React.FC<ReviewSummaryPanelProps> = ({
@@ -69,9 +67,7 @@ export const ReviewSummaryPanel: React.FC<ReviewSummaryPanelProps> = ({
   deBandConfig,
   srtHorizon,
   leveragePoint,
-  macroVision,
-  onStartSprint,
-  onGoToActZone
+  macroVision
 }) => {
   const completedItems = validationItems.filter(item => item.completed);
   const requiredItems = validationItems.filter(item => item.required);
@@ -318,27 +314,6 @@ export const ReviewSummaryPanel: React.FC<ReviewSummaryPanelProps> = ({
         </div>
       </Card>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        <Button
-          onClick={onStartSprint}
-          disabled={!isReadyForSprint}
-          className="flex-1"
-          size="lg"
-        >
-          <ArrowRight className="h-4 w-4 mr-2" />
-          Start Sprint
-        </Button>
-        
-        <Button
-          onClick={onGoToActZone}
-          variant="outline"
-          disabled={!isReadyForSprint}
-          size="lg"
-        >
-          Go to Act Zone
-        </Button>
-      </div>
 
       {/* Readiness Status */}
       {!isReadyForSprint && (
