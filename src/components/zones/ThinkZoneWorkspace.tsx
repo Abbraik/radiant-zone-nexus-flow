@@ -352,7 +352,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
 
           <Button
             onClick={handleNext}
-            disabled={currentStep === steps.length - 1 || !canProceed}
+            disabled={currentStep < steps.length - 1 && !canProceed}
           >
             {currentStep === steps.length - 1 ? "Complete" : "Next"}
             <ArrowRight className="h-4 w-4 ml-2" />
