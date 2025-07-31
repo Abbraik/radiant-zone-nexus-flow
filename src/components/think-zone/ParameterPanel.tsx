@@ -45,48 +45,248 @@ interface ParameterConfig {
   customSRTMonths?: number;
 }
 
-const mockTensionSignals: TensionSignal[] = [
-  {
-    id: 'air-quality',
-    name: 'Air Quality Index',
-    description: 'Measures air pollution levels across major cities',
-    unit: 'AQI',
-    currentValue: 156,
-    trend: 'up',
-    category: 'environmental',
-    historicalData: [120, 135, 145, 150, 156]
-  },
-  {
-    id: 'employment-rate',
-    name: 'Youth Employment Rate',
-    description: 'Percentage of youth (16-24) in employment',
-    unit: '%',
-    currentValue: 67.5,
-    trend: 'down',
-    category: 'social',
-    historicalData: [72, 70, 69, 68, 67.5]
-  },
-  {
-    id: 'housing-affordability',
-    name: 'Housing Affordability Index',
-    description: 'Ratio of median house price to median income',
-    unit: 'ratio',
-    currentValue: 8.2,
-    trend: 'up',
-    category: 'economic',
-    historicalData: [7.1, 7.5, 7.8, 8.0, 8.2]
-  },
-  {
-    id: 'citizen-trust',
-    name: 'Citizen Trust Index',
-    description: 'Public trust in government institutions',
-    unit: 'score',
-    currentValue: 42,
-    trend: 'down',
-    category: 'governance',
-    historicalData: [58, 52, 48, 45, 42]
+const getArchetypeSpecificTensions = (archetypeId?: string): TensionSignal[] => {
+  switch (archetypeId) {
+    case 'population-development-loop':
+      return [
+        {
+          id: 'resource-efficiency',
+          name: 'Resource Market Efficiency',
+          description: 'Efficiency of resource allocation in the market',
+          unit: '%',
+          currentValue: 73,
+          trend: 'down',
+          category: 'economic',
+          historicalData: [80, 78, 76, 75, 73]
+        },
+        {
+          id: 'population-growth-rate',
+          name: 'Population Growth Rate',
+          description: 'Annual population growth rate',
+          unit: '%',
+          currentValue: 1.8,
+          trend: 'up',
+          category: 'social',
+          historicalData: [1.4, 1.5, 1.6, 1.7, 1.8]
+        },
+        {
+          id: 'economic-growth',
+          name: 'Economic Growth Index',
+          description: 'Overall economic development indicator',
+          unit: 'index',
+          currentValue: 2.3,
+          trend: 'stable',
+          category: 'economic',
+          historicalData: [2.1, 2.2, 2.3, 2.3, 2.3]
+        }
+      ];
+
+    case 'natural-population-growth':
+      return [
+        {
+          id: 'fertility-rate',
+          name: 'Total Fertility Rate',
+          description: 'Average births per woman',
+          unit: 'births/woman',
+          currentValue: 2.1,
+          trend: 'down',
+          category: 'social',
+          historicalData: [2.5, 2.4, 2.3, 2.2, 2.1]
+        },
+        {
+          id: 'marriage-rate',
+          name: 'Marriage Rate',
+          description: 'Annual marriages per 1000 population',
+          unit: 'per 1000',
+          currentValue: 6.8,
+          trend: 'down',
+          category: 'social',
+          historicalData: [8.2, 7.8, 7.4, 7.1, 6.8]
+        },
+        {
+          id: 'youth-ratio',
+          name: 'Youth Dependency Ratio',
+          description: 'Ratio of youth to working age population',
+          unit: '%',
+          currentValue: 42.5,
+          trend: 'up',
+          category: 'social',
+          historicalData: [38, 39.5, 40.8, 41.7, 42.5]
+        }
+      ];
+
+    case 'environmental-quality-loop':
+      return [
+        {
+          id: 'air-quality',
+          name: 'Air Quality Index',
+          description: 'Measures air pollution levels across major cities',
+          unit: 'AQI',
+          currentValue: 156,
+          trend: 'up',
+          category: 'environmental',
+          historicalData: [120, 135, 145, 150, 156]
+        },
+        {
+          id: 'water-quality',
+          name: 'Water Quality Index',
+          description: 'Overall water quality assessment',
+          unit: 'WQI',
+          currentValue: 68,
+          trend: 'down',
+          category: 'environmental',
+          historicalData: [85, 80, 76, 72, 68]
+        },
+        {
+          id: 'health-expenditure',
+          name: 'Healthcare Expenditure',
+          description: 'Public health spending as % of GDP',
+          unit: '% GDP',
+          currentValue: 4.2,
+          trend: 'up',
+          category: 'economic',
+          historicalData: [3.5, 3.7, 3.9, 4.0, 4.2]
+        }
+      ];
+
+    case 'economic-stability-loop':
+      return [
+        {
+          id: 'market-volatility',
+          name: 'Market Volatility Index',
+          description: 'Measure of market price fluctuations',
+          unit: 'index',
+          currentValue: 24.5,
+          trend: 'up',
+          category: 'economic',
+          historicalData: [18, 20, 22, 23, 24.5]
+        },
+        {
+          id: 'employment-rate',
+          name: 'Employment Rate',
+          description: 'Percentage of working-age population employed',
+          unit: '%',
+          currentValue: 78.3,
+          trend: 'stable',
+          category: 'economic',
+          historicalData: [77, 77.5, 78, 78.2, 78.3]
+        },
+        {
+          id: 'consumer-confidence',
+          name: 'Consumer Confidence Index',
+          description: 'Consumer sentiment about economic conditions',
+          unit: 'index',
+          currentValue: 102.7,
+          trend: 'up',
+          category: 'economic',
+          historicalData: [95, 98, 100, 101, 102.7]
+        }
+      ];
+
+    case 'global-influence-loop':
+      return [
+        {
+          id: 'trade-balance',
+          name: 'Trade Balance',
+          description: 'Difference between exports and imports',
+          unit: 'billion USD',
+          currentValue: -15.2,
+          trend: 'down',
+          category: 'economic',
+          historicalData: [-8, -10, -12, -14, -15.2]
+        },
+        {
+          id: 'currency-stability',
+          name: 'Currency Stability Index',
+          description: 'Measure of exchange rate volatility',
+          unit: 'index',
+          currentValue: 0.85,
+          trend: 'down',
+          category: 'economic',
+          historicalData: [0.95, 0.92, 0.89, 0.87, 0.85]
+        },
+        {
+          id: 'foreign-investment',
+          name: 'Foreign Direct Investment',
+          description: 'Inflow of foreign investment',
+          unit: 'billion USD',
+          currentValue: 12.8,
+          trend: 'stable',
+          category: 'economic',
+          historicalData: [11.5, 12.0, 12.5, 12.7, 12.8]
+        }
+      ];
+
+    case 'social-outcomes-loop':
+      return [
+        {
+          id: 'education-index',
+          name: 'Education Quality Index',
+          description: 'Composite measure of education outcomes',
+          unit: 'index',
+          currentValue: 0.78,
+          trend: 'up',
+          category: 'social',
+          historicalData: [0.72, 0.74, 0.76, 0.77, 0.78]
+        },
+        {
+          id: 'healthcare-access',
+          name: 'Healthcare Access Index',
+          description: 'Population access to healthcare services',
+          unit: '%',
+          currentValue: 83.2,
+          trend: 'up',
+          category: 'social',
+          historicalData: [78, 79.5, 81, 82.1, 83.2]
+        },
+        {
+          id: 'social-mobility',
+          name: 'Social Mobility Index',
+          description: 'Opportunity for socioeconomic advancement',
+          unit: 'index',
+          currentValue: 0.64,
+          trend: 'stable',
+          category: 'social',
+          historicalData: [0.61, 0.62, 0.63, 0.64, 0.64]
+        }
+      ];
+
+    default:
+      // Default/fallback tension signals for other loops
+      return [
+        {
+          id: 'system-pressure',
+          name: 'System Pressure Index',
+          description: 'Overall stress on the system',
+          unit: 'index',
+          currentValue: 65.4,
+          trend: 'up',
+          category: 'governance',
+          historicalData: [58, 60, 62, 64, 65.4]
+        },
+        {
+          id: 'resource-scarcity',
+          name: 'Resource Scarcity Index',
+          description: 'Availability of key resources',
+          unit: 'index',
+          currentValue: 42.8,
+          trend: 'up',
+          category: 'economic',
+          historicalData: [35, 37, 39, 41, 42.8]
+        },
+        {
+          id: 'stakeholder-satisfaction',
+          name: 'Stakeholder Satisfaction',
+          description: 'Overall stakeholder contentment level',
+          unit: '%',
+          currentValue: 67.5,
+          trend: 'down',
+          category: 'governance',
+          historicalData: [72, 70, 69, 68, 67.5]
+        }
+      ];
   }
-];
+};
 
 const srtHorizonTemplates: SRTHorizon[] = [
   {
@@ -135,6 +335,9 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   loopArchetype
 }) => {
   const [activeTab, setActiveTab] = useState('tension');
+  
+  // Get dynamic tension signals based on selected archetype
+  const tensionSignals = getArchetypeSpecificTensions(loopArchetype);
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
@@ -238,11 +441,18 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
           <div className="p-4 h-full overflow-y-auto">
             <TabsContent value="tension" className="space-y-4 mt-0">
               <div className="space-y-3">
-                <h4 className="text-sm font-medium text-muted-foreground">
-                  Select Key Tension Signal
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    Select Key Tension Signal
+                  </h4>
+                  {loopArchetype && (
+                    <Badge variant="outline" className="text-xs">
+                      {loopArchetype.replace(/-/g, ' ')}
+                    </Badge>
+                  )}
+                </div>
                 
-                {mockTensionSignals.map((signal) => (
+                {tensionSignals.map((signal) => (
                   <motion.div
                     key={signal.id}
                     whileHover={{ scale: 1.02 }}
