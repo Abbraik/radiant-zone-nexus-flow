@@ -13,7 +13,11 @@ import {
   Database,
   Lightbulb,
   Globe,
-  Brain
+  Brain,
+  Shield,
+  Network,
+  Compass,
+  Calculator
 } from 'lucide-react';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -175,6 +179,84 @@ const leveragePoints: LeveragePoint[] = [
     difficulty: 'medium',
     timeToImpact: 'medium',
     icon: <Globe className="h-4 w-4" />
+  },
+  {
+    id: 'regulating-flows',
+    rank: 6,
+    name: 'Regulating Negative Feedback Loops',
+    description: 'The strength of the mechanisms that keep the system in check',
+    meadowsCategory: 'flows',
+    governmentLevers: ['regulatory', 'organizational'],
+    effectiveness: { balancing: 85, reinforcing: 60 },
+    examples: ['Safety regulations', 'Quality controls', 'Performance monitoring'],
+    difficulty: 'medium',
+    timeToImpact: 'short',
+    icon: <Shield className="h-4 w-4" />
+  },
+  {
+    id: 'driving-flows',
+    rank: 5,
+    name: 'Driving Positive Feedback Loops',
+    description: 'The strength of the mechanisms that drive system growth',
+    meadowsCategory: 'flows',
+    governmentLevers: ['economic', 'technological'],
+    effectiveness: { balancing: 55, reinforcing: 80 },
+    examples: ['Innovation incentives', 'Growth mechanisms', 'Network effects'],
+    difficulty: 'medium',
+    timeToImpact: 'short',
+    icon: <TrendingUp className="h-4 w-4" />
+  },
+  {
+    id: 'self-organization',
+    rank: 4,
+    name: 'Power of Self-Organization',
+    description: 'The capacity to evolve and learn without external direction',
+    meadowsCategory: 'structure',
+    governmentLevers: ['collaborative', 'organizational'],
+    effectiveness: { balancing: 70, reinforcing: 75 },
+    examples: ['Decentralized networks', 'Community organizing', 'Emergent leadership'],
+    difficulty: 'high',
+    timeToImpact: 'medium',
+    icon: <Network className="h-4 w-4" />
+  },
+  {
+    id: 'goals-paradigm',
+    rank: 3,
+    name: 'Goals of Paradigm',
+    description: 'The purpose for which the paradigm exists',
+    meadowsCategory: 'paradigm',
+    governmentLevers: ['communicative', 'collaborative'],
+    effectiveness: { balancing: 80, reinforcing: 85 },
+    examples: ['Societal values', 'Cultural norms', 'Collective purpose'],
+    difficulty: 'high',
+    timeToImpact: 'long',
+    icon: <Compass className="h-4 w-4" />
+  },
+  {
+    id: 'transcending-paradigms',
+    rank: 2,
+    name: 'Transcending Paradigms',
+    description: 'Staying unattached to any particular paradigm',
+    meadowsCategory: 'paradigm',
+    governmentLevers: ['collaborative', 'communicative'],
+    effectiveness: { balancing: 90, reinforcing: 95 },
+    examples: ['Systems thinking', 'Multiple perspectives', 'Adaptive governance'],
+    difficulty: 'high',
+    timeToImpact: 'long',
+    icon: <Eye className="h-4 w-4" />
+  },
+  {
+    id: 'constants-parameters',
+    rank: 1,
+    name: 'Constants, Parameters, Numbers',
+    description: 'Least effective but most commonly attempted interventions',
+    meadowsCategory: 'flows',
+    governmentLevers: ['economic', 'regulatory'],
+    effectiveness: { balancing: 30, reinforcing: 25 },
+    examples: ['Subsidies', 'Taxes', 'Minimum wages', 'Interest rates'],
+    difficulty: 'low',
+    timeToImpact: 'immediate',
+    icon: <Calculator className="h-4 w-4" />
   }
 ];
 
@@ -311,43 +393,43 @@ export const LeverageDomainMapper: React.FC<LeverageDomainMapperProps> = ({
                   whileTap={{ scale: 0.98 }}
                 >
                   <Card 
-                    className={`p-4 cursor-pointer transition-all ${
+                    className={`p-3 cursor-pointer transition-all h-full ${
                       isSelected ? 'ring-2 ring-primary bg-primary/5' : 'hover:border-primary/50'
                     }`}
                     onClick={() => onLeveragePointSelect(point)}
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-3 h-full flex flex-col">
                       {/* Header */}
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-muted/50">
+                        <div className="flex items-start gap-2 flex-1 min-w-0">
+                          <div className="p-1.5 rounded-lg bg-muted/50 flex-shrink-0">
                             {point.icon}
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline" className="text-xs">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="text-xs flex-shrink-0">
                                 #{point.rank}
                               </Badge>
-                              <h5 className="font-medium text-sm">{point.name}</h5>
+                              <h5 className="font-medium text-sm leading-tight truncate">{point.name}</h5>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1">
+                            <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                               {point.description}
                             </p>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                           <div className="text-right">
-                            <div className="text-lg font-bold text-primary">
+                            <div className="text-base font-bold text-primary">
                               {effectiveness}%
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Effectiveness
+                              Effect
                             </div>
                           </div>
                           <Tooltip>
                             <TooltipTrigger>
-                              <Info className="h-4 w-4 text-muted-foreground" />
+                              <Info className="h-3 w-3 text-muted-foreground" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-sm">
                               <p>{getRationale(point, loopType)}</p>
