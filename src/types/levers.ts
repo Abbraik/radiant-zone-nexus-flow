@@ -18,8 +18,8 @@ export interface SubLever {
   actionType: string;
   examples: string[];
   leverageAlignment: LeveragePointAlignment[];
-  complexity: 'Low' | 'Medium' | 'High';
-  timeToImpact: 'Short' | 'Medium' | 'Long';
+  complexity: 'Low' | 'Medium' | 'High' | 'Very High';
+  timeToImpact: 'Immediate' | 'Short-term' | 'Medium-term' | 'Long-term';
 }
 
 export interface LeveragePointAlignment {
@@ -44,444 +44,773 @@ export const sixUniversalLevers: GovernmentLever[] = [
   {
     id: 'legal-institutional',
     name: 'Legal & Institutional',
-    description: 'Laws, regulations, institutional structures, and governance frameworks',
-    domain: 'Governance & Structure',
+    description: 'Define the foundational rules, powers, and structures of governance',
+    domain: 'Governance',
     icon: '⚖️',
     color: 'hsl(var(--accent))',
     subLevers: [
       {
         id: 'legislation',
         name: 'Legislation',
-        description: 'Create, amend, or repeal laws and statutes',
+        description: 'Enacting primary laws to define obligations, rights, and social or economic rules',
         actionType: 'Regulatory',
-        examples: [
-          'Carbon pricing legislation',
-          'Digital privacy laws',
-          'Procurement transparency acts'
-        ],
+        examples: ['Civil rights laws', 'Taxation codes', 'Environmental statutes'],
         leverageAlignment: [
           {
-            leveragePointRank: 2,
-            effectivenessScore: 95,
+            leveragePointRank: 1,
+            effectivenessScore: 9,
             applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Directly changes system structure and rules'
+            rationale: 'Changes fundamental system paradigms'
           },
           {
-            leveragePointRank: 3,
-            effectivenessScore: 85,
-            applicableLoopTypes: ['Balancing'],
-            rationale: 'Establishes new power distributions'
+            leveragePointRank: 2,
+            effectivenessScore: 8,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Establishes system structure'
           }
         ],
         complexity: 'High',
-        timeToImpact: 'Long'
+        timeToImpact: 'Long-term'
       },
       {
-        id: 'regulatory-standards',
-        name: 'Regulatory Standards',
-        description: 'Set technical standards, compliance requirements, and operational guidelines',
-        actionType: 'Standards',
-        examples: [
-          'Emission standards for vehicles',
-          'Building safety codes',
-          'Data security protocols'
-        ],
+        id: 'regulation',
+        name: 'Regulation',
+        description: 'Issuing secondary, often technical rules to operationalize laws through agencies',
+        actionType: 'Operational',
+        examples: ['Emissions caps by environmental authority', 'Safety standards', 'Quality controls'],
         leverageAlignment: [
           {
+            leveragePointRank: 3,
+            effectivenessScore: 7,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Shapes power distribution'
+          },
+          {
             leveragePointRank: 4,
-            effectivenessScore: 80,
+            effectivenessScore: 6,
             applicableLoopTypes: ['Balancing'],
-            rationale: 'Constrains system behavior within acceptable bounds'
+            rationale: 'Controls system rules'
           }
         ],
         complexity: 'Medium',
-        timeToImpact: 'Medium'
+        timeToImpact: 'Medium-term'
       },
       {
-        id: 'institutional-design',
-        name: 'Institutional Design',
-        description: 'Create, restructure, or eliminate institutions and agencies',
+        id: 'constitutional-rule-setting',
+        name: 'Constitutional Rule-Setting',
+        description: 'Designing or amending the basic legal framework that defines institutional power and citizen rights',
         actionType: 'Structural',
-        examples: [
-          'Establish environmental protection agency',
-          'Merge overlapping departments',
-          'Create independent oversight bodies'
+        examples: ['Amending term limits', 'Decentralizing authority', 'Constitutional conventions'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 1,
+            effectivenessScore: 10,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Changes system paradigms'
+          },
+          {
+            leveragePointRank: 2,
+            effectivenessScore: 9,
+            applicableLoopTypes: ['Reinforcing'],
+            rationale: 'Restructures system power'
+          }
         ],
+        complexity: 'Very High',
+        timeToImpact: 'Long-term'
+      },
+      {
+        id: 'judicial-interpretation',
+        name: 'Judicial Interpretation',
+        description: 'Courts interpreting and applying laws, resolving ambiguities, and setting precedents',
+        actionType: 'Interpretive',
+        examples: ['Supreme Court rulings', 'Precedent setting', 'Legal clarifications'],
         leverageAlignment: [
           {
             leveragePointRank: 2,
-            effectivenessScore: 90,
+            effectivenessScore: 8,
             applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Changes fundamental system architecture'
+            rationale: 'Interprets system structure'
+          },
+          {
+            leveragePointRank: 3,
+            effectivenessScore: 7,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Shapes power distribution'
           }
         ],
         complexity: 'High',
-        timeToImpact: 'Long'
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'electoral-system-design',
+        name: 'Electoral System Design',
+        description: 'Structuring how representatives are elected and how political accountability functions',
+        actionType: 'Structural',
+        examples: ['Proportional representation', 'Ranked-choice voting', 'Campaign finance reform'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 1,
+            effectivenessScore: 9,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Changes system paradigms'
+          },
+          {
+            leveragePointRank: 2,
+            effectivenessScore: 8,
+            applicableLoopTypes: ['Reinforcing'],
+            rationale: 'Restructures power distribution'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Long-term'
       }
     ]
   },
   {
     id: 'economic-fiscal',
     name: 'Economic & Fiscal',
-    description: 'Financial incentives, disincentives, and resource allocation mechanisms',
-    domain: 'Financial & Economic',
+    description: 'Manage public resources, shape market behavior, and drive economic outcomes',
+    domain: 'Economics',
     icon: '💰',
     color: 'hsl(var(--primary))',
     subLevers: [
       {
-        id: 'taxation',
-        name: 'Taxation',
-        description: 'Implement taxes, fees, or financial penalties',
-        actionType: 'Financial Disincentive',
-        examples: [
-          'Carbon tax',
-          'Congestion pricing',
-          'Sugar tax on beverages'
-        ],
-        leverageAlignment: [
-          {
-            leveragePointRank: 6,
-            effectivenessScore: 75,
-            applicableLoopTypes: ['Balancing'],
-            rationale: 'Creates negative feedback to discourage unwanted behavior'
-          }
-        ],
-        complexity: 'Medium',
-        timeToImpact: 'Short'
-      },
-      {
-        id: 'subsidies-grants',
-        name: 'Subsidies & Grants',
-        description: 'Provide financial support for desired activities',
-        actionType: 'Financial Incentive',
-        examples: [
-          'Electric vehicle rebates',
-          'Green energy subsidies',
-          'Small business grants'
-        ],
-        leverageAlignment: [
-          {
-            leveragePointRank: 6,
-            effectivenessScore: 70,
-            applicableLoopTypes: ['Reinforcing'],
-            rationale: 'Creates positive feedback to encourage desired behavior'
-          }
-        ],
-        complexity: 'Low',
-        timeToImpact: 'Short'
-      },
-      {
-        id: 'market-mechanisms',
-        name: 'Market Mechanisms',
-        description: 'Create or modify market structures and trading systems',
-        actionType: 'Market Design',
-        examples: [
-          'Cap-and-trade systems',
-          'Feed-in tariffs',
-          'Prediction markets for policy outcomes'
-        ],
+        id: 'taxation-revenue',
+        name: 'Taxation & Revenue Collection',
+        description: 'Generating income through direct and indirect taxes',
+        actionType: 'Financial',
+        examples: ['Progressive income tax', 'VAT', 'Corporate tax'],
         leverageAlignment: [
           {
             leveragePointRank: 5,
-            effectivenessScore: 85,
+            effectivenessScore: 6,
             applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Changes rules governing system flows'
+            rationale: 'Creates financial feedback loops'
+          },
+          {
+            leveragePointRank: 6,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Controls system flows'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Short-term'
+      },
+      {
+        id: 'public-expenditure',
+        name: 'Public Expenditure Allocation',
+        description: 'Disbursing government funds for services, infrastructure, or transfer payments',
+        actionType: 'Financial',
+        examples: ['Education funding', 'Defense spending', 'Healthcare allocation'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 6,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Directs resource flows'
+          },
+          {
+            leveragePointRank: 7,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Influences system parameters'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'market-incentivization',
+        name: 'Market Incentivization',
+        description: 'Influencing private behavior through subsidies, grants, or disincentives',
+        actionType: 'Incentive',
+        examples: ['Electric vehicle rebates', 'Carbon taxes', 'R&D grants'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 7,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Creates behavioral incentives'
+          },
+          {
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Adjusts system parameters'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'monetary-influence',
+        name: 'Monetary Influence',
+        description: 'Adjusting interest rates and liquidity via central banks to stabilize or stimulate the economy',
+        actionType: 'Financial',
+        examples: ['Interest rate adjustments', 'Quantitative easing', 'Reserve requirements'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Controls monetary flows'
+          },
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Influences system parameters'
           }
         ],
         complexity: 'High',
-        timeToImpact: 'Medium'
+        timeToImpact: 'Short-term'
+      },
+      {
+        id: 'public-asset-deployment',
+        name: 'Public Asset Deployment',
+        description: 'Leveraging land, sovereign wealth funds, or natural resources for economic purposes',
+        actionType: 'Asset',
+        examples: ['State property for housing', 'Sovereign wealth investment', 'Natural resource licensing'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Deploys public assets'
+          },
+          {
+            leveragePointRank: 10,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Modifies system parameters'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
       }
     ]
   },
   {
-    id: 'information-communications',
-    name: 'Information & Communications',
-    description: 'Information sharing, transparency, education, and narrative shaping',
-    domain: 'Knowledge & Influence',
+    id: 'administrative-executive',
+    name: 'Administrative & Executive',
+    description: 'Translate policy into action through implementation, enforcement, and delivery',
+    domain: 'Implementation',
+    icon: '⚙️',
+    color: 'hsl(var(--warning))',
+    subLevers: [
+      {
+        id: 'service-delivery',
+        name: 'Service Delivery',
+        description: 'Providing direct public services such as health, education, transportation, and welfare',
+        actionType: 'Operational',
+        examples: ['Running hospitals', 'Operating schools', 'Public transportation'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 10,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Delivers system outputs'
+          },
+          {
+            leveragePointRank: 11,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Implements system functions'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'policy-implementation',
+        name: 'Policy Implementation',
+        description: 'Turning laws into functioning programs through administrative planning and coordination',
+        actionType: 'Operational',
+        examples: ['Universal basic income rollout', 'Healthcare reform implementation', 'Education policy execution'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Executes system changes'
+          },
+          {
+            leveragePointRank: 10,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Implements system operations'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'enforcement-compliance',
+        name: 'Enforcement & Compliance Monitoring',
+        description: 'Ensuring individuals and organizations follow rules through audits, fines, and policing',
+        actionType: 'Enforcement',
+        examples: ['Labor inspections', 'Environmental audits', 'Tax compliance monitoring'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 11,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Enforces system rules'
+          },
+          {
+            leveragePointRank: 12,
+            effectivenessScore: 1,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Maintains system parameters'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Short-term'
+      },
+      {
+        id: 'infrastructure-deployment',
+        name: 'Infrastructure Deployment',
+        description: 'Building or maintaining physical and digital infrastructure for public benefit',
+        actionType: 'Infrastructure',
+        examples: ['Road construction', 'Power grid expansion', 'Broadband infrastructure'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Creates system infrastructure'
+          },
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Establishes system parameters'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Long-term'
+      },
+      {
+        id: 'crisis-response',
+        name: 'Crisis Response Activation',
+        description: 'Managing emergency response systems during disasters, pandemics, or security events',
+        actionType: 'Emergency',
+        examples: ['Earthquake response', 'COVID task forces', 'Emergency management'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 12,
+            effectivenessScore: 1,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Manages system disruptions'
+          },
+          {
+            leveragePointRank: 11,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Responds to system events'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Immediate'
+      },
+      {
+        id: 'operational-data-collection',
+        name: 'Operational Data Collection',
+        description: 'Gathering administrative data to monitor performance, adjust policies, or detect problems',
+        actionType: 'Monitoring',
+        examples: ['Hospital bed tracking', 'Performance monitoring', 'Administrative analytics'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 12,
+            effectivenessScore: 1,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Monitors system performance'
+          },
+          {
+            leveragePointRank: 11,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Provides system feedback'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Short-term'
+      }
+    ]
+  },
+  {
+    id: 'communicative-normative',
+    name: 'Communicative & Normative',
+    description: 'Shape beliefs, behaviors, social norms, and collective identity',
+    domain: 'Communication',
     icon: '📢',
     color: 'hsl(var(--info))',
     subLevers: [
       {
-        id: 'public-education',
-        name: 'Public Education',
-        description: 'Educate citizens and stakeholders about issues and solutions',
-        actionType: 'Knowledge Transfer',
-        examples: [
-          'Climate change awareness campaigns',
-          'Financial literacy programs',
-          'Public health education'
-        ],
+        id: 'public-communication',
+        name: 'Public Communication Campaigning',
+        description: 'Promoting messages to influence public behavior or opinion',
+        actionType: 'Communicative',
+        examples: ['Anti-smoking campaigns', 'Vaccination drives', 'Public health messaging'],
         leverageAlignment: [
           {
-            leveragePointRank: 1,
-            effectivenessScore: 85,
+            leveragePointRank: 10,
+            effectivenessScore: 3,
             applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Changes paradigms and mental models'
-          }
-        ],
-        complexity: 'Medium',
-        timeToImpact: 'Long'
-      },
-      {
-        id: 'transparency-disclosure',
-        name: 'Transparency & Disclosure',
-        description: 'Require or provide access to information',
-        actionType: 'Information Access',
-        examples: [
-          'Corporate carbon footprint reporting',
-          'Government spending transparency',
-          'Food nutrition labeling'
-        ],
-        leverageAlignment: [
+            rationale: 'Influences public behavior'
+          },
           {
-            leveragePointRank: 7,
-            effectivenessScore: 65,
+            leveragePointRank: 11,
+            effectivenessScore: 2,
             applicableLoopTypes: ['Balancing'],
-            rationale: 'Provides information flows that enable better decision-making'
+            rationale: 'Shapes system information flows'
           }
         ],
         complexity: 'Low',
-        timeToImpact: 'Medium'
+        timeToImpact: 'Short-term'
       },
       {
-        id: 'narrative-framing',
-        name: 'Narrative & Framing',
-        description: 'Shape public discourse and cultural narratives',
-        actionType: 'Cultural Influence',
-        examples: [
-          'Reframe climate action as economic opportunity',
-          'Position health as national security issue',
-          'Promote civic duty messaging'
-        ],
+        id: 'curriculum-symbol-design',
+        name: 'Curriculum & Symbol Design',
+        description: 'Defining educational content, national holidays, monuments, and symbols',
+        actionType: 'Cultural',
+        examples: ['National history curriculum', 'Civic education', 'National monuments'],
         leverageAlignment: [
           {
-            leveragePointRank: 1,
-            effectivenessScore: 90,
+            leveragePointRank: 3,
+            effectivenessScore: 7,
             applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Transforms fundamental beliefs and worldviews'
-          }
-        ],
-        complexity: 'High',
-        timeToImpact: 'Long'
-      }
-    ]
-  },
-  {
-    id: 'physical-infrastructure',
-    name: 'Physical Infrastructure',
-    description: 'Built environment, logistics systems, and physical constraints',
-    domain: 'Physical Systems',
-    icon: '🏗️',
-    color: 'hsl(var(--warning))',
-    subLevers: [
-      {
-        id: 'transport-infrastructure',
-        name: 'Transport Infrastructure',
-        description: 'Build, modify, or remove transportation systems',
-        actionType: 'Physical Construction',
-        examples: [
-          'Bike lane networks',
-          'Public transit expansion',
-          'Electric vehicle charging stations'
-        ],
-        leverageAlignment: [
+            rationale: 'Shapes cultural paradigms'
+          },
           {
-            leveragePointRank: 8,
-            effectivenessScore: 70,
-            applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Changes physical constraints and flows'
-          }
-        ],
-        complexity: 'High',
-        timeToImpact: 'Long'
-      },
-      {
-        id: 'digital-infrastructure',
-        name: 'Digital Infrastructure',
-        description: 'Build, maintain, or regulate digital systems and networks',
-        actionType: 'Digital Construction',
-        examples: [
-          'Broadband expansion',
-          'Digital government services',
-          'Smart city sensor networks'
-        ],
-        leverageAlignment: [
-          {
-            leveragePointRank: 7,
-            effectivenessScore: 75,
+            leveragePointRank: 4,
+            effectivenessScore: 6,
             applicableLoopTypes: ['Reinforcing'],
-            rationale: 'Enables new information flows and feedback loops'
-          }
-        ],
-        complexity: 'High',
-        timeToImpact: 'Medium'
-      },
-      {
-        id: 'space-design',
-        name: 'Space & Urban Design',
-        description: 'Design physical spaces to influence behavior',
-        actionType: 'Environmental Design',
-        examples: [
-          'Pedestrian-friendly urban design',
-          'Green spaces in cities',
-          'Nudge architecture in public buildings'
-        ],
-        leverageAlignment: [
-          {
-            leveragePointRank: 9,
-            effectivenessScore: 60,
-            applicableLoopTypes: ['Balancing'],
-            rationale: 'Shapes parameters and constraints of system behavior'
+            rationale: 'Influences system beliefs'
           }
         ],
         complexity: 'Medium',
-        timeToImpact: 'Long'
+        timeToImpact: 'Long-term'
+      },
+      {
+        id: 'narrative-framing',
+        name: 'Narrative Framing',
+        description: 'Crafting narratives that provide meaning to laws, crises, or reforms',
+        actionType: 'Narrative',
+        examples: ['Climate policy as intergenerational justice', 'Economic reform messaging', 'Crisis communication'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 4,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Frames system understanding'
+          },
+          {
+            leveragePointRank: 5,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Reinforcing'],
+            rationale: 'Shapes system narrative'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'information-disclosure',
+        name: 'Information Disclosure',
+        description: 'Publishing data, government plans, or decisions to increase transparency and accountability',
+        actionType: 'Transparency',
+        examples: ['Budget transparency portals', 'FOIA regimes', 'Open data initiatives'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 11,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Increases system transparency'
+          },
+          {
+            leveragePointRank: 12,
+            effectivenessScore: 1,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Provides system information'
+          }
+        ],
+        complexity: 'Low',
+        timeToImpact: 'Short-term'
+      },
+      {
+        id: 'soft-power-messaging',
+        name: 'Soft Power Messaging',
+        description: 'Projecting values internationally through culture, media, or public diplomacy',
+        actionType: 'Diplomatic',
+        examples: ['Cultural festivals abroad', 'International media outlets', 'Cultural exchange programs'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Projects system values'
+          },
+          {
+            leveragePointRank: 10,
+            effectivenessScore: 2,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Influences external perceptions'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Long-term'
       }
     ]
   },
   {
-    id: 'social-cultural',
-    name: 'Social & Cultural',
-    description: 'Social norms, cultural practices, and community engagement',
-    domain: 'Social Systems',
+    id: 'behavioral-social',
+    name: 'Behavioral & Social',
+    description: 'Influence individual decisions and collective behavior without direct coercion',
+    domain: 'Behavioral',
     icon: '👥',
     color: 'hsl(var(--success))',
     subLevers: [
       {
-        id: 'community-engagement',
-        name: 'Community Engagement',
-        description: 'Facilitate participation in decision-making and implementation',
-        actionType: 'Participatory',
-        examples: [
-          'Citizen assemblies on climate policy',
-          'Participatory budgeting',
-          'Community-led renewable energy projects'
-        ],
+        id: 'behavioral-design',
+        name: 'Behavioral Design (Nudging)',
+        description: 'Structuring choice environments to guide decisions without restricting freedom',
+        actionType: 'Behavioral',
+        examples: ['Organ donation opt-out systems', 'Energy use comparisons', 'Choice architecture'],
         leverageAlignment: [
           {
-            leveragePointRank: 3,
-            effectivenessScore: 80,
+            leveragePointRank: 7,
+            effectivenessScore: 5,
             applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Redistributes power and enables self-organization'
+            rationale: 'Influences decision-making'
+          },
+          {
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Shapes behavioral parameters'
           }
         ],
         complexity: 'Medium',
-        timeToImpact: 'Medium'
+        timeToImpact: 'Short-term'
       },
       {
-        id: 'social-norms',
-        name: 'Social Norms',
-        description: 'Influence collective behaviors and social expectations',
-        actionType: 'Behavioral',
-        examples: [
-          'Anti-smoking campaigns',
-          'Promote recycling as social norm',
-          'Normalize sustainable consumption'
-        ],
+        id: 'default-settings',
+        name: 'Default Settings & Opt-Outs',
+        description: 'Using pre-selected defaults to steer user behavior',
+        actionType: 'Design',
+        examples: ['Automatic retirement enrollment', 'Default privacy settings', 'Opt-out systems'],
         leverageAlignment: [
           {
-            leveragePointRank: 1,
-            effectivenessScore: 75,
-            applicableLoopTypes: ['Reinforcing'],
-            rationale: 'Changes cultural paradigms that drive behavior'
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Sets behavioral defaults'
+          },
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Configures system parameters'
           }
         ],
-        complexity: 'High',
-        timeToImpact: 'Long'
+        complexity: 'Low',
+        timeToImpact: 'Immediate'
       },
       {
-        id: 'collaboration-networks',
-        name: 'Collaboration Networks',
-        description: 'Foster connections and partnerships between stakeholders',
-        actionType: 'Network Building',
-        examples: [
-          'Public-private partnerships',
-          'Cross-sector climate alliances',
-          'Innovation hubs and clusters'
+        id: 'social-protection-structuring',
+        name: 'Social Protection Structuring',
+        description: 'Designing programs that not only protect, but also encourage certain life choices',
+        actionType: 'Social',
+        examples: ['Conditional cash transfers', 'Education incentives', 'Healthcare conditionality'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 6,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Creates social incentives'
+          },
+          {
+            leveragePointRank: 7,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Structures social flows'
+          }
         ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'participatory-channels',
+        name: 'Participatory Channel Creation',
+        description: 'Enabling public input in policy or budgeting decisions',
+        actionType: 'Participatory',
+        examples: ['Participatory budgeting', 'Citizen juries', 'Public consultations'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 5,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Enables public participation'
+          },
+          {
+            leveragePointRank: 6,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Creates participatory flows'
+          }
+        ],
+        complexity: 'Medium',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'recognition-identity',
+        name: 'Recognition & Identity Policy',
+        description: 'Formally recognizing marginalized or identity groups to foster inclusion',
+        actionType: 'Recognition',
+        examples: ['Indigenous status recognition', 'Same-sex partnership recognition', 'Minority rights'],
         leverageAlignment: [
           {
             leveragePointRank: 4,
-            effectivenessScore: 70,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Recognizes group identities'
+          },
+          {
+            leveragePointRank: 5,
+            effectivenessScore: 5,
             applicableLoopTypes: ['Reinforcing'],
-            rationale: 'Changes network structure and information flows'
+            rationale: 'Shapes social power dynamics'
           }
         ],
         complexity: 'Medium',
-        timeToImpact: 'Medium'
+        timeToImpact: 'Long-term'
       }
     ]
   },
   {
-    id: 'technology-innovation',
-    name: 'Technology & Innovation',
-    description: 'Research, development, deployment, and adoption of new technologies',
-    domain: 'Innovation Systems',
-    icon: '🔬',
+    id: 'international-global',
+    name: 'International & Global',
+    description: 'Shape global relationships, assert sovereignty, and manage interdependence',
+    domain: 'International',
+    icon: '🌍',
     color: 'hsl(var(--destructive))',
     subLevers: [
       {
-        id: 'research-development',
-        name: 'Research & Development',
-        description: 'Fund and direct scientific research and technological development',
-        actionType: 'Innovation Investment',
-        examples: [
-          'Clean energy research grants',
-          'Medical research initiatives',
-          'AI safety research programs'
-        ],
-        leverageAlignment: [
-          {
-            leveragePointRank: 1,
-            effectivenessScore: 95,
-            applicableLoopTypes: ['Reinforcing'],
-            rationale: 'Creates paradigm shifts through new technologies'
-          }
-        ],
-        complexity: 'High',
-        timeToImpact: 'Long'
-      },
-      {
-        id: 'technology-deployment',
-        name: 'Technology Deployment',
-        description: 'Support large-scale adoption and implementation of technologies',
-        actionType: 'Scaling',
-        examples: [
-          'Smart grid deployment',
-          'Digital health system rollout',
-          'Autonomous vehicle testing zones'
-        ],
-        leverageAlignment: [
-          {
-            leveragePointRank: 8,
-            effectivenessScore: 80,
-            applicableLoopTypes: ['Reinforcing', 'Balancing'],
-            rationale: 'Changes system parameters and material flows'
-          }
-        ],
-        complexity: 'High',
-        timeToImpact: 'Medium'
-      },
-      {
-        id: 'innovation-ecosystem',
-        name: 'Innovation Ecosystem',
-        description: 'Create conditions for innovation and entrepreneurship',
-        actionType: 'Ecosystem Building',
-        examples: [
-          'Startup incubators and accelerators',
-          'Regulatory sandboxes',
-          'Innovation procurement programs'
-        ],
+        id: 'treaty-negotiation',
+        name: 'Treaty Negotiation & Ratification',
+        description: 'Engaging in legally binding international commitments',
+        actionType: 'Diplomatic',
+        examples: ['Paris Climate Accord', 'WTO accession', 'Bilateral agreements'],
         leverageAlignment: [
           {
             leveragePointRank: 2,
-            effectivenessScore: 85,
+            effectivenessScore: 8,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Creates international structures'
+          },
+          {
+            leveragePointRank: 3,
+            effectivenessScore: 7,
             applicableLoopTypes: ['Reinforcing'],
-            rationale: 'Changes system structure to enable continuous innovation'
+            rationale: 'Shapes global power dynamics'
+          }
+        ],
+        complexity: 'Very High',
+        timeToImpact: 'Long-term'
+      },
+      {
+        id: 'foreign-aid-allocation',
+        name: 'Foreign Aid Allocation',
+        description: 'Transferring financial or material assistance to achieve strategic or humanitarian goals',
+        actionType: 'Financial',
+        examples: ['Disaster relief funding', 'Development grants', 'Humanitarian assistance'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Provides international assistance'
+          },
+          {
+            leveragePointRank: 9,
+            effectivenessScore: 3,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Influences global flows'
           }
         ],
         complexity: 'Medium',
-        timeToImpact: 'Medium'
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'trade-policy-adjustment',
+        name: 'Trade Policy Adjustment',
+        description: 'Structuring the terms of trade through tariffs, agreements, or embargoes',
+        actionType: 'Economic',
+        examples: ['Free trade agreements', 'Import sanctions', 'Export controls'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 5,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Shapes trade flows'
+          },
+          {
+            leveragePointRank: 6,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Controls economic flows'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Medium-term'
+      },
+      {
+        id: 'cross-border-regulation',
+        name: 'Cross-border Regulation Coordination',
+        description: 'Harmonizing national laws and enforcement with international standards',
+        actionType: 'Regulatory',
+        examples: ['Global health protocols', 'Cybersecurity standards', 'Environmental coordination'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 3,
+            effectivenessScore: 7,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Coordinates international rules'
+          },
+          {
+            leveragePointRank: 4,
+            effectivenessScore: 6,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Harmonizes regulatory systems'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Long-term'
+      },
+      {
+        id: 'sanction-incentive-deployment',
+        name: 'Sanction & Incentive Deployment',
+        description: 'Using carrots and sticks to influence foreign behavior or compliance',
+        actionType: 'Coercive',
+        examples: ['Economic sanctions', 'Most-Favored Nation status', 'Trade incentives'],
+        leverageAlignment: [
+          {
+            leveragePointRank: 7,
+            effectivenessScore: 5,
+            applicableLoopTypes: ['Reinforcing', 'Balancing'],
+            rationale: 'Applies international pressure'
+          },
+          {
+            leveragePointRank: 8,
+            effectivenessScore: 4,
+            applicableLoopTypes: ['Balancing'],
+            rationale: 'Influences international behavior'
+          }
+        ],
+        complexity: 'High',
+        timeToImpact: 'Short-term'
       }
     ]
   }
@@ -515,7 +844,7 @@ export const getRecommendedLevers = (
 
 export const getSubLeversByLever = (leverId: string): SubLever[] => {
   const lever = sixUniversalLevers.find(l => l.id === leverId);
-  return lever?.subLevers || [];
+  return lever ? lever.subLevers : [];
 };
 
 export const getSubLeverById = (subLeverId: string): SubLever | undefined => {
