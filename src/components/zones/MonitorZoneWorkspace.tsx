@@ -17,7 +17,11 @@ import { Switch } from '../ui/switch';
 import { Badge } from '../ui/badge';
 import { MultiLevelLoopHealthDashboard } from '../monitor/MultiLevelLoopHealthDashboard';
 import { AlertSystem } from '../monitor/AlertSystem';
+import { SubLeverPerformancePanel } from '../monitor/SubLeverPerformancePanel';
+import { MicroLoopAlertRail } from '../monitor/MicroLoopAlertRail';
+import { AdvancedAnalyticsSuite } from '../monitor/AdvancedAnalyticsSuite';
 import { EnhancedLoop } from '../../types/monitor';
+import { AnalyticsInsight, MicroLoopAlert } from '../../types/analytics';
 
 // Mock data
 const mockLoops = [
@@ -142,22 +146,74 @@ export const MonitorZoneWorkspace: React.FC = () => {
     // TODO: Navigate to detailed loop view or open sidebar
   };
 
+  const handleMicroLoopAlert = (alert: MicroLoopAlert) => {
+    console.log('Micro-loop alert clicked:', alert);
+    // TODO: Navigate to task or intervention detail
+  };
+
+  const handleAnalyticsInsight = (insight: AnalyticsInsight) => {
+    console.log('Analytics insight clicked:', insight);
+    // TODO: Open insight detail modal or navigate to relevant view
+  };
+
   return (
     <div className="space-y-6">
+      {/* Phase 2: Micro-Loop Alert Rail */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <MicroLoopAlertRail 
+          workspaceType="monitor"
+          onAlertClick={handleMicroLoopAlert}
+          maxVisible={3}
+        />
+      </motion.div>
+
       {/* Phase 1: Multi-Level Loop Health Dashboard */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
       >
         <MultiLevelLoopHealthDashboard onLoopSelect={handleLoopSelect} />
       </motion.div>
+
+      {/* Phase 2: Sub-Lever Performance Panel & Advanced Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Sub-Lever Performance Panel (2/3 width) */}
+        <motion.div
+          className="lg:col-span-2"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <SubLeverPerformancePanel
+            onAdjustParameters={(subLeverId) => console.log('Adjust parameters for:', subLeverId)}
+            onCreateCorrectiveTask={(subLever, gap) => console.log('Create corrective task:', subLever.name, gap)}
+          />
+        </motion.div>
+
+        {/* Advanced Analytics Suite (1/3 width) */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <AdvancedAnalyticsSuite
+            onExportData={(query) => console.log('Export data:', query)}
+            onConfigureAlert={() => console.log('Configure analytics alerts')}
+            onViewInsight={handleAnalyticsInsight}
+          />
+        </motion.div>
+      </div>
 
       {/* Alert System */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
       >
         <AlertSystem />
       </motion.div>
