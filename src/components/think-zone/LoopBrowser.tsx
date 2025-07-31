@@ -134,13 +134,15 @@ const coreLoopArchetypes: LoopArchetype[] = [
 interface LoopBrowserProps {
   onArchetypeSelect: (archetype: LoopArchetype) => void;
   onCustomLoopCreate: () => void;
-  selectedArchetypeId?: string;
+  selectedArchetypeIds?: string[];
+  multiSelect?: boolean;
 }
 
 export const LoopBrowser: React.FC<LoopBrowserProps> = ({
   onArchetypeSelect,
   onCustomLoopCreate,
-  selectedArchetypeId
+  selectedArchetypeIds = [],
+  multiSelect = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -194,6 +196,10 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
     return colors[category as keyof typeof colors] || colors.other;
   };
 
+  const isSelected = (archetypeId: string) => {
+    return selectedArchetypeIds.includes(archetypeId);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -204,7 +210,14 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
       <div className="space-y-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Loop Browser</h2>
-          <p className="text-muted-foreground">Select a loop archetype to begin strategic framing</p>
+          <p className="text-muted-foreground">
+            {multiSelect ? 'Select multiple loop archetypes for strategic framing' : 'Select a loop archetype to begin strategic framing'}
+          </p>
+          {multiSelect && selectedArchetypeIds.length > 0 && (
+            <p className="text-sm text-muted-foreground mt-2">
+              {selectedArchetypeIds.length} loop{selectedArchetypeIds.length !== 1 ? 's' : ''} selected
+            </p>
+          )}
         </div>
 
         {/* Search and Filters */}
@@ -247,7 +260,7 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
           >
             <Card 
               className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                selectedArchetypeId === archetype.id 
+                isSelected(archetype.id)
                   ? 'ring-2 ring-primary bg-primary/5' 
                   : 'hover:border-primary/50'
               }`}

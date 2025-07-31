@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Save, Play } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { LoopBrowser, LoopArchetype } from '../think-zone/LoopBrowser';
 import { EnhancedCLDBuilder } from '../think-zone/EnhancedCLDBuilder';
@@ -27,16 +28,12 @@ interface ThinkZoneStep {
 export const ThinkZoneWorkspace: React.FC = () => {
   const { toast } = useToast();
   
-  // Core state
+  // Core state - now supporting multiple selections
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedArchetype, setSelectedArchetype] = useState<LoopArchetype | null>(null);
+  const [selectedArchetypes, setSelectedArchetypes] = useState<LoopArchetype[]>([]);
   const [cldModel, setCldModel] = useState<CLDModel | null>(null);
-  const [parameterConfig, setParameterConfig] = useState<any>({
-    tensionSignal: null,
-    deBandConfig: null,
-    srtHorizon: null
-  });
-  const [leveragePoint, setLeveragePoint] = useState<any>(null);
+  const [parameterConfigs, setParameterConfigs] = useState<any[]>([]);
+  const [leveragePoints, setLeveragePoints] = useState<any[]>([]);
   const [macroVision, setMacroVision] = useState({ text: '', isValid: false });
   const [sprintCreated, setSprintCreated] = useState(false);
   const [showLearning, setShowLearning] = useState(false);
@@ -45,10 +42,10 @@ export const ThinkZoneWorkspace: React.FC = () => {
     {
       id: 'loop-selection',
       title: 'Loop Selection',
-      description: 'Choose or create your causal loop archetype',
+      description: 'Choose or create your causal loop archetypes',
       component: 'LoopBrowser',
       required: true,
-      completed: !!selectedArchetype
+      completed: selectedArchetypes.length > 0
     },
     {
       id: 'cld-building',
@@ -61,10 +58,12 @@ export const ThinkZoneWorkspace: React.FC = () => {
     {
       id: 'parameters',
       title: 'Parameters',
-      description: 'Set tension signals, DE-Bands, and SRT horizon',
+      description: 'Set tension signals, DE-Bands, and SRT horizons',
       component: 'ParameterPanel',
       required: true,
-      completed: !!(parameterConfig.tensionSignal && parameterConfig.deBandConfig && parameterConfig.srtHorizon)
+      completed: parameterConfigs.length > 0 && parameterConfigs.every(config => 
+        config.tensionSignal && config.deBandConfig && config.srtHorizon
+      )
     },
     {
       id: 'leverage',
@@ -72,7 +71,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
       description: 'Select leverage points and government levers',
       component: 'LeverageMapper',
       required: true,
-      completed: !!leveragePoint
+      completed: leveragePoints.length > 0
     },
     {
       id: 'vision',
@@ -108,8 +107,16 @@ export const ThinkZoneWorkspace: React.FC = () => {
     }
   };
 
+  // Handler for multiple archetype selection
   const handleArchetypeSelect = (archetype: LoopArchetype) => {
-    setSelectedArchetype(archetype);
+    setSelectedArchetypes(prev => {
+      const exists = prev.find(a => a.id === archetype.id);
+      if (exists) {
+        return prev.filter(a => a.id !== archetype.id);
+      } else {
+        return [...prev, archetype];
+      }
+    });
     toast({
       title: "Archetype Selected",
       description: `${archetype.name} archetype ready for configuration`
@@ -125,6 +132,31 @@ export const ThinkZoneWorkspace: React.FC = () => {
     toast({
       title: "Model Saved",
       description: "Your causal loop diagram has been saved"
+    });
+  };
+
+  // Handler for multiple parameter configurations
+  const handleParameterConfigAdd = (config: any) => {
+    setParameterConfigs(prev => [...prev, config]);
+  };
+
+  const handleParameterConfigUpdate = (index: number, config: any) => {
+    setParameterConfigs(prev => prev.map((c, i) => i === index ? config : c));
+  };
+
+  const handleParameterConfigRemove = (index: number) => {
+    setParameterConfigs(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Handler for multiple leverage points
+  const handleLeveragePointSelect = (point: any) => {
+    setLeveragePoints(prev => {
+      const exists = prev.find(p => p.id === point.id);
+      if (exists) {
+        return prev.filter(p => p.id !== point.id);
+      } else {
+        return [...prev, point];
+      }
     });
   };
 
@@ -170,43 +202,57 @@ export const ThinkZoneWorkspace: React.FC = () => {
         return (
           <LoopBrowser
             onArchetypeSelect={handleArchetypeSelect}
-            onCustomLoopCreate={() => setSelectedArchetype(null)}
-            selectedArchetypeId={selectedArchetype?.id}
+            onCustomLoopCreate={() => setSelectedArchetypes([])}
+            selectedArchetypeIds={selectedArchetypes.map(a => a.id)}
+            multiSelect={true}
           />
         );
       
       case 'CLDBuilder':
         return (
           <EnhancedCLDBuilder
-            selectedArchetype={selectedArchetype || undefined}
+            selectedArchetype={selectedArchetypes[0] || undefined}
             onModelChange={handleModelChange}
             onSave={handleModelSave}
           />
         );
       
       case 'ParameterPanel':
+        // For now, create one config per archetype
+        const currentConfig = parameterConfigs[0] || {
+          tensionSignal: null,
+          deBandConfig: null,
+          srtHorizon: null
+        };
+        
         return (
           <ParameterPanel
-            config={parameterConfig}
-            onConfigChange={setParameterConfig}
-            loopArchetype={selectedArchetype?.id}
+            config={currentConfig}
+            onConfigChange={(config) => {
+              if (parameterConfigs.length === 0) {
+                handleParameterConfigAdd(config);
+              } else {
+                handleParameterConfigUpdate(0, config);
+              }
+            }}
+            loopArchetype={selectedArchetypes[0]?.id}
           />
         );
       
       case 'LeverageMapper':
         return (
           <LeverageDomainMapper
-            selectedLeveragePoint={leveragePoint}
-            onLeveragePointSelect={setLeveragePoint}
-            loopType={selectedArchetype?.type}
+            selectedLeveragePoint={leveragePoints[0] || null}
+            onLeveragePointSelect={handleLeveragePointSelect}
+            loopType={selectedArchetypes[0]?.type}
           />
         );
       
       case 'MacroVision':
         return (
           <MacroVisionCapture
-            loopArchetype={selectedArchetype?.id}
-            tensionSignal={parameterConfig.tensionSignal?.id}
+            loopArchetype={selectedArchetypes[0]?.id}
+            tensionSignal={parameterConfigs[0]?.tensionSignal?.id}
             onVisionChange={setMacroVision}
             initialVision={macroVision.text}
           />
@@ -216,13 +262,13 @@ export const ThinkZoneWorkspace: React.FC = () => {
         const bundle = {
           id: `bundle-${Date.now()}`,
           loopConfiguration: {
-            archetype: selectedArchetype?.name || '',
+            archetype: selectedArchetypes[0]?.name || '',
             nodeCount: cldModel?.nodes.length || 0,
             linkCount: cldModel?.links.length || 0,
             modelData: cldModel
           },
-          parameterConfiguration: parameterConfig,
-          leveragePoint,
+          parameterConfiguration: parameterConfigs[0] || {},
+          leveragePoint: leveragePoints[0] || null,
           macroVision: {
             text: macroVision.text,
             characterCount: macroVision.text.length
@@ -230,13 +276,16 @@ export const ThinkZoneWorkspace: React.FC = () => {
           metadata: {
             createdAt: new Date(),
             createdBy: 'current-user',
-            thinkZoneVersion: '3.0'
+            thinkZoneVersion: '3.0',
+            selectedArchetypes: selectedArchetypes,
+            allParameterConfigs: parameterConfigs,
+            allLeveragePoints: leveragePoints
           }
         };
 
         const loopData = {
-          name: selectedArchetype?.name || '',
-          type: selectedArchetype?.type || 'balancing' as 'balancing' | 'reinforcing',
+          name: selectedArchetypes[0]?.name || '',
+          type: selectedArchetypes[0]?.type || 'balancing' as 'balancing' | 'reinforcing',
           nodeCount: cldModel?.nodes.length || 0,
           linkCount: cldModel?.links.length || 0
         };
@@ -248,13 +297,30 @@ export const ThinkZoneWorkspace: React.FC = () => {
         
         return (
           <div className="space-y-6">
+            {/* Multi-Selection Summary */}
+            {selectedArchetypes.length > 1 && (
+              <Card className="p-4 bg-blue-500/5 border-blue-200">
+                <h4 className="font-medium text-blue-800 mb-2">Multiple Loops Selected</h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedArchetypes.map((archetype) => (
+                    <Badge key={archetype.id} variant="outline" className="text-blue-600">
+                      {archetype.name}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-sm text-blue-700 mt-2">
+                  The system will configure parameters for all selected loops and find common leverage points.
+                </p>
+              </Card>
+            )}
+            
             <ReviewSummaryPanel
               validationItems={getValidationItems()}
               loopData={loopData}
-              tensionSignal={parameterConfig.tensionSignal}
-              deBandConfig={parameterConfig.deBandConfig}
-              srtHorizon={parameterConfig.srtHorizon}
-              leveragePoint={leveragePoint}
+              tensionSignal={parameterConfigs[0]?.tensionSignal}
+              deBandConfig={parameterConfigs[0]?.deBandConfig}
+              srtHorizon={parameterConfigs[0]?.srtHorizon}
+              leveragePoint={leveragePoints[0]}
               macroVision={reviewMacroVision}
             />
             
