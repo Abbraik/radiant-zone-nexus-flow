@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { mockTasks, TaskType } from '../config/taskRegistry';
 import { useToast } from './use-toast';
 
@@ -122,6 +123,7 @@ const mockTasksWithStatus: Task[] = [
 
 export const useTasks = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [claimingTask, setClaimingTask] = useState<Task | null>(null);
   const [showClaimPopup, setShowClaimPopup] = useState(false);
@@ -153,6 +155,9 @@ export const useTasks = () => {
       return taskId;
     },
     onSuccess: (taskId) => {
+      // Get the claimed task to check its zone
+      const claimedTask = allTasks.find(task => task.id === taskId);
+      
       // Update local state
       queryClient.setQueryData(['tasks'], (oldTasks: Task[] = []) => 
         oldTasks.map(task => 
@@ -167,6 +172,11 @@ export const useTasks = () => {
         description: "Task has been added to your workspace",
         duration: 3000
       });
+
+      // Navigate to appropriate zone if it's a monitor task
+      if (claimedTask?.zone === 'monitor') {
+        navigate('/monitor');
+      }
     }
   });
 
