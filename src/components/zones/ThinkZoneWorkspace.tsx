@@ -269,9 +269,9 @@ export const ThinkZoneWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -320,14 +320,14 @@ export const ThinkZoneWorkspace: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full p-6">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 max-w-7xl mx-auto">
           <motion.div
             key={currentStep}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="h-full"
+            className="w-full"
           >
             {renderStepContent()}
           </motion.div>
