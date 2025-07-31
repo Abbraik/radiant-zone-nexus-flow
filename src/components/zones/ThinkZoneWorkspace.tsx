@@ -237,9 +237,9 @@ export const ThinkZoneWorkspace: React.FC = () => {
           <div className="space-y-6">
             {/* Multi-Loop Configuration Header */}
             {selectedArchetypes.length > 1 && (
-              <Card className="p-4 bg-blue-500/5 border-blue-200">
-                <h4 className="font-medium text-blue-800 mb-2">Multiple Loop Configuration</h4>
-                <p className="text-sm text-blue-700">
+              <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
+                <h4 className="font-semibold text-primary mb-3">Multiple Loop Configuration</h4>
+                <p className="text-sm text-foreground-muted">
                   Configure parameters for each selected loop archetype. You can select tensions across all loops.
                 </p>
               </Card>
@@ -254,17 +254,17 @@ export const ThinkZoneWorkspace: React.FC = () => {
               };
               
               return (
-                <Card key={archetype.id} className="p-4">
-                  <div className="mb-4">
-                    <h4 className="font-medium text-foreground flex items-center gap-2">
+                <Card key={archetype.id} className="glass p-6 border-border/30 rounded-[--radius-lg]">
+                  <div className="mb-6">
+                    <h4 className="font-semibold text-foreground flex items-center gap-3">
                       {archetype.name}
                       {currentConfig.tensionSignal && currentConfig.deBandConfig && currentConfig.srtHorizon && (
-                        <Badge variant="secondary" className="bg-green-500/10 text-green-600">
+                        <Badge variant="secondary" className="bg-success/20 text-success border-success/30">
                           Complete
                         </Badge>
                       )}
                     </h4>
-                    <p className="text-sm text-muted-foreground">{archetype.description}</p>
+                    <p className="text-sm text-foreground-muted mt-2">{archetype.description}</p>
                   </div>
                   
                   <ParameterPanel
@@ -294,8 +294,8 @@ export const ThinkZoneWorkspace: React.FC = () => {
             
             {/* Show message if no archetypes selected */}
             {selectedArchetypes.length === 0 && (
-              <Card className="p-8 text-center">
-                <p className="text-muted-foreground">
+              <Card className="glass p-12 text-center border-border/30 rounded-[--radius-lg]">
+                <p className="text-foreground-muted">
                   Please select loop archetypes in the previous step to configure parameters.
                 </p>
               </Card>
@@ -365,16 +365,16 @@ export const ThinkZoneWorkspace: React.FC = () => {
           <div className="space-y-6">
             {/* Multi-Selection Summary */}
             {selectedArchetypes.length > 1 && (
-              <Card className="p-4 bg-blue-500/5 border-blue-200">
-                <h4 className="font-medium text-blue-800 mb-2">Multiple Loops Selected</h4>
-                <div className="flex flex-wrap gap-2">
+              <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
+                <h4 className="font-semibold text-primary mb-3">Multiple Loops Selected</h4>
+                <div className="flex flex-wrap gap-2 mb-3">
                   {selectedArchetypes.map((archetype) => (
-                    <Badge key={archetype.id} variant="outline" className="text-blue-600">
+                    <Badge key={archetype.id} variant="outline" className="text-primary border-primary/30">
                       {archetype.name}
                     </Badge>
                   ))}
                 </div>
-                <p className="text-sm text-blue-700 mt-2">
+                <p className="text-sm text-foreground-muted">
                   The system will configure parameters for all selected loops and find common leverage points.
                 </p>
               </Card>
@@ -406,46 +406,53 @@ export const ThinkZoneWorkspace: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-10">
-        <div className="p-4">
+      <div className="glass-secondary border-b border-border/50 sticky top-0 z-10">
+        <div className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Think Zone</h1>
-              <p className="text-muted-foreground">Streamlined Strategic Framing</p>
+              <h1 className="text-2xl font-bold text-foreground">Think Zone</h1>
+              <p className="text-foreground-muted">Streamlined Strategic Framing</p>
             </div>
             
             <div className="flex items-center gap-4">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={() => setShowLearning(true)}
+                className="glass rounded-[--radius-button]"
               >
                 Learning Hub
               </Button>
               
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-foreground-subtle">
                 Step {currentStep + 1} of {steps.length}
               </div>
             </div>
           </div>
 
           {/* Progress */}
-          <div className="mt-4 space-y-2">
+          <div className="mt-6 space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <span>Configuration Progress</span>
-              <span>{Math.round(progress)}% Complete</span>
+              <span className="font-medium text-foreground">Configuration Progress</span>
+              <span className="text-primary font-semibold">{Math.round(progress)}% Complete</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-3 bg-muted rounded-full" />
           </div>
 
           {/* Steps Navigation */}
-          <div className="mt-4 flex items-center gap-2 overflow-x-auto">
+          <div className="mt-6 flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {steps.map((step, index) => (
               <Button
                 key={step.id}
                 variant={index === currentStep ? "default" : step.completed ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => setCurrentStep(index)}
-                className="whitespace-nowrap"
+                className={`whitespace-nowrap transition-all ${
+                  index === currentStep 
+                    ? "bg-primary text-primary-foreground shadow-lg" 
+                    : step.completed 
+                      ? "bg-success/20 text-success border-success/30 hover:bg-success/30" 
+                      : "glass-secondary border-border/30 hover:bg-glass-primary"
+                }`}
               >
                 {step.completed && "✓ "}{step.title}
               </Button>
@@ -455,39 +462,44 @@ export const ThinkZoneWorkspace: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="p-8 max-w-7xl mx-auto">
           <motion.div
             key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="w-full"
           >
-            {renderStepContent()}
+            <div className="glass rounded-[--radius-xl] p-8 shadow-elevation">
+              {renderStepContent()}
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4">
-        <div className="flex items-center justify-between">
+      <div className="glass-secondary border-t border-border/50 p-6">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
           <Button
             variant="outline"
             onClick={handleBack}
             disabled={currentStep === 0}
+            className="glass rounded-[--radius-button] border-border/30 hover:bg-glass-primary"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
 
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-foreground-subtle font-medium">
             {steps[currentStep]?.description}
           </div>
 
           <Button
             onClick={handleNext}
             disabled={currentStep < steps.length - 1 && !canProceed}
+            className="bg-primary hover:bg-primary-hover text-primary-foreground rounded-[--radius-button] px-6 py-3 shadow-lg transition-all hover:shadow-xl hover:scale-105"
           >
             {currentStep === steps.length - 1 ? "Complete" : "Next"}
             <ArrowRight className="h-4 w-4 ml-2" />
