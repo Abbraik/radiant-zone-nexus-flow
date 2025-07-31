@@ -243,7 +243,10 @@ export const exportBundle = (
       updatedAt: new Date(),
       createdBy: 'current-user',
       owner: 'current-user',
-      stakeholders: []
+      stakeholders: [],
+      macroVision: 'macro-vision-1',
+      mesoConfiguration: 'meso-config-1',
+      microConfiguration: 'micro-config-1'
     },
     interventions,
     dependencies,

@@ -843,7 +843,10 @@ export const ActZone: React.FC = () => {
                     updatedAt: new Date(),
                     createdBy: 'current-user',
                     owner: 'current-user',
-                    stakeholders: []
+                    stakeholders: [],
+                    macroVision: 'macro-vision-1',
+                    mesoConfiguration: 'meso-config-1',
+                    microConfiguration: 'micro-config-1'
                   }}
                 />
               </div>
@@ -855,47 +858,35 @@ export const ActZone: React.FC = () => {
         <BundleSummaryModal
           isOpen={showBundleSummary}
           onClose={() => setShowBundleSummary(false)}
-          onPublish={() => {
+          bundleData={{
+            name: 'Digital Government Transformation Bundle',
+            description: 'Comprehensive intervention bundle for digital transformation',
+            interventions: enhancedInterventions.map(int => ({
+              id: int.id,
+              name: int.name,
+              category: int.category,
+              cost: int.budget.totalBudget,
+              triImpact: 0.15
+            })),
+            assignments: [],
+            sprintStart: new Date(),
+            sprintEnd: new Date(Date.now() + 26 * 7 * 24 * 60 * 60 * 1000),
+            totalCost: enhancedInterventions.reduce((sum, int) => sum + int.budget.totalBudget, 0),
+            expectedTRIImprovement: 0.25,
+            complianceStatus: 'passed',
+            complianceChecks: []
+          }}
+          teamMembers={[]}
+          customRoles={[]}
+          onConfirmPublish={() => {
             handlePublish();
             setShowBundleSummary(false);
-          }}
-          onExport={(format) => {
             exportBundle(
-              format,
+              'json',
               'Digital Government Transformation Bundle',
               enhancedInterventions,
-              dependencies,
-              metaSolveConfig || undefined,
-              {
-                loopId: 'loop-001',
-                loopName: 'Innovation Adoption Feedback',
-                loopType: 'Reinforcing',
-                leveragePointRank: 6,
-                leveragePointName: 'Rules (incentives, punishments, constraints)',
-                deBandStatus: 'yellow',
-                recommendedLevers: ['economic-fiscal', 'legal-institutional', 'information-communications']
-              }
+              dependencies
             );
-          }}
-          bundle={{
-            name: 'Digital Government Transformation Bundle',
-            description: 'Comprehensive intervention bundle targeting innovation adoption loops through strategic lever activation',
-            interventions: enhancedInterventions,
-            dependencies,
-            metaSolveConfig,
-            loopContext: {
-              loopId: 'loop-001',
-              loopName: 'Innovation Adoption Feedback',
-              loopType: 'Reinforcing',
-              leveragePointRank: 6,
-              leveragePointName: 'Rules (incentives, punishments, constraints)',
-              deBandStatus: 'yellow',
-              recommendedLevers: ['economic-fiscal', 'legal-institutional', 'information-communications']
-            },
-            totalBudget: enhancedInterventions.reduce((sum, int) => sum + int.budget.totalBudget, 0),
-            timelineWeeks: 26,
-            riskLevel: enhancedInterventions.some(int => int.complexity === 'High') ? 'high' : 
-                      enhancedInterventions.some(int => int.complexity === 'Medium') ? 'medium' : 'low'
           }}
         />
 
