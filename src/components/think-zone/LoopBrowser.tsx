@@ -212,7 +212,7 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
       </div>
 
       {/* Loop Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {filteredArchetypes.map((archetype) => (
           <motion.div
             key={archetype.id}
@@ -222,51 +222,41 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
             whileTap={{ scale: 0.98 }}
           >
             <Card 
-              className={`p-6 cursor-pointer transition-all duration-200 hover:shadow-md ${
+              className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
                 selectedArchetypeId === archetype.id 
                   ? 'ring-2 ring-primary bg-primary/5' 
                   : 'hover:border-primary/50'
               }`}
               onClick={() => onArchetypeSelect(archetype)}
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-muted/50">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="p-1.5 rounded-lg bg-muted/50">
                       {archetype.icon}
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground">{archetype.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        {getTypeIcon(archetype.type)}
-                        <Badge variant="secondary" className={getTypeColor(archetype.type)}>
-                          {archetype.type}
-                        </Badge>
-                      </div>
-                    </div>
+                    <Badge variant="secondary" className={`${getTypeColor(archetype.type)} text-xs`}>
+                      {archetype.type}
+                    </Badge>
                   </div>
+                  <h3 className="font-semibold text-foreground text-sm leading-tight">{archetype.name}</h3>
                 </div>
 
-                {/* Description */}
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {archetype.description}
-                </p>
-
                 {/* Variables Preview */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Common Variables
+                    Variables
                   </h4>
                   <div className="flex flex-wrap gap-1">
-                    {archetype.commonVariables.slice(0, 3).map((variable) => (
+                    {archetype.commonVariables.slice(0, 2).map((variable) => (
                       <Badge key={variable} variant="outline" className="text-xs">
                         {variable}
                       </Badge>
                     ))}
-                    {archetype.commonVariables.length > 3 && (
+                    {archetype.commonVariables.length > 2 && (
                       <Badge variant="outline" className="text-xs text-muted-foreground">
-                        +{archetype.commonVariables.length - 3} more
+                        +{archetype.commonVariables.length - 2}
                       </Badge>
                     )}
                   </div>
@@ -276,13 +266,13 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
                 <Button 
                   size="sm" 
                   variant="outline"
-                  className="w-full"
+                  className="w-full text-xs"
                   onClick={(e) => {
                     e.stopPropagation();
                     onArchetypeSelect(archetype);
                   }}
                 >
-                  Instantiate Archetype
+                  Select Loop
                 </Button>
               </div>
             </Card>
