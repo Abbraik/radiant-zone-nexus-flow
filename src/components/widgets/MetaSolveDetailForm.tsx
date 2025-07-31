@@ -54,20 +54,6 @@ export const MetaSolveDetailForm: React.FC<MetaSolveDetailFormProps> = ({
   initialData,
   macroVision
 }) => {
-  const [activeTab, setActiveTab] = useState<'meso' | 'micro'>('meso');
-  const [institutionalOwners, setInstitutionalOwners] = useState<InstitutionalOwner[]>(
-    initialData?.meso?.institutionalOwners || []
-  );
-  const [frontlineUnits, setFrontlineUnits] = useState<FrontlineUnit[]>(
-    initialData?.micro?.frontlineUnits || []
-  );
-  const [pilotSites, setPilotSites] = useState<PilotSite[]>(
-    initialData?.micro?.pilotSites || []
-  );
-  const [governanceCell, setGovernanceCell] = useState<GovernanceCellRole[]>(
-    initialData?.meso?.governanceStructure?.governanceCell || defaultGovernanceCell
-  );
-
   // Default governance cell structure based on MetaSolve methodology
   const defaultGovernanceCell: GovernanceCellRole[] = [
     {
@@ -101,6 +87,20 @@ export const MetaSolveDetailForm: React.FC<MetaSolveDetailFormProps> = ({
       authorities: ['Implementation decisions', 'Quality standards']
     }
   ];
+
+  const [activeTab, setActiveTab] = useState<'meso' | 'micro'>('meso');
+  const [institutionalOwners, setInstitutionalOwners] = useState<InstitutionalOwner[]>(
+    initialData?.meso?.institutionalOwners || []
+  );
+  const [frontlineUnits, setFrontlineUnits] = useState<FrontlineUnit[]>(
+    initialData?.micro?.frontlineUnits || []
+  );
+  const [pilotSites, setPilotSites] = useState<PilotSite[]>(
+    initialData?.micro?.pilotSites || []
+  );
+  const [governanceCell, setGovernanceCell] = useState<GovernanceCellRole[]>(
+    initialData?.meso?.governanceStructure?.governanceCell || defaultGovernanceCell
+  );
 
   const mockAgencies = [
     { id: 'treasury', name: 'Department of Treasury', type: 'department' },
