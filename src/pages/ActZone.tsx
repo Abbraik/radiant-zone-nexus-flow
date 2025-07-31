@@ -11,10 +11,14 @@ import {
   Check,
   Play,
   Users,
-  Settings
+  Settings,
+  Sliders
 } from 'lucide-react';
 import LoopLeverageRecommendationPane from '../components/widgets/LoopLeverageRecommendationPane';
 import SixLeverSelector from '../components/widgets/SixLeverSelector';
+import MetaSolveDetailForm from '../components/widgets/MetaSolveDetailForm';
+import EnhancedInterventionDetailEditor from '../components/widgets/EnhancedInterventionDetailEditor';
+import AdvancedImpactSimulator from '../components/widgets/AdvancedImpactSimulator';
 import {
   DndContext,
   closestCenter,
@@ -118,6 +122,12 @@ interface Intervention {
   impact: string;
 }
 
+import type { 
+  EnhancedIntervention, 
+  InterventionBundle 
+} from '../types/intervention';
+import type { MetaSolveLayer } from '../types/metasolve';
+
 interface BundleItem {
   id: string;
   intervention: Intervention;
@@ -192,6 +202,10 @@ export const ActZone: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [showMetaSolveForm, setShowMetaSolveForm] = useState(false);
+  const [selectedIntervention, setSelectedIntervention] = useState<EnhancedIntervention | null>(null);
+  const [metaSolveConfig, setMetaSolveConfig] = useState<Partial<MetaSolveLayer> | null>(null);
+  const [enhancedInterventions, setEnhancedInterventions] = useState<EnhancedIntervention[]>([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -429,7 +443,51 @@ export const ActZone: React.FC = () => {
                           </div>
                           
                           <motion.button
-                            onClick={() => addIntervention(intervention)}
+                            onClick={() => {
+                              addIntervention(intervention);
+                              // Convert to enhanced intervention
+                              const enhancedIntervention: EnhancedIntervention = {
+                                id: intervention.id,
+                                name: intervention.name,
+                                description: intervention.description,
+                                icon: intervention.icon,
+                                category: intervention.category,
+                                selectedSubLevers: [],
+                                subLeverConfigurations: [],
+                                targetLoopVariables: [],
+                                expectedLoopImpact: {
+                                  loopId: 'loop-001',
+                                  impactType: 'strengthen',
+                                  targetVariables: [],
+                                  expectedMagnitude: 5,
+                                  confidenceLevel: 'medium',
+                                  assumptions: []
+                                },
+                                parameters: [],
+                                microTasks: [],
+                                microLoops: [],
+                                budget: {
+                                  totalBudget: 0,
+                                  currency: 'USD',
+                                  lineItems: [],
+                                  contingency: 0,
+                                  contingencyPercent: 10,
+                                  approvalStatus: 'draft'
+                                },
+                                resources: [],
+                                automationRules: [],
+                                effort: intervention.effort as 'Low' | 'Medium' | 'High',
+                                impact: intervention.impact as 'Low' | 'Medium' | 'High',
+                                complexity: 'Medium',
+                                timeToImpact: 'Medium',
+                                status: 'draft',
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                                createdBy: 'current-user',
+                                lastModifiedBy: 'current-user'
+                              };
+                              setEnhancedInterventions(prev => [...prev, enhancedIntervention]);
+                            }}
                             className="bg-teal-500 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-teal-600"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -465,11 +523,34 @@ export const ActZone: React.FC = () => {
                             </div>
                           ) : (
                             bundleItems.map((item) => (
-                              <SortableInterventionCard
-                                key={item.id}
-                                item={item}
-                                onRemove={removeIntervention}
-                              />
+                              <div key={item.id} className="flex items-center justify-between p-3 glass rounded-lg border border-border-subtle hover:bg-glass-accent/30 transition-colors">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xl">{item.intervention.icon}</span>
+                                  <div>
+                                    <div className="text-foreground font-medium">{item.intervention.name}</div>
+                                    <div className="text-muted-foreground text-sm">{item.intervention.description}</div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      const enhanced = enhancedInterventions.find(ei => ei.id === item.intervention.id);
+                                      if (enhanced) setSelectedIntervention(enhanced);
+                                    }}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeIntervention(item.id)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
                             ))
                           )}
                         </div>
@@ -487,172 +568,158 @@ export const ActZone: React.FC = () => {
                 </div>
               </div>
 
-              {/* Smart Roles Panel */}
-              <motion.div
-                className="mt-6 p-4 bg-white/10 rounded-xl border border-white/10"
-                whileHover={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    {mockRoles.map((role) => (
-                      <motion.div
-                        key={role.id}
-                        className="flex items-center space-x-2 group"
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        <motion.div
-                          className={`w-10 h-10 ${role.color} rounded-full flex items-center justify-center text-white font-medium`}
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                          {role.avatar}
-                        </motion.div>
-                        <div>
-                          <div className="text-white font-medium">{role.name}</div>
-                          <div className="text-gray-400 text-sm">{role.title}</div>
-                        </div>
-                        <motion.button
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/20 rounded"
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
-                        >
-                          <Edit className="w-4 h-4 text-gray-400" />
-                        </motion.button>
-                      </motion.div>
-                    ))}
+              {/* MetaSolve Configuration & Impact Simulation */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                {/* MetaSolve Detail Form Trigger */}
+                <motion.div
+                  className="glass rounded-xl p-6 border border-border-subtle hover:border-primary/30 transition-colors cursor-pointer"
+                  onClick={() => setShowMetaSolveForm(true)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <Sliders className="h-6 w-6 text-primary" />
+                    <h4 className="font-medium text-foreground">MetaSolve Configuration</h4>
                   </div>
-                  <p className="text-sm text-gray-400">Role defaults based on last sprint.</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Configure institutional (Meso) and frontline (Micro) delivery layers
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      {metaSolveConfig?.meso?.institutionalOwners?.length ? (
+                        <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                          {metaSolveConfig.meso.institutionalOwners.length} agencies
+                        </span>
+                      ) : null}
+                      {metaSolveConfig?.micro?.frontlineUnits?.length ? (
+                        <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded">
+                          {metaSolveConfig.micro.frontlineUnits.length} units
+                        </span>
+                      ) : null}
+                    </div>
+                    <span className="text-primary text-sm">Configure →</span>
+                  </div>
+                </motion.div>
+
+                {/* Advanced Impact Simulator */}
+                <div className="lg:col-span-1">
+                  <AdvancedImpactSimulator
+                    interventions={enhancedInterventions}
+                    loopContext={{
+                      loopId: 'loop-001',
+                      loopName: 'Innovation Adoption Feedback',
+                      loopType: 'Reinforcing',
+                      currentState: {
+                        efficiency: 0.7,
+                        satisfaction: 0.75,
+                        cost: 100
+                      }
+                    }}
+                  />
                 </div>
-              </motion.div>
+              </div>
 
               {/* Primary Action Bar */}
-              <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-b-2xl -mx-8 -mb-8 px-8 py-6 border-t border-white/10">
+              <div className="mt-8 glass rounded-b-2xl -mx-8 -mb-8 px-8 py-6 border-t border-border-subtle">
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => setShowAdvanced(!showAdvanced)}
-                    className="text-teal-300 underline text-base hover:text-teal-200 transition-colors"
+                    className="text-primary underline text-base hover:text-primary-hover transition-colors"
                   >
-                    Advanced Settings
+                    {showAdvanced ? 'Hide' : 'Show'} Advanced Settings
                   </button>
 
                   <div className="flex items-center space-x-4">
-                    <Button
+                    <motion.button
                       onClick={handleValidate}
-                      variant="outline"
-                      className="border-white/30 text-white hover:bg-white/10 rounded-full py-2 px-6"
+                      className="btn-secondary flex items-center space-x-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <Check className="w-4 h-4 mr-2" />
-                      Validate
-                    </Button>
-                    
+                      <Check className="w-4 h-4" />
+                      <span>Validate Bundle</span>
+                    </motion.button>
+
                     <motion.button
                       onClick={handlePublish}
                       disabled={bundleItems.length === 0}
-                      className="bg-teal-500 hover:bg-teal-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold text-lg rounded-full px-10 py-3 shadow-lg transition-all duration-200 flex items-center space-x-3"
-                      whileHover={{ scale: bundleItems.length > 0 ? 1.03 : 1 }}
-                      whileTap={{ scale: bundleItems.length > 0 ? 0.97 : 1 }}
+                      className={`btn-primary flex items-center space-x-2 ${
+                        bundleItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      whileHover={bundleItems.length > 0 ? { scale: 1.02 } : {}}
+                      whileTap={bundleItems.length > 0 ? { scale: 0.98 } : {}}
                     >
-                      <Play className="w-5 h-5" />
+                      <Play className="w-4 h-4" />
                       <span>Publish Bundle</span>
                     </motion.button>
                   </div>
                 </div>
               </div>
-
-              {/* Advanced Settings Accordion */}
-              <AnimatePresence>
-                {showAdvanced && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden mt-4"
-                  >
-                    <div className="bg-white/5 rounded-lg p-6 space-y-6 border border-white/10">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium text-white">Advanced Settings</h3>
-                        <motion.div
-                          animate={{ rotate: showAdvanced ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronDown className="w-5 h-5 text-gray-400" />
-                        </motion.div>
-                      </div>
-
-                      {/* RACI Matrix */}
-                      <div className="space-y-3">
-                        <h4 className="text-white font-medium">RACI Matrix</h4>
-                        <div className="grid grid-cols-4 gap-2 text-sm">
-                          <div className="text-gray-400 font-medium">Intervention</div>
-                          <div className="text-gray-400 font-medium">Champion</div>
-                          <div className="text-gray-400 font-medium">Analyst</div>
-                          <div className="text-gray-400 font-medium">Stakeholder</div>
-                          
-                          {bundleItems.map((item) => (
-                            <React.Fragment key={item.id}>
-                              <div className="text-white py-2">{item.intervention.name}</div>
-                              <select className="bg-white/10 border-white/20 text-white rounded p-1">
-                                <option value="R">Responsible</option>
-                                <option value="A">Accountable</option>
-                                <option value="C">Consulted</option>
-                                <option value="I">Informed</option>
-                              </select>
-                              <select className="bg-white/10 border-white/20 text-white rounded p-1">
-                                <option value="R">Responsible</option>
-                                <option value="A">Accountable</option>
-                                <option value="C">Consulted</option>
-                                <option value="I">Informed</option>
-                              </select>
-                              <select className="bg-white/10 border-white/20 text-white rounded p-1">
-                                <option value="R">Responsible</option>
-                                <option value="A">Accountable</option>
-                                <option value="C">Consulted</option>
-                                <option value="I">Informed</option>
-                              </select>
-                            </React.Fragment>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Policy Standard Module */}
-                      <div className="space-y-3">
-                        <h4 className="text-white font-medium">Policy Standard Module</h4>
-                        <select className="w-full bg-white/10 border-white/20 text-white rounded-lg p-3">
-                          <option value="">Select PRS Module</option>
-                          <option value="security">Security Standards</option>
-                          <option value="compliance">Compliance Framework</option>
-                          <option value="performance">Performance Guidelines</option>
-                        </select>
-                      </div>
-
-                      {/* Scheduling Overrides */}
-                      <div className="space-y-3">
-                        <h4 className="text-white font-medium">Scheduling Overrides</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-gray-300 text-sm">Start Date</label>
-                            <Input
-                              type="date"
-                              className="bg-white/10 border-white/20 text-white rounded-full p-3 mt-1"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-gray-300 text-sm">End Date</label>
-                            <Input
-                              type="date"
-                              className="bg-white/10 border-white/20 text-white rounded-full p-3 mt-1"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
           </div>
         </div>
+
+        {/* Advanced Settings Panel */}
+        <AnimatePresence>
+          {showAdvanced && (
+            <motion.div
+              className="mt-6 p-6 glass-secondary rounded-2xl border border-border-subtle"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="p-4 glass rounded-xl border border-border-subtle">
+                  <h4 className="font-medium text-foreground mb-2">RACI Matrix</h4>
+                  <p className="text-sm text-muted-foreground">Define roles and responsibilities</p>
+                </div>
+                <div className="p-4 glass rounded-xl border border-border-subtle">
+                  <h4 className="font-medium text-foreground mb-2">Policy Standards</h4>
+                  <p className="text-sm text-muted-foreground">Compliance and standards module</p>
+                </div>
+                <div className="p-4 glass rounded-xl border border-border-subtle">
+                  <h4 className="font-medium text-foreground mb-2">Scheduling</h4>
+                  <p className="text-sm text-muted-foreground">Timeline and resource scheduling</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* MetaSolve Detail Form Modal */}
+        <MetaSolveDetailForm
+          isOpen={showMetaSolveForm}
+          onClose={() => setShowMetaSolveForm(false)}
+          onSave={(config) => {
+            setMetaSolveConfig(config);
+            setShowMetaSolveForm(false);
+          }}
+          initialData={metaSolveConfig || undefined}
+          macroVision={{
+            title: "Digital Government Transformation",
+            leverageContext: {
+              leveragePointName: "Rules (incentives, punishments, constraints)",
+              loopName: "Innovation Adoption Feedback",
+              loopType: "Reinforcing"
+            }
+          }}
+        />
+
+        {/* Enhanced Intervention Detail Editor Modal */}
+        {selectedIntervention && (
+          <EnhancedInterventionDetailEditor
+            intervention={selectedIntervention}
+            isOpen={!!selectedIntervention}
+            onClose={() => setSelectedIntervention(null)}
+            onSave={(updatedIntervention) => {
+              setEnhancedInterventions(prev => 
+                prev.map(ei => ei.id === updatedIntervention.id ? updatedIntervention : ei)
+              );
+              setSelectedIntervention(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );
