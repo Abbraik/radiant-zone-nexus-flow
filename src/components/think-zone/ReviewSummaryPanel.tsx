@@ -232,7 +232,10 @@ export const ReviewSummaryPanel: React.FC<ReviewSummaryPanelProps> = ({
                 </Badge>
               </div>
               <div className="text-xs text-muted-foreground">
-                {leveragePoint.effectiveness}% effectiveness rating
+                {typeof leveragePoint.effectiveness === 'object' && leveragePoint.effectiveness
+                  ? `${(leveragePoint.effectiveness as any).balancing || (leveragePoint.effectiveness as any).reinforcing || 0}% effectiveness rating`
+                  : `${leveragePoint.effectiveness || 0}% effectiveness rating`
+                }
               </div>
             </div>
           </Card>
