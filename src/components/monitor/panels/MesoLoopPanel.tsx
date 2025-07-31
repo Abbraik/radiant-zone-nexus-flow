@@ -119,7 +119,7 @@ export function MesoLoopPanel({ onLoopSelect, selectedLoopId }: MesoLoopPanelPro
   return (
     <div className="h-full">
       <motion.div
-        className="h-full backdrop-blur-xl bg-background/40 rounded-2xl border border-border/50 p-6"
+        className="h-full glass rounded-xl border-border/50 p-6"
         whileHover={{ scale: 1.005 }}
         transition={{ duration: 0.3 }}
       >
@@ -138,7 +138,7 @@ export function MesoLoopPanel({ onLoopSelect, selectedLoopId }: MesoLoopPanelPro
             return (
               <motion.div key={loop.id} layout>
                 <Card 
-                  className={`bg-background/60 backdrop-blur-sm border-border/50 cursor-pointer transition-all duration-300 overflow-hidden ${
+                  className={`glass-secondary border-border/50 cursor-pointer transition-all duration-300 overflow-hidden ${
                     selectedLoopId === loop.id ? 'border-primary ring-1 ring-primary/20' : 'hover:border-primary/50'
                   }`}
                   onClick={() => handleTileClick(loop)}

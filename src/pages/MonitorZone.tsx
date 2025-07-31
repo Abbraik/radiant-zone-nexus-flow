@@ -34,10 +34,10 @@ export default function MonitorZone() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
       {/* Persistent Top Navigation */}
       <motion.header 
-        className="h-16 border-b border-border/50 backdrop-blur-xl bg-background/80 sticky top-0 z-50"
+        className="h-16 border-b border-border/50 glass-secondary sticky top-0 z-50"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -53,7 +53,7 @@ export default function MonitorZone() {
                 placeholder="Search loops, bundles, or tasks..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-80 bg-background/60 backdrop-blur-sm border-border/50"
+                className="pl-10 w-80 glass-secondary border-border/50"
               />
             </div>
           </div>
@@ -62,12 +62,12 @@ export default function MonitorZone() {
             {/* Role Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="bg-background/60 backdrop-blur-sm border-border/50">
+                <Button variant="outline" className="glass-secondary border-border/50">
                   {userRole}
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background/95 backdrop-blur-xl border-border/50">
+              <DropdownMenuContent className="glass border-border/50">
                 <DropdownMenuItem onClick={() => setUserRole('C-Suite')}>
                   C-Suite
                 </DropdownMenuItem>
@@ -81,7 +81,7 @@ export default function MonitorZone() {
             </DropdownMenu>
 
             {/* Alerts */}
-            <Button variant="outline" className="relative bg-background/60 backdrop-blur-sm border-border/50">
+            <Button variant="outline" className="relative glass-secondary border-border/50">
               <Bell className="h-4 w-4" />
               {alertCount > 0 && (
                 <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-destructive">
@@ -93,11 +93,11 @@ export default function MonitorZone() {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="bg-background/60 backdrop-blur-sm border-border/50">
+                <Button variant="outline" size="icon" className="glass-secondary border-border/50">
                   <User className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background/95 backdrop-blur-xl border-border/50">
+              <DropdownMenuContent className="glass border-border/50">
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Customize Dashboard</DropdownMenuItem>

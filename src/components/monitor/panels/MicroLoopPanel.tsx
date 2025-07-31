@@ -172,7 +172,7 @@ export function MicroLoopPanel({ onLoopSelect, selectedLoopId }: MicroLoopPanelP
   return (
     <div className="h-full">
       <motion.div
-        className="h-full backdrop-blur-xl bg-background/40 rounded-2xl border border-border/50 p-6"
+        className="h-full glass rounded-xl border-border/50 p-6"
         whileHover={{ scale: 1.005 }}
         transition={{ duration: 0.3 }}
       >
@@ -189,7 +189,7 @@ export function MicroLoopPanel({ onLoopSelect, selectedLoopId }: MicroLoopPanelP
             return (
               <motion.div key={loop.id} layout>
                 <Card 
-                  className={`bg-background/60 backdrop-blur-sm border-border/50 cursor-pointer transition-all duration-300 ${
+                  className={`glass-secondary border-border/50 cursor-pointer transition-all duration-300 ${
                     selectedLoopId === loop.id ? 'border-primary ring-1 ring-primary/20' : 'hover:border-primary/50'
                   }`}
                   onClick={() => onLoopSelect(loop.id, loop)}
@@ -282,7 +282,7 @@ export function MicroLoopPanel({ onLoopSelect, selectedLoopId }: MicroLoopPanelP
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="mt-3 p-3 bg-muted/20 rounded-lg space-y-3"
+                          className="mt-3 p-3 glass-secondary rounded-lg space-y-3"
                         >
                           {/* Pulse Trendline */}
                           <div className="flex items-center justify-between">

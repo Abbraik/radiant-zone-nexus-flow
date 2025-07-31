@@ -60,7 +60,7 @@ export function ContextSidebar({ selectedItem }: ContextSidebarProps) {
     return (
       <div className="h-full p-4">
         <motion.div
-          className="h-full backdrop-blur-xl bg-background/40 rounded-2xl border border-border/50 p-6 flex items-center justify-center"
+          className="text-center glass rounded-xl border-border/50 p-6 flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
@@ -80,7 +80,7 @@ export function ContextSidebar({ selectedItem }: ContextSidebarProps) {
   return (
     <div className="h-full p-4">
       <motion.div
-        className="h-full backdrop-blur-xl bg-background/40 rounded-2xl border border-border/50 overflow-hidden"
+        className="h-full glass rounded-xl border-border/50 overflow-hidden"
         initial={{ x: 20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}

@@ -184,7 +184,7 @@ export function MacroLoopPanel({ searchQuery, onLoopSelect, selectedLoopId }: Ma
   return (
     <div className="h-full">
       <motion.div
-        className="h-full backdrop-blur-xl bg-background/40 rounded-2xl border border-border/50 p-6"
+        className="h-full glass rounded-xl border-border/50 p-6"
         whileHover={{ scale: 1.005 }}
         transition={{ duration: 0.3 }}
       >
@@ -201,7 +201,7 @@ export function MacroLoopPanel({ searchQuery, onLoopSelect, selectedLoopId }: Ma
             whileTap={{ scale: 0.98 }}
             className="col-span-1"
           >
-            <Card className="h-full bg-background/60 backdrop-blur-sm border-border/50 cursor-pointer hover:border-primary/50 transition-all duration-300">
+            <Card className="h-full glass-secondary border-border/50 cursor-pointer hover:border-primary/50 transition-all duration-300">
               <CardContent className="p-4 h-full flex flex-col justify-between">
                 <div>
                   <h3 className="font-medium text-sm mb-2 text-foreground">All Loops</h3>
@@ -239,7 +239,7 @@ export function MacroLoopPanel({ searchQuery, onLoopSelect, selectedLoopId }: Ma
               className="relative"
             >
               <Card 
-                className={`h-full bg-background/60 backdrop-blur-sm border-border/50 cursor-pointer transition-all duration-300 ${
+                className={`h-full glass-secondary border-border/50 cursor-pointer transition-all duration-300 ${
                   selectedLoopId === loop.id ? 'border-primary ring-1 ring-primary/20' : 'hover:border-primary/50'
                 }`}
                 onClick={() => onLoopSelect(loop.id, loop)}
@@ -295,7 +295,7 @@ export function MacroLoopPanel({ searchQuery, onLoopSelect, selectedLoopId }: Ma
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className="absolute inset-0 bg-background/95 backdrop-blur-xl rounded-lg border border-primary/50 p-4 z-10"
+                      className="absolute inset-0 glass-accent rounded-lg border border-primary/50 p-4 z-10"
                     >
                       <div className="h-full flex flex-col justify-between">
                         <div>
