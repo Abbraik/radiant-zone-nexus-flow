@@ -62,9 +62,11 @@ export const ThinkZoneWorkspace: React.FC = () => {
       description: 'Set tension signals, DE-Bands, and SRT horizons',
       component: 'ParameterPanel',
       required: true,
-      completed: parameterConfigs.length > 0 && parameterConfigs.every(config => 
-        config.tensionSignal && config.deBandConfig && config.srtHorizon
-      )
+      completed: selectedArchetypes.length > 0 && 
+        parameterConfigs.length >= selectedArchetypes.length &&
+        parameterConfigs.slice(0, selectedArchetypes.length).every(config => 
+          config.tensionSignal && config.deBandConfig && config.srtHorizon
+        )
     },
     {
       id: 'leverage',
@@ -231,28 +233,74 @@ export const ThinkZoneWorkspace: React.FC = () => {
         );
       
       case 'ParameterPanel':
-        // For now, create one config per archetype
-        const currentConfig = parameterConfigs[0] || {
-          tensionSignal: null,
-          deBandConfig: null,
-          srtHorizon: null
-        };
-        
         return (
-          <ParameterPanel
-            config={currentConfig}
-            onConfigChange={(config) => {
-              if (parameterConfigs.length === 0) {
-                handleParameterConfigAdd(config);
-              } else {
-                handleParameterConfigUpdate(0, config);
-              }
-            }}
-            loopArchetype={selectedArchetypes[0]?.id}
-            selectedTensionSignals={selectedTensionSignals}
-            onTensionSignalToggle={handleTensionSignalToggle}
-            multiSelect={true}
-          />
+          <div className="space-y-6">
+            {/* Multi-Loop Configuration Header */}
+            {selectedArchetypes.length > 1 && (
+              <Card className="p-4 bg-blue-500/5 border-blue-200">
+                <h4 className="font-medium text-blue-800 mb-2">Multiple Loop Configuration</h4>
+                <p className="text-sm text-blue-700">
+                  Configure parameters for each selected loop archetype. You can select tensions across all loops.
+                </p>
+              </Card>
+            )}
+            
+            {/* Parameter panels for each selected archetype */}
+            {selectedArchetypes.map((archetype, index) => {
+              const currentConfig = parameterConfigs[index] || {
+                tensionSignal: null,
+                deBandConfig: null,
+                srtHorizon: null
+              };
+              
+              return (
+                <Card key={archetype.id} className="p-4">
+                  <div className="mb-4">
+                    <h4 className="font-medium text-foreground flex items-center gap-2">
+                      {archetype.name}
+                      {currentConfig.tensionSignal && currentConfig.deBandConfig && currentConfig.srtHorizon && (
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-600">
+                          Complete
+                        </Badge>
+                      )}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{archetype.description}</p>
+                  </div>
+                  
+                  <ParameterPanel
+                    config={currentConfig}
+                    onConfigChange={(config) => {
+                      if (parameterConfigs.length <= index) {
+                        // Add new config
+                        const newConfigs = [...parameterConfigs];
+                        while (newConfigs.length <= index) {
+                          newConfigs.push({ tensionSignal: null, deBandConfig: null, srtHorizon: null });
+                        }
+                        newConfigs[index] = config;
+                        setParameterConfigs(newConfigs);
+                      } else {
+                        // Update existing config
+                        handleParameterConfigUpdate(index, config);
+                      }
+                    }}
+                    loopArchetype={archetype.id}
+                    selectedTensionSignals={selectedTensionSignals}
+                    onTensionSignalToggle={handleTensionSignalToggle}
+                    multiSelect={true}
+                  />
+                </Card>
+              );
+            })}
+            
+            {/* Show message if no archetypes selected */}
+            {selectedArchetypes.length === 0 && (
+              <Card className="p-8 text-center">
+                <p className="text-muted-foreground">
+                  Please select loop archetypes in the previous step to configure parameters.
+                </p>
+              </Card>
+            )}
+          </div>
         );
       
       case 'LeverageMapper':
