@@ -173,9 +173,11 @@ export const useTasks = () => {
         duration: 3000
       });
 
-      // Navigate to appropriate zone if it's a monitor task
+      // Navigate to appropriate zone if it's a monitor task (defer to avoid React internal errors)
       if (claimedTask?.zone === 'monitor') {
-        navigate('/monitor');
+        setTimeout(() => {
+          navigate('/monitor');
+        }, 100);
       }
     }
   });
