@@ -462,7 +462,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto custom-scrollbar glass-secondary">
         <div className="p-8 max-w-7xl mx-auto">
           <motion.div
             key={currentStep}
@@ -472,7 +472,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="w-full"
           >
-            <div className="glass rounded-[--radius-xl] p-8 shadow-elevation">
+            <div className="glass rounded-[--radius-xl] p-8 shadow-elevation border border-border/20">
               {renderStepContent()}
             </div>
           </motion.div>
