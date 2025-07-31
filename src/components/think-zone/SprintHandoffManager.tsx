@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, 
   Package, 
@@ -14,6 +15,7 @@ import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { useToast } from '../ui/use-toast';
+import { useThinkZone } from '../../contexts/ThinkZoneContext';
 
 interface SprintBundle {
   id: string;
@@ -27,6 +29,7 @@ interface SprintBundle {
     tensionSignal: any;
     deBandConfig: any;
     srtHorizon: any;
+    allConfigurations?: any[];
   };
   leveragePoint: {
     id: string;
@@ -60,6 +63,8 @@ export const SprintHandoffManager: React.FC<SprintHandoffManagerProps> = ({
   isCreating = false
 }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { navigateToActZone } = useThinkZone();
 
   const handleCreateSprint = async () => {
     try {
@@ -78,9 +83,31 @@ export const SprintHandoffManager: React.FC<SprintHandoffManagerProps> = ({
   };
 
   const handleGoToActZone = () => {
-    // Generate sprint ID based on bundle
-    const sprintId = `sprint-${bundle.id}-${Date.now()}`;
-    onGoToActZone(sprintId);
+    // Convert bundle to SprintBundle format and navigate
+    const sprintBundle = {
+      id: bundle.id,
+      leverageContext: {
+        leveragePointRank: bundle.leveragePoint?.rank || 6,
+        leveragePointName: bundle.leveragePoint?.name || 'Unknown',
+        loopId: bundle.loopConfiguration?.modelData?.selectedArchetypes?.[0]?.id || 'unknown',
+        loopName: bundle.loopConfiguration?.archetype || 'Unknown Loop',
+        loopType: bundle.loopConfiguration?.modelData?.selectedArchetypes?.[0]?.type || 'Balancing',
+        deBandStatus: 'yellow' as const
+      },
+      selectedArchetypes: bundle.loopConfiguration?.modelData?.selectedArchetypes || [],
+      macroVision: {
+        text: bundle.macroVision?.text || '',
+        timeHorizon: bundle.parameterConfiguration?.srtHorizon?.duration ? `${bundle.parameterConfiguration.srtHorizon.duration} months` : '6 months',
+        successMetrics: []
+      },
+      parameterConfiguration: {
+        ...bundle.parameterConfiguration,
+        allConfigurations: bundle.parameterConfiguration?.allConfigurations || []
+      },
+      metadata: bundle.metadata
+    };
+    
+    navigateToActZone(sprintBundle);
   };
 
   const getBundleSize = () => {

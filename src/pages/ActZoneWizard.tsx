@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useThinkZone } from '../contexts/ThinkZoneContext';
+import { MetaSolveInterventionBuilder } from '../components/metasolve/MetaSolveInterventionBuilder';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -77,6 +79,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
   leveragePoints = [], 
   loopType = 'Reinforcing' 
 }) => {
+  const { sprintBundle } = useThinkZone();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedLeveragePoints] = useState<string[]>(leveragePoints);
   const [selectedSubLevers, setSelectedSubLevers] = useState<string[]>([]);
@@ -205,39 +208,47 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="p-6 text-center">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-purple-500" />
-                <h3 className="text-lg font-semibold mb-2">Design Custom Interventions</h3>
-                <p className="text-muted-foreground mb-4">Create interventions based on selected sub-levers.</p>
-                <Button onClick={() => handleInterventionCreate({
-                  id: `intervention-${Date.now()}`,
-                  name: 'Sample Intervention',
-                  description: 'Sample intervention description',
-                  icon: 'target',
-                  category: 'Policy',
-                  selectedSubLevers,
-                  subLeverConfigurations: [],
-                  targetLoopVariables: [],
-                  expectedLoopImpact: { loopId: 'sample-loop', impactType: 'strengthen', targetVariables: [], expectedMagnitude: 5, confidenceLevel: 'medium', assumptions: [] },
-                  parameters: [],
-                  microTasks: [],
-                  microLoops: [],
-                  budget: { totalBudget: 100000, currency: 'USD', lineItems: [], contingency: 0, contingencyPercent: 10, approvalStatus: 'draft' },
-                  resources: [],
-                  automationRules: [],
-                  effort: 'Medium',
-                  impact: 'High',
-                  complexity: 'Medium',
-                  timeToImpact: 'Medium',
-                  status: 'draft',
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                  createdBy: 'user',
-                  lastModifiedBy: 'user'
-                })}>
-                  Create Intervention
-                </Button>
-              </div>
+              {sprintBundle ? (
+                <MetaSolveInterventionBuilder
+                  leverageContext={sprintBundle.leverageContext}
+                  selectedSubLevers={selectedSubLevers}
+                  onInterventionCreate={handleInterventionCreate}
+                />
+              ) : (
+                <div className="p-6 text-center">
+                  <FileText className="h-12 w-12 mx-auto mb-4 text-purple-500" />
+                  <h3 className="text-lg font-semibold mb-2">Design Custom Interventions</h3>
+                  <p className="text-muted-foreground mb-4">Create interventions based on selected sub-levers.</p>
+                  <Button onClick={() => handleInterventionCreate({
+                    id: `intervention-${Date.now()}`,
+                    name: 'Sample Intervention',
+                    description: 'Sample intervention description',
+                    icon: 'target',
+                    category: 'Policy',
+                    selectedSubLevers,
+                    subLeverConfigurations: [],
+                    targetLoopVariables: [],
+                    expectedLoopImpact: { loopId: 'sample-loop', impactType: 'strengthen', targetVariables: [], expectedMagnitude: 5, confidenceLevel: 'medium', assumptions: [] },
+                    parameters: [],
+                    microTasks: [],
+                    microLoops: [],
+                    budget: { totalBudget: 100000, currency: 'USD', lineItems: [], contingency: 0, contingencyPercent: 10, approvalStatus: 'draft' },
+                    resources: [],
+                    automationRules: [],
+                    effort: 'Medium',
+                    impact: 'High',
+                    complexity: 'Medium',
+                    timeToImpact: 'Medium',
+                    status: 'draft',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    createdBy: 'user',
+                    lastModifiedBy: 'user'
+                  })}>
+                    Create Intervention
+                  </Button>
+                </div>
+              )}
               {interventions.length > 0 && (
                 <div className="mt-6">
                   <h3 className="text-lg font-semibold mb-4">Created Interventions ({interventions.length})</h3>
