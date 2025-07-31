@@ -9,88 +9,190 @@ interface ArchetypePattern {
 }
 
 const archetypePatterns: Record<string, ArchetypePattern> = {
-  'limits-to-growth': {
+  'population-development-loop': {
     nodes: [
-      { label: 'Population', type: 'stock', position: { x: 200, y: 100 }, value: 1000 },
-      { label: 'Birth Rate', type: 'flow', position: { x: 100, y: 100 } },
-      { label: 'Resource Consumption', type: 'auxiliary', position: { x: 300, y: 200 } },
-      { label: 'Available Resources', type: 'stock', position: { x: 400, y: 300 }, value: 5000 },
-      { label: 'Carrying Capacity', type: 'auxiliary', position: { x: 300, y: 400 } },
-      { label: 'Death Rate', type: 'flow', position: { x: 300, y: 100 } }
+      { label: 'Population Size', type: 'stock', position: { x: 200, y: 100 }, value: 1000 },
+      { label: 'Resource Market Efficiency', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Economic Growth', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Social Outcomes', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Population Characteristics', type: 'auxiliary', position: { x: 150, y: 300 } }
     ],
     links: [
       { polarity: 'positive', strength: 0.8 },
-      { polarity: 'positive', strength: 0.7 },
-      { polarity: 'negative', strength: 0.6 },
-      { polarity: 'negative', strength: 0.9, delay: 2 },
-      { polarity: 'positive', strength: 0.5 },
-      { polarity: 'negative', strength: 0.8 }
-    ],
-    layout: 'circular'
-  },
-  'fixes-that-fail': {
-    nodes: [
-      { label: 'Problem Symptom', type: 'auxiliary', position: { x: 200, y: 100 } },
-      { label: 'Quick Fix', type: 'flow', position: { x: 100, y: 200 } },
-      { label: 'Fundamental Solution', type: 'auxiliary', position: { x: 300, y: 200 } },
-      { label: 'Capability for Fundamental Solution', type: 'stock', position: { x: 400, y: 300 }, value: 50 },
-      { label: 'Unintended Consequences', type: 'auxiliary', position: { x: 100, y: 300 } }
-    ],
-    links: [
-      { polarity: 'negative', strength: 0.8 },
-      { polarity: 'negative', strength: 0.6, delay: 1 },
-      { polarity: 'positive', strength: 0.7 },
-      { polarity: 'positive', strength: 0.9, delay: 3 },
-      { polarity: 'negative', strength: 0.5 }
-    ],
-    layout: 'circular'
-  },
-  'tragedy-of-commons': {
-    nodes: [
-      { label: 'Individual Use', type: 'flow', position: { x: 150, y: 100 } },
-      { label: 'Total Use', type: 'auxiliary', position: { x: 300, y: 100 } },
-      { label: 'Resource Quality', type: 'stock', position: { x: 400, y: 200 }, value: 100 },
-      { label: 'Individual Benefit', type: 'auxiliary', position: { x: 200, y: 300 } },
-      { label: 'Pressure to Use More', type: 'auxiliary', position: { x: 100, y: 200 } }
-    ],
-    links: [
-      { polarity: 'positive', strength: 0.9 },
-      { polarity: 'negative', strength: 0.8, delay: 2 },
       { polarity: 'positive', strength: 0.7 },
       { polarity: 'positive', strength: 0.6 },
-      { polarity: 'negative', strength: 0.5, delay: 1 }
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 }
     ],
     layout: 'circular'
   },
-  'success-to-successful': {
+  'natural-population-growth': {
     nodes: [
-      { label: 'Performance', type: 'auxiliary', position: { x: 200, y: 100 } },
-      { label: 'Resources Allocated', type: 'flow', position: { x: 350, y: 150 } },
-      { label: 'Capability', type: 'stock', position: { x: 400, y: 250 }, value: 75 },
-      { label: 'Investment Priority', type: 'auxiliary', position: { x: 200, y: 300 } }
+      { label: 'Fertility Rate', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'Population Size', type: 'stock', position: { x: 350, y: 150 }, value: 1000 },
+      { label: 'Marriage Rates', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Birth Rates', type: 'flow', position: { x: 300, y: 350 } },
+      { label: 'Age Structure', type: 'auxiliary', position: { x: 150, y: 300 } }
     ],
     links: [
       { polarity: 'positive', strength: 0.9 },
       { polarity: 'positive', strength: 0.8 },
-      { polarity: 'positive', strength: 0.7, delay: 1 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.8, delay: 1 },
+      { polarity: 'positive', strength: 0.6 }
+    ],
+    layout: 'circular'
+  },
+  'population-resource-market': {
+    nodes: [
+      { label: 'Population Growth', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'Resource Market', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Capital Structure', type: 'stock', position: { x: 400, y: 250 }, value: 500 },
+      { label: 'Economic Stability', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Infrastructure Investment', type: 'flow', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.6 },
+      { polarity: 'positive', strength: 0.8, delay: 2 },
+      { polarity: 'positive', strength: 0.7 }
+    ],
+    layout: 'circular'
+  },
+  'economic-population-growth': {
+    nodes: [
+      { label: 'Economic Model', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'Labor Demand', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Population Composition', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Migration', type: 'flow', position: { x: 300, y: 350 } },
+      { label: 'External Labor', type: 'stock', position: { x: 150, y: 300 }, value: 200 }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.9 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.6, delay: 1 },
       { polarity: 'positive', strength: 0.8 }
     ],
     layout: 'circular'
   },
-  'growth-underinvestment': {
+  'environmental-quality-loop': {
     nodes: [
-      { label: 'Demand', type: 'auxiliary', position: { x: 150, y: 100 } },
-      { label: 'Performance Standard', type: 'auxiliary', position: { x: 300, y: 100 } },
-      { label: 'Capacity', type: 'stock', position: { x: 400, y: 200 }, value: 200 },
-      { label: 'Performance', type: 'auxiliary', position: { x: 300, y: 300 } },
-      { label: 'Investment in Capacity', type: 'flow', position: { x: 150, y: 250 } }
+      { label: 'Environmental Quality', type: 'stock', position: { x: 200, y: 100 }, value: 100 },
+      { label: 'Economic Growth', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Health Outcomes', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Population Characteristics', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Resource Demand', type: 'auxiliary', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'negative', strength: 0.8 },
+      { polarity: 'negative', strength: 0.7, delay: 2 },
+      { polarity: 'negative', strength: 0.6 },
+      { polarity: 'negative', strength: 0.8 },
+      { polarity: 'negative', strength: 0.7 }
+    ],
+    layout: 'circular'
+  },
+  'production-process-loop': {
+    nodes: [
+      { label: 'Market Demand', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'Labor Resources', type: 'stock', position: { x: 350, y: 150 }, value: 1000 },
+      { label: 'Income', type: 'flow', position: { x: 400, y: 250 } },
+      { label: 'Purchasing Power', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Production Output', type: 'auxiliary', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.9 },
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.6 }
+    ],
+    layout: 'circular'
+  },
+  'economic-stability-loop': {
+    nodes: [
+      { label: 'Population Size', type: 'stock', position: { x: 200, y: 100 }, value: 1000 },
+      { label: 'Market Demand', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Economic Growth', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Market Stability', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Resource Efficiency', type: 'auxiliary', position: { x: 150, y: 300 } }
     ],
     links: [
       { polarity: 'positive', strength: 0.8 },
       { polarity: 'positive', strength: 0.7 },
-      { polarity: 'negative', strength: 0.9, delay: 1 },
+      { polarity: 'positive', strength: 0.6 },
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 }
+    ],
+    layout: 'circular'
+  },
+  'global-influence-loop': {
+    nodes: [
+      { label: 'Global Trade', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'International Policies', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Resource Prices', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Local Development', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Economic Stability', type: 'auxiliary', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.6 },
+      { polarity: 'negative', strength: 0.8, delay: 1 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'negative', strength: 0.6 }
+    ],
+    layout: 'circular'
+  },
+  'social-outcomes-loop': {
+    nodes: [
+      { label: 'Social Outcomes', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'Education', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Healthcare', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Population Characteristics', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Market Stability', type: 'auxiliary', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.8 },
       { polarity: 'positive', strength: 0.6, delay: 2 },
-      { polarity: 'negative', strength: 0.5 }
+      { polarity: 'positive', strength: 0.7 }
+    ],
+    layout: 'circular'
+  },
+  'migration-economic-opportunities': {
+    nodes: [
+      { label: 'Migration Patterns', type: 'flow', position: { x: 200, y: 100 } },
+      { label: 'Economic Opportunities', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Labor Market', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Economic Efficiency', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Workforce Composition', type: 'auxiliary', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.9 },
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.6 },
+      { polarity: 'positive', strength: 0.8, delay: 1 }
+    ],
+    layout: 'circular'
+  },
+  'social-structure-loop': {
+    nodes: [
+      { label: 'Social Outcomes', type: 'auxiliary', position: { x: 200, y: 100 } },
+      { label: 'Social Phenomena', type: 'auxiliary', position: { x: 350, y: 150 } },
+      { label: 'Nuptiality', type: 'auxiliary', position: { x: 400, y: 250 } },
+      { label: 'Population Growth', type: 'auxiliary', position: { x: 300, y: 350 } },
+      { label: 'Cultural Changes', type: 'auxiliary', position: { x: 150, y: 300 } }
+    ],
+    links: [
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.6, delay: 1 },
+      { polarity: 'positive', strength: 0.8 },
+      { polarity: 'positive', strength: 0.7 },
+      { polarity: 'positive', strength: 0.5, delay: 2 }
     ],
     layout: 'circular'
   }

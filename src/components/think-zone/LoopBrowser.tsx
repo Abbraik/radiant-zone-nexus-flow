@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ArrowUpCircle, ArrowDownCircle, Target, Repeat, Shuffle } from 'lucide-react';
+import { Search, ArrowUpCircle, ArrowDownCircle, Target, Repeat, Shuffle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 
 export interface LoopArchetype {
   id: string;
@@ -143,6 +144,17 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+
+  const toggleCardExpansion = (id: string) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedCards(newExpanded);
+  };
 
   const filteredArchetypes = coreLoopArchetypes.filter(archetype => {
     const matchesSearch = archetype.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -168,6 +180,18 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
 
   const getTypeColor = (type: 'reinforcing' | 'balancing') => {
     return type === 'reinforcing' ? 'bg-orange-500/10 text-orange-500' : 'bg-blue-500/10 text-blue-500';
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      'growth': 'bg-green-500/10 text-green-500',
+      'limits': 'bg-red-500/10 text-red-500',
+      'fixes': 'bg-yellow-500/10 text-yellow-500',
+      'tragedy': 'bg-purple-500/10 text-purple-500',
+      'success': 'bg-blue-500/10 text-blue-500',
+      'other': 'bg-gray-500/10 text-gray-500'
+    };
+    return colors[category as keyof typeof colors] || colors.other;
   };
 
   return (
@@ -236,12 +260,45 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
                     <div className="p-1.5 rounded-lg bg-muted/50">
                       {archetype.icon}
                     </div>
-                    <Badge variant="secondary" className={`${getTypeColor(archetype.type)} text-xs`}>
-                      {archetype.type}
-                    </Badge>
+                    <div className="flex gap-1">
+                      <Badge variant="secondary" className={`${getCategoryColor(archetype.category)} text-xs`}>
+                        {archetype.category}
+                      </Badge>
+                      <Badge variant="secondary" className={`${getTypeColor(archetype.type)} text-xs`}>
+                        {archetype.type}
+                      </Badge>
+                    </div>
                   </div>
                   <h3 className="font-semibold text-foreground text-sm leading-tight">{archetype.name}</h3>
                 </div>
+
+                {/* Expandable Description */}
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-between text-xs p-1 h-auto"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCardExpansion(archetype.id);
+                      }}
+                    >
+                      <span className="text-muted-foreground">
+                        {expandedCards.has(archetype.id) ? 'Hide Details' : 'Show Details'}
+                      </span>
+                      {expandedCards.has(archetype.id) ? 
+                        <ChevronUp className="h-3 w-3" /> : 
+                        <ChevronDown className="h-3 w-3" />
+                      }
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-2">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {archetype.description}
+                    </p>
+                  </CollapsibleContent>
+                </Collapsible>
 
                 {/* Variables Preview */}
                 <div className="space-y-1">
@@ -262,7 +319,7 @@ export const LoopBrowser: React.FC<LoopBrowserProps> = ({
                   </div>
                 </div>
 
-                {/* Instantiate Button */}
+                {/* Select Button */}
                 <Button 
                   size="sm" 
                   variant="outline"
