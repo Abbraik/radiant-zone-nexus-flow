@@ -327,17 +327,30 @@ interface ParameterPanelProps {
   config: ParameterConfig;
   onConfigChange: (config: ParameterConfig) => void;
   loopArchetype?: string;
+  selectedTensionSignals?: TensionSignal[];
+  onTensionSignalToggle?: (signal: TensionSignal) => void;
+  multiSelect?: boolean;
 }
 
 export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   config,
   onConfigChange,
-  loopArchetype
+  loopArchetype,
+  selectedTensionSignals = [],
+  onTensionSignalToggle,
+  multiSelect = false
 }) => {
   const [activeTab, setActiveTab] = useState('tension');
   
   // Get dynamic tension signals based on selected archetype
   const tensionSignals = getArchetypeSpecificTensions(loopArchetype);
+
+  const isSignalSelected = (signal: TensionSignal) => {
+    if (multiSelect && selectedTensionSignals) {
+      return selectedTensionSignals.some(s => s.id === signal.id);
+    }
+    return config.tensionSignal?.id === signal.id;
+  };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
@@ -443,13 +456,20 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-muted-foreground">
-                    Select Key Tension Signal
+                    {multiSelect ? 'Select Tension Signals' : 'Select Key Tension Signal'}
                   </h4>
-                  {loopArchetype && (
-                    <Badge variant="outline" className="text-xs">
-                      {loopArchetype.replace(/-/g, ' ')}
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {loopArchetype && (
+                      <Badge variant="outline" className="text-xs">
+                        {loopArchetype.replace(/-/g, ' ')}
+                      </Badge>
+                    )}
+                    {multiSelect && selectedTensionSignals.length > 0 && (
+                      <Badge variant="secondary" className="text-xs bg-blue-500/10 text-blue-600">
+                        {selectedTensionSignals.length} selected
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 
                 {tensionSignals.map((signal) => (
@@ -460,11 +480,17 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
                   >
                     <Card 
                       className={`p-4 cursor-pointer transition-all ${
-                        config.tensionSignal?.id === signal.id 
+                        isSignalSelected(signal)
                           ? 'ring-2 ring-primary bg-primary/5' 
                           : 'hover:border-primary/50'
                       }`}
-                      onClick={() => handleTensionSelect(signal)}
+                      onClick={() => {
+                        if (multiSelect && onTensionSignalToggle) {
+                          onTensionSignalToggle(signal);
+                        } else {
+                          handleTensionSelect(signal);
+                        }
+                      }}
                     >
                       <div className="space-y-3">
                         <div className="flex items-start justify-between">

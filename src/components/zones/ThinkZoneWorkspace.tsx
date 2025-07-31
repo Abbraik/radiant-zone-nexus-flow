@@ -33,6 +33,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
   const [selectedArchetypes, setSelectedArchetypes] = useState<LoopArchetype[]>([]);
   const [cldModel, setCldModel] = useState<CLDModel | null>(null);
   const [parameterConfigs, setParameterConfigs] = useState<any[]>([]);
+  const [selectedTensionSignals, setSelectedTensionSignals] = useState<any[]>([]);
   const [leveragePoints, setLeveragePoints] = useState<any[]>([]);
   const [macroVision, setMacroVision] = useState({ text: '', isValid: false });
   const [sprintCreated, setSprintCreated] = useState(false);
@@ -148,6 +149,18 @@ export const ThinkZoneWorkspace: React.FC = () => {
     setParameterConfigs(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Handler for multiple tension signals
+  const handleTensionSignalToggle = (signal: any) => {
+    setSelectedTensionSignals(prev => {
+      const exists = prev.find(s => s.id === signal.id);
+      if (exists) {
+        return prev.filter(s => s.id !== signal.id);
+      } else {
+        return [...prev, signal];
+      }
+    });
+  };
+
   // Handler for multiple leverage points
   const handleLeveragePointSelect = (point: any) => {
     setLeveragePoints(prev => {
@@ -236,6 +249,9 @@ export const ThinkZoneWorkspace: React.FC = () => {
               }
             }}
             loopArchetype={selectedArchetypes[0]?.id}
+            selectedTensionSignals={selectedTensionSignals}
+            onTensionSignalToggle={handleTensionSignalToggle}
+            multiSelect={true}
           />
         );
       
@@ -245,6 +261,8 @@ export const ThinkZoneWorkspace: React.FC = () => {
             selectedLeveragePoint={leveragePoints[0] || null}
             onLeveragePointSelect={handleLeveragePointSelect}
             loopType={selectedArchetypes[0]?.type}
+            selectedLeveragePoints={leveragePoints}
+            multiSelect={true}
           />
         );
       

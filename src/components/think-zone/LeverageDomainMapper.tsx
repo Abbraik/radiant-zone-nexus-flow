@@ -264,15 +264,26 @@ interface LeverageDomainMapperProps {
   selectedLeveragePoint?: LeveragePoint;
   onLeveragePointSelect: (point: LeveragePoint) => void;
   loopType?: 'balancing' | 'reinforcing';
+  selectedLeveragePoints?: LeveragePoint[];
+  multiSelect?: boolean;
 }
 
 export const LeverageDomainMapper: React.FC<LeverageDomainMapperProps> = ({
   selectedLeveragePoint,
   onLeveragePointSelect,
-  loopType = 'balancing'
+  loopType = 'balancing',
+  selectedLeveragePoints = [],
+  multiSelect = false
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
+
+  const isPointSelected = (point: LeveragePoint) => {
+    if (multiSelect && selectedLeveragePoints) {
+      return selectedLeveragePoints.some(p => p.id === point.id);
+    }
+    return selectedLeveragePoint?.id === point.id;
+  };
 
   const getEffectivenessScore = (point: LeveragePoint) => {
     return loopType === 'balancing' ? point.effectiveness.balancing : point.effectiveness.reinforcing;
@@ -371,9 +382,16 @@ export const LeverageDomainMapper: React.FC<LeverageDomainMapperProps> = ({
 
         {/* Leverage Points Grid */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-muted-foreground">
-            Select Leverage Point (Ordered by Impact)
-          </h4>
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-muted-foreground">
+              {multiSelect ? 'Select Leverage Points (Ordered by Impact)' : 'Select Leverage Point (Ordered by Impact)'}
+            </h4>
+            {multiSelect && selectedLeveragePoints.length > 0 && (
+              <Badge variant="secondary" className="text-xs bg-blue-500/10 text-blue-600">
+                {selectedLeveragePoints.length} selected
+              </Badge>
+            )}
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {leveragePoints
@@ -381,7 +399,7 @@ export const LeverageDomainMapper: React.FC<LeverageDomainMapperProps> = ({
             .map((point) => {
               const effectiveness = getEffectivenessScore(point);
               const connectedLevers = getConnectedLevers(point);
-              const isSelected = selectedLeveragePoint?.id === point.id;
+              const isSelected = isPointSelected(point);
               const isHovered = hoveredPoint === point.id;
 
               return (
