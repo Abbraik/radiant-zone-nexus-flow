@@ -15,6 +15,9 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 import { Badge } from '../ui/badge';
+import { MultiLevelLoopHealthDashboard } from '../monitor/MultiLevelLoopHealthDashboard';
+import { AlertSystem } from '../monitor/AlertSystem';
+import { EnhancedLoop } from '../../types/monitor';
 
 // Mock data
 const mockLoops = [
@@ -134,17 +137,40 @@ export const MonitorZoneWorkspace: React.FC = () => {
     setSelectedLoop(loopId);
   };
 
+  const handleLoopSelect = (loop: EnhancedLoop) => {
+    console.log('Selected loop:', loop);
+    // TODO: Navigate to detailed loop view or open sidebar
+  };
+
   return (
     <div className="space-y-6">
-      {/* System Pulse Overview */}
+      {/* Phase 1: Multi-Level Loop Health Dashboard */}
       <motion.div
-        className="w-full p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
+        <MultiLevelLoopHealthDashboard onLoopSelect={handleLoopSelect} />
+      </motion.div>
+
+      {/* Alert System */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <AlertSystem />
+      </motion.div>
+
+      {/* Legacy System Pulse Overview - Now Secondary */}
+      <motion.div
+        className="w-full p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-white">System Pulse</h2>
+          <h2 className="text-xl font-semibold text-white">Legacy Loop Monitoring</h2>
           
           <div className="flex items-center space-x-4">
             {[
