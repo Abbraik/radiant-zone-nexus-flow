@@ -20,6 +20,9 @@ import { AlertSystem } from '../monitor/AlertSystem';
 import { SubLeverPerformancePanel } from '../monitor/SubLeverPerformancePanel';
 import { MicroLoopAlertRail } from '../monitor/MicroLoopAlertRail';
 import { AdvancedAnalyticsSuite } from '../monitor/AdvancedAnalyticsSuite';
+import { CommunityPulseDashboard } from '../monitor/CommunityPulseDashboard';
+import { LearningPathRecommendations } from '../monitor/LearningPathRecommendations';
+import { CollaborativeInsightsEngine } from '../monitor/CollaborativeInsightsEngine';
 import { EnhancedLoop } from '../../types/monitor';
 import { AnalyticsInsight, MicroLoopAlert } from '../../types/analytics';
 
@@ -216,6 +219,31 @@ export const MonitorZoneWorkspace: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.4 }}
       >
         <AlertSystem />
+      </motion.div>
+
+      {/* Phase 3: Community Pulse Integration & Continuous Learning */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+      >
+        <CommunityPulseDashboard />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        <LearningPathRecommendations />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.7 }}
+      >
+        <CollaborativeInsightsEngine />
       </motion.div>
 
       {/* Legacy System Pulse Overview - Now Secondary */}
