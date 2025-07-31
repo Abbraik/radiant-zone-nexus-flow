@@ -13,6 +13,8 @@ import {
   Users,
   Settings
 } from 'lucide-react';
+import LoopLeverageRecommendationPane from '../components/widgets/LoopLeverageRecommendationPane';
+import SixLeverSelector from '../components/widgets/SixLeverSelector';
 import {
   DndContext,
   closestCenter,
@@ -342,12 +344,51 @@ export const ActZone: React.FC = () => {
         <div className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             <motion.div
-              className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl p-8"
+              className="glass-secondary rounded-2xl border border-border-subtle shadow-2xl p-8"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Loop-Leverage-Lever Recommendation Pane */}
+                <div className="lg:col-span-1">
+                  <LoopLeverageRecommendationPane
+                    loopContext={{
+                      loopId: 'loop-001',
+                      loopName: 'Innovation Adoption Feedback',
+                      loopType: 'Reinforcing',
+                      leveragePointRank: 6,
+                      leveragePointName: 'Rules (incentives, punishments, constraints)',
+                      deBandStatus: 'yellow',
+                      recommendedLevers: ['economic-fiscal', 'legal-institutional', 'information-communications']
+                    }}
+                    onLeverRecommendationClick={(leverId) => {
+                      console.log('Recommended lever clicked:', leverId);
+                      // TODO: Filter Six Lever Selector by this lever
+                    }}
+                  />
+                </div>
+
+                {/* Six Lever Selector */}
+                <div className="lg:col-span-2">
+                  <SixLeverSelector
+                    selectedSubLevers={[]}
+                    onSubLeverSelect={(subLeverId) => {
+                      console.log('Sub-lever selected:', subLeverId);
+                      // TODO: Add to bundle
+                    }}
+                    onSubLeverDeselect={(subLeverId) => {
+                      console.log('Sub-lever deselected:', subLeverId);
+                      // TODO: Remove from bundle  
+                    }}
+                    loopType="Reinforcing"
+                    leveragePointRank={6}
+                    multiSelect={true}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
                 {/* Intervention Picker */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-white">Add Interventions</h3>
