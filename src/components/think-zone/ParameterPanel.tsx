@@ -541,7 +541,20 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
             </TabsContent>
 
             <TabsContent value="deband" className="space-y-4 mt-0">
-              {config.tensionSignal && config.deBandConfig && (
+              {(config.tensionSignal && config.deBandConfig) || (multiSelect && selectedTensionSignals.length > 0) ? (
+                (() => {
+                  // Use existing config or create one from first selected signal
+                  const activeTensionSignal = config.tensionSignal || selectedTensionSignals[0];
+                  const activeDeBandConfig = config.deBandConfig || {
+                    signal: activeTensionSignal.id,
+                    lowerBound: activeTensionSignal.currentValue * 0.8,
+                    upperBound: activeTensionSignal.currentValue * 1.2,
+                    currentValue: activeTensionSignal.currentValue,
+                    breachFrequency: Math.random() * 30,
+                    riskLevel: activeTensionSignal.trend === 'up' ? 'high' : activeTensionSignal.trend === 'down' ? 'medium' : 'low'
+                  };
+
+                  return (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-medium">
@@ -552,7 +565,7 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
                         <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Set acceptable bounds for {config.tensionSignal.name}</p>
+                        <p>Set acceptable bounds for {activeTensionSignal.name}</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -561,10 +574,10 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
                     <div className="space-y-4">
                       <div className="text-center">
                         <div className="text-2xl font-bold">
-                          {config.deBandConfig.currentValue} {config.tensionSignal.unit}
+                          {activeDeBandConfig.currentValue} {activeTensionSignal.unit}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          Current {config.tensionSignal.name}
+                          Current {activeTensionSignal.name}
                         </div>
                       </div>
 
@@ -575,46 +588,70 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
                           <span>Upper Bound</span>
                         </div>
                         
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-4">
-                            <span className="text-sm w-12">{config.deBandConfig.lowerBound.toFixed(1)}</span>
-                            <Slider
-                              value={[config.deBandConfig.lowerBound]}
-                              onValueChange={([value]) => handleDEBandUpdate({ lowerBound: value })}
-                              min={config.tensionSignal.currentValue * 0.5}
-                              max={config.tensionSignal.currentValue * 0.95}
-                              step={0.1}
-                              className="flex-1"
-                            />
-                          </div>
-                          
-                          <div className="flex items-center gap-4">
-                            <span className="text-sm w-12">{config.deBandConfig.upperBound.toFixed(1)}</span>
-                            <Slider
-                              value={[config.deBandConfig.upperBound]}
-                              onValueChange={([value]) => handleDEBandUpdate({ upperBound: value })}
-                              min={config.tensionSignal.currentValue * 1.05}
-                              max={config.tensionSignal.currentValue * 2}
-                              step={0.1}
-                              className="flex-1"
-                            />
-                          </div>
-                        </div>
+                         <div className="space-y-2">
+                           <div className="flex items-center gap-4">
+                             <span className="text-sm w-12">{activeDeBandConfig.lowerBound.toFixed(1)}</span>
+                             <Slider
+                               value={[activeDeBandConfig.lowerBound]}
+                               onValueChange={([value]) => {
+                                 const updatedConfig = { ...activeDeBandConfig, lowerBound: value };
+                                 if (config.deBandConfig) {
+                                   handleDEBandUpdate({ lowerBound: value });
+                                 } else {
+                                   // Auto-create config if not exists
+                                   onConfigChange({
+                                     ...config,
+                                     tensionSignal: activeTensionSignal,
+                                     deBandConfig: updatedConfig
+                                   });
+                                 }
+                               }}
+                               min={activeTensionSignal.currentValue * 0.5}
+                               max={activeTensionSignal.currentValue * 0.95}
+                               step={0.1}
+                               className="flex-1"
+                             />
+                           </div>
+                           
+                           <div className="flex items-center gap-4">
+                             <span className="text-sm w-12">{activeDeBandConfig.upperBound.toFixed(1)}</span>
+                             <Slider
+                               value={[activeDeBandConfig.upperBound]}
+                               onValueChange={([value]) => {
+                                 const updatedConfig = { ...activeDeBandConfig, upperBound: value };
+                                 if (config.deBandConfig) {
+                                   handleDEBandUpdate({ upperBound: value });
+                                 } else {
+                                   // Auto-create config if not exists
+                                   onConfigChange({
+                                     ...config,
+                                     tensionSignal: activeTensionSignal,
+                                     deBandConfig: updatedConfig
+                                   });
+                                 }
+                               }}
+                               min={activeTensionSignal.currentValue * 1.05}
+                               max={activeTensionSignal.currentValue * 2}
+                               step={0.1}
+                               className="flex-1"
+                             />
+                           </div>
+                         </div>
                       </div>
 
                       {/* Breach Analysis */}
                       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
                         <div className="text-center">
                           <div className="text-lg font-semibold">
-                            {config.deBandConfig.breachFrequency.toFixed(1)}%
+                            {activeDeBandConfig.breachFrequency.toFixed(1)}%
                           </div>
                           <div className="text-xs text-muted-foreground">
                             Historical Breaches
                           </div>
                         </div>
                         <div className="text-center">
-                          <div className={`text-lg font-semibold ${getRiskColor(config.deBandConfig.riskLevel)}`}>
-                            {config.deBandConfig.riskLevel.toUpperCase()}
+                          <div className={`text-lg font-semibold ${getRiskColor(activeDeBandConfig.riskLevel)}`}>
+                            {activeDeBandConfig.riskLevel.toUpperCase()}
                           </div>
                           <div className="text-xs text-muted-foreground">
                             Risk Level
@@ -623,6 +660,14 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
                       </div>
                     </div>
                   </Card>
+                </div>
+                  );
+                })()
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">
+                    Please select a tension signal to configure DE-Bands
+                  </p>
                 </div>
               )}
             </TabsContent>
