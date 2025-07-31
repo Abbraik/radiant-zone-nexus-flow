@@ -18,13 +18,6 @@ import type { EnhancedIntervention, InterventionBundle, BundleDependency } from 
 
 const steps = [
   {
-    id: 'leverage-points',
-    title: 'Select Leverage Points',
-    description: 'Choose system leverage points to target',
-    icon: Target,
-    color: 'text-blue-500'
-  },
-  {
     id: 'government-levers',
     title: 'Choose Government Levers',
     description: 'Select appropriate levers and sub-levers',
@@ -75,9 +68,17 @@ const steps = [
   }
 ];
 
-export const ActZoneWizard: React.FC = () => {
+interface ActZoneWizardProps {
+  leveragePoints?: string[]; // Passed from Think Zone
+  loopType?: 'Reinforcing' | 'Balancing';
+}
+
+export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({ 
+  leveragePoints = [], 
+  loopType = 'Reinforcing' 
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedLeveragePoints, setSelectedLeveragePoints] = useState<string[]>([]);
+  const [selectedLeveragePoints] = useState<string[]>(leveragePoints);
   const [selectedSubLevers, setSelectedSubLevers] = useState<string[]>([]);
   const [interventions, setInterventions] = useState<EnhancedIntervention[]>([]);
   const [dependencies, setDependencies] = useState<BundleDependency[]>([]);
@@ -92,21 +93,19 @@ export const ActZoneWizard: React.FC = () => {
 
   const canProceedToNext = () => {
     switch (currentStep) {
-      case 0: // Leverage Points
-        return selectedLeveragePoints.length > 0;
-      case 1: // Government Levers
+      case 0: // Government Levers
         return selectedSubLevers.length > 0;
-      case 2: // Design Interventions
+      case 1: // Design Interventions
         return interventions.length > 0;
-      case 3: // Dependencies
+      case 2: // Dependencies
         return true; // Optional step
-      case 4: // Roles
+      case 3: // Roles
         return Object.keys(raciAssignments).length > 0;
-      case 5: // Schedule
+      case 4: // Schedule
         return Object.keys(scheduleData).length > 0;
-      case 6: // Compliance
+      case 5: // Compliance
         return Object.keys(complianceData).length > 0;
-      case 7: // Finalize
+      case 6: // Finalize
         return true;
       default:
         return false;
@@ -174,36 +173,14 @@ export const ActZoneWizard: React.FC = () => {
           <Card className="border-none shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-blue-500" />
-                Select Leverage Points
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="p-6 text-center">
-                <Target className="h-12 w-12 mx-auto mb-4 text-blue-500" />
-                <h3 className="text-lg font-semibold mb-2">Select System Leverage Points</h3>
-                <p className="text-muted-foreground mb-4">Choose the leverage points you want to target with your interventions.</p>
-                <Button onClick={() => setSelectedLeveragePoints(['leverage-1'])}>
-                  Add Leverage Points
-                </Button>
-                {selectedLeveragePoints.length > 0 && (
-                  <Badge variant="secondary" className="mt-2">
-                    {selectedLeveragePoints.length} points selected
-                  </Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      case 1:
-        return (
-          <Card className="border-none shadow-none">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-green-500" />
                 Choose Government Levers & Sub-Levers
               </CardTitle>
+              {selectedLeveragePoints.length > 0 && (
+                <div className="text-sm text-muted-foreground">
+                  Based on selected leverage points: {selectedLeveragePoints.join(', ')}
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <SixLeverSelector
@@ -218,7 +195,7 @@ export const ActZoneWizard: React.FC = () => {
           </Card>
         );
 
-      case 2:
+      case 1:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -284,7 +261,7 @@ export const ActZoneWizard: React.FC = () => {
           </Card>
         );
 
-      case 3:
+      case 2:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -303,7 +280,7 @@ export const ActZoneWizard: React.FC = () => {
           </Card>
         );
 
-      case 4:
+      case 3:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -321,7 +298,7 @@ export const ActZoneWizard: React.FC = () => {
           </Card>
         );
 
-      case 5:
+      case 4:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -343,7 +320,7 @@ export const ActZoneWizard: React.FC = () => {
           </Card>
         );
 
-      case 6:
+      case 5:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -365,7 +342,7 @@ export const ActZoneWizard: React.FC = () => {
           </Card>
         );
 
-      case 7:
+      case 6:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -383,11 +360,11 @@ export const ActZoneWizard: React.FC = () => {
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="p-4 rounded-lg bg-accent">
-                  <div className="text-2xl font-bold text-primary">{selectedLeveragePoints.length}</div>
-                  <div className="text-sm text-muted-foreground">Leverage Points</div>
-                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                  <div className="p-4 rounded-lg bg-accent">
+                    <div className="text-2xl font-bold text-primary">{selectedLeveragePoints.length}</div>
+                    <div className="text-sm text-muted-foreground">Leverage Points</div>
+                  </div>
                 <div className="p-4 rounded-lg bg-accent">
                   <div className="text-2xl font-bold text-primary">{selectedSubLevers.length}</div>
                   <div className="text-sm text-muted-foreground">Sub-Levers</div>
@@ -435,7 +412,7 @@ export const ActZoneWizard: React.FC = () => {
         </div>
 
         {/* Step Navigation */}
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-8">
+        <div className="grid grid-cols-4 md:grid-cols-7 gap-2 mb-8">
           {steps.map((step, index) => {
             const StepIcon = step.icon;
             const isActive = index === currentStep;
