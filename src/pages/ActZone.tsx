@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -12,13 +12,21 @@ import {
   Play,
   Users,
   Settings,
-  Sliders
+  Sliders,
+  GitBranch,
+  FileText,
+  Keyboard
 } from 'lucide-react';
 import LoopLeverageRecommendationPane from '../components/widgets/LoopLeverageRecommendationPane';
 import SixLeverSelector from '../components/widgets/SixLeverSelector';
 import MetaSolveDetailForm from '../components/widgets/MetaSolveDetailForm';
 import EnhancedInterventionDetailEditor from '../components/widgets/EnhancedInterventionDetailEditor';
 import AdvancedImpactSimulator from '../components/widgets/AdvancedImpactSimulator';
+import EnhancedDependencyConfigurator from '../components/widgets/EnhancedDependencyConfigurator';
+import BundleSummaryModal from '../components/widgets/BundleSummaryModal';
+import LoadingStates from '../components/widgets/LoadingStates';
+import useKeyboardNavigation, { ACT_ZONE_SHORTCUTS } from '../hooks/useKeyboardNavigation';
+import { exportBundle } from '../utils/bundleExport';
 import {
   DndContext,
   closestCenter,
@@ -124,7 +132,8 @@ interface Intervention {
 
 import type { 
   EnhancedIntervention, 
-  InterventionBundle 
+  InterventionBundle,
+  BundleDependency 
 } from '../types/intervention';
 import type { MetaSolveLayer } from '../types/metasolve';
 
@@ -206,6 +215,11 @@ export const ActZone: React.FC = () => {
   const [selectedIntervention, setSelectedIntervention] = useState<EnhancedIntervention | null>(null);
   const [metaSolveConfig, setMetaSolveConfig] = useState<Partial<MetaSolveLayer> | null>(null);
   const [enhancedInterventions, setEnhancedInterventions] = useState<EnhancedIntervention[]>([]);
+  const [dependencies, setDependencies] = useState<BundleDependency[]>([]);
+  const [showDependencyManager, setShowDependencyManager] = useState(false);
+  const [showBundleSummary, setShowBundleSummary] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -567,6 +581,62 @@ export const ActZone: React.FC = () => {
                   </div>
                 </div>
               </div>
+              {/* Enhanced Dependency & Summary Management */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                {/* Dependency Management */}
+                <motion.div
+                  className="glass rounded-xl p-6 border border-border-subtle hover:border-primary/30 transition-colors cursor-pointer"
+                  onClick={() => setShowDependencyManager(true)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <GitBranch className="h-6 w-6 text-accent" />
+                    <h4 className="font-medium text-foreground">Dependency Management</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Configure intervention dependencies and view Gantt timeline
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded">
+                        {dependencies.length} dependencies
+                      </span>
+                      <span className="text-xs bg-warning/20 text-warning px-2 py-1 rounded">
+                        {dependencies.filter(d => d.criticalPath).length} critical
+                      </span>
+                    </div>
+                    <span className="text-accent text-sm">Manage →</span>
+                  </div>
+                </motion.div>
+
+                {/* Bundle Summary */}
+                <motion.div
+                  className="glass rounded-xl p-6 border border-border-subtle hover:border-success/30 transition-colors cursor-pointer"
+                  onClick={() => setShowBundleSummary(true)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <FileText className="h-6 w-6 text-success" />
+                    <h4 className="font-medium text-foreground">Bundle Summary</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Review complete bundle and generate impact narrative
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs bg-success/20 text-success px-2 py-1 rounded">
+                        {enhancedInterventions.length} interventions
+                      </span>
+                      <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                        Ready to publish
+                      </span>
+                    </div>
+                    <span className="text-success text-sm">Review →</span>
+                  </div>
+                </motion.div>
+              </div>
 
               {/* MetaSolve Configuration & Impact Simulation */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
@@ -622,14 +692,33 @@ export const ActZone: React.FC = () => {
               {/* Primary Action Bar */}
               <div className="mt-8 glass rounded-b-2xl -mx-8 -mb-8 px-8 py-6 border-t border-border-subtle">
                 <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => setShowAdvanced(!showAdvanced)}
-                    className="text-primary underline text-base hover:text-primary-hover transition-colors"
-                  >
-                    {showAdvanced ? 'Hide' : 'Show'} Advanced Settings
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setShowAdvanced(!showAdvanced)}
+                      className="text-primary underline text-base hover:text-primary-hover transition-colors"
+                    >
+                      {showAdvanced ? 'Hide' : 'Show'} Advanced Settings
+                    </button>
+                    <button
+                      onClick={() => setShowKeyboardHelp(true)}
+                      className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                    >
+                      <Keyboard className="h-4 w-4" />
+                      <span className="text-sm">Shortcuts</span>
+                    </button>
+                  </div>
 
                   <div className="flex items-center space-x-4">
+                    <motion.button
+                      onClick={() => setShowDependencyManager(true)}
+                      className="btn-secondary flex items-center space-x-2"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <GitBranch className="w-4 h-4" />
+                      <span>Dependencies</span>
+                    </motion.button>
+
                     <motion.button
                       onClick={handleValidate}
                       className="btn-secondary flex items-center space-x-2"
@@ -637,20 +726,20 @@ export const ActZone: React.FC = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Check className="w-4 h-4" />
-                      <span>Validate Bundle</span>
+                      <span>Validate</span>
                     </motion.button>
 
                     <motion.button
-                      onClick={handlePublish}
-                      disabled={bundleItems.length === 0}
+                      onClick={() => setShowBundleSummary(true)}
+                      disabled={enhancedInterventions.length === 0}
                       className={`btn-primary flex items-center space-x-2 ${
-                        bundleItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                        enhancedInterventions.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
-                      whileHover={bundleItems.length > 0 ? { scale: 1.02 } : {}}
-                      whileTap={bundleItems.length > 0 ? { scale: 0.98 } : {}}
+                      whileHover={enhancedInterventions.length > 0 ? { scale: 1.02 } : {}}
+                      whileTap={enhancedInterventions.length > 0 ? { scale: 0.98 } : {}}
                     >
                       <Play className="w-4 h-4" />
-                      <span>Publish Bundle</span>
+                      <span>Review & Publish</span>
                     </motion.button>
                   </div>
                 </div>
@@ -705,6 +794,171 @@ export const ActZone: React.FC = () => {
             }
           }}
         />
+
+        {/* Enhanced Dependency Configurator Modal */}
+        {showDependencyManager && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowDependencyManager(false)}
+            />
+            <motion.div
+              className="relative glass-secondary rounded-2xl border border-border-subtle shadow-2xl w-full max-w-7xl max-h-[90vh] overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-border-subtle">
+                <h2 className="text-xl font-semibold text-foreground">Dependency Management</h2>
+                <button
+                  onClick={() => setShowDependencyManager(false)}
+                  className="p-2 hover:bg-muted/20 rounded-lg transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="overflow-y-auto max-h-[calc(90vh-80px)] p-6">
+                <EnhancedDependencyConfigurator
+                  interventions={enhancedInterventions}
+                  dependencies={dependencies}
+                  onDependenciesChange={setDependencies}
+                  bundle={{
+                    id: 'current-bundle',
+                    name: 'Current Bundle',
+                    description: 'Current intervention bundle',
+                    interventions: enhancedInterventions,
+                    totalBudget: enhancedInterventions.reduce((sum, int) => sum + int.budget.totalBudget, 0),
+                    totalTimelineWeeks: 26,
+                    riskLevel: 'medium',
+                    dependencies,
+                    conflicts: [],
+                    status: 'draft',
+                    workflowStage: 'design',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    createdBy: 'current-user',
+                    owner: 'current-user',
+                    stakeholders: []
+                  }}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Bundle Summary Modal */}
+        <BundleSummaryModal
+          isOpen={showBundleSummary}
+          onClose={() => setShowBundleSummary(false)}
+          onPublish={() => {
+            handlePublish();
+            setShowBundleSummary(false);
+          }}
+          onExport={(format) => {
+            exportBundle(
+              format,
+              'Digital Government Transformation Bundle',
+              enhancedInterventions,
+              dependencies,
+              metaSolveConfig || undefined,
+              {
+                loopId: 'loop-001',
+                loopName: 'Innovation Adoption Feedback',
+                loopType: 'Reinforcing',
+                leveragePointRank: 6,
+                leveragePointName: 'Rules (incentives, punishments, constraints)',
+                deBandStatus: 'yellow',
+                recommendedLevers: ['economic-fiscal', 'legal-institutional', 'information-communications']
+              }
+            );
+          }}
+          bundle={{
+            name: 'Digital Government Transformation Bundle',
+            description: 'Comprehensive intervention bundle targeting innovation adoption loops through strategic lever activation',
+            interventions: enhancedInterventions,
+            dependencies,
+            metaSolveConfig,
+            loopContext: {
+              loopId: 'loop-001',
+              loopName: 'Innovation Adoption Feedback',
+              loopType: 'Reinforcing',
+              leveragePointRank: 6,
+              leveragePointName: 'Rules (incentives, punishments, constraints)',
+              deBandStatus: 'yellow',
+              recommendedLevers: ['economic-fiscal', 'legal-institutional', 'information-communications']
+            },
+            totalBudget: enhancedInterventions.reduce((sum, int) => sum + int.budget.totalBudget, 0),
+            timelineWeeks: 26,
+            riskLevel: enhancedInterventions.some(int => int.complexity === 'High') ? 'high' : 
+                      enhancedInterventions.some(int => int.complexity === 'Medium') ? 'medium' : 'low'
+          }}
+        />
+
+        {/* Loading Overlay */}
+        {isLoading && (
+          <motion.div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <LoadingStates.ActZoneLoadingSkeleton />
+          </motion.div>
+        )}
+
+        {/* Keyboard Help Modal */}
+        {showKeyboardHelp && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowKeyboardHelp(false)}
+            />
+            <motion.div
+              className="relative glass-secondary rounded-xl border border-border-subtle shadow-2xl w-full max-w-2xl p-6"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-foreground">Keyboard Shortcuts</h3>
+                <button
+                  onClick={() => setShowKeyboardHelp(false)}
+                  className="p-2 hover:bg-muted/20 rounded-lg transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-6">
+                {Object.entries(ACT_ZONE_SHORTCUTS).map(([category, shortcuts]) => (
+                  <div key={category}>
+                    <h4 className="font-medium text-foreground mb-3 capitalize">{category.replace('_', ' ')}</h4>
+                    <div className="space-y-2">
+                      {shortcuts.map((shortcut, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 glass rounded">
+                          <span className="text-sm text-muted-foreground">{shortcut.description}</span>
+                          <code className="text-xs bg-muted/30 px-2 py-1 rounded font-mono">
+                            {shortcut.ctrlKey ? 'Ctrl+' : ''}{shortcut.shiftKey ? 'Shift+' : ''}{shortcut.altKey ? 'Alt+' : ''}{shortcut.key.toUpperCase()}
+                          </code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
         {/* Enhanced Intervention Detail Editor Modal */}
         {selectedIntervention && (
