@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { Task } from '../../hooks/useTasks';
 import { Skeleton } from '../ui/skeleton';
 import { ThinkZoneWorkspace } from '../zones/ThinkZoneWorkspace';
-import { ActZone } from '../../pages/ActZone';
+import { ActZoneWizard } from '../../pages/ActZoneWizard';
+import { MonitorZoneWorkspace } from '../zones/MonitorZoneWorkspace';
+import { InnovateLearnZoneWorkspace } from '../zones/InnovateLearnZoneWorkspace';
 
 interface DynamicWidgetProps {
   widgetName: string;
@@ -67,23 +69,12 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
       case 'think':
         console.log('DynamicWidget: Rendering enhanced ThinkZoneWorkspace for think task');
         return <ThinkZoneWorkspace />;
-      case 'act':
-        console.log('DynamicWidget: Rendering enhanced ActZone for act task');
-        return <ActZone />;
+        case 'act':
+          return <ActZoneWizard />;
       case 'monitor':
-        // For now, fallback to a simple component
-        return (
-          <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-400">Monitor Zone workspace will be loaded here</p>
-          </div>
-        );
+        return <MonitorZoneWorkspace />;
       case 'innovate-learn':
-        // For now, fallback to a simple component  
-        return (
-          <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-            <p className="text-green-400">Innovate-Learn Zone workspace will be loaded here</p>
-          </div>
-        );
+        return <InnovateLearnZoneWorkspace />;
       default:
         return (
           <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
