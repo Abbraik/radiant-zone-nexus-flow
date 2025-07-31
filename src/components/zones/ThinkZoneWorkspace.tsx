@@ -404,7 +404,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col glass-hero">
       {/* Header */}
       <div className="glass-secondary border-b border-border/50 sticky top-0 z-10">
         <div className="p-6">
