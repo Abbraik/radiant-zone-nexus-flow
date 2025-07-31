@@ -441,11 +441,11 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
               <TrendingUp className="h-3 w-3 mr-1" />
               Tension
             </TabsTrigger>
-            <TabsTrigger value="deband" className="text-xs" disabled={!config.tensionSignal}>
+            <TabsTrigger value="deband" className="text-xs" disabled={!config.tensionSignal && (!multiSelect || selectedTensionSignals.length === 0)}>
               <Target className="h-3 w-3 mr-1" />
               DE-Band
             </TabsTrigger>
-            <TabsTrigger value="srt" className="text-xs" disabled={!config.deBandConfig}>
+            <TabsTrigger value="srt" className="text-xs" disabled={!config.deBandConfig && (!multiSelect || selectedTensionSignals.length === 0)}>
               <Calendar className="h-3 w-3 mr-1" />
               SRT
             </TabsTrigger>
@@ -487,6 +487,10 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
                       onClick={() => {
                         if (multiSelect && onTensionSignalToggle) {
                           onTensionSignalToggle(signal);
+                          // Also set this signal as the primary config signal if not already set
+                          if (!config.tensionSignal) {
+                            handleTensionSelect(signal);
+                          }
                         } else {
                           handleTensionSelect(signal);
                         }
