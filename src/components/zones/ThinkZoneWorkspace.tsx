@@ -328,13 +328,32 @@ export const ThinkZoneWorkspace: React.FC = () => {
         const bundle = {
           id: `bundle-${Date.now()}`,
           loopConfiguration: {
-            archetype: selectedArchetypes[0]?.name || '',
+            archetype: selectedArchetypes.length > 1 
+              ? `Multi-Loop Configuration (${selectedArchetypes.length} loops)` 
+              : selectedArchetypes[0]?.name || '',
             nodeCount: cldModel?.nodes.length || 0,
             linkCount: cldModel?.links.length || 0,
-            modelData: cldModel
+            modelData: {
+              ...cldModel,
+              selectedArchetypes,
+              multiSelectMode: selectedArchetypes.length > 1
+            }
           },
-          parameterConfiguration: parameterConfigs[0] || {},
-          leveragePoint: leveragePoints[0] || null,
+          parameterConfiguration: {
+            tensionSignal: selectedTensionSignals.length > 0 ? selectedTensionSignals[0] : parameterConfigs[0]?.tensionSignal,
+            deBandConfig: parameterConfigs[0]?.deBandConfig,
+            srtHorizon: parameterConfigs[0]?.srtHorizon,
+            // Additional data for multi-select
+            allConfigurations: parameterConfigs,
+            selectedTensionSignals: selectedTensionSignals
+          },
+          leveragePoint: leveragePoints[0] || {
+            id: 'default',
+            name: 'No leverage point selected',
+            rank: 0,
+            effectiveness: 0,
+            governmentLevers: []
+          },
           macroVision: {
             text: macroVision.text,
             characterCount: macroVision.text.length
@@ -343,14 +362,24 @@ export const ThinkZoneWorkspace: React.FC = () => {
             createdAt: new Date(),
             createdBy: 'current-user',
             thinkZoneVersion: '3.0',
+            // Extended metadata for multi-select
+            multiSelectMode: selectedArchetypes.length > 1,
             selectedArchetypes: selectedArchetypes,
             allParameterConfigs: parameterConfigs,
-            allLeveragePoints: leveragePoints
+            allLeveragePoints: leveragePoints,
+            totalSelections: {
+              archetypes: selectedArchetypes.length,
+              parameterConfigs: parameterConfigs.length,
+              leveragePoints: leveragePoints.length,
+              tensionSignals: selectedTensionSignals.length
+            }
           }
         };
 
         const loopData = {
-          name: selectedArchetypes[0]?.name || '',
+          name: selectedArchetypes.length > 1 
+            ? `Multi-Loop Configuration (${selectedArchetypes.length} loops)` 
+            : selectedArchetypes[0]?.name || '',
           type: selectedArchetypes[0]?.type || 'balancing' as 'balancing' | 'reinforcing',
           nodeCount: cldModel?.nodes.length || 0,
           linkCount: cldModel?.links.length || 0
@@ -366,16 +395,45 @@ export const ThinkZoneWorkspace: React.FC = () => {
             {/* Multi-Selection Summary */}
             {selectedArchetypes.length > 1 && (
               <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-                <h4 className="font-semibold text-primary mb-3">Multiple Loops Selected</h4>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {selectedArchetypes.map((archetype) => (
-                    <Badge key={archetype.id} variant="outline" className="text-primary border-primary/30">
-                      {archetype.name}
-                    </Badge>
-                  ))}
+                <h4 className="font-semibold text-primary mb-3">Multiple Loops Configuration Summary</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{selectedArchetypes.length}</div>
+                    <div className="text-sm text-foreground-muted">Loop Archetypes</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{parameterConfigs.filter(config => 
+                      config.tensionSignal && config.deBandConfig && config.srtHorizon
+                    ).length}</div>
+                    <div className="text-sm text-foreground-muted">Configured Parameters</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{leveragePoints.length}</div>
+                    <div className="text-sm text-foreground-muted">Leverage Points</div>
+                  </div>
                 </div>
-                <p className="text-sm text-foreground-muted">
-                  The system will configure parameters for all selected loops and find common leverage points.
+                <div className="space-y-2">
+                  <h5 className="font-medium text-foreground">Selected Archetypes:</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedArchetypes.map((archetype, index) => {
+                      const hasConfig = parameterConfigs[index] && 
+                        parameterConfigs[index].tensionSignal && 
+                        parameterConfigs[index].deBandConfig && 
+                        parameterConfigs[index].srtHorizon;
+                      return (
+                        <Badge 
+                          key={archetype.id} 
+                          variant="outline" 
+                          className={`text-primary border-primary/30 ${hasConfig ? 'bg-success/20' : 'bg-warning/20'}`}
+                        >
+                          {archetype.name} {hasConfig ? '✓' : '⚠️'}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+                <p className="text-sm text-foreground-muted mt-3">
+                  The system will create a comprehensive sprint incorporating all selected loops and their configurations.
                 </p>
               </Card>
             )}
@@ -383,7 +441,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
             <ReviewSummaryPanel
               validationItems={getValidationItems()}
               loopData={loopData}
-              tensionSignal={parameterConfigs[0]?.tensionSignal}
+              tensionSignal={selectedTensionSignals.length > 0 ? selectedTensionSignals[0] : parameterConfigs[0]?.tensionSignal}
               deBandConfig={parameterConfigs[0]?.deBandConfig}
               srtHorizon={parameterConfigs[0]?.srtHorizon}
               leveragePoint={leveragePoints[0]}
