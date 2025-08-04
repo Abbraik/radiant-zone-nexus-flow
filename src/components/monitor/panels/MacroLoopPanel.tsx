@@ -26,64 +26,148 @@ interface MacroLoopPanelProps {
 
 const mockMacroLoops: MacroLoop[] = [
   {
-    id: 'macro-1',
-    name: 'Innovation Adoption',
+    id: 'population-development-loop',
+    name: 'Population and Development Loop',
     type: 'reinforcing',
-    vision: 'Accelerate breakthrough solutions',
+    vision: 'Population size and characteristics greatly influence resource market efficiency',
     tensionSignal: [65, 68, 72, 69, 74, 78, 82, 85, 88, 91, 94, 89],
     deBandValue: 89,
     deBandMin: 70,
     deBandMax: 95,
     status: 'healthy',
     breachCount: 0,
-    leveragePoint: 'Culture & Mindset'
+    leveragePoint: 'Resource Market Efficiency'
   },
   {
-    id: 'macro-2',
-    name: 'Resource Allocation',
-    type: 'balancing',
-    vision: 'Optimize strategic investments',
+    id: 'natural-population-growth',
+    name: 'Natural Population Growth Loop',
+    type: 'reinforcing',
+    vision: 'Fertility rate determines local population size and composition',
+    tensionSignal: [82, 84, 86, 85, 87, 89, 91, 88, 90, 92, 95, 93],
+    deBandValue: 93,
+    deBandMin: 80,
+    deBandMax: 100,
+    status: 'healthy',
+    breachCount: 0,
+    leveragePoint: 'Marriage Rates & Family Formation'
+  },
+  {
+    id: 'population-resource-market',
+    name: 'Population and Resource Market Loop',
+    type: 'reinforcing',
+    vision: 'Population dynamics directly impact resource market supply and demand',
     tensionSignal: [45, 42, 38, 35, 32, 29, 26, 23, 20, 18, 15, 12],
     deBandValue: 12,
     deBandMin: 25,
     deBandMax: 85,
     status: 'critical',
     breachCount: 8,
-    leveragePoint: 'Information Flow'
+    leveragePoint: 'Capital Structure & Investment'
   },
   {
-    id: 'macro-3',
-    name: 'Market Response',
+    id: 'economic-population-growth',
+    name: 'Economic Model and Unnatural Population Growth Loop',
     type: 'reinforcing',
-    vision: 'Adapt to market dynamics',
+    vision: 'Economic model defines growth patterns and labor recruitment',
     tensionSignal: [75, 73, 71, 69, 67, 65, 63, 61, 59, 57, 55, 53],
     deBandValue: 53,
     deBandMin: 40,
     deBandMax: 80,
     status: 'warning',
     breachCount: 2,
-    leveragePoint: 'Rules & Policies'
+    leveragePoint: 'Labor Market Dynamics'
   },
-  // Add more loops to fill the 3x4 grid
-  ...Array.from({ length: 8 }, (_, i) => {
-    const types: ('reinforcing' | 'balancing')[] = ['reinforcing', 'balancing'];
-    const statuses: ('healthy' | 'warning' | 'critical')[] = ['healthy', 'warning', 'critical'];
-    const leveragePoints = ['Culture & Mindset', 'Information Flow', 'Rules & Policies'];
-    
-    return {
-      id: `macro-${i + 4}`,
-      name: `Loop ${i + 4}`,
-      type: types[Math.floor(Math.random() * types.length)],
-      vision: 'Strategic objective alignment',
-      tensionSignal: Array.from({ length: 12 }, () => Math.floor(Math.random() * 100)),
-      deBandValue: Math.floor(Math.random() * 100),
-      deBandMin: 20,
-      deBandMax: 80,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      breachCount: Math.floor(Math.random() * 10),
-      leveragePoint: leveragePoints[Math.floor(Math.random() * leveragePoints.length)]
-    };
-  })
+  {
+    id: 'environmental-quality-loop',
+    name: 'Environmental Quality Loop',
+    type: 'balancing',
+    vision: 'Economic model influences environmental quality affecting health outcomes',
+    tensionSignal: [58, 55, 52, 48, 45, 42, 39, 36, 33, 30, 27, 25],
+    deBandValue: 25,
+    deBandMin: 30,
+    deBandMax: 70,
+    status: 'critical',
+    breachCount: 6,
+    leveragePoint: 'Environmental Policies'
+  },
+  {
+    id: 'production-process-loop',
+    name: 'Production Process Loop',
+    type: 'reinforcing',
+    vision: 'Goods and services market demand generates income for workforce',
+    tensionSignal: [72, 74, 76, 78, 80, 82, 84, 86, 88, 85, 87, 89],
+    deBandValue: 89,
+    deBandMin: 70,
+    deBandMax: 95,
+    status: 'healthy',
+    breachCount: 0,
+    leveragePoint: 'Income Generation & Purchasing Power'
+  },
+  {
+    id: 'economic-stability-loop',
+    name: 'Economic Stability Loop',
+    type: 'reinforcing',
+    vision: 'Population size leads to higher demand stabilizing market growth',
+    tensionSignal: [65, 68, 70, 72, 75, 77, 79, 81, 83, 85, 87, 84],
+    deBandValue: 84,
+    deBandMin: 60,
+    deBandMax: 90,
+    status: 'healthy',
+    breachCount: 1,
+    leveragePoint: 'Market Stability Mechanisms'
+  },
+  {
+    id: 'global-influence-loop',
+    name: 'Global Influence Loop',
+    type: 'reinforcing',
+    vision: 'External global factors impact local conditions and resource availability',
+    tensionSignal: [55, 58, 60, 57, 59, 62, 64, 61, 63, 66, 68, 65],
+    deBandValue: 65,
+    deBandMin: 50,
+    deBandMax: 80,
+    status: 'warning',
+    breachCount: 3,
+    leveragePoint: 'International Trade Policies'
+  },
+  {
+    id: 'social-outcomes-loop',
+    name: 'Social Outcomes Loop',
+    type: 'reinforcing',
+    vision: 'Improving education, healthcare and well-being through stable markets',
+    tensionSignal: [78, 80, 82, 84, 86, 88, 90, 92, 89, 91, 93, 95],
+    deBandValue: 95,
+    deBandMin: 75,
+    deBandMax: 100,
+    status: 'healthy',
+    breachCount: 0,
+    leveragePoint: 'Social Development Programs'
+  },
+  {
+    id: 'migration-economic-opportunities',
+    name: 'Migration and Economic Opportunities Loop',
+    type: 'reinforcing',
+    vision: 'Economic opportunities drive migration patterns impacting labor markets',
+    tensionSignal: [48, 50, 52, 49, 51, 53, 55, 52, 54, 56, 58, 60],
+    deBandValue: 60,
+    deBandMin: 45,
+    deBandMax: 75,
+    status: 'warning',
+    breachCount: 4,
+    leveragePoint: 'Labor Market Efficiency'
+  },
+  {
+    id: 'social-structure-loop',
+    name: 'Social Structure Loop',
+    type: 'reinforcing',
+    vision: 'Social outcomes improvement leads to changing social phenomena',
+    tensionSignal: [70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92],
+    deBandValue: 92,
+    deBandMin: 65,
+    deBandMax: 95,
+    status: 'healthy',
+    breachCount: 0,
+    leveragePoint: 'Cultural & Social Innovation'
+  }
 ];
 
 const SparklineChart: React.FC<{ data: number[]; status: string }> = ({ data, status }) => {

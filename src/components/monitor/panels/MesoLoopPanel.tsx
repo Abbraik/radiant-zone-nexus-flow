@@ -40,8 +40,8 @@ interface MesoLoopPanelProps {
 const mockMesoLoops: MesoLoop[] = [
   {
     id: 'meso-1',
-    name: 'Budget Allocation',
-    icon: DollarSign,
+    name: 'Population Data Collection',
+    icon: Users,
     kpiValue: 87,
     kpiTarget: 90,
     kpiUnit: '%',
@@ -52,28 +52,28 @@ const mockMesoLoops: MesoLoop[] = [
     completedTasks: 284,
     totalTasks: 320,
     avgCycleTime: 14,
-    processType: 'Financial'
+    processType: 'Demographic Analysis'
   },
   {
     id: 'meso-2',
-    name: 'Compliance Monitoring',
-    icon: Shield,
-    kpiValue: 96,
-    kpiTarget: 95,
+    name: 'Resource Market Analysis',
+    icon: DollarSign,
+    kpiValue: 92,
+    kpiTarget: 85,
     kpiUnit: '%',
     trend: 'up',
-    trendValue: 1.8,
+    trendValue: 4.5,
     status: 'healthy',
     activeBundles: 8,
     completedTasks: 152,
     totalTasks: 160,
     avgCycleTime: 7,
-    processType: 'Governance'
+    processType: 'Economic Assessment'
   },
   {
     id: 'meso-3',
-    name: 'Innovation Adoption',
-    icon: Lightbulb,
+    name: 'Environmental Impact Assessment',
+    icon: Shield,
     kpiValue: 73,
     kpiTarget: 80,
     kpiUnit: '%',
@@ -84,11 +84,11 @@ const mockMesoLoops: MesoLoop[] = [
     completedTasks: 98,
     totalTasks: 180,
     avgCycleTime: 21,
-    processType: 'Innovation'
+    processType: 'Environmental Governance'
   },
   {
     id: 'meso-4',
-    name: 'Governance Cell Coordination',
+    name: 'Labor Market Coordination',
     icon: Users,
     kpiValue: 82,
     kpiTarget: 85,
@@ -100,7 +100,71 @@ const mockMesoLoops: MesoLoop[] = [
     completedTasks: 76,
     totalTasks: 90,
     avgCycleTime: 10,
-    processType: 'Coordination'
+    processType: 'Workforce Development'
+  },
+  {
+    id: 'meso-5',
+    name: 'Social Services Delivery',
+    icon: Lightbulb,
+    kpiValue: 95,
+    kpiTarget: 90,
+    kpiUnit: '%',
+    trend: 'up',
+    trendValue: 2.8,
+    status: 'healthy',
+    activeBundles: 11,
+    completedTasks: 189,
+    totalTasks: 200,
+    avgCycleTime: 9,
+    processType: 'Social Programs'
+  },
+  {
+    id: 'meso-6',
+    name: 'Migration Pattern Monitoring',
+    icon: TrendingUp,
+    kpiValue: 78,
+    kpiTarget: 85,
+    kpiUnit: '%',
+    trend: 'up',
+    trendValue: 1.9,
+    status: 'warning',
+    activeBundles: 9,
+    completedTasks: 134,
+    totalTasks: 170,
+    avgCycleTime: 12,
+    processType: 'Population Mobility'
+  },
+  {
+    id: 'meso-7',
+    name: 'Economic Model Validation',
+    icon: DollarSign,
+    kpiValue: 88,
+    kpiTarget: 85,
+    kpiUnit: '%',
+    trend: 'up',
+    trendValue: 3.1,
+    status: 'healthy',
+    activeBundles: 7,
+    completedTasks: 145,
+    totalTasks: 165,
+    avgCycleTime: 8,
+    processType: 'Economic Planning'
+  },
+  {
+    id: 'meso-8',
+    name: 'Global Trade Impact Analysis',
+    icon: TrendingDown,
+    kpiValue: 65,
+    kpiTarget: 75,
+    kpiUnit: '%',
+    trend: 'down',
+    trendValue: -1.7,
+    status: 'critical',
+    activeBundles: 13,
+    completedTasks: 87,
+    totalTasks: 150,
+    avgCycleTime: 18,
+    processType: 'International Relations'
   }
 ];
 

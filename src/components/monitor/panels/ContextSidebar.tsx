@@ -112,10 +112,60 @@ export function ContextSidebar({ selectedItem }: ContextSidebarProps) {
               <Network className="h-4 w-4 mr-2" />
               Causal Loop Diagram
             </h4>
-            <div className="h-32 bg-muted/20 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <Network className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">Interactive CLD</p>
+            <div className="h-32 bg-muted/20 rounded-lg p-3 relative overflow-hidden">
+              {/* Simple CLD visualization */}
+              <svg className="w-full h-full" viewBox="0 0 200 100">
+                {/* Nodes */}
+                <circle cx="30" cy="25" r="8" fill="hsl(var(--primary))" opacity="0.7" />
+                <circle cx="170" cy="25" r="8" fill="hsl(var(--success))" opacity="0.7" />
+                <circle cx="30" cy="75" r="8" fill="hsl(var(--warning))" opacity="0.7" />
+                <circle cx="170" cy="75" r="8" fill="hsl(var(--destructive))" opacity="0.7" />
+                <circle cx="100" cy="50" r="10" fill="hsl(var(--primary))" />
+                
+                {/* Connections */}
+                <motion.path
+                  d="M38 25 L92 50"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="2"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1.5, delay: 0.2 }}
+                />
+                <motion.path
+                  d="M108 50 L162 25"
+                  stroke="hsl(var(--success))"
+                  strokeWidth="2"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1.5, delay: 0.4 }}
+                />
+                <motion.path
+                  d="M38 75 L92 50"
+                  stroke="hsl(var(--warning))"
+                  strokeWidth="2"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1.5, delay: 0.6 }}
+                />
+                <motion.path
+                  d="M108 50 L162 75"
+                  stroke="hsl(var(--destructive))"
+                  strokeWidth="2"
+                  fill="none"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1.5, delay: 0.8 }}
+                />
+                
+                {/* Arrow heads */}
+                <polygon points="160,23 165,25 160,27" fill="hsl(var(--success))" />
+                <polygon points="160,73 165,75 160,77" fill="hsl(var(--destructive))" />
+              </svg>
+              <div className="absolute bottom-1 right-2">
+                <p className="text-xs text-muted-foreground">Live CLD</p>
               </div>
             </div>
           </div>
@@ -225,16 +275,87 @@ export function ContextSidebar({ selectedItem }: ContextSidebarProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="h-24 bg-muted/20 rounded-lg flex items-center justify-center"
+                className="h-24 bg-muted/20 rounded-lg p-3"
               >
-                <div className="text-center">
-                  <TrendingUp className="h-6 w-6 text-muted-foreground mx-auto mb-1" />
-                  <p className="text-xs text-muted-foreground">
-                    {activeChart === 'baseline' && 'Baseline vs Current'}
-                    {activeChart === 'impact' && 'Sub-Lever Impact'}
-                    {activeChart === 'pulse' && 'Community Sentiment'}
-                  </p>
-                </div>
+                {activeChart === 'baseline' && (
+                  <svg className="w-full h-full" viewBox="0 0 160 60">
+                    {/* Baseline area chart */}
+                    <defs>
+                      <linearGradient id="baseline-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.1" />
+                      </linearGradient>
+                    </defs>
+                    
+                    {/* Grid lines */}
+                    <line x1="0" y1="15" x2="160" y2="15" stroke="hsl(var(--border))" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="0" y1="30" x2="160" y2="30" stroke="hsl(var(--border))" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="0" y1="45" x2="160" y2="45" stroke="hsl(var(--border))" strokeWidth="0.5" opacity="0.5" />
+                    
+                    {/* Baseline area */}
+                    <motion.path
+                      d="M0 45 L20 40 L40 35 L60 38 L80 32 L100 30 L120 28 L140 25 L160 22 L160 60 L0 60 Z"
+                      fill="url(#baseline-gradient)"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 1 }}
+                    />
+                    
+                    {/* Current line */}
+                    <motion.path
+                      d="M0 35 L20 32 L40 28 L60 30 L80 25 L100 23 L120 20 L140 18 L160 15"
+                      stroke="hsl(var(--success))"
+                      strokeWidth="2"
+                      fill="none"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 1.5, delay: 0.5 }}
+                    />
+                    
+                    <text x="5" y="55" className="text-xs" fill="hsl(var(--muted-foreground))">Baseline</text>
+                    <text x="120" y="12" className="text-xs" fill="hsl(var(--success))">Current</text>
+                  </svg>
+                )}
+                
+                {activeChart === 'impact' && (
+                  <svg className="w-full h-full" viewBox="0 0 160 60">
+                    {/* Impact bar chart */}
+                    <rect x="10" y="40" width="20" height="15" fill="hsl(var(--primary))" opacity="0.7" />
+                    <rect x="40" y="25" width="20" height="30" fill="hsl(var(--success))" opacity="0.7" />
+                    <rect x="70" y="35" width="20" height="20" fill="hsl(var(--warning))" opacity="0.7" />
+                    <rect x="100" y="15" width="20" height="40" fill="hsl(var(--destructive))" opacity="0.7" />
+                    <rect x="130" y="30" width="20" height="25" fill="hsl(var(--primary))" opacity="0.7" />
+                    
+                    <text x="15" y="12" className="text-xs" fill="hsl(var(--muted-foreground))">L1</text>
+                    <text x="45" y="12" className="text-xs" fill="hsl(var(--muted-foreground))">L2</text>
+                    <text x="75" y="12" className="text-xs" fill="hsl(var(--muted-foreground))">L3</text>
+                    <text x="105" y="12" className="text-xs" fill="hsl(var(--muted-foreground))">L4</text>
+                    <text x="135" y="12" className="text-xs" fill="hsl(var(--muted-foreground))">L5</text>
+                  </svg>
+                )}
+                
+                {activeChart === 'pulse' && type === 'micro' && (
+                  <svg className="w-full h-full" viewBox="0 0 160 60">
+                    {/* Pulse sentiment chart */}
+                    <motion.path
+                      d="M0 30 Q20 20, 40 25 T80 20 Q100 15, 120 18 T160 15"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="2"
+                      fill="none"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 2 }}
+                    />
+                    
+                    {/* Sentiment indicators */}
+                    <circle cx="40" cy="25" r="3" fill="hsl(var(--success))" />
+                    <circle cx="80" cy="20" r="3" fill="hsl(var(--warning))" />
+                    <circle cx="120" cy="18" r="3" fill="hsl(var(--success))" />
+                    
+                    <text x="5" y="55" className="text-xs" fill="hsl(var(--muted-foreground))">Sentiment</text>
+                    <text x="120" y="55" className="text-xs" fill="hsl(var(--muted-foreground))">94%</text>
+                  </svg>
+                )}
               </motion.div>
             </AnimatePresence>
           </div>
