@@ -306,11 +306,11 @@ export const ActZone: React.FC = () => {
   return (
     <div className="h-full relative overflow-hidden">
       {/* Full-Bleed Backdrop */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
         {/* Animated Network Mesh */}
         <div className="absolute inset-0 opacity-5">
           <motion.div
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-teal-500/20 to-blue-500/20 blur-3xl"
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-primary/30 blur-3xl"
             animate={{ 
               x: [0, 100, 0],
               y: [0, -50, 0],
@@ -319,7 +319,7 @@ export const ActZone: React.FC = () => {
             transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
-            className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-r from-purple-500/20 to-teal-500/20 blur-3xl"
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-secondary/30 blur-3xl"
             animate={{ 
               x: [0, -60, 0],
               y: [0, 30, 0],
@@ -333,36 +333,36 @@ export const ActZone: React.FC = () => {
       <div className="relative z-10 h-full flex flex-col">
         {/* Hero Ribbon */}
         <motion.div
-          className="w-full bg-white/5 backdrop-blur-xl h-20 flex items-center justify-between px-8 shadow-lg border-b border-white/10"
+          className="w-full glass h-20 flex items-center justify-between px-8 shadow-elegant border-b border-border-subtle"
           initial={{ y: -80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
         >
           <div className="flex items-center space-x-4">
             <span className="text-3xl">🍲</span>
-            <span className="text-2xl font-semibold text-white">
+            <span className="text-2xl font-semibold text-foreground">
               {bundleItems.length} interventions
             </span>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5 text-gray-400" />
-            <span className="text-base text-white">Due in 6 weeks</span>
+            <Calendar className="w-5 h-5 text-foreground-subtle" />
+            <span className="text-base text-foreground">Due in 6 weeks</span>
           </div>
 
           <div className="flex items-center space-x-3">
             {mockRoles.map((role) => (
               <div key={role.id} className="flex items-center space-x-2">
-                <div className={`w-10 h-10 ${role.color} rounded-full flex items-center justify-center text-white font-medium`}>
+                <div className={`w-10 h-10 ${role.color} rounded-full flex items-center justify-center text-foreground font-medium`}>
                   {role.avatar}
                 </div>
-                <span className="text-sm text-gray-300">{role.title}</span>
+                <span className="text-sm text-foreground-subtle">{role.title}</span>
               </div>
             ))}
             <button className="w-10 h-10 border-2 border-dashed border-gray-400 rounded-full flex items-center justify-center hover:border-teal-400 transition-colors">
-              <Plus className="w-4 h-4 text-gray-400" />
+              <Plus className="w-4 h-4 text-foreground-subtle" />
             </button>
-            <button className="text-teal-300 underline text-sm hover:text-teal-200 transition-colors ml-2">
+            <button className="text-accent underline text-sm hover:text-accent/80 transition-colors ml-2">
               Edit Roles
             </button>
           </div>

@@ -116,14 +116,14 @@ export const EnhancedHeader: React.FC = () => {
             transition={{ delay: 0.1 }}
           >
             <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-all">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 shadow-lg shadow-teal-500/20 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">R</span>
+              <div className="w-8 h-8 rounded-xl bg-gradient-primary shadow-elegant flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm">R</span>
               </div>
               <div className="hidden md:block">
-                <div className="font-bold text-white text-base tracking-tight">
+                <div className="font-bold text-foreground text-base tracking-tight">
                   RGS {isUltimateWorkspace ? 'Ultimate' : 'MVUI'}
                 </div>
-                <div className="text-xs text-gray-300">
+                <div className="text-xs text-foreground-subtle">
                   {isUltimateWorkspace ? 'Governance OS' : 'Multi-Value UI'}
                 </div>
               </div>
@@ -132,14 +132,14 @@ export const EnhancedHeader: React.FC = () => {
             {/* Task Selector for Ultimate Workspace */}
             {isUltimateWorkspace && activeTask && myTasks.length > 1 && (
               <Select value={activeTask.id}>
-                <SelectTrigger className="w-40 md:w-48 bg-gray-800/60 border-white/20 text-white backdrop-blur-md">
+                <SelectTrigger className="w-40 md:w-48 glass border-border-subtle text-foreground backdrop-blur-md">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-900/95 backdrop-blur-xl border-white/10">
+                <SelectContent className="glass-secondary backdrop-blur-xl border-border-subtle">
                   {myTasks.map((task) => (
-                    <SelectItem key={task.id} value={task.id} className="text-white hover:bg-gray-800/40">
+                    <SelectItem key={task.id} value={task.id} className="text-foreground hover:bg-glass-accent">
                       <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs bg-gray-700/50 text-gray-300 border-white/10">
+                        <Badge variant="secondary" className="text-xs glass text-foreground-subtle border-border-subtle">
                           {task.zone}
                         </Badge>
                         <span className="truncate">{task.title}</span>
@@ -153,7 +153,7 @@ export const EnhancedHeader: React.FC = () => {
 
           {/* Desktop Navigation */}
           <motion.nav 
-            className="hidden lg:flex items-center bg-gray-800/40 backdrop-blur-md rounded-2xl p-1 border border-white/10 shadow-2xl justify-center min-w-fit"
+            className="hidden lg:flex items-center glass backdrop-blur-md rounded-2xl p-1 border border-border-subtle shadow-elegant justify-center min-w-fit"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -171,8 +171,8 @@ export const EnhancedHeader: React.FC = () => {
                   onClick={() => !isUltimateWorkspace && handleZoneChange(item.id as Zone)}
                   className={`relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                     isActive
-                      ? 'text-white shadow-lg'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/40'
+                      ? 'text-foreground shadow-elegant'
+                      : 'text-foreground-subtle hover:text-foreground hover:bg-glass-accent'
                   }`}
                   title={item.description}
                 >
@@ -186,7 +186,7 @@ export const EnhancedHeader: React.FC = () => {
                   <Icon className="w-4 h-4 relative z-10" />
                   <span className="relative z-10 whitespace-nowrap">{item.label}</span>
                   {item.badge && (
-                    <Badge variant="secondary" className="relative z-10 text-xs ml-1 bg-gray-700/50 text-gray-300 border-white/10">
+                    <Badge variant="secondary" className="relative z-10 text-xs ml-1 glass text-foreground-subtle border-border-subtle">
                       {item.badge}
                     </Badge>
                   )}
@@ -226,7 +226,7 @@ export const EnhancedHeader: React.FC = () => {
 
             {/* Task Count Badge for Ultimate Workspace */}
             {isUltimateWorkspace && (location.pathname === '/workspace' || location.pathname === '/dashboard') && myTasks.length > 0 && (
-              <Badge variant="secondary" className="bg-gray-800/60 text-gray-300 border-white/10 hidden sm:flex">
+              <Badge variant="secondary" className="glass text-foreground-subtle border-border-subtle hidden sm:flex">
                 {myTasks.length} task{myTasks.length !== 1 ? 's' : ''}
               </Badge>
             )}
@@ -243,8 +243,8 @@ export const EnhancedHeader: React.FC = () => {
               onClick={toggleWorkspace}
               className={`border-white/20 backdrop-blur-md transition-all duration-200 ${
                 isUltimateWorkspace
-                  ? 'bg-teal-500 text-white border-teal-400 shadow-lg shadow-teal-500/20 hover:bg-teal-400'
-                  : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 border-white/10'
+                  ? 'bg-accent text-accent-foreground border-accent shadow-elegant hover:bg-accent/90'
+                  : 'glass text-foreground-subtle hover:bg-glass-accent border-border-subtle'
               }`}
             >
               <Briefcase className="w-4 h-4 md:mr-2" />
@@ -254,12 +254,12 @@ export const EnhancedHeader: React.FC = () => {
             </Button>
 
             {/* Role Badge */}
-            <div className="hidden xl:block bg-gray-800/60 backdrop-blur-md rounded-2xl px-3 py-1.5 border border-white/10">
-              <span className="text-xs font-medium text-gray-300">Champion</span>
+            <div className="hidden xl:block glass backdrop-blur-md rounded-2xl px-3 py-1.5 border border-border-subtle">
+              <span className="text-xs font-medium text-foreground-subtle">Champion</span>
             </div>
             
             {/* User Profile */}
-            <Button variant="ghost" size="sm" className="p-2 hover:bg-gray-700/40 transition-all text-gray-300 hover:text-white">
+            <Button variant="ghost" size="sm" className="p-2 hover:bg-glass-accent transition-all text-foreground-subtle hover:text-foreground">
               <User className="w-4 h-4" />
             </Button>
 

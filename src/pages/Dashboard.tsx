@@ -279,7 +279,7 @@ export const Dashboard: React.FC = () => {
             className="flex justify-center mb-6"
           >
             <div className="flex items-center gap-4">
-              <Trophy className="h-16 w-16 text-amber-400" />
+              <Trophy className="h-16 w-16 text-warning" />
               <Star className="h-12 w-12 text-primary animate-pulse" />
               <Award className="h-14 w-14 text-accent" />
             </div>

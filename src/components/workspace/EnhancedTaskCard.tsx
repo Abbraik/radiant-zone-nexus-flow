@@ -22,7 +22,7 @@ const EnhancedTaskCard: React.FC<EnhancedTaskCardProps> = ({
   const { openTeamsChat } = useTeams();
 
   const getDueDateColor = (dueDate: Date | undefined) => {
-    if (!dueDate) return 'text-gray-400';
+    if (!dueDate) return 'text-muted-foreground';
     const daysUntilDue = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     if (daysUntilDue <= 1) return 'text-red-400';
     if (daysUntilDue <= 3) return 'text-orange-400';
@@ -45,7 +45,7 @@ const EnhancedTaskCard: React.FC<EnhancedTaskCardProps> = ({
       'monitor': 'bg-orange-500/20 text-orange-300 border-orange-400/30',
       'innovate-learn': 'bg-green-500/20 text-green-300 border-green-400/30'
     };
-    return zoneColors[zone] || 'bg-gray-500/20 text-gray-300 border-gray-400/30';
+    return zoneColors[zone] || 'bg-muted/20 text-muted-foreground border-border-subtle';
   };
 
   const handleTeamsClick = () => {
@@ -63,7 +63,7 @@ const EnhancedTaskCard: React.FC<EnhancedTaskCardProps> = ({
         <div className="flex-1 space-y-3">
           {/* Title and Status */}
           <div className="flex items-start justify-between">
-            <h3 className="text-lg font-semibold text-white">{task.title}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{task.title}</h3>
             <div className="flex items-center gap-1 px-2 py-1 bg-teal-500/20 rounded-full border border-teal-400/30">
               <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
               <span className="text-xs text-teal-300 font-medium">Active</span>
@@ -71,7 +71,7 @@ const EnhancedTaskCard: React.FC<EnhancedTaskCardProps> = ({
           </div>
 
           {/* Description */}
-          <p className="text-gray-300 text-sm leading-relaxed">
+          <p className="text-foreground-subtle text-sm leading-relaxed">
             {task.description}
           </p>
 
@@ -112,7 +112,7 @@ const EnhancedTaskCard: React.FC<EnhancedTaskCardProps> = ({
             onClick={handleTeamsClick}
             variant="outline"
             size="sm"
-            className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:border-white/30 flex items-center gap-2"
+            className="glass text-foreground border-border-subtle hover:bg-glass-accent hover:border-border-accent flex items-center gap-2"
           >
             <MessageSquare className="h-4 w-4" />
             <Users className="h-4 w-4" />
@@ -127,8 +127,8 @@ const EnhancedTaskCard: React.FC<EnhancedTaskCardProps> = ({
           className={cn(
             'font-medium',
             task.type === 'publish_bundle' 
-              ? 'bg-primary hover:bg-primary-hover text-white' 
-              : 'bg-teal-500 hover:bg-teal-600 text-white'
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
+              : 'bg-accent hover:bg-accent/90 text-accent-foreground'
           )}
         >
           <CheckCircle className="h-4 w-4 mr-2" />

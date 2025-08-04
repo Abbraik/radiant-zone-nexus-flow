@@ -147,8 +147,8 @@ const SortableInterventionCard: React.FC<{
       {...attributes}
       layout
       className={`
-        bg-white/10 rounded-lg p-3 flex items-center justify-between cursor-move
-        border border-white/20 hover:bg-white/15 transition-all duration-200
+        glass rounded-lg p-3 flex items-center justify-between cursor-move
+        border border-border-subtle hover:bg-glass-accent transition-all duration-200
         ${isDragging ? 'scale-105 shadow-xl' : ''}
       `}
       whileHover={{ scale: 1.01 }}
@@ -157,8 +157,8 @@ const SortableInterventionCard: React.FC<{
       <div className="flex items-center space-x-3">
         <span className="text-xl">{item.intervention.icon}</span>
         <div>
-          <div className="text-white font-medium">{item.intervention.name}</div>
-          <div className="text-gray-400 text-sm">{item.intervention.description}</div>
+          <div className="text-foreground font-medium">{item.intervention.name}</div>
+          <div className="text-foreground-subtle text-sm">{item.intervention.description}</div>
         </div>
       </div>
       
@@ -168,13 +168,13 @@ const SortableInterventionCard: React.FC<{
         </Badge>
         <button
           {...listeners}
-          className="p-1 hover:bg-white/20 rounded text-gray-400 hover:text-white transition-colors"
+          className="p-1 hover:bg-glass-accent rounded text-foreground-subtle hover:text-foreground transition-colors"
         >
           <GripVertical className="w-4 h-4" />
         </button>
         <button
           onClick={() => onRemove(item.id)}
-          className="p-1 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400 transition-colors"
+          className="p-1 hover:bg-destructive/20 rounded text-foreground-subtle hover:text-destructive transition-colors"
         >
           <X className="w-4 h-4" />
         </button>

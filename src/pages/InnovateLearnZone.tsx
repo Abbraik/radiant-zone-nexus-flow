@@ -106,13 +106,13 @@ export const InnovateLearnZone: React.FC = () => {
   return (
     <div className="h-full relative overflow-hidden">
       {/* Animated Backdrop */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
         {/* Data-stream particle effect */}
         <div className="absolute inset-0 opacity-10">
           {Array.from({ length: 20 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 bg-teal-400 rounded-full"
+              className="absolute w-1 h-1 bg-accent rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -136,26 +136,26 @@ export const InnovateLearnZone: React.FC = () => {
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Hero Carousel: Insight Feed */}
           <motion.div
-            className="max-w-4xl mx-auto p-4 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+            className="max-w-4xl mx-auto p-4 glass rounded-2xl border border-border-subtle shadow-elegant"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-white">Latest Insights</h2>
+                <h2 className="text-xl font-semibold text-foreground">Latest Insights</h2>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={prevInsight}
-                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                    className="w-8 h-8 glass rounded-full flex items-center justify-center hover:bg-glass-accent transition-colors"
                   >
-                    <ChevronLeft className="w-4 h-4 text-white" />
+                    <ChevronLeft className="w-4 h-4 text-foreground" />
                   </button>
                   <button
                     onClick={nextInsight}
-                    className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+                    className="w-8 h-8 glass rounded-full flex items-center justify-center hover:bg-glass-accent transition-colors"
                   >
-                    <ChevronRight className="w-4 h-4 text-white" />
+                    <ChevronRight className="w-4 h-4 text-foreground" />
                   </button>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export const InnovateLearnZone: React.FC = () => {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentInsight}
-                    className="absolute inset-0 bg-white/10 rounded-xl p-4 flex flex-col justify-between"
+                    className="absolute inset-0 glass rounded-xl p-4 flex flex-col justify-between"
                     initial={{ opacity: 0, x: 100 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -100 }}
@@ -172,19 +172,19 @@ export const InnovateLearnZone: React.FC = () => {
                     whileHover={{ y: -4, boxShadow: '0 8px 25px rgba(0,0,0,0.3)' }}
                   >
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
                         {mockInsights[currentInsight].title}
                       </h3>
-                      <p className="text-sm text-gray-300 line-clamp-2">
+                      <p className="text-sm text-foreground-subtle line-clamp-2">
                         {mockInsights[currentInsight].summary}
                       </p>
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         {mockInsights[currentInsight].timestamp}
                       </span>
-                      <button className="text-teal-400 underline text-sm flex items-center space-x-1 hover:text-teal-300 transition-colors">
+                      <button className="text-accent underline text-sm flex items-center space-x-1 hover:text-accent/80 transition-colors">
                         <span>Try Experiment</span>
                         <Play className="w-3 h-3" />
                       </button>
@@ -200,7 +200,7 @@ export const InnovateLearnZone: React.FC = () => {
                     key={index}
                     onClick={() => setCurrentInsight(index)}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentInsight ? 'bg-teal-400' : 'bg-white/30'
+                      index === currentInsight ? 'bg-accent' : 'bg-muted/50'
                     }`}
                   />
                 ))}
@@ -210,25 +210,25 @@ export const InnovateLearnZone: React.FC = () => {
 
           {/* Experiment Studio Panel */}
           <motion.div
-            className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl"
+            className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 glass rounded-2xl border border-border-subtle shadow-elegant"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             {/* Parameters Column */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-white">New Experiment</h3>
+              <h3 className="text-xl font-semibold text-foreground">New Experiment</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="text-gray-300 text-sm mb-2 block">Parameter X</label>
+                  <label className="text-foreground-subtle text-sm mb-2 block">Parameter X</label>
                   <Select value={paramX} onValueChange={setParamX}>
-                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectTrigger className="glass border-border-subtle text-foreground">
                       <SelectValue placeholder="Select parameter X" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectContent className="glass-secondary border-border-subtle">
                       {parameterOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value} className="text-white hover:bg-slate-700">
+                        <SelectItem key={option.value} value={option.value} className="text-foreground hover:bg-glass-accent">
                           {option.label}
                         </SelectItem>
                       ))}
@@ -237,14 +237,14 @@ export const InnovateLearnZone: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-gray-300 text-sm mb-2 block">Parameter Y</label>
+                  <label className="text-foreground-subtle text-sm mb-2 block">Parameter Y</label>
                   <Select value={paramY} onValueChange={setParamY}>
-                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectTrigger className="glass border-border-subtle text-foreground">
                       <SelectValue placeholder="Select parameter Y" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectContent className="glass-secondary border-border-subtle">
                       {parameterOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value} className="text-white hover:bg-slate-700">
+                        <SelectItem key={option.value} value={option.value} className="text-foreground hover:bg-glass-accent">
                           {option.label}
                         </SelectItem>
                       ))}
@@ -254,9 +254,9 @@ export const InnovateLearnZone: React.FC = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-gray-300 text-sm">Intensity</label>
+                    <label className="text-foreground-subtle text-sm">Intensity</label>
                     <motion.div
-                      className="bg-teal-500 text-white rounded-full w-8 h-6 flex items-center justify-center text-xs font-medium"
+                      className="bg-accent text-foreground rounded-full w-8 h-6 flex items-center justify-center text-xs font-medium"
                       key={intensity[0]}
                       initial={{ scale: 0.8 }}
                       animate={{ scale: [0.8, 1.2, 1] }}
@@ -279,14 +279,14 @@ export const InnovateLearnZone: React.FC = () => {
                 <div className="space-y-2">
                   <Button
                     onClick={handleRunSimulation}
-                    className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-full py-3 px-6"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-full py-3 px-6"
                   >
                     Run Simulation
                   </Button>
                   
                   <button
                     onClick={handleShockRehearsal}
-                    className="w-full text-teal-300 underline text-sm hover:text-teal-200 transition-colors flex items-center justify-center space-x-1"
+                    className="w-full text-accent underline text-sm hover:text-accent/80 transition-colors flex items-center justify-center space-x-1"
                   >
                     <span>Run Shock-Rehearsal</span>
                     <Play className="w-3 h-3" />
@@ -297,20 +297,20 @@ export const InnovateLearnZone: React.FC = () => {
 
             {/* Live Preview Column */}
             <div className="lg:col-span-2 space-y-4">
-              <h3 className="text-xl font-semibold text-white">Live Preview</h3>
+              <h3 className="text-xl font-semibold text-foreground">Live Preview</h3>
               
               <motion.div
-                className="w-full h-48 bg-white/10 rounded-lg flex items-center justify-center relative"
+                className="w-full h-48 glass rounded-lg flex items-center justify-center relative"
                 whileHover={{ scale: 1.02 }}
               >
                 {lastResult !== null ? (
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-white mb-2">
+                    <div className="text-4xl font-bold text-foreground mb-2">
                       {lastResult > 0 ? '+' : ''}{lastResult.toFixed(1)}%
                     </div>
-                    <div className="text-gray-300">Performance Change</div>
+                    <div className="text-foreground-subtle">Performance Change</div>
                     <motion.div
-                      className="absolute top-4 right-4 bg-teal-500 text-white rounded-full px-3 py-1 text-sm"
+                      className="absolute top-4 right-4 bg-accent text-accent-foreground rounded-full px-3 py-1 text-sm"
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
@@ -318,7 +318,7 @@ export const InnovateLearnZone: React.FC = () => {
                     </motion.div>
                   </div>
                 ) : (
-                  <div className="text-center text-gray-400">
+                  <div className="text-center text-muted-foreground">
                     <div className="text-6xl mb-2">📊</div>
                     <div>Run a simulation to see results</div>
                   </div>
@@ -332,7 +332,7 @@ export const InnovateLearnZone: React.FC = () => {
             <div className="flex justify-end">
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-teal-300 underline text-sm hover:text-teal-200 transition-colors"
+                className="text-accent underline text-sm hover:text-accent/80 transition-colors"
               >
                 Advanced Options
               </button>
@@ -347,61 +347,61 @@ export const InnovateLearnZone: React.FC = () => {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden mt-4"
                 >
-                  <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-6 space-y-6">
+                  <div className="glass rounded-xl border border-border-subtle p-6 space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-medium text-white">Advanced Options</h3>
+                      <h3 className="text-lg font-medium text-foreground">Advanced Options</h3>
                       <motion.div
                         animate={{ rotate: showAdvanced ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                        <ChevronDown className="w-5 h-5 text-foreground-subtle" />
                       </motion.div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-3">
-                        <h4 className="text-white font-medium">ORS Export Options</h4>
+                        <h4 className="text-foreground font-medium">ORS Export Options</h4>
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
                             <Switch />
-                            <span className="text-gray-300 text-sm">Loop Data</span>
+                            <span className="text-foreground-subtle text-sm">Loop Data</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Switch />
-                            <span className="text-gray-300 text-sm">Simulation Log</span>
+                            <span className="text-foreground-subtle text-sm">Simulation Log</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Switch />
-                            <span className="text-gray-300 text-sm">Metrics CSV</span>
+                            <span className="text-foreground-subtle text-sm">Metrics CSV</span>
                           </div>
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <h4 className="text-white font-medium">Knowledge Graph</h4>
+                        <h4 className="text-foreground font-medium">Knowledge Graph</h4>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-300">Enable 3D Graph</span>
+                          <span className="text-foreground-subtle">Enable 3D Graph</span>
                           <Switch />
                         </div>
-                        <Button variant="outline" className="border-white/30 text-white w-full">
+                        <Button variant="outline" className="border-border-subtle text-foreground w-full">
                           <Settings className="w-4 h-4 mr-2" />
                           Open Graph
                         </Button>
                       </div>
 
                       <div className="space-y-3">
-                        <h4 className="text-white font-medium">Template Manager</h4>
+                        <h4 className="text-foreground font-medium">Template Manager</h4>
                         <Select>
-                          <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                          <SelectTrigger className="glass border-border-subtle text-foreground">
                             <SelectValue placeholder="Load template" />
                           </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-600">
-                            <SelectItem value="default" className="text-white">Default Setup</SelectItem>
-                            <SelectItem value="stress" className="text-white">Stress Test</SelectItem>
-                            <SelectItem value="optimization" className="text-white">Optimization Run</SelectItem>
+                          <SelectContent className="glass-secondary border-border-subtle">
+                            <SelectItem value="default" className="text-foreground">Default Setup</SelectItem>
+                            <SelectItem value="stress" className="text-foreground">Stress Test</SelectItem>
+                            <SelectItem value="optimization" className="text-foreground">Optimization Run</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Button variant="outline" className="border-white/30 text-white w-full">
+                        <Button variant="outline" className="border-border-subtle text-foreground w-full">
                           <Save className="w-4 h-4 mr-2" />
                           Save as Template
                         </Button>
