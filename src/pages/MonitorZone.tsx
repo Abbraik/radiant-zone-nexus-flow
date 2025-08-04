@@ -10,6 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { MacroLoopPanel } from '@/components/monitor/panels/MacroLoopPanel';
 import { MesoLoopPanel } from '@/components/monitor/panels/MesoLoopPanel';
 import { MicroLoopPanel } from '@/components/monitor/panels/MicroLoopPanel';
@@ -107,61 +109,73 @@ export default function MonitorZone() {
         </div>
       </motion.header>
 
-      {/* Main Dashboard Grid */}
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Macro Loop Panel - 40% */}
-        <motion.div 
-          className="w-[40%] p-4"
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <MacroLoopPanel
-            searchQuery={searchQuery}
-            onLoopSelect={(id, data) => handleItemSelect('macro', id, data)}
-            selectedLoopId={selectedItem?.type === 'macro' ? selectedItem.id : null}
-          />
-        </motion.div>
+      {/* Main Dashboard with Resizable Layout */}
+      <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-4rem)]">
+        {/* Main Content Area */}
+        <ResizablePanel defaultSize={75} minSize={50} maxSize={85}>
+          <div className="flex h-full">
+            {/* Macro Loop Panel - 40% of main content */}
+            <motion.div 
+              className="w-[47%] p-4"
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+            >
+              <MacroLoopPanel
+                searchQuery={searchQuery}
+                onLoopSelect={(id, data) => handleItemSelect('macro', id, data)}
+                selectedLoopId={selectedItem?.type === 'macro' ? selectedItem.id : null}
+              />
+            </motion.div>
 
-        {/* Right Side - 45% */}
-        <div className="w-[45%] flex flex-col p-4 space-y-4">
-          {/* Meso Loop Panel - Top Half */}
+            {/* Right Side - 53% of main content */}
+            <div className="w-[53%] flex flex-col p-4 space-y-4">
+              {/* Meso Loop Panel - Top Half */}
+              <motion.div 
+                className="h-1/2"
+                initial={{ y: -30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <MesoLoopPanel
+                  onLoopSelect={(id, data) => handleItemSelect('meso', id, data)}
+                  selectedLoopId={selectedItem?.type === 'meso' ? selectedItem.id : null}
+                />
+              </motion.div>
+
+              {/* Micro Loop + Community Pulse Panel - Bottom Half */}
+              <motion.div 
+                className="h-1/2"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <MicroLoopPanel
+                  onLoopSelect={(id, data) => handleItemSelect('micro', id, data)}
+                  selectedLoopId={selectedItem?.type === 'micro' ? selectedItem.id : null}
+                />
+              </motion.div>
+            </div>
+          </div>
+        </ResizablePanel>
+
+        {/* Resizable Handle */}
+        <ResizableHandle withHandle className="bg-border/50 hover:bg-border data-[resize-handle-state=hover]:bg-primary/20 transition-colors" />
+
+        {/* Context Sidebar - Resizable */}
+        <ResizablePanel defaultSize={25} minSize={15} maxSize={50}>
           <motion.div 
-            className="h-1/2"
-            initial={{ y: -30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            className="h-full border-l border-border/50 bg-background/30"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <MesoLoopPanel
-              onLoopSelect={(id, data) => handleItemSelect('meso', id, data)}
-              selectedLoopId={selectedItem?.type === 'meso' ? selectedItem.id : null}
-            />
+            <ScrollArea className="h-full">
+              <ContextSidebar selectedItem={selectedItem} />
+            </ScrollArea>
           </motion.div>
-
-          {/* Micro Loop + Community Pulse Panel - Bottom Half */}
-          <motion.div 
-            className="h-1/2"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <MicroLoopPanel
-              onLoopSelect={(id, data) => handleItemSelect('micro', id, data)}
-              selectedLoopId={selectedItem?.type === 'micro' ? selectedItem.id : null}
-            />
-          </motion.div>
-        </div>
-
-        {/* Context Sidebar - 15% */}
-        <motion.div 
-          className="w-[15%] border-l border-border/50"
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <ContextSidebar selectedItem={selectedItem} />
-        </motion.div>
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
