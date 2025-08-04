@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Search, Bell, User, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Bell, User, ChevronDown, Settings, Download, Share, Layout, Filter, AlertTriangle, Eye, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,6 +17,11 @@ import { MacroLoopPanel } from '@/components/monitor/panels/MacroLoopPanel';
 import { MesoLoopPanel } from '@/components/monitor/panels/MesoLoopPanel';
 import { MicroLoopPanel } from '@/components/monitor/panels/MicroLoopPanel';
 import { ContextSidebar } from '@/components/monitor/panels/ContextSidebar';
+import { AlertSystem } from '@/components/monitor/AlertSystem';
+import { DashboardCustomizer } from '@/components/monitor/DashboardCustomizer';
+import { ExportSharePanel } from '@/components/monitor/ExportSharePanel';
+import { GlobalSearchPanel } from '@/components/monitor/GlobalSearchPanel';
+import { LearningModeToggle } from '@/components/monitor/LearningModeToggle';
 
 type UserRole = 'C-Suite' | 'Ops Manager' | 'Analyst';
 
@@ -30,9 +36,95 @@ export default function MonitorZone() {
   const [userRole, setUserRole] = useState<UserRole>('Ops Manager');
   const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
   const [alertCount] = useState(7);
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [dashboardLayout, setDashboardLayout] = useState('grid');
+  const [isCustomizeMode, setIsCustomizeMode] = useState(false);
+  const [macroLoopFilters, setMacroLoopFilters] = useState({ 
+    type: 'all' as 'all' | 'reinforcing' | 'balancing',
+    showMiniCLD: false 
+  });
 
   const handleItemSelect = (type: 'macro' | 'meso' | 'micro', id: string, data: any) => {
     setSelectedItem({ type, id, data });
+  };
+
+  const handleGlobalSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleSearchResultSelect = (result: any) => {
+    // Navigate to the specific loop/bundle/task
+    handleItemSelect(result.type, result.id, result);
+  };
+
+  const handleAlertAction = (action: string, alertId?: string) => {
+    switch (action) {
+      case 'acknowledge':
+        console.log('Acknowledging alert:', alertId);
+        break;
+      case 'jumpTo':
+        console.log('Jumping to alert context:', alertId);
+        break;
+      case 'spawnSprint':
+        console.log('Spawning sprint for alert:', alertId);
+        break;
+    }
+  };
+
+  const handleExportShare = (action: string, options?: any) => {
+    switch (action) {
+      case 'export':
+        console.log('Exporting dashboard:', options);
+        break;
+      case 'share':
+        console.log('Sharing dashboard:', options);
+        break;
+    }
+  };
+
+  const handleMacroLoopAction = (action: string, loopId?: string, data?: any) => {
+    switch (action) {
+      case 'filter':
+        setMacroLoopFilters(prev => ({ ...prev, ...data }));
+        break;
+      case 'hoverCLD':
+        console.log('Show mini-CLD for:', loopId);
+        break;
+      case 'focus':
+        handleItemSelect('macro', loopId!, data);
+        break;
+    }
+  };
+
+  const handleMesoLoopAction = (action: string, loopId?: string, data?: any) => {
+    switch (action) {
+      case 'select':
+        handleItemSelect('meso', loopId!, data);
+        break;
+      case 'bulkAction':
+        console.log('Performing bulk action:', action, data);
+        break;
+    }
+  };
+
+  const handleMicroLoopAction = (action: string, loopId?: string, data?: any) => {
+    switch (action) {
+      case 'reviewGauge':
+        console.log('Reviewing micro-gauge:', loopId);
+        break;
+      case 'viewFeedback':
+        console.log('Viewing feedback stream:', loopId);
+        break;
+      case 'spawnTask':
+        console.log('Spawning corrective task:', loopId, data);
+        break;
+      case 'adjustParameters':
+        console.log('Adjusting parameters:', loopId, data);
+        break;
+      case 'acknowledgeAlert':
+        console.log('Acknowledging micro-loop alert:', loopId);
+        break;
+    }
   };
 
   return (
@@ -48,19 +140,24 @@ export default function MonitorZone() {
           <div className="flex items-center space-x-6">
             <h1 className="text-xl font-semibold text-foreground">Monitor Zone</h1>
             
-            {/* Global Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search loops, bundles, or tasks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-80 glass-secondary border-border/50"
-              />
-            </div>
+            {/* Enhanced Global Search */}
+            <GlobalSearchPanel
+              query={searchQuery}
+              onQueryChange={handleGlobalSearch}
+              onResultSelect={handleSearchResultSelect}
+            />
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Dashboard Customization */}
+            <DashboardCustomizer
+              currentLayout={dashboardLayout}
+              onLayoutChange={setDashboardLayout}
+            />
+
+            {/* Export & Share */}
+            <ExportSharePanel />
+
             {/* Role Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -83,7 +180,11 @@ export default function MonitorZone() {
             </DropdownMenu>
 
             {/* Alerts */}
-            <Button variant="outline" className="relative glass-secondary border-border/50">
+            <Button 
+              variant="outline" 
+              className="relative glass-secondary border-border/50"
+              onClick={() => setShowAlerts(!showAlerts)}
+            >
               <Bell className="h-4 w-4" />
               {alertCount > 0 && (
                 <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-destructive">
@@ -102,12 +203,39 @@ export default function MonitorZone() {
               <DropdownMenuContent className="glass border-border/50">
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Customize Dashboard</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setIsCustomizeMode(!isCustomizeMode)}>
+                  <Layout className="h-4 w-4 mr-2" />
+                  Dashboard Layout
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Save View Preset
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
       </motion.header>
+
+      {/* Alert System Overlay */}
+      <AnimatePresence>
+        {showAlerts && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-16 left-0 right-0 z-40 p-4"
+          >
+            <AlertSystem />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Learning Mode Panel */}
+      <div className="absolute top-20 right-4 z-30 w-80">
+        <LearningModeToggle />
+      </div>
 
       {/* Main Dashboard with Resizable Layout */}
       <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-4rem)]">
@@ -123,7 +251,7 @@ export default function MonitorZone() {
             >
               <MacroLoopPanel
                 searchQuery={searchQuery}
-                onLoopSelect={(id, data) => handleItemSelect('macro', id, data)}
+                onLoopSelect={(id, data) => handleMacroLoopAction('focus', id, data)}
                 selectedLoopId={selectedItem?.type === 'macro' ? selectedItem.id : null}
               />
             </motion.div>
@@ -138,7 +266,7 @@ export default function MonitorZone() {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <MesoLoopPanel
-                  onLoopSelect={(id, data) => handleItemSelect('meso', id, data)}
+                  onLoopSelect={(id, data) => handleMesoLoopAction('select', id, data)}
                   selectedLoopId={selectedItem?.type === 'meso' ? selectedItem.id : null}
                 />
               </motion.div>
@@ -151,7 +279,7 @@ export default function MonitorZone() {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 <MicroLoopPanel
-                  onLoopSelect={(id, data) => handleItemSelect('micro', id, data)}
+                  onLoopSelect={(id, data) => handleMicroLoopAction('reviewGauge', id, data)}
                   selectedLoopId={selectedItem?.type === 'micro' ? selectedItem.id : null}
                 />
               </motion.div>
