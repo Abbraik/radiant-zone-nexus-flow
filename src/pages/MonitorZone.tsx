@@ -149,6 +149,9 @@ export default function MonitorZone() {
           </div>
 
           <div className="flex items-center space-x-4">
+            {/* Learning Mode Toggle */}
+            <LearningModeToggle />
+
             {/* Dashboard Customization */}
             <DashboardCustomizer
               currentLayout={dashboardLayout}
@@ -232,10 +235,6 @@ export default function MonitorZone() {
         )}
       </AnimatePresence>
 
-      {/* Learning Mode Panel */}
-      <div className="absolute top-20 right-4 z-30 w-80">
-        <LearningModeToggle />
-      </div>
 
       {/* Main Dashboard with Resizable Layout */}
       <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-4rem)]">

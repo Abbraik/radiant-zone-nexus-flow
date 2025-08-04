@@ -126,40 +126,25 @@ export function LearningModeToggle() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Learning Mode Toggle */}
-      <Card className="glass border-border/50">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center space-x-2">
-              <GraduationCap className="h-5 w-5 text-primary" />
-              <span>Learning Mode</span>
-            </CardTitle>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-muted-foreground">
-                {isLearningMode ? 'Active' : 'Inactive'}
-              </span>
-              <Switch
-                checked={isLearningMode}
-                onCheckedChange={setIsLearningMode}
-              />
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Overlay historical insights and recommended interventions based on past performance
-          </p>
-        </CardHeader>
-      </Card>
+    <div className="flex items-center space-x-2">
+      {/* Compact Learning Mode Toggle for Header */}
+      <div className="flex items-center space-x-2">
+        <GraduationCap className="h-4 w-4 text-primary" />
+        <span className="text-sm text-muted-foreground">Learn</span>
+        <Switch
+          checked={isLearningMode}
+          onCheckedChange={setIsLearningMode}
+        />
+      </div>
 
-      {/* Learning Insights Panel */}
-      <AnimatePresence>
-        {isLearningMode && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+      {/* Learning Insights Modal */}
+      {isLearningMode && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          className="absolute top-full right-0 mt-2 w-96 z-50"
+        >
             <Card className="glass border-border/50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center justify-between">
@@ -286,9 +271,8 @@ export function LearningModeToggle() {
                 </ScrollArea>
               </CardContent>
             </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+      )}
     </div>
   );
 }
