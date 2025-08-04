@@ -43,6 +43,12 @@ export default function MonitorZone() {
     type: 'all' as 'all' | 'reinforcing' | 'balancing',
     showMiniCLD: false 
   });
+  const [panelVisibility, setPanelVisibility] = useState({
+    'macro-panel': true,
+    'meso-panel': true,
+    'micro-panel': true,
+    'alerts-panel': true
+  });
 
   const handleItemSelect = (type: 'macro' | 'meso' | 'micro', id: string, data: any) => {
     setSelectedItem({ type, id, data });
@@ -127,6 +133,30 @@ export default function MonitorZone() {
     }
   };
 
+  const handlePanelToggle = (panelId: string) => {
+    setPanelVisibility(prev => ({
+      ...prev,
+      [panelId]: !prev[panelId]
+    }));
+  };
+
+  const handleSavePreset = (name: string, layout: any) => {
+    console.log('Saving preset:', name, layout);
+    // Here you could save to localStorage or send to backend
+    localStorage.setItem(`dashboard-preset-${name}`, JSON.stringify(layout));
+  };
+
+  const getLayoutClasses = () => {
+    switch (dashboardLayout) {
+      case 'list':
+        return 'flex flex-col space-y-4';
+      case 'hybrid':
+        return 'grid grid-cols-2 gap-4';
+      default: // grid
+        return 'flex'; // Keep current flex layout as default
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
       {/* Persistent Top Navigation */}
@@ -156,6 +186,8 @@ export default function MonitorZone() {
             <DashboardCustomizer
               currentLayout={dashboardLayout}
               onLayoutChange={setDashboardLayout}
+              onPanelToggle={handlePanelToggle}
+              onSavePreset={handleSavePreset}
             />
 
             {/* Export & Share */}
@@ -240,49 +272,61 @@ export default function MonitorZone() {
       <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-4rem)]">
         {/* Main Content Area */}
         <ResizablePanel defaultSize={75} minSize={50} maxSize={85}>
-          <div className="flex h-full">
-            {/* Macro Loop Panel - 40% of main content */}
-            <motion.div 
-              className="w-[47%] p-4"
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <MacroLoopPanel
-                searchQuery={searchQuery}
-                onLoopSelect={(id, data) => handleMacroLoopAction('focus', id, data)}
-                selectedLoopId={selectedItem?.type === 'macro' ? selectedItem.id : null}
-              />
-            </motion.div>
-
-            {/* Right Side - 53% of main content */}
-            <div className="w-[53%] flex flex-col p-4 space-y-4">
-              {/* Meso Loop Panel - Top Half */}
+          <div className={`h-full p-4 ${getLayoutClasses()}`}>
+            {/* Macro Loop Panel */}
+            {panelVisibility['macro-panel'] && (
               <motion.div 
-                className="h-1/2"
-                initial={{ y: -30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                className={dashboardLayout === 'list' ? 'w-full' : dashboardLayout === 'hybrid' ? 'col-span-1' : 'w-[47%]'}
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
               >
-                <MesoLoopPanel
-                  onLoopSelect={(id, data) => handleMesoLoopAction('select', id, data)}
-                  selectedLoopId={selectedItem?.type === 'meso' ? selectedItem.id : null}
+                <MacroLoopPanel
+                  searchQuery={searchQuery}
+                  onLoopSelect={(id, data) => handleMacroLoopAction('focus', id, data)}
+                  selectedLoopId={selectedItem?.type === 'macro' ? selectedItem.id : null}
                 />
               </motion.div>
+            )}
 
-              {/* Micro Loop + Community Pulse Panel - Bottom Half */}
-              <motion.div 
-                className="h-1/2"
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                <MicroLoopPanel
-                  onLoopSelect={(id, data) => handleMicroLoopAction('reviewGauge', id, data)}
-                  selectedLoopId={selectedItem?.type === 'micro' ? selectedItem.id : null}
-                />
-              </motion.div>
-            </div>
+            {/* Right Side Panels Container */}
+            {(panelVisibility['meso-panel'] || panelVisibility['micro-panel']) && (
+              <div className={`flex flex-col space-y-4 ${
+                dashboardLayout === 'list' ? 'w-full' : 
+                dashboardLayout === 'hybrid' ? 'col-span-1' : 
+                'w-[53%]'
+              }`}>
+                {/* Meso Loop Panel */}
+                {panelVisibility['meso-panel'] && (
+                  <motion.div 
+                    className={dashboardLayout === 'list' ? 'w-full' : 'h-1/2'}
+                    initial={{ y: -30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                  >
+                    <MesoLoopPanel
+                      onLoopSelect={(id, data) => handleMesoLoopAction('select', id, data)}
+                      selectedLoopId={selectedItem?.type === 'meso' ? selectedItem.id : null}
+                    />
+                  </motion.div>
+                )}
+
+                {/* Micro Loop Panel */}
+                {panelVisibility['micro-panel'] && (
+                  <motion.div 
+                    className={dashboardLayout === 'list' ? 'w-full' : 'h-1/2'}
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                  >
+                    <MicroLoopPanel
+                      onLoopSelect={(id, data) => handleMicroLoopAction('reviewGauge', id, data)}
+                      selectedLoopId={selectedItem?.type === 'micro' ? selectedItem.id : null}
+                    />
+                  </motion.div>
+                )}
+              </div>
+            )}
           </div>
         </ResizablePanel>
 
