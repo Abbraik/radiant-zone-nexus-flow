@@ -241,6 +241,75 @@ export function MacroSidebarContent({ data }: MacroSidebarContentProps) {
         </AnimatePresence>
       </div>
 
+      {/* System Breaches */}
+      <div className="p-4 border-b border-border/50">
+        <h4 className="text-sm font-medium text-foreground mb-3 flex items-center">
+          <Zap className="h-4 w-4 mr-2" />
+          System Breaches
+        </h4>
+        <div className="space-y-2">
+          <Card className="bg-destructive/5 border-destructive/20">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h5 className="text-xs font-medium text-destructive">Policy Cascade Failure</h5>
+                <Badge variant="destructive" className="text-xs">Critical</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Strategic policy implementation showing 3.2σ deviation from expected trajectory
+              </p>
+              <div className="flex items-center text-xs text-muted-foreground">
+                <FileText className="h-3 w-3 mr-1" />
+                <span>Detected by: Strategic Policy Monitor</span>
+              </div>
+              <div className="flex items-center text-xs text-muted-foreground mt-1">
+                <Clock className="h-3 w-3 mr-1" />
+                <span>2 hours ago</span>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-warning/5 border-warning/20">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h5 className="text-xs font-medium text-warning">Leverage Point Drift</h5>
+                <Badge variant="secondary" className="text-xs">Warning</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Information flow patterns deviating from strategic design intentions
+              </p>
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Network className="h-3 w-3 mr-1" />
+                <span>Detected by: CLD Pattern Analyzer</span>
+              </div>
+              <div className="flex items-center text-xs text-muted-foreground mt-1">
+                <Clock className="h-3 w-3 mr-1" />
+                <span>6 hours ago</span>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-primary/5 border-primary/20">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h5 className="text-xs font-medium text-primary">Vision Alignment Gap</h5>
+                <Badge variant="outline" className="text-xs">Monitoring</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Strategic vision metrics showing minor variance in stakeholder alignment
+              </p>
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Users className="h-3 w-3 mr-1" />
+                <span>Detected by: Stakeholder Pulse System</span>
+              </div>
+              <div className="flex items-center text-xs text-muted-foreground mt-1">
+                <Clock className="h-3 w-3 mr-1" />
+                <span>12 hours ago</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* AI Recommendations */}
       <div className="p-4 border-b border-border/50">
         <h4 className="text-sm font-medium text-foreground mb-3 flex items-center">
