@@ -20,6 +20,13 @@ import type { EnhancedIntervention, InterventionBundle, BundleDependency } from 
 
 const steps = [
   {
+    id: 'think-context',
+    title: 'Think Zone Context',
+    description: 'Review insights and leverage points from Think Zone analysis',
+    icon: Target,
+    color: 'text-blue-500'
+  },
+  {
     id: 'government-levers',
     title: 'Choose Government Levers',
     description: 'Select appropriate levers and sub-levers',
@@ -96,19 +103,21 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
 
   const canProceedToNext = () => {
     switch (currentStep) {
-      case 0: // Government Levers
+      case 0: // Think Context
+        return true; // Just review step, always can proceed
+      case 1: // Government Levers
         return selectedSubLevers.length > 0;
-      case 1: // Design Interventions
+      case 2: // Design Sprint Steps
         return interventions.length > 0;
-      case 2: // Dependencies
+      case 3: // Dependencies
         return true; // Optional step
-      case 3: // Roles
+      case 4: // Roles
         return Object.keys(raciAssignments).length > 0;
-      case 4: // Schedule
+      case 5: // Schedule
         return Object.keys(scheduleData).length > 0;
-      case 5: // Compliance
+      case 6: // Compliance
         return Object.keys(complianceData).length > 0;
-      case 6: // Finalize
+      case 7: // Finalize
         return true;
       default:
         return false;
@@ -176,6 +185,76 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           <Card className="border-none shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-blue-500" />
+                Think Zone Context & Insights
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="text-center">
+                <Target className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Ready to Start Sprint Design</h3>
+                <p className="text-muted-foreground mb-6">
+                  Based on your Think Zone analysis, we've identified key leverage points and insights to guide your intervention design.
+                </p>
+              </div>
+
+              {sprintBundle && (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-lg bg-accent/50 border">
+                    <h4 className="font-semibold mb-2">Analysis Context</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">Macro Vision:</span>
+                        <p className="text-muted-foreground">
+                          {typeof sprintBundle.macroVision === 'string' 
+                            ? sprintBundle.macroVision 
+                            : sprintBundle.macroVision?.text || 'Strategic policy intervention'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-medium">Loop Type:</span>
+                        <Badge variant="outline" className="ml-2">{loopType}</Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedLeveragePoints.length > 0 && (
+                    <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                      <h4 className="font-semibold mb-3 text-primary">Identified Leverage Points</h4>
+                      <div className="grid gap-2">
+                        {selectedLeveragePoints.map((point, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-primary" />
+                            <span className="text-sm">{point}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-4">
+                  The next step will guide you through selecting appropriate government levers and designing targeted interventions.
+                </p>
+                <Button 
+                  onClick={handleNext}
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                >
+                  Start Sprint Design
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+      case 1:
+        return (
+          <Card className="border-none shadow-none">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-green-500" />
                 Choose Government Levers & Sub-Levers
               </CardTitle>
@@ -198,13 +277,13 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 1:
+      case 2:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-purple-500" />
-                Design Custom Interventions
+                Design Sprint Steps
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -217,7 +296,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
               ) : (
                 <div className="p-6 text-center">
                   <FileText className="h-12 w-12 mx-auto mb-4 text-purple-500" />
-                  <h3 className="text-lg font-semibold mb-2">Design Custom Interventions</h3>
+                  <h3 className="text-lg font-semibold mb-2">Design Sprint Steps</h3>
                   <p className="text-muted-foreground mb-4">Create interventions based on selected sub-levers.</p>
                   <Button onClick={() => handleInterventionCreate({
                     id: `intervention-${Date.now()}`,
@@ -272,7 +351,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 2:
+      case 3:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -291,7 +370,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 3:
+      case 4:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -309,7 +388,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 4:
+      case 5:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -331,7 +410,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 5:
+      case 6:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -353,7 +432,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 6:
+      case 7:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -423,7 +502,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
         </div>
 
         {/* Step Navigation */}
-        <div className="grid grid-cols-4 md:grid-cols-7 gap-2 mb-8">
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-8">
           {steps.map((step, index) => {
             const StepIcon = step.icon;
             const isActive = index === currentStep;
