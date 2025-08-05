@@ -27,8 +27,8 @@ const steps = [
     color: 'text-green-500'
   },
   {
-    id: 'design-interventions',
-    title: 'Design Interventions',
+    id: 'design-sprint-steps',
+    title: 'Design Sprint Steps',
     description: 'Create custom interventions based on selected levers',
     icon: FileText,
     color: 'text-purple-500'
