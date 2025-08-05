@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Task } from '../../hooks/useTasks';
 import { Skeleton } from '../ui/skeleton';
 import { ThinkZoneWorkspace } from '../zones/ThinkZoneWorkspace';
-import { ActZoneWizard } from '../../pages/ActZoneWizard';
+import { EnhancedActZoneWorkspace } from '../zones/EnhancedActZoneWorkspace';
 import { MonitorZoneWorkspace } from '../zones/MonitorZoneWorkspace';
 import { InnovateLearnZoneWorkspace } from '../zones/InnovateLearnZoneWorkspace';
 
@@ -67,13 +67,16 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
   if (widgetName === 'ZoneWorkspace') {
     switch (task.zone) {
       case 'think':
-        console.log('DynamicWidget: Rendering enhanced ThinkZoneWorkspace for think task');
+        console.log('DynamicWidget: Rendering ThinkZoneWorkspace for think task');
         return <ThinkZoneWorkspace />;
-        case 'act':
-          return <ActZoneWizard />;
+      case 'act':
+        console.log('DynamicWidget: Rendering EnhancedActZoneWorkspace for act task');
+        return <EnhancedActZoneWorkspace />;
       case 'monitor':
+        console.log('DynamicWidget: Rendering MonitorZoneWorkspace for monitor task');
         return <MonitorZoneWorkspace />;
       case 'innovate-learn':
+        console.log('DynamicWidget: Rendering InnovateLearnZoneWorkspace for innovate-learn task');
         return <InnovateLearnZoneWorkspace />;
       default:
         return (
