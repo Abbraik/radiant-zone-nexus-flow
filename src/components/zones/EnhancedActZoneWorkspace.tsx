@@ -497,16 +497,16 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
     })
   );
 
-  // Step configuration for 8-step workflow
+  // Step configuration for Sprint Planning workflow
   const steps = [
-    { id: 'context', title: 'Review Context', completed: currentStep > 1, active: currentStep === 1 },
-    { id: 'assemble', title: 'Assemble Interventions', completed: currentStep > 2, active: currentStep === 2 },
-    { id: 'preview', title: 'Preview Impact', completed: currentStep > 3, active: currentStep === 3 },
-    { id: 'dependencies', title: 'Configure Dependencies', completed: currentStep > 4, active: currentStep === 4 },
-    { id: 'roles', title: 'Assign Roles', completed: currentStep > 5, active: currentStep === 5 },
-    { id: 'schedule', title: 'Schedule Sprint', completed: currentStep > 6, active: currentStep === 6 },
-    { id: 'validate', title: 'Validate Compliance', completed: currentStep > 7, active: currentStep === 7 },
-    { id: 'publish', title: 'Publish Bundle', completed: currentStep > 8, active: currentStep === 8 },
+    { id: 'bundle-review', title: 'Review Bundle Context', completed: currentStep > 1, active: currentStep === 1 },
+    { id: 'sprint-substeps', title: 'Design Sprint Sub-Steps', completed: currentStep > 2, active: currentStep === 2 },
+    { id: 'preview-impact', title: 'Preview Sprint Impact', completed: currentStep > 3, active: currentStep === 3 },
+    { id: 'configure-dependencies', title: 'Configure Sub-Step Dependencies', completed: currentStep > 4, active: currentStep === 4 },
+    { id: 'assign-roles', title: 'Assign Sprint Roles', completed: currentStep > 5, active: currentStep === 5 },
+    { id: 'schedule-sprint', title: 'Schedule Sprint Timeline', completed: currentStep > 6, active: currentStep === 6 },
+    { id: 'validate-compliance', title: 'Validate Sprint Compliance', completed: currentStep > 7, active: currentStep === 7 },
+    { id: 'publish-sprint', title: 'Publish Sprint Plan', completed: currentStep > 8, active: currentStep === 8 },
   ];
 
   const filteredInterventions = populationInterventions.filter(
@@ -588,14 +588,14 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1: return true; // Context review
-      case 2: return bundleItems.length > 0; // Assemble interventions
-      case 3: return true; // Preview impact
-      case 4: return true; // Configure dependencies (optional)
-      case 5: return raciAssignments.length > 0; // Assign roles - now requires RACI assignments
-      case 6: return sprintStartDate && sprintEndDate; // Schedule sprint
-      case 7: return true; // Validate compliance
-      case 8: return bundleItems.length > 0; // Publish bundle
+      case 1: return true; // Bundle review
+      case 2: return bundleItems.length > 0; // Design sprint sub-steps
+      case 3: return true; // Preview sprint impact
+      case 4: return true; // Configure sub-step dependencies (optional)
+      case 5: return raciAssignments.length > 0; // Assign sprint roles
+      case 6: return sprintStartDate && sprintEndDate; // Schedule sprint timeline
+      case 7: return true; // Validate sprint compliance
+      case 8: return bundleItems.length > 0; // Publish sprint plan
       default: return false;
     }
   };
@@ -609,8 +609,8 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
 
   const handlePublish = () => {
     toast({
-      title: "Bundle Published",
-      description: `Successfully published bundle with ${bundleItems.length} interventions. Monitor tasks created.`,
+      title: "Sprint Plan Published",
+      description: `Successfully published sprint plan with ${bundleItems.length} sub-steps. Monitor tasks created.`,
     });
   };
 
@@ -624,8 +624,8 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
       <div className="p-8 space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Act Zone - Bundle Assembly</h2>
-          <p className="text-gray-300">Transform strategic insights into concrete policy interventions</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Act Zone - Sprint Planning</h2>
+          <p className="text-gray-300">Transform Bundle design into time-boxed execution sprints</p>
         </div>
 
         {/* Progress Bar */}
@@ -636,7 +636,7 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
           <AnimatePresence mode="wait">
             {currentStep === 1 && (
               <motion.div
-                key="context-review"
+                key="bundle-review"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
@@ -648,23 +648,23 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
 
             {currentStep === 2 && (
               <motion.div
-                key="assemble-interventions"
+                key="design-sprint-substeps"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Intervention Library */}
+                  {/* Sprint Sub-Steps Library */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-white">Intervention Library</h3>
+                    <h3 className="text-lg font-medium text-white">Sprint Sub-Steps Design</h3>
                     
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search interventions..."
+                        placeholder="Search sprint sub-steps..."
                         className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                       />
                     </div>
