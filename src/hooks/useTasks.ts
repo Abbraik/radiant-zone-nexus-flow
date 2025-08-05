@@ -158,7 +158,7 @@ export const useTasks = () => {
       // Get the claimed task to check its zone
       const claimedTask = allTasks.find(task => task.id === taskId);
       
-      // Update local state
+      // Update local state and invalidate query to force re-render
       queryClient.setQueryData(['tasks'], (oldTasks: Task[] = []) => 
         oldTasks.map(task => 
           task.id === taskId 
@@ -166,6 +166,10 @@ export const useTasks = () => {
             : task
         )
       );
+      
+      // Force query invalidation to ensure all components re-render
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      console.log('useTasks: Task claimed and query invalidated, taskId:', taskId);
       
       toast({
         title: "Task Claimed",
@@ -197,6 +201,10 @@ export const useTasks = () => {
             : task
         )
       );
+      
+      // Force query invalidation to ensure all components re-render
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      console.log('useTasks: Task completed and query invalidated, taskId:', taskId);
       
       // Custom completion messages based on task type
       let title = "Task Completed";
