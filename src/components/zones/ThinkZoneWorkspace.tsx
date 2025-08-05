@@ -41,17 +41,25 @@ export const ThinkZoneWorkspace: React.FC = () => {
 
   const steps: ThinkZoneStep[] = [
     {
-      id: 'loop-context',
-      title: 'Define Loop Context',
-      description: 'Select feedback loop archetype for strategic package',
+      id: 'loop-selection',
+      title: 'Loop Selection',
+      description: 'Choose or create your causal loop archetypes',
       component: 'LoopBrowser',
       required: true,
       completed: selectedArchetypes.length > 0
     },
     {
-      id: 'define-de-band',
-      title: 'Define DE-Band',
-      description: 'Configure dynamic equilibrium parameters',
+      id: 'cld-building',
+      title: 'CLD Building',
+      description: 'Configure your causal loop diagram',
+      component: 'CLDBuilder',
+      required: true,
+      completed: !!cldModel && cldModel.nodes.length > 0
+    },
+    {
+      id: 'parameters',
+      title: 'Parameters',
+      description: 'Set tension signals, DE-Bands, and SRT horizons',
       component: 'ParameterPanel',
       required: true,
       completed: selectedArchetypes.length > 0 && 
@@ -61,33 +69,25 @@ export const ThinkZoneWorkspace: React.FC = () => {
         )
     },
     {
-      id: 'select-sub-levers',
-      title: 'Select Sub-Levers',
-      description: 'Choose leverage points and government levers',
+      id: 'leverage',
+      title: 'Leverage Mapping',
+      description: 'Select leverage points and government levers',
       component: 'LeverageMapper',
       required: true,
       completed: leveragePoints.length > 0
     },
     {
-      id: 'draft-macro-vision',
-      title: 'Draft Macro Vision',
-      description: 'Define strategic goals bound to feedback loop',
+      id: 'vision',
+      title: 'Macro Vision',
+      description: 'Define high-level goals in 120 characters',
       component: 'MacroVision',
       required: true,
       completed: macroVision.isValid
     },
     {
-      id: 'configure-cld',
-      title: 'Configure CLD Structure',
-      description: 'Build causal loop diagram for bundle context',
-      component: 'CLDBuilder',
-      required: true,
-      completed: !!cldModel && cldModel.nodes.length > 0
-    },
-    {
-      id: 'bundle-review',
-      title: 'Bundle Design Review',
-      description: 'Review strategic package and handoff to Act Zone',
+      id: 'review',
+      title: 'Review & Launch',
+      description: 'Review configuration and create sprint',
       component: 'Review',
       required: false,
       completed: sprintCreated
@@ -176,23 +176,23 @@ export const ThinkZoneWorkspace: React.FC = () => {
   };
 
   const handleCreateSprint = async (bundle: any) => {
-    // Mock bundle creation
+    // Mock sprint creation
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Mark the bundle review step as completed
+    // Mark the review step as completed
     setSprintCreated(true);
     
     toast({
-      title: "Bundle Design Complete",
-      description: "Strategic bundle ready for Act Zone sprint planning!"
+      title: "Sprint Created",
+      description: "Your Think Zone configuration is now a sprint!"
     });
   };
 
   const handleGoToActZone = (sprintId: string) => {
-    // Navigate to Act Zone with bundle data
+    // Navigate to Act Zone with sprint data
     toast({
       title: "Navigating to Act Zone",
-      description: "Opening Act Zone with your strategic bundle configuration"
+      description: "Opening Act Zone with your sprint configuration"
     });
   };
 
@@ -215,56 +215,32 @@ export const ThinkZoneWorkspace: React.FC = () => {
     switch (step?.component) {
       case 'LoopBrowser':
         return (
-          <div className="space-y-6">
-            <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-              <h4 className="font-semibold text-primary mb-3">Loop Context Definition</h4>
-              <p className="text-sm text-foreground-muted">
-                Select the feedback loop archetype that will form the foundation of your strategic bundle.
-              </p>
-            </Card>
-            <LoopBrowser
-              onArchetypeSelect={handleArchetypeSelect}
-              onCustomLoopCreate={() => setSelectedArchetypes([])}
-              selectedArchetypeIds={selectedArchetypes.map(a => a.id)}
-              multiSelect={true}
-            />
-          </div>
+          <LoopBrowser
+            onArchetypeSelect={handleArchetypeSelect}
+            onCustomLoopCreate={() => setSelectedArchetypes([])}
+            selectedArchetypeIds={selectedArchetypes.map(a => a.id)}
+            multiSelect={true}
+          />
         );
       
       case 'CLDBuilder':
         return (
-          <div className="space-y-6">
-            <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-              <h4 className="font-semibold text-primary mb-3">CLD Structure Configuration</h4>
-              <p className="text-sm text-foreground-muted">
-                Build the causal loop diagram that will provide the structural context for your strategic bundle.
-              </p>
-            </Card>
-            <EnhancedCLDBuilder
-              selectedArchetype={selectedArchetypes[0] || undefined}
-              onModelChange={handleModelChange}
-              onSave={handleModelSave}
-            />
-          </div>
+          <EnhancedCLDBuilder
+            selectedArchetype={selectedArchetypes[0] || undefined}
+            onModelChange={handleModelChange}
+            onSave={handleModelSave}
+          />
         );
       
       case 'ParameterPanel':
         return (
           <div className="space-y-6">
-            {/* DE-Band Design Header */}
-            <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-              <h4 className="font-semibold text-primary mb-3">DE-Band Configuration</h4>
-              <p className="text-sm text-foreground-muted">
-                Define dynamic equilibrium parameters that will govern your strategic bundle execution.
-              </p>
-            </Card>
-            
             {/* Multi-Loop Configuration Header */}
             {selectedArchetypes.length > 1 && (
               <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-                <h4 className="font-semibold text-primary mb-3">Multiple Loop Bundle</h4>
+                <h4 className="font-semibold text-primary mb-3">Multiple Loop Configuration</h4>
                 <p className="text-sm text-foreground-muted">
-                  Configure DE-Band parameters for each selected loop archetype in your strategic package.
+                  Configure parameters for each selected loop archetype. You can select tensions across all loops.
                 </p>
               </Card>
             )}
@@ -281,7 +257,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
                 <Card key={archetype.id} className="glass p-6 border-border/30 rounded-[--radius-lg]">
                   <div className="mb-6">
                     <h4 className="font-semibold text-foreground flex items-center gap-3">
-                      {archetype.name} - DE-Band Design
+                      {archetype.name}
                       {currentConfig.tensionSignal && currentConfig.deBandConfig && currentConfig.srtHorizon && (
                         <Badge variant="secondary" className="bg-success/20 text-success border-success/30">
                           Complete
@@ -320,7 +296,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
             {selectedArchetypes.length === 0 && (
               <Card className="glass p-12 text-center border-border/30 rounded-[--radius-lg]">
                 <p className="text-foreground-muted">
-                  Please define loop context in the previous step to configure DE-Band parameters.
+                  Please select loop archetypes in the previous step to configure parameters.
                 </p>
               </Card>
             )}
@@ -329,39 +305,23 @@ export const ThinkZoneWorkspace: React.FC = () => {
       
       case 'LeverageMapper':
         return (
-          <div className="space-y-6">
-            <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-              <h4 className="font-semibold text-primary mb-3">Sub-Lever Selection</h4>
-              <p className="text-sm text-foreground-muted">
-                Choose specific leverage points and government levers for your strategic bundle.
-              </p>
-            </Card>
-            <LeverageDomainMapper
-              selectedLeveragePoint={leveragePoints[0] || null}
-              onLeveragePointSelect={handleLeveragePointSelect}
-              loopType={selectedArchetypes[0]?.type}
-              selectedLeveragePoints={leveragePoints}
-              multiSelect={true}
-            />
-          </div>
+          <LeverageDomainMapper
+            selectedLeveragePoint={leveragePoints[0] || null}
+            onLeveragePointSelect={handleLeveragePointSelect}
+            loopType={selectedArchetypes[0]?.type}
+            selectedLeveragePoints={leveragePoints}
+            multiSelect={true}
+          />
         );
       
       case 'MacroVision':
         return (
-          <div className="space-y-6">
-            <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-              <h4 className="font-semibold text-primary mb-3">Macro Vision Drafting</h4>
-              <p className="text-sm text-foreground-muted">
-                Define the strategic vision that will guide your bundle implementation.
-              </p>
-            </Card>
-            <MacroVisionCapture
-              loopArchetype={selectedArchetypes[0]?.id}
-              tensionSignal={parameterConfigs[0]?.tensionSignal?.id}
-              onVisionChange={setMacroVision}
-              initialVision={macroVision.text}
-            />
-          </div>
+          <MacroVisionCapture
+            loopArchetype={selectedArchetypes[0]?.id}
+            tensionSignal={parameterConfigs[0]?.tensionSignal?.id}
+            onVisionChange={setMacroVision}
+            initialVision={macroVision.text}
+          />
         );
       
       case 'Review':
@@ -432,28 +392,28 @@ export const ThinkZoneWorkspace: React.FC = () => {
         
         return (
           <div className="space-y-6">
-            {/* Bundle Design Summary */}
+            {/* Multi-Selection Summary */}
             {selectedArchetypes.length > 1 && (
               <Card className="glass-accent p-6 border-primary/20 rounded-[--radius-lg]">
-                <h4 className="font-semibold text-primary mb-3">Strategic Bundle Configuration Summary</h4>
+                <h4 className="font-semibold text-primary mb-3">Multiple Loops Configuration Summary</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary">{selectedArchetypes.length}</div>
-                    <div className="text-sm text-foreground-muted">Loop Contexts</div>
+                    <div className="text-sm text-foreground-muted">Loop Archetypes</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary">{parameterConfigs.filter(config => 
                       config.tensionSignal && config.deBandConfig && config.srtHorizon
                     ).length}</div>
-                    <div className="text-sm text-foreground-muted">DE-Band Configurations</div>
+                    <div className="text-sm text-foreground-muted">Configured Parameters</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary">{leveragePoints.length}</div>
-                    <div className="text-sm text-foreground-muted">Sub-Levers</div>
+                    <div className="text-sm text-foreground-muted">Leverage Points</div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <h5 className="font-medium text-foreground">Bundle Components:</h5>
+                  <h5 className="font-medium text-foreground">Selected Archetypes:</h5>
                   <div className="flex flex-wrap gap-2">
                     {selectedArchetypes.map((archetype, index) => {
                       const hasConfig = parameterConfigs[index] && 
@@ -473,7 +433,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-sm text-foreground-muted mt-3">
-                  Ready to handoff strategic bundle to Act Zone for sprint implementation.
+                  The system will create a comprehensive sprint incorporating all selected loops and their configurations.
                 </p>
               </Card>
             )}
