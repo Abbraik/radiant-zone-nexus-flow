@@ -36,16 +36,9 @@ const steps = [
   {
     id: 'design-sprint-steps',
     title: 'Design Sprint Steps',
-    description: 'Create custom interventions based on selected levers',
+    description: 'Create interventions and configure dependencies',
     icon: FileText,
     color: 'text-purple-500'
-  },
-  {
-    id: 'configure-dependencies',
-    title: 'Configure Dependencies',
-    description: 'Set up intervention relationships and sequencing',
-    icon: Target,
-    color: 'text-orange-500'
   },
   {
     id: 'assign-roles',
@@ -107,17 +100,15 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
         return true; // Just review step, always can proceed
       case 1: // Government Levers
         return selectedSubLevers.length > 0;
-      case 2: // Design Sprint Steps
+      case 2: // Design Sprint Steps (combined with dependencies)
         return interventions.length > 0;
-      case 3: // Dependencies
-        return true; // Optional step
-      case 4: // Roles
+      case 3: // Roles
         return Object.keys(raciAssignments).length > 0;
-      case 5: // Schedule
+      case 4: // Schedule
         return Object.keys(scheduleData).length > 0;
-      case 6: // Compliance
+      case 5: // Compliance
         return Object.keys(complianceData).length > 0;
-      case 7: // Finalize
+      case 6: // Finalize
         return true;
       default:
         return false;
@@ -283,68 +274,85 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-purple-500" />
-                Design Sprint Steps
+                Design Sprint Steps & Configure Dependencies
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              {sprintBundle ? (
-                <MetaSolveInterventionBuilder
-                  leverageContext={sprintBundle.leverageContext}
-                  selectedSubLevers={selectedSubLevers}
-                  onInterventionCreate={handleInterventionCreate}
-                />
-              ) : (
-                <div className="p-6 text-center">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-purple-500" />
-                  <h3 className="text-lg font-semibold mb-2">Design Sprint Steps</h3>
-                  <p className="text-muted-foreground mb-4">Create interventions based on selected sub-levers.</p>
-                  <Button onClick={() => handleInterventionCreate({
-                    id: `intervention-${Date.now()}`,
-                    name: 'Sample Intervention',
-                    description: 'Sample intervention description',
-                    icon: 'target',
-                    category: 'Policy',
-                    selectedSubLevers,
-                    subLeverConfigurations: [],
-                    targetLoopVariables: [],
-                    expectedLoopImpact: { loopId: 'sample-loop', impactType: 'strengthen', targetVariables: [], expectedMagnitude: 5, confidenceLevel: 'medium', assumptions: [] },
-                    parameters: [],
-                    microTasks: [],
-                    microLoops: [],
-                    budget: { totalBudget: 100000, currency: 'USD', lineItems: [], contingency: 0, contingencyPercent: 10, approvalStatus: 'draft' },
-                    resources: [],
-                    automationRules: [],
-                    effort: 'Medium',
-                    impact: 'High',
-                    complexity: 'Medium',
-                    timeToImpact: 'Medium',
-                    status: 'draft',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    createdBy: 'user',
-                    lastModifiedBy: 'user'
-                  })}>
-                    Create Intervention
-                  </Button>
-                </div>
-              )}
-              {interventions.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-semibold mb-4">Created Interventions ({interventions.length})</h3>
-                  <div className="space-y-3">
-                    {interventions.map((intervention) => (
-                      <div
-                        key={intervention.id}
-                        className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium">{intervention.name}</h4>
-                          <Badge variant="secondary">{intervention.category}</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">{intervention.description}</p>
-                      </div>
-                    ))}
+            <CardContent className="space-y-8">
+              {/* Intervention Creation Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Create Interventions</h3>
+                {sprintBundle ? (
+                  <MetaSolveInterventionBuilder
+                    leverageContext={sprintBundle.leverageContext}
+                    selectedSubLevers={selectedSubLevers}
+                    onInterventionCreate={handleInterventionCreate}
+                  />
+                ) : (
+                  <div className="p-6 text-center border rounded-lg">
+                    <FileText className="h-12 w-12 mx-auto mb-4 text-purple-500" />
+                    <h4 className="text-lg font-semibold mb-2">Design Sprint Steps</h4>
+                    <p className="text-muted-foreground mb-4">Create interventions based on selected sub-levers.</p>
+                    <Button onClick={() => handleInterventionCreate({
+                      id: `intervention-${Date.now()}`,
+                      name: 'Sample Intervention',
+                      description: 'Sample intervention description',
+                      icon: 'target',
+                      category: 'Policy',
+                      selectedSubLevers,
+                      subLeverConfigurations: [],
+                      targetLoopVariables: [],
+                      expectedLoopImpact: { loopId: 'sample-loop', impactType: 'strengthen', targetVariables: [], expectedMagnitude: 5, confidenceLevel: 'medium', assumptions: [] },
+                      parameters: [],
+                      microTasks: [],
+                      microLoops: [],
+                      budget: { totalBudget: 100000, currency: 'USD', lineItems: [], contingency: 0, contingencyPercent: 10, approvalStatus: 'draft' },
+                      resources: [],
+                      automationRules: [],
+                      effort: 'Medium',
+                      impact: 'High',
+                      complexity: 'Medium',
+                      timeToImpact: 'Medium',
+                      status: 'draft',
+                      createdAt: new Date(),
+                      updatedAt: new Date(),
+                      createdBy: 'user',
+                      lastModifiedBy: 'user'
+                    })}>
+                      Create Intervention
+                    </Button>
                   </div>
+                )}
+                
+                {interventions.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-lg font-semibold mb-4">Created Interventions ({interventions.length})</h4>
+                    <div className="space-y-3">
+                      {interventions.map((intervention) => (
+                        <div
+                          key={intervention.id}
+                          className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <h5 className="font-medium">{intervention.name}</h5>
+                            <Badge variant="secondary">{intervention.category}</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">{intervention.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Dependency Configuration Section */}
+              {interventions.length > 1 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Configure Dependencies</h3>
+                  <EnhancedDependencyConfigurator
+                    interventions={interventions}
+                    dependencies={dependencies}
+                    onDependenciesChange={setDependencies}
+                  />
                 </div>
               )}
             </CardContent>
@@ -352,25 +360,6 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
         );
 
       case 3:
-        return (
-          <Card className="border-none shadow-none">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-orange-500" />
-                Configure Dependencies
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EnhancedDependencyConfigurator
-                interventions={interventions}
-                dependencies={dependencies}
-                onDependenciesChange={setDependencies}
-              />
-            </CardContent>
-          </Card>
-        );
-
-      case 4:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -388,7 +377,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 5:
+      case 4:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -410,7 +399,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 6:
+      case 5:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -432,7 +421,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
           </Card>
         );
 
-      case 7:
+      case 6:
         return (
           <Card className="border-none shadow-none">
             <CardHeader>
@@ -502,7 +491,7 @@ export const ActZoneWizard: React.FC<ActZoneWizardProps> = ({
         </div>
 
         {/* Step Navigation */}
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-8">
+        <div className="grid grid-cols-4 md:grid-cols-7 gap-2 mb-8">
           {steps.map((step, index) => {
             const StepIcon = step.icon;
             const isActive = index === currentStep;
