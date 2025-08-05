@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { mockTasks, TaskType } from '../config/taskRegistry';
+import { mockTasks, TaskType, taskRegistry } from '../config/taskRegistry';
 import { useToast } from './use-toast';
 
 export interface Task extends TaskType {
@@ -21,7 +21,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Set up the foundational meta-loop that orchestrates all population and development dynamics',
     zone: 'think',
     type: 'define_tension',
-    components: ['TensionSelector', 'SRTRangeSlider'],
+    components: taskRegistry.define_tension || ['ZoneWorkspace'],
     status: 'available',
     loop_id: 'loop-meta',
     due_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
@@ -34,7 +34,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Review natural population growth patterns and fertility rate determinants',
     zone: 'think',
     type: 'define_tension',
-    components: ['TensionSelector', 'SRTRangeSlider'],
+    components: taskRegistry.define_tension || ['ZoneWorkspace'],
     status: 'available',
     loop_id: 'loop-1',
     due_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
@@ -47,7 +47,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Design intervention bundle for population-resource market balance',
     zone: 'act',
     type: 'publish_bundle',
-    components: ['InterventionPicker', 'BundlePreview', 'SmartRolesPanel'],
+    components: taskRegistry.publish_bundle || ['ZoneWorkspace'],
     status: 'available',
     loop_id: 'loop-2',
     due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
@@ -60,7 +60,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Track economic stability indicators and population growth correlation',
     zone: 'monitor',
     type: 'review_tri',
-    components: ['LoopTable', 'TRIDetailDrawer'],
+    components: taskRegistry.review_tri || ['ZoneWorkspace'],
     status: 'available',
     loop_id: 'loop-6',
     due_at: new Date(Date.now() + 0.5 * 24 * 60 * 60 * 1000), // critical - 12 hours
@@ -73,7 +73,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Test various migration and economic opportunity scenarios for system resilience',
     zone: 'innovate-learn',
     type: 'run_simulation',
-    components: ['SimulationParams', 'SimulationPreview'],
+    components: taskRegistry.run_simulation || ['ZoneWorkspace'],
     status: 'available',
     loop_id: 'loop-9',
     due_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
@@ -86,7 +86,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Document learnings from environmental quality and economic balance testing',
     zone: 'innovate-learn',
     type: 'capture_insight',
-    components: ['InsightFeed', 'ExperimentStudio'],
+    components: taskRegistry.capture_insight || ['ZoneWorkspace'],
     status: 'available',
     loop_id: 'loop-4',
     due_at: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days
@@ -99,7 +99,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Interactive 3D visualization of population and development goal dependencies',
     zone: 'think',
     type: 'view_cascade_3d',
-    components: ['Cascade3DViewer'],
+    components: taskRegistry.view_cascade_3d || ['Cascade3DViewer'],
     status: 'available',
     loop_id: 'loop-meta',
     due_at: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
@@ -112,7 +112,7 @@ const mockTasksWithStatus: Task[] = [
     description: 'Real-time digital twin analysis of social structure evolution and outcomes',
     zone: 'monitor',
     type: 'monitor_digital_twin',
-    components: ['DigitalTwinPreview', 'TrendSparklines'],
+    components: taskRegistry.monitor_digital_twin || ['DigitalTwinPreview', 'TrendSparklines'],
     status: 'available',
     loop_id: 'loop-10',
     due_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
@@ -147,6 +147,8 @@ export const useTasks = () => {
   console.log('useTasks: Available tasks:', availableTasks.map(t => ({ id: t.id, title: t.title })));
   
   const activeTask = myTasks[0] || null;
+  console.log('useTasks: myTasks:', myTasks.map(t => ({ id: t.id, title: t.title, status: t.status })));
+  console.log('useTasks: activeTask:', activeTask ? { id: activeTask.id, title: activeTask.title, status: activeTask.status } : null);
 
   const claimTaskMutation = useMutation({
     mutationFn: async (taskId: string) => {
