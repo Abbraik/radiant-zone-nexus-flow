@@ -30,7 +30,7 @@ export default function LoopRegistry(){
         <h1 className="text-xl font-semibold">Loop Registry</h1>
         <div className="flex items-center gap-3 ml-auto">
           <LevelSwitcher />
-          <button onClick={()=>nav('/think/loops/new')} disabled className="px-3 py-2 rounded bg-muted text-foreground-subtle cursor-not-allowed">
+          <button onClick={()=>nav('/think/loops/new')} className="px-3 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90">
             New Loop
           </button>
         </div>
