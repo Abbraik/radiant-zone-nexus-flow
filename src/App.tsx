@@ -18,10 +18,10 @@ import MonitorZone from "./pages/MonitorZone";
 import { InnovateLearnZone } from "./pages/InnovateLearnZone";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
+import LoopRegistry from "./pages/think/LoopRegistry";
 
 const queryClient = createQueryClient();
 
@@ -53,6 +53,9 @@ const App = () => (
                           <Route path="/" element={<Index />} />
                           <Route path="/think" element={<ThinkZone />} />
                           <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
+                          {import.meta.env.VITE_PAGS_FULL === '1' && (
+                            <Route path="/think/loops" element={<LoopRegistry />} />
+                          )}
                           <Route path="/act" element={<ActZone />} />
                           <Route path="/monitor" element={<MonitorZone />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
@@ -91,6 +94,9 @@ const App = () => (
                   <Route path="/think" element={<ThinkZone />} />
                   <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
                   <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
+                  {import.meta.env.VITE_PAGS_FULL === '1' && (
+                    <Route path="/think/loops" element={<LoopRegistry />} />
+                  )}
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />
                   <Route path="/innovate" element={<InnovateLearnZone />} />

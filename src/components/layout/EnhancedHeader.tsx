@@ -99,6 +99,10 @@ export const EnhancedHeader: React.FC = () => {
   };
 
   const visibleNavigation = getVisibleNavigation();
+  const loopsNav: NavigationItem = { id: 'think-loops', label: 'Loops', icon: Package, path: '/think/loops', description: 'Loop Registry' };
+  const navItems: NavigationItem[] = (!isUltimateWorkspace && import.meta.env.VITE_PAGS_FULL === '1')
+    ? [...visibleNavigation, loopsNav]
+    : visibleNavigation;
 
   return (
     <>
@@ -159,7 +163,7 @@ export const EnhancedHeader: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            {visibleNavigation.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
                 (item.id !== 'workspace' && location.pathname === item.path) ||
@@ -297,7 +301,7 @@ export const EnhancedHeader: React.FC = () => {
             </div>
 
             {/* Navigation Items */}
-            {visibleNavigation.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
                 (item.id !== 'workspace' && location.pathname === item.path);
