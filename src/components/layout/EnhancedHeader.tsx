@@ -30,6 +30,7 @@ import { Separator } from '../ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useTasks } from '../../hooks/useTasks';
 import type { Zone } from '../../types';
+import HeaderAddons from '@/components/shell/HeaderAddons';
 
 interface NavigationItem {
   id: string;
@@ -262,6 +263,9 @@ export const EnhancedHeader: React.FC = () => {
             <Button variant="ghost" size="sm" className="p-2 hover:bg-glass-accent transition-all text-foreground-subtle hover:text-foreground">
               <User className="w-4 h-4" />
             </Button>
+
+            {/* PAGS Header Addons */}
+            <HeaderAddons />
 
             {/* Mobile Menu Toggle */}
             <Button
