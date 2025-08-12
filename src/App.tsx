@@ -71,21 +71,17 @@ const App = () => (
                           <Route path="/" element={<Index />} />
                           <Route path="/think" element={<ThinkZone />} />
                           <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
-                          {import.meta.env.VITE_PAGS_FULL === '1' && (
-                            <>
-                              <Route path="/think/loops" element={<LoopRegistry />} />
-                              <Route path="/think/loops/new" element={<LoopStudioPage />} />
-                              <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
-                              <Route path="/think/variables" element={<VariableRegistry />} />
-                              <Route path="/think/leverage" element={<LeverageLadder />} />
-                              <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
-                              <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
-                              <Route path="/act/bundles" element={<BundlesList />} />
-                              <Route path="/act/bundles/new" element={<BundlesList />} />
-                              <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
-                              <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
-                            </>
-                          )}
+                          <Route path="/think/loops" element={<LoopRegistry />} />
+                          <Route path="/think/loops/new" element={<LoopStudioPage />} />
+                          <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
+                          <Route path="/think/variables" element={<VariableRegistry />} />
+                          <Route path="/think/leverage" element={<LeverageLadder />} />
+                          <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
+                          <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
+                          <Route path="/act/bundles" element={<BundlesList />} />
+                          <Route path="/act/bundles/new" element={<BundlesList />} />
+                          <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
+                          <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
                           <Route path="/act" element={<ActZone />} />
                           <Route path="/monitor" element={<LoopHealthPage />} />
                           <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
@@ -129,21 +125,17 @@ const App = () => (
                   <Route path="/think" element={<ThinkZone />} />
                   <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
                   <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
-                  {import.meta.env.VITE_PAGS_FULL === '1' && (
-                    <>
-                      <Route path="/think/loops" element={<LoopRegistry />} />
-                      <Route path="/think/loops/new" element={<LoopStudioPage />} />
-                      <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
-                      <Route path="/think/variables" element={<VariableRegistry />} />
-                      <Route path="/think/leverage" element={<LeverageLadder />} />
-                      <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
-                      <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
-                      <Route path="/act/bundles" element={<BundlesList />} />
-                      <Route path="/act/bundles/new" element={<BundlesList />} />
-                      <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
-                      <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
-                    </>
-                  )}
+                  <Route path="/think/loops" element={<LoopRegistry />} />
+                  <Route path="/think/loops/new" element={<LoopStudioPage />} />
+                  <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
+                  <Route path="/think/variables" element={<VariableRegistry />} />
+                  <Route path="/think/leverage" element={<LeverageLadder />} />
+                  <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
+                  <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
+                  <Route path="/act/bundles" element={<BundlesList />} />
+                  <Route path="/act/bundles/new" element={<BundlesList />} />
+                  <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
+                  <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<LoopHealthPage />} />
                   <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
