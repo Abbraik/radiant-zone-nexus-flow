@@ -6,7 +6,7 @@ type ScenarioRef = { id: string; color?: string }
 export default function TrajectoryChart({ data, scenarios, indexKey }:{
   data: any[]
   scenarios: ScenarioRef[]
-  indexKey: 'SHI' | 'SPI'
+  indexKey: string
 }){
   return (
     <ResponsiveContainer width="100%" height={300}>

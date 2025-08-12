@@ -7,6 +7,7 @@ import { useBundleStore } from '@/stores/useBundleStore'
 import { applyMockImpact } from '@/services/mock/leverageImpact'
 import TrajectoryChart from '@/components/think/TrajectoryChart'
 import { runTrajectory } from '@/services/simulation/runTrajectory'
+import { runPDFMockTrajectory } from '@/services/simulation/runPDFMockTrajectory'
 
 export default function LeverageScenarios(){
   const { scenarios, createScenario, addLP, removeLP, cloneScenario } = useScenarioStore()
@@ -17,6 +18,7 @@ export default function LeverageScenarios(){
   const [newName, setNewName] = useState('')
   const [compare, setCompare] = useState(false)
   const [showTraj, setShowTraj] = useState(false)
+  const [mode, setMode] = useState<'simple'|'pdf'>('simple')
 
   useEffect(()=>{ document.title = 'Leverage Scenarios | THINK' },[])
   useEffect(()=>{ fetchLoops(); fetchBundles() },[])
@@ -27,19 +29,21 @@ export default function LeverageScenarios(){
 
   const palette = ['#0ea5e9','#10b981','#ef4444','#8b5cf6','#f59e0b','#14b8a6','#6366f1','#84cc16']
   const scenariosWithColors = useMemo(()=> scenarios.map((s,i)=> ({ ...s, color: palette[i % palette.length] })), [scenarios])
-  const trajData = useMemo(()=> {
+  const chartData = useMemo(()=> {
     if (!showTraj || scenariosWithColors.length===0) return [] as any[]
     const byT: Record<number, any> = {}
     scenariosWithColors.forEach(s=>{
-      const series = runTrajectory({ id: s.id, lps: s.lps as any }, 36)
+      const series = mode==='simple'
+        ? runTrajectory({ id: s.id, lps: s.lps as any }, 36)
+        : runPDFMockTrajectory({ id: s.id, lps: s.lps as any }, 36)
       series.forEach(row=>{
-        const t = row.t as number
+        const t = (row as any).t as number
         if (!byT[t]) byT[t] = { t }
         Object.keys(row).forEach(k=>{ if (k!=='t') byT[t][k] = (row as any)[k] })
       })
     })
     return Object.values(byT).sort((a:any,b:any)=> a.t - b.t)
-  }, [showTraj, scenariosWithColors])
+  }, [showTraj, scenariosWithColors, mode])
 
   type TargetKey = { id: string; type: TargetType }
   function aggregateScenario(sId: string){
@@ -99,6 +103,14 @@ export default function LeverageScenarios(){
         <div className="ml-auto flex items-center gap-4">
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={compare} onChange={e=>setCompare(e.target.checked)}/> Compare Scenarios</label>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={showTraj} onChange={e=>setShowTraj(e.target.checked)}/> View Trajectories</label>
+          {showTraj && (
+            <label className="flex items-center gap-2 text-sm">Engine
+              <select className="border rounded px-2 py-1 text-sm" value={mode} onChange={e=>setMode(e.target.value as any)}>
+                <option value="simple">Simple (SHI/SPI)</option>
+                <option value="pdf">PDF mock (Pillars)</option>
+              </select>
+            </label>
+          )}
         </div>
       </header>
 
@@ -129,8 +141,19 @@ export default function LeverageScenarios(){
       {showTraj && scenarios.length > 0 && (
         <section className="space-y-4">
           <h2 className="font-medium">Trajectories</h2>
-          <TrajectoryChart data={trajData} scenarios={scenariosWithColors as any} indexKey="SHI" />
-          <TrajectoryChart data={trajData} scenarios={scenariosWithColors as any} indexKey="SPI" />
+          {mode==='simple' ? (
+            <>
+              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SHI" />
+              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SPI" />
+            </>
+          ) : (
+            <>
+              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="pop_dyn" />
+              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="res_market" />
+              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="prod_services" />
+              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="soc_outcomes" />
+            </>
+          )}
         </section>
       )}
 
