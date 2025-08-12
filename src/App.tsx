@@ -109,6 +109,8 @@ const App = () => (
                   {import.meta.env.VITE_PAGS_FULL === '1' && (
                     <>
                       <Route path="/think/loops" element={<LoopRegistry />} />
+                      <Route path="/think/loops/new" element={<LoopStudioPage />} />
+                      <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
                       <Route path="/think/variables" element={<VariableRegistry />} />
                       <Route path="/act/bundles" element={<BundlesList />} />
                       <Route path="/act/bundles/new" element={<BundlesList />} />
