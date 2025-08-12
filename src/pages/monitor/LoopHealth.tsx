@@ -3,6 +3,7 @@ import { useLoopHealthStore, type LoopHealth } from '@/stores/useLoopHealthStore
 import { SparklineChart } from '@/components/dashboard/SparklineChart'
 import { Info, AlertTriangle } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import SystemIndicesStrip from '@/components/monitor/SystemIndicesStrip'
 
 function hashSeed(seed: string){
   let h = 2166136261 >>> 0
@@ -55,6 +56,8 @@ export default function LoopHealthPage(){
 
   return (
     <div className="p-4 space-y-4">
+      <SystemIndicesStrip onViewRelatedLoops={()=> setBreachedOnly(true)} />
+
       <header className="flex flex-wrap items-center gap-3">
         <h1 className="text-xl font-semibold">Loop Health</h1>
         <div className="ml-auto flex flex-wrap items-center gap-2">
