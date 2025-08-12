@@ -31,6 +31,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useTasks } from '../../hooks/useTasks';
 import type { Zone } from '../../types';
 import HeaderAddons from '@/components/shell/HeaderAddons';
+import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
+import { NAV_CONFIG } from '@/config/nav';
 
 interface NavigationItem {
   id: string;
@@ -80,6 +82,11 @@ export const EnhancedHeader: React.FC = () => {
 
   const isUltimateWorkspace = isEnabled('newTaskDrivenUI');
 
+  const getZoneRoute = (zoneId: 'think'|'act'|'monitor'|'innovate'|'admin') => {
+    const get = useWorkspaceStore.getState().getRouteForZone
+    return get(zoneId)
+  }
+
   const handleZoneChange = (zone: Zone) => {
     setCurrentZone(zone);
   };
@@ -99,6 +106,7 @@ export const EnhancedHeader: React.FC = () => {
   };
 
   const visibleNavigation = getVisibleNavigation();
+  // Extend with key zone pages
   const loopsNav: NavigationItem = { id: 'think-loops', label: 'Loops', icon: Package, path: '/think/loops', description: 'Loop Registry' };
   const loopStudioNav: NavigationItem = { id: 'think-loop-studio', label: 'Loop Studio', icon: Star, path: '/think/loops/new', description: 'Create and edit loops' };
   const leverageNav: NavigationItem = { id: 'think-leverage', label: 'Leverage', icon: Target, path: '/think/leverage', description: 'Meadows Leverage Ladder' };
@@ -106,9 +114,14 @@ export const EnhancedHeader: React.FC = () => {
   const leverageScenariosNav: NavigationItem = { id: 'think-leverage-scenarios', label: 'Leverage Scenarios', icon: Star, path: '/think/leverage-scenarios', description: 'Scenario planning for LP mixes' };
   const variablesNav: NavigationItem = { id: 'think-variables', label: 'Variables', icon: Shield, path: '/think/variables', description: 'Variable Registry' };
   const bundlesNav: NavigationItem = { id: 'act-bundles', label: 'Bundles', icon: Briefcase, path: '/act/bundles', description: 'Intervention Bundles' };
+  const shockLabNav: NavigationItem = { id: 'innovate-shock-lab', label: 'Shock Lab', icon: Activity, path: '/innovate/shock-lab', description: 'Run shock simulations' };
+  const networkNav: NavigationItem = { id: 'innovate-network', label: 'Network Explorer', icon: Users, path: '/innovate/network-explorer', description: 'Actor network' };
+  const changesQueueNav: NavigationItem = { id: 'admin-changes', label: 'Changes Queue', icon: Settings, path: '/admin/changes-queue', description: 'Review and publish' };
+  const metaLoopNav: NavigationItem = { id: 'admin-meta', label: 'Meta-Loop Console', icon: Shield, path: '/admin/meta-loop-console', description: 'Supervisory console' };
+  const demoNav: NavigationItem = { id: 'demo-atlas', label: 'Seed Atlas', icon: Star, path: '/demo-atlas', description: 'Demo cases and tours' };
   const navItems: NavigationItem[] = (!isUltimateWorkspace && import.meta.env.VITE_PAGS_FULL === '1')
-    ? [...visibleNavigation, loopsNav, loopStudioNav, leverageNav, leverageAnalysisNav, leverageScenariosNav, variablesNav, bundlesNav]
-    : visibleNavigation;
+    ? [...visibleNavigation, loopsNav, loopStudioNav, leverageNav, leverageAnalysisNav, leverageScenariosNav, variablesNav, bundlesNav, networkNav, shockLabNav, changesQueueNav, metaLoopNav, demoNav]
+    : [...visibleNavigation, demoNav];
 
   return (
     <>
@@ -171,6 +184,14 @@ export const EnhancedHeader: React.FC = () => {
           >
             {navItems.map((item) => {
               const Icon = item.icon;
+              // Compute dynamic path for core zone tabs
+              let toPath = item.path
+              if (item.id==='think') toPath = getZoneRoute('think')
+              if (item.id==='act') toPath = getZoneRoute('act')
+              if (item.id==='monitor') toPath = getZoneRoute('monitor')
+              if (item.id==='innovate-learn') toPath = getZoneRoute('innovate')
+              if (item.id==='admin') toPath = getZoneRoute('admin')
+
               const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
                 (item.id !== 'workspace' && location.pathname === item.path) ||
                 (item.id === currentZone && !isUltimateWorkspace);
@@ -178,7 +199,7 @@ export const EnhancedHeader: React.FC = () => {
               return (
                 <NavLink
                   key={item.id}
-                  to={item.path}
+                  to={toPath}
                   onClick={() => !isUltimateWorkspace && handleZoneChange(item.id as Zone)}
                   className={`relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                     isActive
@@ -241,6 +262,11 @@ export const EnhancedHeader: React.FC = () => {
                 {myTasks.length} task{myTasks.length !== 1 ? 's' : ''}
               </Badge>
             )}
+
+            {/* Demo Atlas quick link */}
+            <NavLink to="/demo-atlas" className="hidden md:block">
+              <Button variant="outline" size="sm" className="ml-1 glass">Seed Atlas</Button>
+            </NavLink>
 
             {/* Feature Flag Chip */}
             <div className="hidden md:block">
@@ -309,13 +335,19 @@ export const EnhancedHeader: React.FC = () => {
             {/* Navigation Items */}
             {navItems.map((item) => {
               const Icon = item.icon;
+              let toPath = item.path
+              if (item.id==='think') toPath = getZoneRoute('think')
+              if (item.id==='act') toPath = getZoneRoute('act')
+              if (item.id==='monitor') toPath = getZoneRoute('monitor')
+              if (item.id==='innovate-learn') toPath = getZoneRoute('innovate')
+              if (item.id==='admin') toPath = getZoneRoute('admin')
               const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
                 (item.id !== 'workspace' && location.pathname === item.path);
               
               return (
                 <NavLink
                   key={item.id}
-                  to={item.path}
+                  to={toPath}
                   onClick={() => {
                     if (!isUltimateWorkspace) handleZoneChange(item.id as Zone);
                     setIsMobileMenuOpen(false);
@@ -353,6 +385,9 @@ export const EnhancedHeader: React.FC = () => {
               <Briefcase className="w-4 h-4 mr-3" />
               Switch to {isUltimateWorkspace ? 'Legacy UI' : 'Ultimate Workspace'}
             </Button>
+            <NavLink to="/demo-atlas" onClick={()=>setIsMobileMenuOpen(false)} className="block">
+              <Button variant="outline" className="w-full mt-2">Seed Atlas</Button>
+            </NavLink>
           </div>
         </motion.div>
       )}

@@ -46,6 +46,15 @@ export default function LoopHealthPage(){
   const [breachedOnly, setBreachedOnly] = useState(false)
   useEffect(()=>{ document.title = 'Loop Health • MONITOR' },[])
 
+  // Deep-link support: ?loop or ?loopId focuses that loop
+  useEffect(()=>{
+    const params = new URLSearchParams(location.search)
+    const id = params.get('loop') || params.get('loopId')
+    if (id){
+      setQ(id)
+    }
+  },[])
+
   const filtered = useMemo(()=>{
     return loops.filter(l=>
       (level==='All' || l.level===level) &&

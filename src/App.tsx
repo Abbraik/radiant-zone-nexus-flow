@@ -36,6 +36,9 @@ import ShockLab from "./pages/innovate/ShockLab";
 import ChangesQueuePage from "./pages/admin/ChangesQueuePage";
 import DemoAtlas from "./pages/DemoAtlas";
 import { GuidedTourProvider } from "./modules/tours/GuidedTourProvider";
+import { RouteWatcher } from "./components/layout/RouteWatcher";
+import { RouteGuard } from "./components/layout/RouteGuard";
+import Forbidden from "./pages/Forbidden";
 const queryClient = createQueryClient();
 
 const App = () => (
@@ -47,6 +50,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <GuidedTourProvider>
+              <RouteWatcher />
             <FeatureFlagGuard 
               flag="newTaskDrivenUI"
               fallback={
@@ -86,8 +90,8 @@ const App = () => (
                           <Route path="/monitor" element={<LoopHealthPage />} />
                           <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
-                          <Route path="/innovate/network-explorer" element={<NetworkExplorer />} />
-                          <Route path="/innovate/shock-lab" element={<ShockLab />} />
+                          <Route path="/innovate/network-explorer" element={<RouteGuard roles={["analyst","admin","superuser"]}><NetworkExplorer /></RouteGuard>} />
+                          <Route path="/innovate/shock-lab" element={<RouteGuard roles={["analyst","admin","superuser"]}><ShockLab /></RouteGuard>} />
                           <Route path="/demo-atlas" element={<DemoAtlas />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
@@ -116,7 +120,7 @@ const App = () => (
                   } />
                   {/* Admin Pages */}
                   <Route path="/admin" element={<AdminPage />} />
-                  <Route path="/admin/changes-queue" element={<ChangesQueuePage />} />
+                  <Route path="/admin/changes-queue" element={<RouteGuard roles={["admin","superuser"]}><ChangesQueuePage /></RouteGuard>} />
                   <Route path="/plugins" element={<AdminPage />} />
                   <Route path="/offline" element={<AdminPage />} />
                   <Route path="/security" element={<AdminPage />} />
@@ -144,6 +148,7 @@ const App = () => (
                   <Route path="/monitor" element={<LoopHealthPage />} />
                   <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                   <Route path="/demo-atlas" element={<DemoAtlas />} />
+                  <Route path="/forbidden" element={<Forbidden />} />
                    <Route path="*" element={<Workspace />} />
                 </Routes>
               </Shell>
