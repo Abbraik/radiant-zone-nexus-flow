@@ -12,6 +12,8 @@ export default function CoverageMatrix({ bundle }: { bundle: Bundle }){
   bundle.items.forEach(item=>{
     item.targetLoops.forEach(lid=> covered[lid] = (covered[lid]||0)+1 )
   })
+  const coveredCount = loopsAtLevel.reduce((acc, l) => acc + ((covered[l.id]||0) > 0 ? 1 : 0), 0)
+  const coveragePct = Math.round((coveredCount / Math.max(loopsAtLevel.length, 1)) * 100)
 
   if (loopsAtLevel.length===0){
     return (
@@ -37,7 +39,7 @@ export default function CoverageMatrix({ bundle }: { bundle: Bundle }){
           </thead>
           <tbody>
             {loopsAtLevel.map(loop=>(
-              <tr key={loop.id} className="border-b">
+              <tr key={loop.id} className={"border-b "+(((covered[loop.id]||0)===0)?'bg-destructive/5':'')}>
                 <Td>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{loop.id}</span>
@@ -50,8 +52,16 @@ export default function CoverageMatrix({ bundle }: { bundle: Bundle }){
                 })}
               </tr>
             ))}
-          </tbody>
-        </table>
+            </tbody>
+            <tfoot>
+              <tr className="bg-muted/50">
+                <Td className="font-medium">Covered loops</Td>
+                <td className="px-3 py-2" colSpan={bundle.items.length}>
+                  {coveragePct}% ({coveredCount}/{loopsAtLevel.length})
+                </td>
+              </tr>
+            </tfoot>
+          </table>
       </div>
 
       {/* Summary */}

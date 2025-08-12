@@ -10,6 +10,16 @@ type BundleState = {
   createBundle: (level: Level) => Bundle
   saveBundle: (b: Bundle) => Promise<void>
   deleteItem: (bundleId: string, itemId: string) => void
+  // New helpers for targeting and coverage
+  setItemTargets: (
+    bundleId: string,
+    itemId: string,
+    targets: { loopId: string; variableIds?: string[] }[]
+  ) => void
+  getCoverageMatrix: (
+    bundle: Bundle,
+    loops: { id: string }[]
+  ) => { loopId: string; coveredBy: string[] }[]
 }
 
 const delay = (ms:number)=>new Promise(r=>setTimeout(r,ms))
@@ -59,10 +69,31 @@ export const useBundleStore = create<BundleState>((set, get)=>({
     set(s=>({
       bundles: s.bundles.map(b=> b.id!==bundleId ? b : { ...b, items: b.items.filter(i=>i.id!==itemId) })
     }))
+  },
+  setItemTargets: (bundleId, itemId, targets)=>{
+    set(s=>({
+      bundles: s.bundles.map(b=>{
+        if (b.id !== bundleId) return b
+        const items = b.items.map(it=>{
+          if (it.id !== itemId) return it
+          const loopIds = Array.from(new Set(targets.map(t=>t.loopId)))
+          const variableIds = Array.from(new Set(targets.flatMap(t=> t.variableIds || [])))
+          const next: BundleItem = { ...it, targetLoops: loopIds, targetVariables: variableIds }
+          return next
+        })
+        return { ...b, items }
+      })
+    }))
+  },
+  getCoverageMatrix: (bundle, loops)=>{
+    return loops.map(l=>({
+      loopId: l.id,
+      coveredBy: bundle.items.filter(it=> it.targetLoops.includes(l.id)).map(it=> it.id)
+    }))
   }
 }))
 
-export function validateBundle(b: Bundle){
+export function validateBundle(b: Bundle, loopsInScope?: { id: string }[]){
   const issues: string[] = []
   if (!b.name.trim()) issues.push('Bundle name is required.')
   b.items.forEach((it, idx)=>{
@@ -71,5 +102,13 @@ export function validateBundle(b: Bundle){
       issues.push(`Item ${idx+1}: must target at least one Loop or Variable.`)
     }
   })
+  // Governance: all loops in scope must be covered by at least one item
+  if (loopsInScope && loopsInScope.length>0){
+    const uncovered = loopsInScope.filter(l=> !b.items.some(it=> it.targetLoops.includes(l.id)))
+    if (uncovered.length>0){
+      uncovered.forEach(l=> issues.push(`Loop ${l.id} has no coverage.`))
+      issues.push('Cannot save — all items must target ≥1 loop/variable and all loops must be covered.')
+    }
+  }
   return { ok: issues.length===0, issues }
 }

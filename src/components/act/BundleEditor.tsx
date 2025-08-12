@@ -11,7 +11,7 @@ export default function BundleEditor({ initial }:{ initial: Bundle }){
   const [bundle, setBundle] = useState<Bundle>(initial)
   const { saveBundle } = useBundleStore()
   const { level } = useLevelStore()
-  const { fetchLoops } = useLoopRegistryStore()
+  const { loops, fetchLoops } = useLoopRegistryStore()
   const { fetchVariables } = useVariableRegistryStore()
 
   useEffect(()=>{ fetchLoops(); fetchVariables(); },[])
@@ -22,7 +22,9 @@ export default function BundleEditor({ initial }:{ initial: Bundle }){
     useMemo(()=> setBundle({ ...bundle, level }), [level])
   }
 
-  const issues = validateBundle(bundle)
+  const loopsAtLevel = useMemo(()=> loops.filter(l=>l.level===level), [loops, level])
+
+  const issues = validateBundle(bundle, loopsAtLevel)
   const addItem = ()=>{
     const it: BundleItem = { id: crypto.randomUUID(), title: '', lever: 'N', targetLoops: [], targetVariables: [], description: '' }
     setBundle(b=>({ ...b, items: [...b.items, it] }))
@@ -46,7 +48,7 @@ export default function BundleEditor({ initial }:{ initial: Bundle }){
         <label className="sr-only" htmlFor="bundle-name">Bundle name</label>
         <input id="bundle-name" value={bundle.name} onChange={e=>setBundle({ ...bundle, name: e.target.value })} placeholder="Bundle name" className="border rounded px-3 py-2 flex-1"/>
         <button onClick={addItem} className="px-3 py-2 rounded bg-primary text-primary-foreground">Add item</button>
-        <button onClick={save} disabled={!issues.ok} className={'px-3 py-2 rounded '+(issues.ok? 'bg-success text-success-foreground':'bg-success/40 text-success-foreground/70 cursor-not-allowed')}>Save bundle</button>
+        <button onClick={save} disabled={!issues.ok} title={!issues.ok ? 'Cannot save — all items must target ≥1 loop and all loops must be covered.' : undefined} className={'px-3 py-2 rounded '+(issues.ok? 'bg-success text-success-foreground':'bg-success/40 text-success-foreground/70 cursor-not-allowed')}>Save bundle</button>
       </header>
 
       {issues.ok ? null : (
