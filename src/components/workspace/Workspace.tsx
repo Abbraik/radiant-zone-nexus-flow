@@ -20,6 +20,8 @@ import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup'
 import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
 import ThinkToolsSurface from '@/components/zones/ThinkToolsSurface'
+import ActToolsSurface from '@/components/zones/ActToolsSurface'
+
 
 
 export const Workspace: React.FC = () => {
@@ -321,6 +323,8 @@ export const Workspace: React.FC = () => {
 
         {/* Think Zone Tools Surface */}
         <ThinkToolsSurface />
+        {/* Act Zone Tools Surface */}
+        <ActToolsSurface />
     </div>
   );
 };

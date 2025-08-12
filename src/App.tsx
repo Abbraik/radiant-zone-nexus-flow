@@ -72,11 +72,8 @@ const App = () => (
                           <Route path="/" element={<Index />} />
                           <Route path="/think" element={<ZoneRouteAdapter />} />
                           <Route path="/think/*" element={<ZoneRouteAdapter />} />
-                          <Route path="/act/bundles" element={<BundlesList />} />
-                          <Route path="/act/bundles/new" element={<BundlesList />} />
-                          <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
-                          <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
-                          <Route path="/act" element={<ActZone />} />
+                          <Route path="/act" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                          <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/monitor" element={<LoopHealthPage />} />
                           <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
@@ -118,11 +115,8 @@ const App = () => (
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ZoneRouteAdapter />} />
                   <Route path="/think/*" element={<ZoneRouteAdapter />} />
-                  <Route path="/act/bundles" element={<BundlesList />} />
-                  <Route path="/act/bundles/new" element={<BundlesList />} />
-                  <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
-                  <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
-                  <Route path="/act" element={<ActZone />} />
+                  <Route path="/act" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                  <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/monitor" element={<LoopHealthPage />} />
                   <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                   <Route path="/demo-atlas" element={<DemoAtlas />} />
