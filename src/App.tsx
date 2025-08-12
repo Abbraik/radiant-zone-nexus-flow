@@ -79,7 +79,7 @@ const App = () => (
                           
                           <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/demo-atlas" element={<DemoAtlas />} />
+                          <Route path="/demo-atlas" element={<Workspace />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
                       </FeatureFlagGuard>
@@ -121,7 +121,7 @@ const App = () => (
                   <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/demo-atlas" element={<DemoAtlas />} />
+                  <Route path="/demo-atlas" element={<Workspace />} />
                   <Route path="/forbidden" element={<Forbidden />} />
                    <Route path="*" element={<Workspace />} />
                 </Routes>
