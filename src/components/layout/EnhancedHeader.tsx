@@ -103,10 +103,11 @@ export const EnhancedHeader: React.FC = () => {
   const loopStudioNav: NavigationItem = { id: 'think-loop-studio', label: 'Loop Studio', icon: Star, path: '/think/loops/new', description: 'Create and edit loops' };
   const leverageNav: NavigationItem = { id: 'think-leverage', label: 'Leverage', icon: Target, path: '/think/leverage', description: 'Meadows Leverage Ladder' };
   const leverageAnalysisNav: NavigationItem = { id: 'think-leverage-analysis', label: 'Leverage Analysis', icon: BarChart3, path: '/think/leverage-analysis', description: 'Coverage across loops & bundles' };
+  const leverageScenariosNav: NavigationItem = { id: 'think-leverage-scenarios', label: 'Leverage Scenarios', icon: Star, path: '/think/leverage-scenarios', description: 'Scenario planning for LP mixes' };
   const variablesNav: NavigationItem = { id: 'think-variables', label: 'Variables', icon: Shield, path: '/think/variables', description: 'Variable Registry' };
   const bundlesNav: NavigationItem = { id: 'act-bundles', label: 'Bundles', icon: Briefcase, path: '/act/bundles', description: 'Intervention Bundles' };
   const navItems: NavigationItem[] = (!isUltimateWorkspace && import.meta.env.VITE_PAGS_FULL === '1')
-    ? [...visibleNavigation, loopsNav, loopStudioNav, leverageNav, leverageAnalysisNav, variablesNav, bundlesNav]
+    ? [...visibleNavigation, loopsNav, loopStudioNav, leverageNav, leverageAnalysisNav, leverageScenariosNav, variablesNav, bundlesNav]
     : visibleNavigation;
 
   return (

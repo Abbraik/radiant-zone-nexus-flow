@@ -26,6 +26,7 @@ import LoopStudioPage from "./pages/think/LoopStudio";
 import VariableRegistry from "./pages/think/VariableRegistry";
 import LeverageLadder from "./pages/think/LeverageLadder";
 import LeverageAnalysis from "./pages/think/LeverageAnalysis";
+import LeverageScenarios from "./pages/think/LeverageScenarios";
 import BundlesList from "./pages/act/BundlesList";
 import BundleEditorPage from "./pages/act/BundleEditorPage";
 
@@ -67,6 +68,7 @@ const App = () => (
                               <Route path="/think/variables" element={<VariableRegistry />} />
                               <Route path="/think/leverage" element={<LeverageLadder />} />
                               <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
+                              <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
                               <Route path="/act/bundles" element={<BundlesList />} />
                               <Route path="/act/bundles/new" element={<BundlesList />} />
                               <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
@@ -118,6 +120,7 @@ const App = () => (
                       <Route path="/think/variables" element={<VariableRegistry />} />
                       <Route path="/think/leverage" element={<LeverageLadder />} />
                       <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
+                      <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
                       <Route path="/act/bundles" element={<BundlesList />} />
                       <Route path="/act/bundles/new" element={<BundlesList />} />
                       <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
