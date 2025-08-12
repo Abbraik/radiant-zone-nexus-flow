@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useLevelStore } from '@/stores/useLevelStore'
 import { useGovernanceStore } from '@/stores/useGovernanceStore'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import LevelSwitcher from '@/components/shell/LevelSwitcher'
 import { Badge } from '@/components/ui/badge'
 
@@ -16,12 +16,15 @@ export default function LoopRegistry(){
   const [classFilter,setClassFilter]=useState<string[]>([])
 
   useEffect(()=>{ fetchLoops() },[level])
+  const [params] = useSearchParams()
+  const filterLoops = (params.get('filterLoops')||'').split(',').filter(Boolean)
 
   const filtered = loops.filter(l=>{
     return l.level === level &&
       (typeFilter.length===0 || typeFilter.includes(l.type)) &&
       (pillarFilter.length===0 || pillarFilter.includes(l.pillar)) &&
-      (classFilter.length===0 || classFilter.includes(l.class))
+      (classFilter.length===0 || classFilter.includes(l.class)) &&
+      (filterLoops.length===0 || filterLoops.includes(l.id))
   })
 
   return (

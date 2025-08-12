@@ -23,6 +23,7 @@ import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
 import LoopRegistry from "./pages/think/LoopRegistry";
 import LoopStudioPage from "./pages/think/LoopStudio";
+import VariableRegistry from "./pages/think/VariableRegistry";
 
 const queryClient = createQueryClient();
 
@@ -59,6 +60,7 @@ const App = () => (
                               <Route path="/think/loops" element={<LoopRegistry />} />
                               <Route path="/think/loops/new" element={<LoopStudioPage />} />
                               <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
+                              <Route path="/think/variables" element={<VariableRegistry />} />
                             </>
                           )}
                           <Route path="/act" element={<ActZone />} />
@@ -100,7 +102,10 @@ const App = () => (
                   <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
                   <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
                   {import.meta.env.VITE_PAGS_FULL === '1' && (
-                    <Route path="/think/loops" element={<LoopRegistry />} />
+                    <>
+                      <Route path="/think/loops" element={<LoopRegistry />} />
+                      <Route path="/think/variables" element={<VariableRegistry />} />
+                    </>
                   )}
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />

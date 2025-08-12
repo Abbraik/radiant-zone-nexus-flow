@@ -100,8 +100,9 @@ export const EnhancedHeader: React.FC = () => {
 
   const visibleNavigation = getVisibleNavigation();
   const loopsNav: NavigationItem = { id: 'think-loops', label: 'Loops', icon: Package, path: '/think/loops', description: 'Loop Registry' };
+  const variablesNav: NavigationItem = { id: 'think-variables', label: 'Variables', icon: Shield, path: '/think/variables', description: 'Variable Registry' };
   const navItems: NavigationItem[] = (!isUltimateWorkspace && import.meta.env.VITE_PAGS_FULL === '1')
-    ? [...visibleNavigation, loopsNav]
+    ? [...visibleNavigation, loopsNav, variablesNav]
     : visibleNavigation;
 
   return (
