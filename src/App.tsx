@@ -39,6 +39,7 @@ import { GuidedTourProvider } from "./modules/tours/GuidedTourProvider";
 import { RouteWatcher } from "./components/layout/RouteWatcher";
 import { RouteGuard } from "./components/layout/RouteGuard";
 import Forbidden from "./pages/Forbidden";
+import ZoneRouteAdapter from "./components/layout/ZoneRouteAdapter";
 const queryClient = createQueryClient();
 
 const App = () => (
@@ -69,15 +70,8 @@ const App = () => (
                       >
                         <Routes>
                           <Route path="/" element={<Index />} />
-                          <Route path="/think" element={<ThinkZone />} />
-                          <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
-                          <Route path="/think/loops" element={<LoopRegistry />} />
-                          <Route path="/think/loops/new" element={<LoopStudioPage />} />
-                          <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
-                          <Route path="/think/variables" element={<VariableRegistry />} />
-                          <Route path="/think/leverage" element={<LeverageLadder />} />
-                          <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
-                          <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
+                          <Route path="/think" element={<ZoneRouteAdapter />} />
+                          <Route path="/think/*" element={<ZoneRouteAdapter />} />
                           <Route path="/act/bundles" element={<BundlesList />} />
                           <Route path="/act/bundles/new" element={<BundlesList />} />
                           <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
@@ -122,16 +116,8 @@ const App = () => (
                   <Route path="/security" element={<AdminPage />} />
                   <Route path="/mission-control" element={<MissionControl />} />
                   {/* Legacy Zone Access */}
-                  <Route path="/think" element={<ThinkZone />} />
-                  <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
-                  <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
-                  <Route path="/think/loops" element={<LoopRegistry />} />
-                  <Route path="/think/loops/new" element={<LoopStudioPage />} />
-                  <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
-                  <Route path="/think/variables" element={<VariableRegistry />} />
-                  <Route path="/think/leverage" element={<LeverageLadder />} />
-                  <Route path="/think/leverage-analysis" element={<LeverageAnalysis />} />
-                  <Route path="/think/leverage-scenarios" element={<LeverageScenarios />} />
+                  <Route path="/think" element={<ZoneRouteAdapter />} />
+                  <Route path="/think/*" element={<ZoneRouteAdapter />} />
                   <Route path="/act/bundles" element={<BundlesList />} />
                   <Route path="/act/bundles/new" element={<BundlesList />} />
                   <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />

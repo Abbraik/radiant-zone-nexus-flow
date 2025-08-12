@@ -19,6 +19,8 @@ import TaskClaimPopup from './TaskClaimPopup';
 import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
+import ThinkToolsSurface from '@/components/zones/ThinkToolsSurface'
+
 
 export const Workspace: React.FC = () => {
   const { 
@@ -316,6 +318,9 @@ export const Workspace: React.FC = () => {
             isLoading={isClaimingTask}
           />
         )}
+
+        {/* Think Zone Tools Surface */}
+        <ThinkToolsSurface />
     </div>
   );
 };
