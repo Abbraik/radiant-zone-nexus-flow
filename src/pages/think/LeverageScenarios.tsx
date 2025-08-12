@@ -6,8 +6,10 @@ import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useBundleStore } from '@/stores/useBundleStore'
 import { applyMockImpact } from '@/services/mock/leverageImpact'
 import TrajectoryChart from '@/components/think/TrajectoryChart'
+import SimulationControls from '@/components/think/SimulationControls'
 import { runTrajectory } from '@/services/simulation/runTrajectory'
 import { runPDFMockTrajectory } from '@/services/simulation/runPDFMockTrajectory'
+import { useSimulationSettingsStore } from '@/stores/useSimulationSettingsStore'
 
 export default function LeverageScenarios(){
   const { scenarios, createScenario, addLP, removeLP, cloneScenario } = useScenarioStore()
@@ -19,6 +21,8 @@ export default function LeverageScenarios(){
   const [compare, setCompare] = useState(false)
   const [showTraj, setShowTraj] = useState(false)
   const [mode, setMode] = useState<'simple'|'pdf'>('simple')
+  const { horizon, sensitivity } = useSimulationSettingsStore()
+  const [applied, setApplied] = useState({ horizon, sensitivity })
 
   useEffect(()=>{ document.title = 'Leverage Scenarios | THINK' },[])
   useEffect(()=>{ fetchLoops(); fetchBundles() },[])
@@ -34,8 +38,8 @@ export default function LeverageScenarios(){
     const byT: Record<number, any> = {}
     scenariosWithColors.forEach(s=>{
       const series = mode==='simple'
-        ? runTrajectory({ id: s.id, lps: s.lps as any }, 36)
-        : runPDFMockTrajectory({ id: s.id, lps: s.lps as any }, 36)
+        ? runTrajectory({ id: s.id, lps: s.lps as any }, applied.horizon)
+        : runPDFMockTrajectory({ id: s.id, lps: s.lps as any }, applied.horizon, applied.sensitivity)
       series.forEach(row=>{
         const t = (row as any).t as number
         if (!byT[t]) byT[t] = { t }
@@ -43,7 +47,7 @@ export default function LeverageScenarios(){
       })
     })
     return Object.values(byT).sort((a:any,b:any)=> a.t - b.t)
-  }, [showTraj, scenariosWithColors, mode])
+  }, [showTraj, scenariosWithColors, mode, applied])
 
   type TargetKey = { id: string; type: TargetType }
   function aggregateScenario(sId: string){
@@ -141,6 +145,7 @@ export default function LeverageScenarios(){
       {showTraj && scenarios.length > 0 && (
         <section className="space-y-4">
           <h2 className="font-medium">Trajectories</h2>
+          <SimulationControls onRun={()=>setApplied({ horizon, sensitivity })} />
           {mode==='simple' ? (
             <>
               <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SHI" />
