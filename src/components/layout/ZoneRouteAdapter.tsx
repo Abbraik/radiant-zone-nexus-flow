@@ -70,8 +70,12 @@ export default function ZoneRouteAdapter({ redirectToWorkspace = true }: { redir
     const zone = zoneFromPath(loc.pathname)
     if (!zone) return
 
-    // Basic role awareness (extend per-view in later phases)
+    // Role checks (basic)
     if (zone === 'admin' && role !== 'admin' && role !== 'superuser') {
+      nav('/forbidden', { replace: true })
+      return
+    }
+    if (zone === 'innovate' && !(role === 'analyst' || role === 'admin' || role === 'superuser')) {
       nav('/forbidden', { replace: true })
       return
     }

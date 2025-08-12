@@ -22,6 +22,8 @@ import { taskRegistry } from '../../config/taskRegistry';
 import ThinkToolsSurface from '@/components/zones/ThinkToolsSurface'
 import ActToolsSurface from '@/components/zones/ActToolsSurface'
 import MonitorToolsSurface from '@/components/zones/MonitorToolsSurface'
+import InnovateToolsSurface from '@/components/zones/InnovateToolsSurface'
+
 
 
 
@@ -329,6 +331,8 @@ export const Workspace: React.FC = () => {
         <ActToolsSurface />
         {/* Monitor Zone Tools Surface */}
         <MonitorToolsSurface />
+        {/* Innovate Zone Tools Surface */}
+        <InnovateToolsSurface />
     </div>
   );
 };

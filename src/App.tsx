@@ -77,8 +77,8 @@ const App = () => (
                           <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
-                          <Route path="/innovate/network-explorer" element={<RouteGuard roles={["analyst","admin","superuser"]}><NetworkExplorer /></RouteGuard>} />
-                          <Route path="/innovate/shock-lab" element={<RouteGuard roles={["analyst","admin","superuser"]}><ShockLab /></RouteGuard>} />
+                          <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                          <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/demo-atlas" element={<DemoAtlas />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
@@ -119,6 +119,8 @@ const App = () => (
                   <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                  <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                  <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/demo-atlas" element={<DemoAtlas />} />
                   <Route path="/forbidden" element={<Forbidden />} />
                    <Route path="*" element={<Workspace />} />
