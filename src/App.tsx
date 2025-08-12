@@ -76,7 +76,7 @@ const App = () => (
                           <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/innovate" element={<InnovateLearnZone />} />
+                          
                           <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/demo-atlas" element={<DemoAtlas />} />
@@ -105,9 +105,9 @@ const App = () => (
                       <Dashboard />
                     </div>
                   } />
-                  {/* Admin Pages */}
-                  <Route path="/admin" element={<AdminPage />} />
-                  <Route path="/admin/changes-queue" element={<RouteGuard roles={["admin","superuser"]}><ChangesQueuePage /></RouteGuard>} />
+                  {/* Admin Pages via Zone Adapter */}
+                  <Route path="/admin" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                  <Route path="/admin/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/plugins" element={<AdminPage />} />
                   <Route path="/offline" element={<AdminPage />} />
                   <Route path="/security" element={<AdminPage />} />

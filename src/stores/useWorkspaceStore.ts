@@ -28,7 +28,7 @@ const defaultViews: Record<ZoneKey, string | null> = {
   act: null,
   monitor: null,
   innovate: null,
-  admin: 'changes-queue',
+  admin: null,
 }
 
 

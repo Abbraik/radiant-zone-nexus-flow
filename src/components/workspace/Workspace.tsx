@@ -23,6 +23,8 @@ import ThinkToolsSurface from '@/components/zones/ThinkToolsSurface'
 import ActToolsSurface from '@/components/zones/ActToolsSurface'
 import MonitorToolsSurface from '@/components/zones/MonitorToolsSurface'
 import InnovateToolsSurface from '@/components/zones/InnovateToolsSurface'
+import AdminToolsSurface from '@/components/zones/AdminToolsSurface'
+
 
 
 
@@ -333,6 +335,8 @@ export const Workspace: React.FC = () => {
         <MonitorToolsSurface />
         {/* Innovate Zone Tools Surface */}
         <InnovateToolsSurface />
+        {/* Admin Zone Tools Surface */}
+        <AdminToolsSurface />
     </div>
   );
 };
