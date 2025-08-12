@@ -31,6 +31,7 @@ import BundlesList from "./pages/act/BundlesList";
 import BundleEditorPage from "./pages/act/BundleEditorPage";
 import PathwayBuilderPage from "./pages/act/PathwayBuilder";
 import LoopHealthPage from "./pages/monitor/LoopHealth";
+import NetworkExplorer from "./pages/innovate/NetworkExplorer";
 
 const queryClient = createQueryClient();
 
