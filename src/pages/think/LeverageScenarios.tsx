@@ -7,6 +7,7 @@ import { useBundleStore } from '@/stores/useBundleStore'
 import { applyMockImpact } from '@/services/mock/leverageImpact'
 import TrajectoryChart from '@/components/think/TrajectoryChart'
 import SimulationControls from '@/components/think/SimulationControls'
+import ReplayPanel from '@/components/think/ReplayPanel'
 import { runTrajectory } from '@/services/simulation/runTrajectory'
 import { runPDFMockTrajectory } from '@/services/simulation/runPDFMockTrajectory'
 import { useSimulationSettingsStore } from '@/stores/useSimulationSettingsStore'
@@ -23,6 +24,8 @@ export default function LeverageScenarios(){
   const [mode, setMode] = useState<'simple'|'pdf'>('simple')
   const { horizon, sensitivity } = useSimulationSettingsStore()
   const [applied, setApplied] = useState({ horizon, sensitivity })
+  const [replay, setReplay] = useState(false)
+  const [replayScenario, setReplayScenario] = useState<string | null>(null)
 
   useEffect(()=>{ document.title = 'Leverage Scenarios | THINK' },[])
   useEffect(()=>{ fetchLoops(); fetchBundles() },[])
@@ -146,18 +149,36 @@ export default function LeverageScenarios(){
         <section className="space-y-4">
           <h2 className="font-medium">Trajectories</h2>
           <SimulationControls onRun={()=>setApplied({ horizon, sensitivity })} />
-          {mode==='simple' ? (
-            <>
-              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SHI" />
-              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SPI" />
-            </>
+          {mode==='pdf' && (
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={replay} onChange={e=>setReplay(e.target.checked)} /> Replay Mode
+              </label>
+              {replay && (
+                <label className="flex items-center gap-2 text-sm">Scenario
+                  <select value={replayScenario ?? scenarios[0]?.id} onChange={e=>setReplayScenario(e.target.value)} className="border rounded px-2 py-1">
+                    {scenarios.map(s=> <option key={s.id} value={s.id}>{s.name || s.id}</option>)}
+                  </select>
+                </label>
+              )}
+            </div>
+          )}
+          {replay && mode==='pdf' ? (
+            <ReplayModeView scenarios={scenarios} replayScenario={replayScenario} applied={applied} />
           ) : (
-            <>
-              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="pop_dyn" />
-              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="res_market" />
-              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="prod_services" />
-              <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="soc_outcomes" />
-            </>
+            mode==='simple' ? (
+              <>
+                <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SHI" />
+                <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="SPI" />
+              </>
+            ) : (
+              <>
+                <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="pop_dyn" />
+                <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="res_market" />
+                <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="prod_services" />
+                <TrajectoryChart data={chartData} scenarios={scenariosWithColors as any} indexKey="soc_outcomes" />
+              </>
+            )
           )}
         </section>
       )}
@@ -170,6 +191,17 @@ export default function LeverageScenarios(){
         </div>
       )}
     </div>
+  )
+}
+
+function ReplayModeView({ scenarios, replayScenario, applied }:{ scenarios: { id:string; name?:string; lps:any[] }[]; replayScenario: string|null; applied: any }){
+  const sid = replayScenario ?? (scenarios[0]?.id ?? null)
+  if (!sid) return null
+  const s = scenarios.find(x=>x.id===sid)
+  if (!s) return null
+  const series = runPDFMockTrajectory({ id: s.id, lps: s.lps as any }, applied.horizon, applied.sensitivity)
+  return (
+    <ReplayPanel monthlySeries={series as any} horizon={applied.horizon} />
   )
 }
 

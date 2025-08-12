@@ -13,28 +13,39 @@ export function runPDFMockTrajectory(
   const lpEffects = scenario.lps.map(lp => {
     const tier = (leveragePoints.find(x=>x.id===lp.lpId)?.tier || 'mid') as 'high'|'mid'|'low'
     const baseImpact = lpPillarImpact[lp.lpId] || {}
-    return { ...baseImpact, elasticity: elasticityTable[tier] }
+    return { lpId: lp.lpId, tier, impact: baseImpact, elasticity: elasticityTable[tier] }
   })
+
+  const activateAt = (tier: 'high'|'mid'|'low') => tier==='high'?0 : tier==='mid'?3 : 6
 
   const monthlySeries: any[] = []
 
   for (let t = 0; t <= months; t++){
+    const activeLPs = lpEffects.filter(e=> t >= activateAt(e.tier)).map(e=> e.lpId)
     // Record current step
     monthlySeries.push({
       t,
+      // scenario-keyed columns for charts
       [`${scenario.id}_pop_dyn`]: state.pop_dyn,
       [`${scenario.id}_res_market`]: state.res_market,
       [`${scenario.id}_prod_services`]: state.prod_services,
       [`${scenario.id}_soc_outcomes`]: state.soc_outcomes,
+      // top-level for replay convenience
+      pop_dyn: state.pop_dyn,
+      res_market: state.res_market,
+      prod_services: state.prod_services,
+      soc_outcomes: state.soc_outcomes,
+      pillars: { ...state },
+      activeLPs
     })
 
     // Sum LP boosts by pillar
     const boostSum = { pop_dyn: 0, res_market: 0, prod_services: 0, soc_outcomes: 0 }
     lpEffects.forEach(e=>{
-      boostSum.pop_dyn += (e as any).pop_dyn || 0
-      boostSum.res_market += (e as any).res_market || 0
-      boostSum.prod_services += (e as any).prod_services || 0
-      boostSum.soc_outcomes += (e as any).soc_outcomes || 0
+      boostSum.pop_dyn += (e.impact as any).pop_dyn || 0
+      boostSum.res_market += (e.impact as any).res_market || 0
+      boostSum.prod_services += (e.impact as any).prod_services || 0
+      boostSum.soc_outcomes += (e.impact as any).soc_outcomes || 0
     })
 
     // Update each pillar toward its target using elasticity + boost
