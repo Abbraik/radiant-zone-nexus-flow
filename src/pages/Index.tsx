@@ -193,6 +193,13 @@ const Index = () => {
                 >
                   Run Simulation
                 </Button>
+                <Button 
+                  onClick={() => navigate('/demo-atlas')}
+                  variant="outline"
+                  className="w-full justify-start btn-secondary"
+                >
+                  Open Demo Atlas
+                </Button>
               </div>
             </Card>
           </motion.div>
