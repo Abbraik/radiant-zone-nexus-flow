@@ -141,7 +141,8 @@ export function GuidedTourProvider({ children }:{ children: React.ReactNode }){
 
 function Overlay({ steps, stepIndex, onNext, onBack, onExit }:{ steps: TourStep[]; stepIndex: number; onNext:()=>void; onBack:()=>void; onExit:()=>void }){
   const step = steps[stepIndex]
-  const el = document.querySelector(step?.anchorSelector||'') as HTMLElement | null
+  const sel = step?.anchorSelector?.trim()
+  const el = sel ? (document.querySelector(sel) as HTMLElement | null) : null
   const rect = el?.getBoundingClientRect()
 
   return createPortal(
