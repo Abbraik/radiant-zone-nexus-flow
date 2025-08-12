@@ -90,6 +90,8 @@ export default function BundleItemEditor({ item, onChange, onDelete, bundleId }:
       {item.targetLoops.length===0 && item.targetVariables.length===0 && (
         <p className="text-sm text-destructive">This item must target at least one Loop or Variable.</p>
       )}
+
+      <LPAssignmentDrawer open={lpOpen} onOpenChange={setLpOpen} itemId={item.id} />
     </div>
   )
 }

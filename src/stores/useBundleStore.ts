@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import type { Bundle, BundleItem } from '@/types/bundles'
 import type { Level } from '@/types/pags'
+import { usePathwayStore } from '@/stores/usePathwayStore'
+import { useLeverageLadderStore } from '@/stores/useLeverageLadderStore'
 
 type BundleState = {
   bundles: Bundle[]
@@ -96,19 +98,32 @@ export const useBundleStore = create<BundleState>((set, get)=>({
 export function validateBundle(b: Bundle, loopsInScope?: { id: string }[]){
   const issues: string[] = []
   if (!b.name.trim()) issues.push('Bundle name is required.')
+
+  const lpAssignments = useLeverageLadderStore.getState().itemAssignments || {}
+  const pathwaysMap = usePathwayStore.getState().pathways || {}
+
   b.items.forEach((it, idx)=>{
     if (!it.title.trim()) issues.push(`Item ${idx+1}: title is required.`)
     if (it.targetLoops.length===0 && it.targetVariables.length===0) {
       issues.push(`Item ${idx+1}: must target at least one Loop or Variable.`)
     }
+    const assign = lpAssignments[it.id]
+    if (!assign?.lpId || !assign?.stage) {
+      issues.push(`Item ${idx+1}: assign a Leverage Point and N/P/S stage.`)
+    }
+    const g = pathwaysMap[it.id]
+    if (!g || (g.nodes?.length||0) < 2) {
+      issues.push(`Item ${idx+1}: define a Pathway with ≥2 actors.`)
+    }
   })
+
   // Governance: all loops in scope must be covered by at least one item
   if (loopsInScope && loopsInScope.length>0){
     const uncovered = loopsInScope.filter(l=> !b.items.some(it=> it.targetLoops.includes(l.id)))
     if (uncovered.length>0){
       uncovered.forEach(l=> issues.push(`Loop ${l.id} has no coverage.`))
-      issues.push('Cannot save — all items must target ≥1 loop/variable and all loops must be covered.')
     }
   }
+
   return { ok: issues.length===0, issues }
 }
