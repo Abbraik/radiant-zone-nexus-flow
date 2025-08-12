@@ -24,6 +24,8 @@ import { createQueryClient } from "./services/api";
 import LoopRegistry from "./pages/think/LoopRegistry";
 import LoopStudioPage from "./pages/think/LoopStudio";
 import VariableRegistry from "./pages/think/VariableRegistry";
+import BundlesList from "./pages/act/BundlesList";
+import BundleEditorPage from "./pages/act/BundleEditorPage";
 
 const queryClient = createQueryClient();
 
@@ -61,6 +63,9 @@ const App = () => (
                               <Route path="/think/loops/new" element={<LoopStudioPage />} />
                               <Route path="/think/loops/:loopId/edit" element={<LoopStudioPage />} />
                               <Route path="/think/variables" element={<VariableRegistry />} />
+                              <Route path="/act/bundles" element={<BundlesList />} />
+                              <Route path="/act/bundles/new" element={<BundlesList />} />
+                              <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
                             </>
                           )}
                           <Route path="/act" element={<ActZone />} />
@@ -105,6 +110,9 @@ const App = () => (
                     <>
                       <Route path="/think/loops" element={<LoopRegistry />} />
                       <Route path="/think/variables" element={<VariableRegistry />} />
+                      <Route path="/act/bundles" element={<BundlesList />} />
+                      <Route path="/act/bundles/new" element={<BundlesList />} />
+                      <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
                     </>
                   )}
                   <Route path="/act" element={<ActZone />} />
