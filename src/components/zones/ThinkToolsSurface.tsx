@@ -8,13 +8,15 @@ import LeverageLadder from '@/pages/think/LeverageLadder'
 import LeverageAnalysis from '@/pages/think/LeverageAnalysis'
 import LeverageScenarios from '@/pages/think/LeverageScenarios'
 import LoopStudioPage from '@/pages/think/LoopStudio'
+import { useNavigate } from 'react-router-dom'
 
 export default function ThinkToolsSurface(){
-  const { view, params } = useWorkspaceStore(s=> s.getViewForZone('think'))
+  const { view } = useWorkspaceStore(s=> s.getViewForZone('think'))
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
+  const nav = useNavigate()
   const open = !!view
 
-  const onClose = ()=> setViewForZone('think', null, null)
+  const onClose = ()=> { setViewForZone('think', null, null); nav('/workspace', { replace: true }) }
 
   const render = ()=>{
     switch(view){
@@ -29,7 +31,7 @@ export default function ThinkToolsSurface(){
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o)=>{ if(!o) onClose() }}>
+    <Dialog open={open} onOpenChange={(o)=>{ if(!o && open) onClose() }}>
       <DialogContent className="max-w-6xl w-[96vw] max-h-[90vh] overflow-auto bg-background/95 backdrop-blur-xl border">
         <ToolFrame>
           {render()}

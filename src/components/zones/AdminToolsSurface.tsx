@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import ToolFrame from '@/components/common/ToolFrame'
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore'
 import ChangesQueuePage from '@/pages/admin/ChangesQueuePage'
+import { useNavigate } from 'react-router-dom'
 
 function MetaLoopConsole(){
   return (
@@ -16,9 +17,10 @@ function MetaLoopConsole(){
 export default function AdminToolsSurface(){
   const { view } = useWorkspaceStore(s=> s.getViewForZone('admin'))
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
+  const nav = useNavigate()
   const open = view === 'changes-queue' || view === 'meta-loop-console'
 
-  const onClose = ()=> setViewForZone('admin', null, null)
+  const onClose = ()=> { setViewForZone('admin', null, null); nav('/workspace', { replace: true }) }
 
   const render = ()=>{
     switch(view){
@@ -29,7 +31,7 @@ export default function AdminToolsSurface(){
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o)=>{ if(!o) onClose() }}>
+    <Dialog open={open} onOpenChange={(o)=>{ if(!o && open) onClose() }}>
       <DialogContent className="max-w-5xl w-[96vw] max-h-[90vh] overflow-auto bg-background/95 backdrop-blur-xl border">
         <ToolFrame>
           {render()}

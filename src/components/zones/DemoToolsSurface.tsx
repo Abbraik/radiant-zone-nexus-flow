@@ -12,7 +12,7 @@ export default function DemoToolsSurface(){
   const onClose = ()=> nav('/workspace', { replace: true })
 
   return (
-    <Dialog open={open} onOpenChange={(o)=>{ if(!o) onClose() }}>
+    <Dialog open={open} onOpenChange={(o)=>{ if(!o && open) onClose() }}>
       <DialogContent className="max-w-6xl w-[96vw] max-h-[90vh] overflow-auto bg-background/95 backdrop-blur-xl border">
         <ToolFrame>
           <DemoAtlas />
