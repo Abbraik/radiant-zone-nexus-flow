@@ -34,7 +34,8 @@ import LoopHealthPage from "./pages/monitor/LoopHealth";
 import NetworkExplorer from "./pages/innovate/NetworkExplorer";
 import ShockLab from "./pages/innovate/ShockLab";
 import ChangesQueuePage from "./pages/admin/ChangesQueuePage";
-
+import DemoAtlas from "./pages/DemoAtlas";
+import { GuidedTourProvider } from "./modules/tours/GuidedTourProvider";
 const queryClient = createQueryClient();
 
 const App = () => (
@@ -45,6 +46,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <GuidedTourProvider>
             <FeatureFlagGuard 
               flag="newTaskDrivenUI"
               fallback={
@@ -86,6 +88,7 @@ const App = () => (
                           <Route path="/innovate" element={<InnovateLearnZone />} />
                           <Route path="/innovate/network-explorer" element={<NetworkExplorer />} />
                           <Route path="/innovate/shock-lab" element={<ShockLab />} />
+                          <Route path="/demo-atlas" element={<DemoAtlas />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
                       </FeatureFlagGuard>
@@ -140,6 +143,7 @@ const App = () => (
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<LoopHealthPage />} />
                   <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
+                  <Route path="/demo-atlas" element={<DemoAtlas />} />
                    <Route path="*" element={<Workspace />} />
                 </Routes>
               </Shell>
