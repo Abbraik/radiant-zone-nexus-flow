@@ -32,6 +32,7 @@ import BundleEditorPage from "./pages/act/BundleEditorPage";
 import PathwayBuilderPage from "./pages/act/PathwayBuilder";
 import LoopHealthPage from "./pages/monitor/LoopHealth";
 import NetworkExplorer from "./pages/innovate/NetworkExplorer";
+import ShockLab from "./pages/innovate/ShockLab";
 
 const queryClient = createQueryClient();
 
@@ -82,6 +83,8 @@ const App = () => (
                           <Route path="/monitor" element={<LoopHealthPage />} />
                           <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
+                          <Route path="/innovate/network-explorer" element={<NetworkExplorer />} />
+                          <Route path="/innovate/shock-lab" element={<ShockLab />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
                       </FeatureFlagGuard>
