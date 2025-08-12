@@ -1,14 +1,16 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import type { BundleItem } from '@/types/bundles'
 import type { Lever } from '@/types/pags'
 import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useVariableRegistryStore } from '@/stores/useVariableRegistryStore'
 import { useLevelStore } from '@/stores/useLevelStore'
 
-export default function BundleItemEditor({ item, onChange, onDelete }:{
+export default function BundleItemEditor({ item, onChange, onDelete, bundleId }:{
   item: BundleItem
   onChange: (next: BundleItem)=>void
   onDelete: ()=>void
+  bundleId?: string
 }){
   const { loops } = useLoopRegistryStore()
   const { variables } = useVariableRegistryStore()
@@ -28,6 +30,11 @@ export default function BundleItemEditor({ item, onChange, onDelete }:{
           <option value="P">P (Program)</option>
           <option value="S">S (Structure)</option>
         </select>
+        {bundleId ? (
+          <Link to={`/act/pathway-builder/${bundleId}/${item.id}`} className="px-2 py-2 rounded bg-accent text-accent-foreground text-sm">Define Pathway</Link>
+        ) : (
+          <button disabled className="px-2 py-2 rounded bg-muted text-muted-foreground text-sm cursor-not-allowed" title="Open from bundle page">Define Pathway</button>
+        )}
         <button onClick={onDelete} aria-label="Delete item" className="px-2 py-2 rounded border">✕</button>
       </div>
       <label className="sr-only" htmlFor={`desc-${item.id}`}>Description</label>

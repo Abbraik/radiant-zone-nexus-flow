@@ -29,6 +29,7 @@ import LeverageAnalysis from "./pages/think/LeverageAnalysis";
 import LeverageScenarios from "./pages/think/LeverageScenarios";
 import BundlesList from "./pages/act/BundlesList";
 import BundleEditorPage from "./pages/act/BundleEditorPage";
+import PathwayBuilderPage from "./pages/act/PathwayBuilder";
 
 const queryClient = createQueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
                               <Route path="/act/bundles" element={<BundlesList />} />
                               <Route path="/act/bundles/new" element={<BundlesList />} />
                               <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
+                              <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
                             </>
                           )}
                           <Route path="/act" element={<ActZone />} />
@@ -124,6 +126,7 @@ const App = () => (
                       <Route path="/act/bundles" element={<BundlesList />} />
                       <Route path="/act/bundles/new" element={<BundlesList />} />
                       <Route path="/act/bundles/:bundleId" element={<BundleEditorPage />} />
+                      <Route path="/act/pathway-builder/:bundleId/:itemId" element={<PathwayBuilderPage />} />
                     </>
                   )}
                   <Route path="/act" element={<ActZone />} />

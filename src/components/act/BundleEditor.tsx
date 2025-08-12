@@ -66,7 +66,7 @@ export default function BundleEditor({ initial }:{ initial: Bundle }){
       <section className="space-y-3">
         {bundle.items.length===0 && <p className="text-sm opacity-70">No items yet. Add your first intervention line item.</p>}
         {bundle.items.map((it, idx)=>(
-          <BundleItemEditor key={it.id} item={it} onChange={(n)=>updateItem(idx,n)} onDelete={()=>deleteItem(idx)} />
+          <BundleItemEditor key={it.id} item={it} onChange={(n)=>updateItem(idx,n)} onDelete={()=>deleteItem(idx)} bundleId={bundle.id} />
         ))}
       </section>
 
