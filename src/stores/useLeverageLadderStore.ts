@@ -22,6 +22,8 @@ type LeverageLadderState = {
   tags: LeverTag[]
   addTag: (tag: LeverTag) => void
   removeTag: (lpId: string, targetId: string, targetType: TargetType) => void
+  getCoverage: () => { loopCoverage: Record<string, string[]>; bundleCoverage: Record<string, string[]> }
+  getCoverageStats: () => { lpCoverageCounts: Record<string, number> }
 }
 
 const defaultLPs: LeveragePoint[] = [
@@ -39,12 +41,30 @@ const defaultLPs: LeveragePoint[] = [
   { id: 'LP1', name: 'Transcending Paradigms', description: 'See paradigms as constructs and move between them', tier: 'high', families: ['Communicative & Normative','International & Global'] },
 ]
 
-export const useLeverageLadderStore = create<LeverageLadderState>((set)=>({
+export const useLeverageLadderStore = create<LeverageLadderState>((set, get)=>({
   leveragePoints: defaultLPs,
   tags: [],
   addTag: (tag) => set((state)=>{
     const exists = state.tags.some(t=> t.lpId===tag.lpId && t.targetId===tag.targetId && t.targetType===tag.targetType)
     return exists ? state : { tags: [...state.tags, tag] }
   }),
-  removeTag: (lpId, targetId, targetType) => set((state)=>({ tags: state.tags.filter(t=>!(t.lpId===lpId && t.targetId===targetId && t.targetType===targetType)) }))
+  removeTag: (lpId, targetId, targetType) => set((state)=>({ tags: state.tags.filter(t=>!(t.lpId===lpId && t.targetId===targetId && t.targetType===targetType)) })),
+  getCoverage: () => {
+    const ts = get().tags
+    const loopCoverage: Record<string, string[]> = {}
+    const bundleCoverage: Record<string, string[]> = {}
+    ts.forEach(t=>{
+      const bucket = t.targetType==='loop' ? loopCoverage : t.targetType==='bundle' ? bundleCoverage : null
+      if (!bucket) return
+      bucket[t.targetId] = bucket[t.targetId] || []
+      if (!bucket[t.targetId].includes(t.lpId)) bucket[t.targetId].push(t.lpId)
+    })
+    return { loopCoverage, bundleCoverage }
+  },
+  getCoverageStats: () => {
+    const ts = get().tags
+    const lpCoverageCounts: Record<string, number> = {}
+    ts.forEach(t=>{ lpCoverageCounts[t.lpId] = (lpCoverageCounts[t.lpId]||0) + 1 })
+    return { lpCoverageCounts }
+  }
 }))
