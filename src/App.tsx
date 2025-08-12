@@ -74,8 +74,8 @@ const App = () => (
                           <Route path="/think/*" element={<ZoneRouteAdapter />} />
                           <Route path="/act" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/monitor" element={<LoopHealthPage />} />
-                          <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
+                          <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                          <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
                           <Route path="/innovate/network-explorer" element={<RouteGuard roles={["analyst","admin","superuser"]}><NetworkExplorer /></RouteGuard>} />
                           <Route path="/innovate/shock-lab" element={<RouteGuard roles={["analyst","admin","superuser"]}><ShockLab /></RouteGuard>} />
@@ -117,8 +117,8 @@ const App = () => (
                   <Route path="/think/*" element={<ZoneRouteAdapter />} />
                   <Route path="/act" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/monitor" element={<LoopHealthPage />} />
-                  <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
+                  <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                  <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
                   <Route path="/demo-atlas" element={<DemoAtlas />} />
                   <Route path="/forbidden" element={<Forbidden />} />
                    <Route path="*" element={<Workspace />} />

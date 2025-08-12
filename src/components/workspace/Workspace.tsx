@@ -21,6 +21,8 @@ import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
 import ThinkToolsSurface from '@/components/zones/ThinkToolsSurface'
 import ActToolsSurface from '@/components/zones/ActToolsSurface'
+import MonitorToolsSurface from '@/components/zones/MonitorToolsSurface'
+
 
 
 
@@ -325,6 +327,8 @@ export const Workspace: React.FC = () => {
         <ThinkToolsSurface />
         {/* Act Zone Tools Surface */}
         <ActToolsSurface />
+        {/* Monitor Zone Tools Surface */}
+        <MonitorToolsSurface />
     </div>
   );
 };

@@ -26,10 +26,11 @@ const defaultRoutes: Record<ZoneKey, string> = {
 const defaultViews: Record<ZoneKey, string | null> = {
   think: null,
   act: null,
-  monitor: 'loop-health',
+  monitor: null,
   innovate: 'network-explorer',
   admin: 'changes-queue',
 }
+
 
 const defaultParams: Record<ZoneKey, ViewParams> = {
   think: null,
