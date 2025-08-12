@@ -30,6 +30,7 @@ import LeverageScenarios from "./pages/think/LeverageScenarios";
 import BundlesList from "./pages/act/BundlesList";
 import BundleEditorPage from "./pages/act/BundleEditorPage";
 import PathwayBuilderPage from "./pages/act/PathwayBuilder";
+import LoopHealthPage from "./pages/monitor/LoopHealth";
 
 const queryClient = createQueryClient();
 
@@ -77,7 +78,8 @@ const App = () => (
                             </>
                           )}
                           <Route path="/act" element={<ActZone />} />
-                          <Route path="/monitor" element={<MonitorZone />} />
+                          <Route path="/monitor" element={<LoopHealthPage />} />
+                          <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                           <Route path="/innovate" element={<InnovateLearnZone />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
@@ -130,8 +132,8 @@ const App = () => (
                     </>
                   )}
                   <Route path="/act" element={<ActZone />} />
-                  <Route path="/monitor" element={<MonitorZone />} />
-                  <Route path="/innovate" element={<InnovateLearnZone />} />
+                  <Route path="/monitor" element={<LoopHealthPage />} />
+                  <Route path="/monitor/loop-health" element={<LoopHealthPage />} />
                    <Route path="*" element={<Workspace />} />
                 </Routes>
               </Shell>
