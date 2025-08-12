@@ -2,9 +2,9 @@ import React, { useMemo, useState } from 'react'
 import { useLeverageLadderStore } from '@/stores/useLeverageLadderStore'
 import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useBundleStore } from '@/stores/useBundleStore'
-
+import StressTestModal from '@/components/think/StressTestModal'
 export default function LeverageAnalysis(){
-  const { leveragePoints, tags, addTag, recommendForTarget } = useLeverageLadderStore()
+  const { leveragePoints, tags, addTag, recommendForTarget, stressTest } = useLeverageLadderStore()
   const { loops } = useLoopRegistryStore()
   const { bundles } = useBundleStore()
   const [filterType, setFilterType] = useState<'all'|'loop'|'bundle'>('all')
@@ -26,6 +26,13 @@ export default function LeverageAnalysis(){
   },[targets,tags])
 
   const coveragePct = (id:string)=> Math.round(((coverage[id]?.length || 0) / lpIds.length) * 100)
+
+  const [testOpen, setTestOpen] = useState(false)
+  const [sel, setSel] = useState<{ lpId: string; target: { id: string; name: string; type: 'loop'|'bundle' } }|null>(null)
+  const selLp = useMemo(()=> leveragePoints.find(x=>x.id===sel?.lpId), [leveragePoints, sel])
+  const selResult = useMemo(()=> sel && selLp ? stressTest(sel.lpId, sel.target.id, sel.target.type) : null, [sel, selLp, stressTest])
+
+  const openTest = (lpId:string, t:{id:string; name:string; type:'loop'|'bundle'})=>{ setSel({ lpId, target: t }); setTestOpen(true) }
 
   return (
     <div className="p-6 space-y-6">
@@ -54,7 +61,16 @@ export default function LeverageAnalysis(){
               {targets.map(t=>(
                 <tr key={t.id} className="border-b">
                   <td className="px-2 py-1 whitespace-nowrap pr-4">{t.name}</td>
-                  {lpIds.map(lpId=> <td key={lpId} className="text-center">{coverage[t.id]?.includes(lpId) ? '✔' : '—'}</td>)}
+                  {lpIds.map(lpId=>{
+                    const covered = coverage[t.id]?.includes(lpId)
+                    return (
+                      <td key={lpId} className="text-center">
+                        {covered ? '✔' : (
+                          <button onClick={()=>openTest(lpId, t)} aria-label={`Stress test ${lpId} for ${t.name}`} className="underline text-primary">—</button>
+                        )}
+                      </td>
+                    )
+                  })}
                   <td className="px-2 py-1 text-center">{coverage[t.id]?.length || 0}</td>
                 </tr>
               ))}
@@ -93,7 +109,10 @@ export default function LeverageAnalysis(){
                   return (
                     <li key={r.lpId} className="flex items-center justify-between gap-2">
                       <span title={`${lp?.description} | Families: ${lp?.families.join(', ')}`}>{r.lpId} — {lp?.name}</span>
-                      <button onClick={()=>addTag({ lpId: r.lpId, targetId: t.id, targetType: t.type })} className="px-2 py-0.5 rounded bg-primary text-primary-foreground text-xs">Apply</button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={()=>openTest(r.lpId, t)} className="px-2 py-0.5 rounded border text-xs">Test</button>
+                        <button onClick={()=>addTag({ lpId: r.lpId, targetId: t.id, targetType: t.type })} className="px-2 py-0.5 rounded bg-primary text-primary-foreground text-xs">Apply</button>
+                      </div>
                     </li>
                   )
                 })}
@@ -102,6 +121,17 @@ export default function LeverageAnalysis(){
           )
         })}
       </section>
+
+      {sel && selLp && selResult && (
+        <StressTestModal
+          open={testOpen}
+          onClose={()=>setTestOpen(false)}
+          lp={selLp}
+          target={sel.target}
+          result={selResult}
+          onApply={()=>{ addTag({ lpId: sel.lpId, targetId: sel.target.id, targetType: sel.target.type }); setTestOpen(false) }}
+        />
+      )}
     </div>
   )
 }

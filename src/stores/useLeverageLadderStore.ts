@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { scoreLPsForTarget } from '@/services/recommendation/scoreLPs'
+import { applyMockImpact } from '@/services/mock/leverageImpact'
 import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useBundleStore } from '@/stores/useBundleStore'
 
@@ -28,6 +29,15 @@ type LeverageLadderState = {
   getCoverage: () => { loopCoverage: Record<string, string[]>; bundleCoverage: Record<string, string[]> }
   getCoverageStats: () => { lpCoverageCounts: Record<string, number> }
   recommendForTarget: (targetId: string, targetType: TargetType) => { lpId: string; score: number }[]
+  stressTest: (lpId: string, targetId: string, targetType: TargetType) => {
+    baselineRisk: number
+    baselineLatency: number
+    baselineIndex: number
+    projectedRisk: number
+    projectedLatency: number
+    projectedIndex: number
+    assumptions: string[]
+  }
 }
 
 const defaultLPs: LeveragePoint[] = [
@@ -96,5 +106,62 @@ export const useLeverageLadderStore = create<LeverageLadderState>((set, get)=>({
     const targetMeta = { id: targetId, type: targetType, loopClass, dominantFamily, pathwayRiskPct, expectedLatencyDays } as const
 
     return scoreLPsForTarget(lpInputs as any, already, targetMeta as any, pref)
+  },
+  stressTest: (lpId, targetId, targetType) => {
+    const { leveragePoints } = get()
+    const lp = leveragePoints.find(x=>x.id===lpId)
+    const tier = lp?.tier || 'mid'
+    const families = lp?.families || []
+
+    // Baselines (mocked from available data)
+    let baselineRisk = 0.6
+    let baselineLatency = 14
+    let baselineIndex = 0.4
+    let dominantFamily: string | undefined
+
+    if (targetType==='loop') {
+      const l = useLoopRegistryStore.getState().loops.find(x=>x.id===targetId)
+      if (l) {
+        baselineIndex = Math.max(0, Math.min(1, (l.dominance + l.gain)/2))
+        // If we had delay params, we'd compute latency; keep default
+        baselineRisk = 0.6
+        baselineLatency = 14
+      }
+    } else if (targetType==='bundle') {
+      const b = useBundleStore.getState().bundles.find(x=>x.id===targetId) as any
+      if (b) {
+        dominantFamily = b?.dominantFamily
+        const loopIds = Array.from(new Set((b.items||[]).flatMap((it:any)=> it.targetLoops || [])))
+        const loops = useLoopRegistryStore.getState().loops.filter(x=> loopIds.includes(x.id))
+        if (loops.length) {
+          const idxs = loops.map(x=> (x.dominance + x.gain)/2)
+          baselineIndex = Math.max(0, Math.min(1, idxs.reduce((a,b)=>a+b,0)/idxs.length))
+        }
+        baselineRisk = 0.55
+        baselineLatency = 16
+      }
+    }
+
+    const resolvesMandateGap = baselineRisk > 0.65 // mock heuristic
+
+    const { projectedIndex, projectedRisk, projectedLatency, assumptions } = applyMockImpact({
+      tier: tier as any,
+      families,
+      dominantFamily,
+      baselineRisk,
+      baselineLatency,
+      baselineIndex,
+      resolvesMandateGap
+    })
+
+    return {
+      baselineRisk,
+      baselineLatency,
+      baselineIndex,
+      projectedRisk,
+      projectedLatency,
+      projectedIndex,
+      assumptions
+    }
   }
 }))
