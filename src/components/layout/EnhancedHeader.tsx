@@ -119,21 +119,9 @@ export const EnhancedHeader: React.FC = () => {
   const changesQueueNav: NavigationItem = { id: 'admin-changes', label: 'Changes Queue', icon: Settings, path: '/admin/changes-queue', description: 'Review and publish' };
   const metaLoopNav: NavigationItem = { id: 'admin-meta', label: 'Meta-Loop Console', icon: Shield, path: '/admin/meta-loop-console', description: 'Supervisory console' };
   const demoNav: NavigationItem = { id: 'demo-atlas', label: 'Seed Atlas', icon: Star, path: '/demo-atlas', description: 'Demo cases and tours' };
-  const navItems: NavigationItem[] = [
-    ...visibleNavigation,
-    loopsNav,
-    loopStudioNav,
-    leverageNav,
-    leverageAnalysisNav,
-    leverageScenariosNav,
-    variablesNav,
-    bundlesNav,
-    networkNav,
-    shockLabNav,
-    changesQueueNav,
-    metaLoopNav,
-    demoNav,
-  ];
+  const navItems: NavigationItem[] = (!isUltimateWorkspace && import.meta.env.VITE_PAGS_FULL === '1')
+    ? [...visibleNavigation, loopsNav, loopStudioNav, leverageNav, leverageAnalysisNav, leverageScenariosNav, variablesNav, bundlesNav, networkNav, shockLabNav, changesQueueNav, metaLoopNav, demoNav]
+    : [...visibleNavigation, demoNav];
 
   return (
     <>
