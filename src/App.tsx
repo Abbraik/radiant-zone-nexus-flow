@@ -33,6 +33,7 @@ import PathwayBuilderPage from "./pages/act/PathwayBuilder";
 import LoopHealthPage from "./pages/monitor/LoopHealth";
 import NetworkExplorer from "./pages/innovate/NetworkExplorer";
 import ShockLab from "./pages/innovate/ShockLab";
+import ChangesQueuePage from "./pages/admin/ChangesQueuePage";
 
 const queryClient = createQueryClient();
 
@@ -112,6 +113,7 @@ const App = () => (
                   } />
                   {/* Admin Pages */}
                   <Route path="/admin" element={<AdminPage />} />
+                  <Route path="/admin/changes-queue" element={<ChangesQueuePage />} />
                   <Route path="/plugins" element={<AdminPage />} />
                   <Route path="/offline" element={<AdminPage />} />
                   <Route path="/security" element={<AdminPage />} />
