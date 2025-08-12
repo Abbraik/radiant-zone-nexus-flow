@@ -9,6 +9,9 @@ export interface BundleItem {
   targetLoops: string[]   // loop IDs
   targetVariables: string[] // variable IDs
   expectedEffect?: string
+  assignedLpId?: string
+  pathwayStage?: Lever    // 'N' | 'P' | 'S'
+
 }
 
 export interface Bundle {

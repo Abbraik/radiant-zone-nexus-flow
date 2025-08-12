@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { BundleItem } from '@/types/bundles'
 import type { Lever } from '@/types/pags'
 import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useVariableRegistryStore } from '@/stores/useVariableRegistryStore'
 import { useLevelStore } from '@/stores/useLevelStore'
+import { useLeverageLadderStore } from '@/stores/useLeverageLadderStore'
+import LPAssignmentDrawer from '@/components/act/LPAssignmentDrawer'
 
 export default function BundleItemEditor({ item, onChange, onDelete, bundleId }:{
   item: BundleItem
@@ -16,6 +18,10 @@ export default function BundleItemEditor({ item, onChange, onDelete, bundleId }:
   const { variables } = useVariableRegistryStore()
   const { level } = useLevelStore()
   const loopsAtLevel = loops.filter(l=>l.level===level)
+
+  const { getAssignment } = useLeverageLadderStore()
+  const assignment = getAssignment(item.id)
+  const [lpOpen, setLpOpen] = useState(false)
 
   const toggle = (arr:string[], id:string)=> arr.includes(id) ? arr.filter(x=>x!==id) : [...arr, id]
 
@@ -34,6 +40,15 @@ export default function BundleItemEditor({ item, onChange, onDelete, bundleId }:
           <Link to={`/act/pathway-builder/${bundleId}/${item.id}`} className="px-2 py-2 rounded bg-accent text-accent-foreground text-sm">Define Pathway</Link>
         ) : (
           <button disabled className="px-2 py-2 rounded bg-muted text-muted-foreground text-sm cursor-not-allowed" title="Open from bundle page">Define Pathway</button>
+        )}
+        {assignment ? (
+          <div className="flex items-center gap-2 ml-2">
+            <span className="px-2 py-1 rounded-full text-xs bg-muted">{assignment.lpId}</span>
+            <span className="px-2 py-1 rounded-full text-xs bg-secondary text-secondary-foreground">{assignment.stage}</span>
+            <button onClick={()=>setLpOpen(true)} className="px-2 py-1 rounded border text-xs">Change</button>
+          </div>
+        ) : (
+          <button onClick={()=>setLpOpen(true)} className="px-2 py-2 rounded bg-accent text-accent-foreground text-sm">Assign LP</button>
         )}
         <button onClick={onDelete} aria-label="Delete item" className="px-2 py-2 rounded border">✕</button>
       </div>

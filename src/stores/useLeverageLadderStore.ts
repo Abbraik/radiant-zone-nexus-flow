@@ -13,6 +13,9 @@ export interface LeveragePoint {
   description: string
   tier: 'high' | 'mid' | 'low'
   families: LeverFamily[]
+  depth: 'Parameters' | 'Feedbacks' | 'System Structure' | 'Mindset'
+  timeToEffect: 'Short' | 'Medium' | 'Long'
+  durability: 'Low' | 'Medium' | 'High'
 }
 
 export interface LeverTag {
@@ -24,6 +27,10 @@ export interface LeverTag {
 type LeverageLadderState = {
   leveragePoints: LeveragePoint[]
   tags: LeverTag[]
+  // LP assignment per bundle item
+  itemAssignments: Record<string, { lpId: string; stage: 'N'|'P'|'S' }>
+  assignLP: (itemId: string, lpId: string, stage: 'N'|'P'|'S') => void
+  getAssignment: (itemId: string) => { lpId: string; stage: 'N'|'P'|'S' } | undefined
   addTag: (tag: LeverTag) => void
   removeTag: (lpId: string, targetId: string, targetType: TargetType) => void
   getCoverage: () => { loopCoverage: Record<string, string[]>; bundleCoverage: Record<string, string[]> }
@@ -41,23 +48,26 @@ type LeverageLadderState = {
 }
 
 const defaultLPs: LeveragePoint[] = [
-  { id: 'LP12', name: 'Parameters', description: 'Adjust numbers, constants, coefficients in the system', tier: 'low', families: ['Economic & Fiscal','Administrative & Executive'] },
-  { id: 'LP11', name: 'Buffers', description: 'Change the sizes of stabilizing stocks and buffers', tier: 'low', families: ['Economic & Fiscal','Legal & Institutional'] },
-  { id: 'LP10', name: 'Stock-and-Flow Structure', description: 'Modify physical system structure and constraints', tier: 'low', families: ['Administrative & Executive','Legal & Institutional'] },
-  { id: 'LP9', name: 'Delays', description: 'Adjust the length of delays relative to system change rate', tier: 'low', families: ['Administrative & Executive'] },
-  { id: 'LP8', name: 'Balancing Feedbacks', description: 'Strengthen or weaken stabilizing (balancing) loops', tier: 'low', families: ['Administrative & Executive','Behavioral & Social'] },
-  { id: 'LP7', name: 'Reinforcing Feedbacks', description: 'Change the gain around reinforcing feedback loops', tier: 'mid', families: ['Behavioral & Social','Communicative & Normative'] },
-  { id: 'LP6', name: 'Information Flows', description: 'Redesign who gets what information and when', tier: 'mid', families: ['Communicative & Normative','Administrative & Executive'] },
-  { id: 'LP5', name: 'Rules of the System', description: 'Change incentives, punishments, and constraints', tier: 'mid', families: ['Legal & Institutional','Economic & Fiscal'] },
-  { id: 'LP4', name: 'Self-Organization', description: 'Encourage system to add/change structure, diversity', tier: 'high', families: ['Legal & Institutional','International & Global'] },
-  { id: 'LP3', name: 'Goals of the System', description: 'Shift system priorities and goals', tier: 'high', families: ['Administrative & Executive','Legal & Institutional'] },
-  { id: 'LP2', name: 'Paradigms', description: 'Change the mindset or paradigm out of which the system arises', tier: 'high', families: ['Communicative & Normative','Behavioral & Social'] },
-  { id: 'LP1', name: 'Transcending Paradigms', description: 'See paradigms as constructs and move between them', tier: 'high', families: ['Communicative & Normative','International & Global'] },
+  { id: 'LP12', name: 'Parameters', description: 'Adjust numbers, constants, coefficients in the system', tier: 'low', families: ['Economic & Fiscal','Administrative & Executive'], depth: 'Parameters', timeToEffect: 'Short', durability: 'Low' },
+  { id: 'LP11', name: 'Buffers', description: 'Change the sizes of stabilizing stocks and buffers', tier: 'low', families: ['Economic & Fiscal','Legal & Institutional'], depth: 'Parameters', timeToEffect: 'Short', durability: 'Low' },
+  { id: 'LP10', name: 'Stock-and-Flow Structure', description: 'Modify physical system structure and constraints', tier: 'low', families: ['Administrative & Executive','Legal & Institutional'], depth: 'Parameters', timeToEffect: 'Short', durability: 'Low' },
+  { id: 'LP9', name: 'Delays', description: 'Adjust the length of delays relative to system change rate', tier: 'low', families: ['Administrative & Executive'], depth: 'Feedbacks', timeToEffect: 'Medium', durability: 'Medium' },
+  { id: 'LP8', name: 'Balancing Feedbacks', description: 'Strengthen or weaken stabilizing (balancing) loops', tier: 'low', families: ['Administrative & Executive','Behavioral & Social'], depth: 'Feedbacks', timeToEffect: 'Medium', durability: 'Medium' },
+  { id: 'LP7', name: 'Reinforcing Feedbacks', description: 'Change the gain around reinforcing feedback loops', tier: 'mid', families: ['Behavioral & Social','Communicative & Normative'], depth: 'Feedbacks', timeToEffect: 'Medium', durability: 'Medium' },
+  { id: 'LP6', name: 'Information Flows', description: 'Redesign who gets what information and when', tier: 'mid', families: ['Communicative & Normative','Administrative & Executive'], depth: 'System Structure', timeToEffect: 'Medium', durability: 'Medium' },
+  { id: 'LP5', name: 'Rules of the System', description: 'Change incentives, punishments, and constraints', tier: 'mid', families: ['Legal & Institutional','Economic & Fiscal'], depth: 'System Structure', timeToEffect: 'Medium', durability: 'Medium' },
+  { id: 'LP4', name: 'Self-Organization', description: 'Encourage system to add/change structure, diversity', tier: 'high', families: ['Legal & Institutional','International & Global'], depth: 'System Structure', timeToEffect: 'Long', durability: 'High' },
+  { id: 'LP3', name: 'Goals of the System', description: 'Shift system priorities and goals', tier: 'high', families: ['Administrative & Executive','Legal & Institutional'], depth: 'Mindset', timeToEffect: 'Long', durability: 'High' },
+  { id: 'LP2', name: 'Paradigms', description: 'Change the mindset or paradigm out of which the system arises', tier: 'high', families: ['Communicative & Normative','Behavioral & Social'], depth: 'Mindset', timeToEffect: 'Long', durability: 'High' },
+  { id: 'LP1', name: 'Transcending Paradigms', description: 'See paradigms as constructs and move between them', tier: 'high', families: ['Communicative & Normative','International & Global'], depth: 'Mindset', timeToEffect: 'Long', durability: 'High' },
 ]
 
 export const useLeverageLadderStore = create<LeverageLadderState>((set, get)=>({
   leveragePoints: defaultLPs,
   tags: [],
+  itemAssignments: {},
+  assignLP: (itemId, lpId, stage)=> set((state)=>({ itemAssignments: { ...state.itemAssignments, [itemId]: { lpId, stage } } })),
+  getAssignment: (itemId)=> get().itemAssignments[itemId],
   addTag: (tag) => set((state)=>{
     const exists = state.tags.some(t=> t.lpId===tag.lpId && t.targetId===tag.targetId && t.targetType===tag.targetType)
     return exists ? state : { tags: [...state.tags, tag] }
