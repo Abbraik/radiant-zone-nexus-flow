@@ -4,7 +4,7 @@ import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
 import { useBundleStore } from '@/stores/useBundleStore'
 
 export default function LeverageAnalysis(){
-  const { leveragePoints, tags } = useLeverageLadderStore()
+  const { leveragePoints, tags, addTag, recommendForTarget } = useLeverageLadderStore()
   const { loops } = useLoopRegistryStore()
   const { bundles } = useBundleStore()
   const [filterType, setFilterType] = useState<'all'|'loop'|'bundle'>('all')
@@ -76,6 +76,31 @@ export default function LeverageAnalysis(){
             return <li key={t.id}>{t.name} — Missing: {missing.join(', ')}</li>
           })}
         </ul>
+      </section>
+
+      {/* Recommendations */}
+      <section>
+        <h2 className="font-medium mb-2">Recommendations</h2>
+        {targets.map(t=>{
+          const recs = recommendForTarget(t.id, t.type)
+          if (!recs.length) return null
+          return (
+            <div key={t.id} className="p-2 border rounded mb-2">
+              <div className="font-medium">{t.name}</div>
+              <ul className="mt-1 text-sm">
+                {recs.slice(0,3).map(r=>{
+                  const lp = leveragePoints.find(x=>x.id===r.lpId)
+                  return (
+                    <li key={r.lpId} className="flex items-center justify-between gap-2">
+                      <span title={`${lp?.description} | Families: ${lp?.families.join(', ')}`}>{r.lpId} — {lp?.name}</span>
+                      <button onClick={()=>addTag({ lpId: r.lpId, targetId: t.id, targetType: t.type })} className="px-2 py-0.5 rounded bg-primary text-primary-foreground text-xs">Apply</button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )
+        })}
       </section>
     </div>
   )

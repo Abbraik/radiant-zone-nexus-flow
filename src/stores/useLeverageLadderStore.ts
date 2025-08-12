@@ -1,4 +1,7 @@
 import { create } from 'zustand'
+import { scoreLPsForTarget } from '@/services/recommendation/scoreLPs'
+import { useLoopRegistryStore } from '@/stores/useLoopRegistryStore'
+import { useBundleStore } from '@/stores/useBundleStore'
 
 export type LeverFamily = 'Legal & Institutional' | 'Economic & Fiscal' | 'Administrative & Executive' | 'Communicative & Normative' | 'Behavioral & Social' | 'International & Global'
 export type TargetType = 'loop' | 'bundle' | 'policy'
@@ -24,6 +27,7 @@ type LeverageLadderState = {
   removeTag: (lpId: string, targetId: string, targetType: TargetType) => void
   getCoverage: () => { loopCoverage: Record<string, string[]>; bundleCoverage: Record<string, string[]> }
   getCoverageStats: () => { lpCoverageCounts: Record<string, number> }
+  recommendForTarget: (targetId: string, targetType: TargetType) => { lpId: string; score: number }[]
 }
 
 const defaultLPs: LeveragePoint[] = [
@@ -66,5 +70,31 @@ export const useLeverageLadderStore = create<LeverageLadderState>((set, get)=>({
     const lpCoverageCounts: Record<string, number> = {}
     ts.forEach(t=>{ lpCoverageCounts[t.lpId] = (lpCoverageCounts[t.lpId]||0) + 1 })
     return { lpCoverageCounts }
+  },
+  recommendForTarget: (targetId, targetType) => {
+    const { leveragePoints, tags } = get()
+    const pref = (import.meta.env.VITE_PAGS_LP_PREF as 'high'|'mid'|'low') || 'high'
+    const already = tags.filter(t=> t.targetId===targetId && t.targetType===targetType).map(t=>t.lpId)
+    const lpInputs = leveragePoints.map(lp=> ({ lpId: lp.id, tier: lp.tier, families: lp.families }))
+
+    // Gather target metadata
+    let loopClass: 'R'|'B'|'N'|'C'|'T'|undefined
+    let dominantFamily: string|undefined
+    // Optional readiness (future): default medium
+    let pathwayRiskPct: number|undefined
+    let expectedLatencyDays: number|undefined
+
+    if (targetType==='loop') {
+      const l = useLoopRegistryStore.getState().loops.find(x=>x.id===targetId)
+      loopClass = l?.class as any
+      // readiness could be derived in future; keep defaults
+    } else if (targetType==='bundle') {
+      const b = useBundleStore.getState().bundles.find(x=>x.id===targetId) as any
+      dominantFamily = b?.dominantFamily // optional property
+    }
+
+    const targetMeta = { id: targetId, type: targetType, loopClass, dominantFamily, pathwayRiskPct, expectedLatencyDays } as const
+
+    return scoreLPsForTarget(lpInputs as any, already, targetMeta as any, pref)
   }
 }))
