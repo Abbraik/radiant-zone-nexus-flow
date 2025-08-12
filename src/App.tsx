@@ -148,6 +148,7 @@ const App = () => (
                 </Routes>
               </Shell>
             </FeatureFlagGuard>
+            </GuidedTourProvider>
           </BrowserRouter>
         </FeatureFlagProvider>
       </TooltipProvider>
