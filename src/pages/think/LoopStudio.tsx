@@ -9,7 +9,7 @@ export default function LoopStudioPage(){
   const { level } = useLevelStore()
   useEffect(()=>{ loadNew({ level }); document.title = 'Loop Studio - Think | RGS' }, [level, loadNew])
 
-  if (import.meta.env.VITE_PAGS_FULL !== '1') return <div className="p-6">Loop Studio is disabled.</div>
+  
 
   return (
     <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">

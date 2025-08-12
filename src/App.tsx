@@ -117,6 +117,7 @@ const App = () => (
                   {/* Admin Pages */}
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="/admin/changes-queue" element={<RouteGuard roles={["admin","superuser"]}><ChangesQueuePage /></RouteGuard>} />
+                  <Route path="/admin/meta-loop-console" element={<RouteGuard roles={["admin","superuser"]}><AdminPage /></RouteGuard>} />
                   <Route path="/plugins" element={<AdminPage />} />
                   <Route path="/offline" element={<AdminPage />} />
                   <Route path="/security" element={<AdminPage />} />
