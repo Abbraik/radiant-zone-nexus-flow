@@ -6,7 +6,7 @@ import LoopHealthPage from '@/pages/monitor/LoopHealth'
 import { useNavigate } from 'react-router-dom'
 
 export default function MonitorToolsSurface(){
-  const { view } = useWorkspaceStore(s=> s.getViewForZone('monitor'))
+  const view = useWorkspaceStore(s=> s.zoneViews['monitor'])
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
   const nav = useNavigate()
   const open = view === 'loop-health'

@@ -15,7 +15,7 @@ function MetaLoopConsole(){
 }
 
 export default function AdminToolsSurface(){
-  const { view } = useWorkspaceStore(s=> s.getViewForZone('admin'))
+  const view = useWorkspaceStore(s=> s.zoneViews['admin'])
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
   const nav = useNavigate()
   const open = view === 'changes-queue' || view === 'meta-loop-console'

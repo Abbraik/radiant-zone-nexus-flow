@@ -8,7 +8,7 @@ import PathwayBuilderPage from '@/pages/act/PathwayBuilder'
 import { useNavigate } from 'react-router-dom'
 
 export default function ActToolsSurface(){
-  const { view } = useWorkspaceStore(s=> s.getViewForZone('act'))
+  const view = useWorkspaceStore(s=> s.zoneViews['act'])
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
   const nav = useNavigate()
   const open = view === 'bundles' || view === 'bundle-editor' || view === 'pathway-builder'

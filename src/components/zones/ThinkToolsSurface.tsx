@@ -11,7 +11,7 @@ import LoopStudioPage from '@/pages/think/LoopStudio'
 import { useNavigate } from 'react-router-dom'
 
 export default function ThinkToolsSurface(){
-  const { view } = useWorkspaceStore(s=> s.getViewForZone('think'))
+  const view = useWorkspaceStore(s=> s.zoneViews['think'])
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
   const nav = useNavigate()
   const open = !!view

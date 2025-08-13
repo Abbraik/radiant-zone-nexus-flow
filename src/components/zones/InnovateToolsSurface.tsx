@@ -7,7 +7,7 @@ import ShockLab from '@/pages/innovate/ShockLab'
 import { useNavigate } from 'react-router-dom'
 
 export default function InnovateToolsSurface(){
-  const { view } = useWorkspaceStore(s=> s.getViewForZone('innovate'))
+  const view = useWorkspaceStore(s=> s.zoneViews['innovate'])
   const setViewForZone = useWorkspaceStore(s=> s.setViewForZone)
   const nav = useNavigate()
   const open = view === 'network-explorer' || view === 'shock-lab'
