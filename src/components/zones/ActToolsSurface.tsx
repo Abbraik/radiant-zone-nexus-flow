@@ -13,7 +13,7 @@ export default function ActToolsSurface(){
   const nav = useNavigate()
   const open = view === 'bundles' || view === 'bundle-editor' || view === 'pathway-builder'
 
-  const onClose = ()=> { setViewForZone('act', null, null); nav('/workspace', { replace: true }) }
+  const onClose = ()=> { setTimeout(()=> { setViewForZone('act', null, null); nav('/workspace', { replace: true }) }, 0) }
 
   const render = ()=>{
     switch(view){

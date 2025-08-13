@@ -12,7 +12,7 @@ export default function InnovateToolsSurface(){
   const nav = useNavigate()
   const open = view === 'network-explorer' || view === 'shock-lab'
 
-  const onClose = ()=> { setViewForZone('innovate', null, null); nav('/workspace', { replace: true }) }
+  const onClose = ()=> { setTimeout(()=> { setViewForZone('innovate', null, null); nav('/workspace', { replace: true }) }, 0) }
 
   const render = ()=>{
     switch(view){

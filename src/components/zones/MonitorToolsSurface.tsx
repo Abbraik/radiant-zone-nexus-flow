@@ -11,7 +11,7 @@ export default function MonitorToolsSurface(){
   const nav = useNavigate()
   const open = view === 'loop-health'
 
-  const onClose = ()=> { setViewForZone('monitor', null, null); nav('/workspace', { replace: true }) }
+  const onClose = ()=> { setTimeout(()=> { setViewForZone('monitor', null, null); nav('/workspace', { replace: true }) }, 0) }
 
   return (
     <Dialog open={open} onOpenChange={(o)=>{ if(!o && open) onClose() }}>

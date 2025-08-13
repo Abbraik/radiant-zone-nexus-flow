@@ -20,7 +20,7 @@ export default function AdminToolsSurface(){
   const nav = useNavigate()
   const open = view === 'changes-queue' || view === 'meta-loop-console'
 
-  const onClose = ()=> { setViewForZone('admin', null, null); nav('/workspace', { replace: true }) }
+  const onClose = ()=> { setTimeout(()=> { setViewForZone('admin', null, null); nav('/workspace', { replace: true }) }, 0) }
 
   const render = ()=>{
     switch(view){

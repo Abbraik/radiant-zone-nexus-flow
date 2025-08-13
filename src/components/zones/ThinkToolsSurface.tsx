@@ -16,7 +16,7 @@ export default function ThinkToolsSurface(){
   const nav = useNavigate()
   const open = !!view
 
-  const onClose = ()=> { setViewForZone('think', null, null); nav('/workspace', { replace: true }) }
+  const onClose = ()=> { setTimeout(()=> { setViewForZone('think', null, null); nav('/workspace', { replace: true }) }, 0) }
 
   const render = ()=>{
     switch(view){

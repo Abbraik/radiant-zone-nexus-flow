@@ -9,7 +9,7 @@ export default function DemoToolsSurface(){
   const nav = useNavigate()
   const open = loc.pathname.startsWith('/demo-atlas')
 
-  const onClose = ()=> nav('/workspace', { replace: true })
+  const onClose = ()=> setTimeout(()=> nav('/workspace', { replace: true }), 0)
 
   return (
     <Dialog open={open} onOpenChange={(o)=>{ if(!o && open) onClose() }}>
