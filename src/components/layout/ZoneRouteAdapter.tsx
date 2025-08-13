@@ -65,6 +65,8 @@ export default function ZoneRouteAdapter({ redirectToWorkspace = true }: { redir
   const role = useRoleStore(s => s.role)
   const setViewForZone = useWorkspaceStore(s => s.setViewForZone)
   const setRouteForZone = useWorkspaceStore(s => s.setRouteForZone)
+  const getViewForZone = useWorkspaceStore(s => s.getViewForZone)
+  const getRouteForZone = useWorkspaceStore(s => s.getRouteForZone)
 
   useEffect(() => {
     const zone = zoneFromPath(loc.pathname)
@@ -84,13 +86,21 @@ export default function ZoneRouteAdapter({ redirectToWorkspace = true }: { redir
     const view = inferView(zone, subpath)
     const params = parseParams(loc.search)
 
-    setViewForZone(zone, view, Object.keys(params).length ? params : null)
-    setRouteForZone(zone, loc.pathname + (loc.search || ''))
+    const nextParams = Object.keys(params).length ? params : null
+    const current = getViewForZone(zone)
+    const targetRoute = loc.pathname + (loc.search || '')
+
+    if (current.view !== view || JSON.stringify(current.params ?? null) !== JSON.stringify(nextParams)) {
+      setViewForZone(zone, view, nextParams)
+    }
+    if (getRouteForZone(zone) !== targetRoute) {
+      setRouteForZone(zone, targetRoute)
+    }
 
     if (redirectToWorkspace) {
       nav('/workspace', { replace: true })
     }
-  }, [loc.pathname, loc.search, nav, role, setViewForZone, setRouteForZone])
+  }, [loc.pathname, loc.search, nav, role, setViewForZone, setRouteForZone, getViewForZone, getRouteForZone])
 
   if (redirectToWorkspace) return null
   return <Workspace />
