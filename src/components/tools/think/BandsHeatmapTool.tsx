@@ -31,7 +31,16 @@ export default function BandsHeatmapTool(){
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {rows.map(r=>(
               <div key={r.id} className="rounded-xl border border-white/10 p-4 bg-zinc-900/60">
-                <div className="text-sm font-medium mb-2">{r.name}</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium mb-2">{r.name}</div>
+                  {(r.status==='hard'||r.status==='critical') && (
+                    <button
+                      onClick={()=>ds.openRel(r.id, r.status==='critical'?'Critical':'Hard' as any)}
+                      className="text-xs px-2 py-1 rounded bg-emerald-600/80 hover:bg-emerald-600">
+                      Open REL
+                    </button>
+                  )}
+                </div>
                 <BandStatusPill status={r.status}/>
                 <div className="text-xs opacity-70 mt-2">Band [{r.bandL} , {r.bandU}] • Target {r.target}</div>
               </div>

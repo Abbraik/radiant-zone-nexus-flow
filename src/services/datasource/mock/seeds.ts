@@ -2,7 +2,7 @@ import { get, set, push, uuid, KEYS } from './db';
 
 // bump SEED_VERSION when you change seed content
 const SEED_FLAG = 'seed:version';
-const SEED_VERSION = 1;
+const SEED_VERSION = 2;
 
 function isoMonthsAgo(n:number){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString(); }
 function isoWeeksAgo(n:number){ const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString(); }
@@ -90,6 +90,14 @@ export async function seedOnce() {
     publishedAt: new Date().toISOString(),
   };
   await push(KEYS.packs, pack);
+
+  // 5) Participation (compressed & overdue) to demo Ship guard
+  const overdueDue = new Date(); overdueDue.setDate(overdueDue.getDate()-3);
+  await push(KEYS.participation, {
+    relId: rels[1].id, method:'Panel', sampleSize:30,
+    compliance:'Compressed', compressed:true, fullPackDue: overdueDue.toISOString().slice(0,10)
+  });
+  await set(KEYS.debt, { overdue: 1, items: [rels[1].id] });
 
   // mark done
   await set(SEED_FLAG, SEED_VERSION);
