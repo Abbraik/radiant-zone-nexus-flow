@@ -3,7 +3,7 @@ import { sha256 } from '@/lib/hash';
 
 // bump SEED_VERSION when you change seed content
 const SEED_FLAG = 'seed:version';
-const SEED_VERSION = 4;
+const SEED_VERSION = 5;
 
 function isoMonthsAgo(n:number){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString(); }
 function isoWeeksAgo(n:number){ const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString(); }
@@ -137,6 +137,67 @@ export async function seedOnce() {
     compliance:'Compressed', compressed:true, fullPackDue: overdueDue.toISOString().slice(0,10)
   });
   await set(KEYS.debt, { overdue: 1, items: [rels[1].id] });
+
+  // 6) Gate Stacks library (macro→meso→micro steps)
+  const stacks = [
+    {
+      id: uuid(), code:'E-1', title:'Rapid Re-employment', domain:'employment',
+      description:'Drive quick return-to-work via hiring credits and activation.',
+      equity:'Prioritize long-term unemployed; youth; single parents.',
+      steps:[
+        { arc:'P_to_R', actor:'Unemployed workers', level:'macro', note:'Outreach; activation' },
+        { arc:'R_to_PS', actor:'Employment services', level:'meso', note:'Intake; case mgmt' },
+        { arc:'PS_to_S', actor:'Labor ministry', level:'micro', note:'Incentives; hiring credit' },
+      ]
+    },
+    {
+      id: uuid(), code:'H-1', title:'Rent Pressure Relief', domain:'housing',
+      description:'Mitigate short-run rent spikes with targeted rebates.',
+      equity:'Low-income renters; families; seniors.',
+      steps:[
+        { arc:'P_to_R', actor:'Rent-burdened households', level:'macro' },
+        { arc:'R_to_PS', actor:'Housing support agency', level:'meso' },
+        { arc:'PS_to_S', actor:'Treasury', level:'micro', note:'Temporary rebate' },
+      ]
+    },
+    {
+      id: uuid(), code:'HE-1', title:'Clinic Throughput Boost', domain:'health',
+      description:'Cut waits with extended hours and tele-triage.',
+      equity:'Low-access regions.',
+      steps:[
+        { arc:'P_to_R', actor:'Patients', level:'macro' },
+        { arc:'R_to_PS', actor:'Clinics', level:'meso', note:'Tele-triage' },
+        { arc:'PS_to_S', actor:'Health ministry', level:'micro', note:'Extended hours funding' },
+      ]
+    },
+    {
+      id: uuid(), code:'EN-1', title:'Retail Energy Cushion', domain:'energy',
+      description:'Cap bill shocks with time-limited subsidy.',
+      equity:'Low-income households.',
+      steps:[
+        { arc:'P_to_R', actor:'Households', level:'macro' },
+        { arc:'R_to_PS', actor:'Utilities', level:'meso' },
+        { arc:'PS_to_S', actor:'Energy regulator', level:'micro', note:'Bill credit' },
+      ]
+    },
+    {
+      id: uuid(), code:'DP-1', title:'Digital Service Reliability', domain:'digital',
+      description:'Stabilize core citizen services; SLOs & rollback playbooks.',
+      equity:'Accessibility and language support.',
+      steps:[
+        { arc:'P_to_R', actor:'Users', level:'macro', note:'Bug triage' },
+        { arc:'R_to_PS', actor:'Service teams', level:'meso', note:'SLO monitors' },
+        { arc:'PS_to_S', actor:'Digital office', level:'micro', note:'Rollback guardrails' },
+      ]
+    },
+  ];
+  await set(KEYS.stacks, stacks as any);
+
+  // 6b) Pre-apply one stack to demo item so Ship guard sees arcs
+  const demoItem = 'demo-item-1';
+  const st = stacks[0]; // E-1
+  const applied = st.steps.map(s=>({ ...s, itemId: demoItem, stackId: st.id, stackCode: st.code }));
+  await set(KEYS.applied(demoItem), applied as any);
 
   // mark done
   await set(SEED_FLAG, SEED_VERSION);
