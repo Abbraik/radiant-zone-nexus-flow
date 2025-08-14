@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useToolsStore } from '@/stores/toolsStore';
 import { useActDemo } from '@/stores/actDemoStore';
 import { canShip } from '@/lib/guards';
+import { ds } from '@/services/datasource';
 
 function Row({ok,label,children}:{ok:boolean;label:string;children?:React.ReactNode}){
   return (
@@ -17,14 +18,29 @@ function Row({ok,label,children}:{ok:boolean;label:string;children?:React.ReactN
 }
 
 export default function ShipPanelTool(){
-  const open = useToolsStore(s=>s.monitor.rel) as any; // not used; we open by act zone below
+  const open = useToolsStore(s=>s.act?.ship ?? false);
   const close = useToolsStore(s=>s.close);
 
   const s = useActDemo();
-  const ok = canShip(s);
+  const [actualGateOutcome, setActualGateOutcome] = React.useState<'ALLOW'|'REWORK'|'BLOCK'|null>(null);
+  const [actualDebt, setActualDebt] = React.useState({ overdue: 0, items: [] as string[] });
+
+  React.useEffect(() => {
+    if (!open) return;
+    // Fetch real gate outcome and participation debt
+    ds.getLastGateOutcome('demo-item-1').then(r => setActualGateOutcome(r.outcome));
+    ds.getParticipationDebt().then(setActualDebt);
+  }, [open]);
+
+  const effectiveContext = {
+    ...s,
+    gateOutcome: actualGateOutcome,
+    participationDebtOverdue: actualDebt.overdue > 0
+  };
+  const ok = canShip(effectiveContext);
 
   return (
-    <Dialog.Root open={useToolsStore.getState().act?.ship ?? false} onOpenChange={(v)=>!v && close('act','ship' as any)}>
+    <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','ship' as any)}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/60" />
         <Dialog.Content className="fixed inset-x-0 top-24 mx-auto w-[720px] rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-2xl">
@@ -40,16 +56,16 @@ export default function ShipPanelTool(){
             <Row ok={s.hasPdiArc} label="Has at least one PDI arc">
               <button onClick={()=>s.set({hasPdiArc: !s.hasPdiArc})} className="text-xs underline ml-3">toggle</button>
             </Row>
-            <Row ok={s.gateOutcome==='ALLOW'} label={`Gate outcome = ${s.gateOutcome ?? '—'}`}>
+            <Row ok={effectiveContext.gateOutcome==='ALLOW'} label={`Gate outcome = ${effectiveContext.gateOutcome ?? '—'}`}>
               <div className="flex items-center gap-2 ml-3">
                 {(['ALLOW','REWORK','BLOCK'] as const).map(g=>(
-                  <button key={g} onClick={()=>s.set({gateOutcome:g})}
-                    className={`text-xs px-2 py-0.5 rounded border ${s.gateOutcome===g?'bg-white/10':''}`}>{g}</button>
+                  <button key={g} onClick={()=>setActualGateOutcome(g)}
+                    className={`text-xs px-2 py-0.5 rounded border ${effectiveContext.gateOutcome===g?'bg-white/10':''}`}>{g}</button>
                 ))}
               </div>
             </Row>
-            <Row ok={!s.participationDebtOverdue} label="No overdue participation debt">
-              <button onClick={()=>s.set({participationDebtOverdue: !s.participationDebtOverdue})} className="text-xs underline ml-3">toggle</button>
+            <Row ok={!effectiveContext.participationDebtOverdue} label={`No overdue participation debt (${actualDebt.overdue} items)`}>
+              <button onClick={()=>setActualDebt(d=>({...d, overdue: d.overdue > 0 ? 0 : 1}))} className="text-xs underline ml-3">toggle</button>
             </Row>
           </div>
 
