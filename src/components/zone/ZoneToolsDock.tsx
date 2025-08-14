@@ -2,7 +2,7 @@ import React from 'react';
 import { useToolsStore } from '@/stores/toolsStore';
 import { HelpCircle, Activity, Thermometer, FileText } from 'lucide-react';
 
-type Props = { zone: 'think'|'monitor'|'act' };
+type Props = { zone: 'think'|'monitor'|'act'|'admin' };
 
 export default function ZoneToolsDock({zone}:Props){
   const toggle = useToolsStore(s=>s.toggle);
@@ -35,6 +35,12 @@ export default function ZoneToolsDock({zone}:Props){
             Pilots
           </button>
         </div>
+      )}
+      {zone==='admin' && (
+        <button onClick={()=>useToolsStore.getState().toggle('admin','meta' as any)}
+          className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+          Meta
+        </button>
       )}
       {zone==='act' && (
         <div className="flex flex-col items-end gap-2">

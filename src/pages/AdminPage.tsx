@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ZoneToolsDock from '@/components/zone/ZoneToolsDock';
+import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Package, Download, Settings, Star, Search, Filter, Code, Zap, Brain, BarChart, Shield,
@@ -1113,6 +1115,8 @@ const AdminPage: React.FC = () => {
             </TabsContent>
           </AnimatePresence>
         </Tabs>
+        <ZoneToolsDock zone="admin" />
+        <ZoneToolsPortals zone="admin" />
       </div>
     </div>
   );
