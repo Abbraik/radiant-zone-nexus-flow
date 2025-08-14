@@ -3,7 +3,7 @@ import { sha256 } from '@/lib/hash';
 
 // bump SEED_VERSION when you change seed content
 const SEED_FLAG = 'seed:version';
-const SEED_VERSION = 5;
+const SEED_VERSION = 6;
 
 function isoMonthsAgo(n:number){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString(); }
 function isoWeeksAgo(n:number){ const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString(); }
@@ -198,6 +198,46 @@ export async function seedOnce() {
   const st = stacks[0]; // E-1
   const applied = st.steps.map(s=>({ ...s, itemId: demoItem, stackId: st.id, stackCode: st.code }));
   await set(KEYS.applied(demoItem), applied as any);
+
+  // 7) Metrics summary (visible on Monitor KPI strip)
+  await set(KEYS.metrics, {
+    tri: 72,         // decent trigger readiness
+    pci: 68,         // platform control improving
+    mttrDays: 11.5,  // mean resolution time
+    uptakePct: 54    // % adoption toward target
+  });
+
+  // 8) Pilots — one ITS and one DiD, with simple effects
+  const monthsAgo = (n:number)=> { const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); };
+  const weeksAgo  = (n:number)=> { const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString().slice(0,10); };
+
+  const pilotITS: any = {
+    id: uuid(), code:'E-1', title:'Rapid Re-employment Pilot', relId: (rels[0]?.id ?? null),
+    startedAt: weeksAgo(16), method: 'ITS',
+    seriesBefore: [
+      { ts: weeksAgo(16), y: 5.0 }, { ts: weeksAgo(14), y: 5.1 }, { ts: weeksAgo(12), y: 5.0 }, { ts: weeksAgo(10), y: 5.2 }
+    ],
+    seriesAfter: [
+      { ts: weeksAgo(8), y: 4.9 }, { ts: weeksAgo(6), y: 4.8 }, { ts: weeksAgo(4), y: 4.7 }, { ts: weeksAgo(2), y: 4.6 }
+    ],
+    summary: { effect: -0.35, note:'post level shift vs pre trend' }
+  };
+
+  const pilotDiD: any = {
+    id: uuid(), code:'H-1', title:'Rent Pressure Relief Pilot', relId: (rels[2]?.id ?? null),
+    startedAt: monthsAgo(4), method: 'DiD',
+    treatedGroup: [
+      { ts: monthsAgo(4), y: 3.1 }, { ts: monthsAgo(3), y: 3.2 }, { ts: monthsAgo(2), y: 3.0 }, { ts: monthsAgo(1), y: 2.8 }
+    ],
+    controlGroup: [
+      { ts: monthsAgo(4), y: 2.9 }, { ts: monthsAgo(3), y: 3.0 }, { ts: monthsAgo(2), y: 3.0 }, { ts: monthsAgo(1), y: 2.95 }
+    ],
+    summary: { effect: -0.25, note:'treated fell more vs control (DiD)' }
+  };
+
+  const pilots = await get(KEYS.pilots, [] as any[]);
+  pilots.push(pilotITS, pilotDiD);
+  await set(KEYS.pilots, pilots);
 
   // mark done
   await set(SEED_FLAG, SEED_VERSION);
