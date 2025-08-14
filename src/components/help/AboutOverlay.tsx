@@ -1,96 +1,126 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import * as Dialog from '@radix-ui/react-dialog';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 import { useToolsStore } from '@/stores/toolsStore';
-import { Info, Workflow, Building } from 'lucide-react';
+import Mermaid from '@/components/diagrams/Mermaid';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
-export default function AboutOverlay() {
-  const { global, close } = useToolsStore();
+const WORKFLOW = `
+flowchart LR
+  A[Think<br/>Map loops & variables] --> B[Act<br/>Bundles & Gate Stacks]
+  B --> C[Monitor<br/>Loop Health & REL]
+  C --> D[Learn<br/>Pilots ITS/DiD]
+  D --> E[Innovate<br/>Shock Lab & Network]
+  E --> A
+  subgraph Governance
+    C -.->|Gate & Participation| B
+    C -.->|Transparency Packs| C
+  end
+`;
+
+const ENTITIES = `
+erDiagram
+  VARIABLE ||--o{ EDGE : "defines link"
+  VARIABLE }o--o{ LOOP : "tagged in"
+  LOOP ||--o{ REL : "breach opens"
+  REL ||--o{ TRANSPARENCY_PACK : "published for"
+  REL ||--o{ PARTICIPATION : "evidence"
+  BUNDLE ||--o{ APPLIED_ARC : "PDI arcs"
+  GATE_SCORES ||--|| BUNDLE : "latest for"
+  GATE_STACK ||--o{ APPLIED_ARC : "expands to"
+  META_REL ||--o{ REL : "precedes/pauses"
+`;
+
+export default function AboutOverlay(){
+  const open = useToolsStore(s=>s.global.about);
+  const tab  = useToolsStore(s=>s.global.aboutTab);
+  const setTab = (t:'overview'|'workflow'|'entities')=>{
+    const u = useToolsStore.getState();
+    u.openAbout(t); // keeps about open and switches tab
+  };
+  const close = useToolsStore(s=>s.close);
 
   return (
-    <Dialog open={global.about} onOpenChange={() => close('global', 'about')}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            About the Platform
-          </DialogTitle>
-        </DialogHeader>
-        
-        <Tabs value={global.aboutTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <Info className="h-4 w-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="workflow" className="flex items-center gap-2">
-              <Workflow className="h-4 w-4" />
-              Workflow
-            </TabsTrigger>
-            <TabsTrigger value="entities" className="flex items-center gap-2">
-              <Building className="h-4 w-4" />
-              Entities
-            </TabsTrigger>
-          </TabsList>
-          
-          <div className="mt-6 overflow-y-auto max-h-[60vh]">
-            <TabsContent value="overview" className="space-y-4">
-              <h3 className="text-lg font-semibold">Platform Overview</h3>
-              <p className="text-muted-foreground">
-                This is a comprehensive system dynamics platform for modeling, monitoring, and acting on complex systems.
-              </p>
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium mb-2">Think Zone</h4>
-                  <p className="text-sm text-muted-foreground">Model and analyze system dynamics with causal loop diagrams.</p>
-                </div>
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium mb-2">Monitor Zone</h4>
-                  <p className="text-sm text-muted-foreground">Track system performance and health indicators.</p>
-                </div>
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium mb-2">Act Zone</h4>
-                  <p className="text-sm text-muted-foreground">Execute interventions and manage change processes.</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="workflow" className="space-y-4">
-              <h3 className="text-lg font-semibold">Workflow Process</h3>
-              <p className="text-muted-foreground">
-                The platform follows a systematic approach to system change management.
-              </p>
-              <ol className="list-decimal list-inside space-y-2 text-sm">
-                <li><strong>Think:</strong> Model the system using causal loop diagrams and identify leverage points</li>
-                <li><strong>Monitor:</strong> Track key indicators and system health metrics</li>
-                <li><strong>Act:</strong> Design and execute targeted interventions</li>
-                <li><strong>Learn:</strong> Analyze results and refine understanding</li>
-              </ol>
-            </TabsContent>
-            
-            <TabsContent value="entities" className="space-y-4">
-              <h3 className="text-lg font-semibold">System Entities</h3>
-              <p className="text-muted-foreground">
-                Key concepts and entities within the platform.
-              </p>
-              <div className="grid gap-3">
-                <div className="p-3 border rounded">
-                  <h4 className="font-medium">RELs (Reinforcing & Limiting Loops)</h4>
-                  <p className="text-xs text-muted-foreground">Fundamental feedback patterns that drive system behavior</p>
-                </div>
-                <div className="p-3 border rounded">
-                  <h4 className="font-medium">Interventions</h4>
-                  <p className="text-xs text-muted-foreground">Targeted actions designed to influence system dynamics</p>
-                </div>
-                <div className="p-3 border rounded">
-                  <h4 className="font-medium">Leverage Points</h4>
-                  <p className="text-xs text-muted-foreground">Strategic locations where small changes can produce big impacts</p>
-                </div>
-              </div>
-            </TabsContent>
+    <Dialog.Root open={open} onOpenChange={(v)=>!v && close('global','about')}>
+      <MotionOverlay />
+      <MotionContent className="glass-modal top-12 w-[1040px]">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">About this App</h2>
+          <div className="flex items-center gap-2 text-sm">
+            <button onClick={()=>setTab('overview')}  className={`btn-chip ${tab==='overview'?'bg-white/15':''}`}>Overview</button>
+            <button onClick={()=>setTab('workflow')}  className={`btn-chip ${tab==='workflow'?'bg-white/15':''}`}>Workflow</button>
+            <button onClick={()=>setTab('entities')}  className={`btn-chip ${tab==='entities'?'bg-white/15':''}`}>Entities</button>
           </div>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+          <Dialog.Close className="btn-ghost text-sm">Close</Dialog.Close>
+        </div>
+
+        {tab==='overview' && (
+          <div className="grid grid-cols-2 gap-4">
+            <ParallaxCard className="glass-panel p-4">
+              <div className="tile-title">What it is</div>
+              <div className="mt-2 text-sm text-zinc-200">
+                A front-end "systems thinking & execution" cockpit:
+                map complexity (<b>Think</b>), package actions (<b>Act</b>), monitor loops & breaches (<b>Monitor</b>),
+                evaluate & learn (<b>Learn</b>), explore innovations (<b>Innovate</b>), with governance rails.
+              </div>
+              <ul className="mt-3 text-sm text-zinc-300 list-disc pl-5 space-y-1">
+                <li>Built with React + TS + Vite + Tailwind + Zustand + Radix/shadcn.</li>
+                <li>Runs fully in-browser with seeded mock data; backend can be added later.</li>
+                <li>Glassy, Apple-inspired UI with subtle motion; overlays instead of pages.</li>
+              </ul>
+            </ParallaxCard>
+
+            <ParallaxCard className="glass-panel p-4">
+              <div className="tile-title">Zones at a glance</div>
+              <ul className="mt-2 text-sm text-zinc-300 space-y-1">
+                <li><b>Think</b>: Loop/Variable registries, CLD Studio, Bands, Auto-REL.</li>
+                <li><b>Act</b>: Bundles, Gate Checklist & Override, Participation Pack, Gate Stacks + PDI Storyboard, Ship Guard.</li>
+                <li><b>Monitor</b>: REL Board w/ timers, Transparency Packs, KPI Strip, Pilot Board.</li>
+                <li><b>Learn</b>: Pilots & evidence roll-up (seeded via Monitor's Pilot Board).</li>
+                <li><b>Innovate</b>: Shock Lab & Network Explorer (stubs present).</li>
+                <li><b>Admin</b>: Meta-Loop Console (conflicts heatmap, precedence, sequence).</li>
+              </ul>
+            </ParallaxCard>
+          </div>
+        )}
+
+        {tab==='workflow' && (
+          <div className="grid grid-cols-5 gap-4">
+            <ParallaxCard className="glass-panel p-4 col-span-3">
+              <div className="tile-title mb-2">Think → Act → Monitor → Learn → Innovate</div>
+              <Mermaid code={WORKFLOW} className="w-full overflow-auto" />
+            </ParallaxCard>
+            <ParallaxCard className="glass-panel p-4 col-span-2">
+              <div className="tile-title">Governance rails</div>
+              <ul className="mt-2 text-sm text-zinc-300 space-y-2">
+                <li><b>Gate</b> (6 scores) with optional <b>Override</b>.</li>
+                <li><b>Participation</b> (Yes/No/Compressed + due date) → debt guard.</li>
+                <li><b>Transparency</b> (Short/Full) with <b>hash & versions</b> + 72h SLO score.</li>
+                <li><b>Meta-Loop precedence</b> pauses RELs; banners & disabled actions reflect it.</li>
+              </ul>
+            </ParallaxCard>
+          </div>
+        )}
+
+        {tab==='entities' && (
+          <div className="grid grid-cols-5 gap-4">
+            <ParallaxCard className="glass-panel p-4 col-span-3">
+              <div className="tile-title mb-2">Core entities & relations</div>
+              <Mermaid code={ENTITIES} className="w-full overflow-auto" />
+            </ParallaxCard>
+            <ParallaxCard className="glass-panel p-4 col-span-2">
+              <div className="tile-title">Glossary (seeded)</div>
+              <ul className="mt-2 text-sm text-zinc-300 space-y-1">
+                <li><b>Indicator</b>: target + bands; values drive status.</li>
+                <li><b>REL</b>: breach ticket (staged: think→…→innovate).</li>
+                <li><b>Gate Stack</b>: reusable PDI sequence; expands to <b>Applied Arcs</b>.</li>
+                <li><b>Transparency Pack</b>: Short/Full, hashed, versioned.</li>
+                <li><b>Meta-REL</b>: conflict/sequence hub; can enforce precedence.</li>
+              </ul>
+            </ParallaxCard>
+          </div>
+        )}
+      </MotionContent>
+    </Dialog.Root>
   );
 }
