@@ -2,6 +2,7 @@ import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 type PackType = 'short'|'full';
 
@@ -50,8 +51,8 @@ export default function TransparencyTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('monitor','transparency')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="glass-overlay z-50" />
-        <Dialog.Content className="glass-modal top-14 w-[960px] z-50">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-14 w-[960px] z-50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Transparency Packs</h2>
             <div className="flex items-center gap-3 text-sm">
@@ -125,7 +126,7 @@ export default function TransparencyTool(){
           ) : (
             <div className="text-sm opacity-70">Publishing creates an immutable version with a SHA-256 hash. Re-publishing the same reference creates a new version.</div>
           )}
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

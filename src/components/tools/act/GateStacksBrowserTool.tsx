@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import { useActDemo } from '@/stores/actDemoStore';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 type Stack = { id:string; code:string; title:string; domain:string; description:string; equity?:string; steps:any[] };
 
@@ -26,8 +27,8 @@ export default function GateStacksBrowserTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','stacks')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-        <Dialog.Content className="fixed inset-x-0 top-16 mx-auto w-[1000px] rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl z-50">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-16 w-[1000px] z-50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Gate Stacks Library</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -77,7 +78,7 @@ export default function GateStacksBrowserTool(){
               )}
             </div>
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

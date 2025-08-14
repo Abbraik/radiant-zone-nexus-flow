@@ -5,6 +5,7 @@ import { useActDemo } from '@/stores/actDemoStore';
 import { usePrecedenceStore } from '@/stores/precedenceStore';
 import { canShip } from '@/lib/guards';
 import { ds } from '@/services/datasource';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 function Row({ok,label,children}:{ok:boolean;label:string;children?:React.ReactNode}){
   return (
@@ -55,8 +56,8 @@ export default function ShipPanelTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','ship' as any)}>
       <Dialog.Portal>
-        <Dialog.Overlay className="glass-overlay" />
-        <Dialog.Content className="glass-modal top-24 w-[720px]">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-24 w-[720px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Ship Decision — Guards</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -92,7 +93,7 @@ export default function ShipPanelTool(){
               </p>
             )}
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

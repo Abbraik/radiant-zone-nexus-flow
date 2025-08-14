@@ -2,6 +2,7 @@ import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 export default function PDIStoryboardTool(){
   const open = useToolsStore(s=>s.act.pdi);
@@ -17,8 +18,8 @@ export default function PDIStoryboardTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','pdi')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-        <Dialog.Content className="fixed inset-x-0 top-20 mx-auto w-[900px] rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl z-50">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-20 w-[900px] z-50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">PDI Storyboard — Applied Arcs</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -41,7 +42,7 @@ export default function PDIStoryboardTool(){
             ))}
             {!arcs.length && <div className="text-sm text-zinc-300 col-span-3 text-center py-8">No applied arcs yet — open "Stacks" to apply one.</div>}
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

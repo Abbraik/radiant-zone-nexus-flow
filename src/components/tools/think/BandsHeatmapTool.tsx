@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import BandStatusPill from '../shared/BandStatusPill';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 export default function BandsHeatmapTool(){
   const open = useToolsStore(s=>s.think.bands);
@@ -22,8 +23,8 @@ export default function BandsHeatmapTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('think','bands')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="glass-overlay" />
-        <Dialog.Content className="glass-modal top-16 w-[920px]">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-16 w-[920px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Bands Heatmap</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -47,7 +48,7 @@ export default function BandsHeatmapTool(){
             ))}
             {rows.length===0 && <div className="opacity-70 text-sm">No indicators yet — add some from “Indicators & Bands”.</div>}
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

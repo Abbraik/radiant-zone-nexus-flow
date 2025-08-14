@@ -2,6 +2,7 @@ import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 type Score = 0|1|2|3|4|5;
 const FIELDS = [
@@ -39,8 +40,8 @@ export default function GateChecklistTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','gate')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60" />
-        <Dialog.Content className="fixed inset-x-0 top-20 mx-auto w-[720px] rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-2xl">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-20 w-[720px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Gate Checklist &amp; Override</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -85,7 +86,7 @@ export default function GateChecklistTool(){
               <button onClick={submit} className="px-3 py-2 rounded bg-emerald-600">Submit Gate</button>
             </div>
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

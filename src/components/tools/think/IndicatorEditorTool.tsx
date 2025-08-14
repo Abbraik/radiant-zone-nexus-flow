@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import BandStatusPill from '../shared/BandStatusPill';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 export default function IndicatorEditorTool(){
   const open = useToolsStore(s=>s.think.indicators);
@@ -27,8 +28,8 @@ React.useEffect(()=>{
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('think','indicators')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="glass-overlay" />
-        <Dialog.Content className="glass-modal top-10 w-[880px]">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-10 w-[880px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Indicators &amp; Bands</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -73,7 +74,7 @@ React.useEffect(()=>{
               </div>
             </div>
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

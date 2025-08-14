@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import { usePrecedenceStore } from '@/stores/precedenceStore';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 type Rel = { id:string; indicatorId:string; stage:string; openedAt:string };
 type HeatCell = { domain:string; level:'macro'|'meso'|'micro'; count:number };
@@ -78,8 +79,8 @@ export default function MetaLoopConsoleTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('admin','meta')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-        <Dialog.Content className="fixed inset-x-0 top-12 mx-auto w-[1080px] rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl z-50">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-12 w-[1080px] z-50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Meta-Loop Console</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -150,7 +151,7 @@ export default function MetaLoopConsoleTool(){
             </div>
           </div>
 
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

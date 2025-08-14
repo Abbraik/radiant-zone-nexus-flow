@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import BandStatusPill from '../shared/BandStatusPill';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 type Indicator = { id:string; name:string; bandL:number; bandU:number; target:number };
 
@@ -41,8 +42,8 @@ export default function ValuePusherTool(){
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="glass-overlay" />
-        <Dialog.Content className="glass-modal top-24 w-[760px]">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-24 w-[760px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Push Value &amp; Auto-REL</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -77,7 +78,7 @@ export default function ValuePusherTool(){
               <button onClick={()=>ds.openRel(sel, breachClass(status) as any)} className="btn-ghost">Open REL now</button>
             )}
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );

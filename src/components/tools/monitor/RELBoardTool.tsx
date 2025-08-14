@@ -5,6 +5,7 @@ import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import RelStageChips from '../shared/RelStageChips';
 import { dueInDays } from '@/lib/relTimers';
+import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
 
 const STAGES: Array<{k:any;label:string}> = [
   {k:'think',label:'Think'},{k:'act',label:'Act'},{k:'monitor',label:'Monitor'},
@@ -26,8 +27,8 @@ export default function RELBoardTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('monitor','rel')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="glass-overlay" />
-        <Dialog.Content className="glass-modal top-16 w-[1000px]">
+        <MotionOverlay />
+        <MotionContent className="glass-modal top-16 w-[1000px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">REL Board</h2>
             <button className="text-sm underline opacity-80" onClick={refresh}>Refresh</button>
@@ -69,7 +70,7 @@ export default function RELBoardTool(){
             })}
             {rows.length===0 && <div className="text-sm text-zinc-300">No REL tickets yet.</div>}
           </div>
-        </Dialog.Content>
+        </MotionContent>
       </Dialog.Portal>
     </Dialog.Root>
   );
