@@ -3,7 +3,7 @@ import { create } from 'zustand';
 type Zone = 'think'|'monitor'|'act';
 
 type ThinkTools = { indicators:boolean; bands:boolean; };
-type MonitorTools = { rel:boolean; transparency:boolean; };
+type MonitorTools = { rel:boolean; transparency:boolean; pilot:boolean; };
 type ActTools = { ship:boolean; gate:boolean; participation:boolean; stacks:boolean; pdi:boolean; };
 
 type State = {
@@ -17,7 +17,7 @@ type State = {
 
 export const useToolsStore = create<State>((set)=>({
   think:   { indicators:false, bands:false },
-  monitor: { rel:false, transparency:false },
+  monitor: { rel:false, transparency:false, pilot:false },
   act:     { ship:false, gate:false, participation:false, stacks:false, pdi:false },
   open:   (zone, tool)=>set((s)=>({ [zone]: { ...(s as any)[zone], [tool]: true } } as any)),
   close:  (zone, tool)=>set((s)=>({ [zone]: { ...(s as any)[zone], [tool]: false } } as any)),
