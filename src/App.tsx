@@ -23,6 +23,7 @@ import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
+import GlobalPortals from '@/components/global/GlobalPortals';
 import '@/styles/glass.css';
 
 const queryClient = createQueryClient();
@@ -30,6 +31,7 @@ const queryClient = createQueryClient();
 const App = () => (
   <ErrorBoundary>
     <DemoBootstrap />
+    <GlobalPortals />
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <FeatureFlagProvider>
