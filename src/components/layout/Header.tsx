@@ -148,6 +148,12 @@ export const Header: React.FC = () => {
           <button className="w-8 h-8 bg-glass-secondary/60 backdrop-blur-sm rounded-xl border border-border/20 flex items-center justify-center hover:bg-glass-secondary/80 transition-all duration-200 hover:scale-105">
             <User className="w-4 h-4 text-foreground-muted" />
           </button>
+
+          <button
+            onClick={()=>useToolsStore.getState().openAbout('overview')}
+            className="btn-chip ml-2">
+            About
+          </button>
         </motion.div>
       </div>
       
