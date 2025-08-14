@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePrecedenceStore } from '@/stores/precedenceStore';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
@@ -11,6 +12,7 @@ const STAGES: Array<{k:any;label:string}> = [
 ];
 
 export default function RELBoardTool(){
+  const prec = usePrecedenceStore(s=>s.state);
   const open = useToolsStore(s=>s.monitor.rel);
   const close = useToolsStore(s=>s.close);
   const [rows,setRows]=React.useState<any[]>([]);
@@ -49,13 +51,17 @@ export default function RELBoardTool(){
                   </div>
                   <div className="justify-self-end">
                     <div className="flex items-center gap-2">
-                      {STAGES.map(s=>(
-                        <button key={s.k}
-                          className="text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5"
-                          onClick={async ()=>{ await ds.advanceRel(r.id, s.k as any); }}>
-                          {s.label}
-                        </button>
-                      ))}
+                      {STAGES.map(s=>{
+                        const paused = prec.active && prec.relIds.includes(r.id);
+                        return (
+                          <button key={s.k}
+                            disabled={paused}
+                            className={`text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5 ${paused?'opacity-40 cursor-not-allowed':''}`}
+                            onClick={async ()=>{ if(paused) return; await ds.advanceRel(r.id, s.k as any); }}>
+                            {s.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

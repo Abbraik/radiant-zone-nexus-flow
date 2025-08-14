@@ -2,6 +2,7 @@ import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useToolsStore } from '@/stores/toolsStore';
 import { useActDemo } from '@/stores/actDemoStore';
+import { usePrecedenceStore } from '@/stores/precedenceStore';
 import { canShip } from '@/lib/guards';
 import { ds } from '@/services/datasource';
 
@@ -48,6 +49,8 @@ export default function ShipPanelTool(){
     participationDebtOverdue: actualDebt.overdue > 0
   };
   const ok = canShip(effectiveContext);
+  const prec = usePrecedenceStore(st=>st.state);
+  const shipEnabled = ok && !prec.active;
 
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','ship' as any)}>
@@ -80,8 +83,14 @@ export default function ShipPanelTool(){
           </div>
 
           <div className="mt-5">
-            <button disabled={!ok} className="px-3 py-2 rounded bg-emerald-600 disabled:opacity-40">Ship decision</button>
-            {!ok && <p className="text-xs opacity-70 mt-2">To ship: map loops/variables, add a PDI arc, pass Gate = ALLOW, and clear or legally compress participation with no overdue debt.</p>}
+            <button disabled={!shipEnabled} className="px-3 py-2 rounded bg-emerald-600 disabled:opacity-40">Ship decision</button>
+            {(!shipEnabled) && (
+              <p className="text-xs opacity-70 mt-2">
+                {!ok
+                  ? 'To ship: map loops/variables, add a PDI arc, pass Gate = ALLOW, and clear/legally compress participation with no overdue debt.'
+                  : 'Ship is paused while a Meta-Loop precedence is active.'}
+              </p>
+            )}
           </div>
         </Dialog.Content>
       </Dialog.Portal>
