@@ -27,10 +27,16 @@ export default function ZoneToolsDock({zone}:Props){
         </button>
       )}
       {zone==='act' && (
-        <button onClick={()=>useToolsStore.getState().toggle('act','ship' as any)}
-          className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
-          Ship
-        </button>
+        <>
+          <button onClick={()=>useToolsStore.getState().toggle('act','ship' as any)}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            Ship
+          </button>
+          <button onClick={()=>useToolsStore.getState().toggle('act','gate' as any)}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            Gate
+          </button>
+        </>
       )}
     </div>
   );
