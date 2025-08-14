@@ -6,6 +6,8 @@ import { ThinkZoneWorkspace } from '../zones/ThinkZoneWorkspace';
 import { ActZoneWizard } from '../../pages/ActZoneWizard';
 import { MonitorZoneWorkspace } from '../zones/MonitorZoneWorkspace';
 import { InnovateLearnZoneWorkspace } from '../zones/InnovateLearnZoneWorkspace';
+import ZoneToolsDock from '@/components/zone/ZoneToolsDock';
+import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 
 interface DynamicWidgetProps {
   widgetName: string;
@@ -68,11 +70,23 @@ export const DynamicWidget: React.FC<DynamicWidgetProps> = ({ widgetName, task }
     switch (task.zone) {
       case 'think':
         console.log('DynamicWidget: Rendering enhanced ThinkZoneWorkspace for think task');
-        return <ThinkZoneWorkspace />;
+        return (<>
+          <ThinkZoneWorkspace />
+          <ZoneToolsDock zone="think" />
+          <ZoneToolsPortals zone="think" />
+        </>);
         case 'act':
-          return <ActZoneWizard />;
+          return (<>
+            <ActZoneWizard />
+            <ZoneToolsDock zone="act" />
+            <ZoneToolsPortals zone="act" />
+          </>);
       case 'monitor':
-        return <MonitorZoneWorkspace />;
+        return (<>
+          <MonitorZoneWorkspace />
+          <ZoneToolsDock zone="monitor" />
+          <ZoneToolsPortals zone="monitor" />
+        </>);
       case 'innovate-learn':
         return <InnovateLearnZoneWorkspace />;
       default:
