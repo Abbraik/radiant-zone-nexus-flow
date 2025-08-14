@@ -53,6 +53,8 @@ import { Input } from '../components/ui/input';
 import { Avatar } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { toast } from '../hooks/use-toast';
+import ZoneToolsDock from '@/components/zone/ZoneToolsDock';
+import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 
 // Mock data
 const availableInterventions = [
@@ -966,6 +968,9 @@ export const ActZone: React.FC = () => {
           />
         )}
       </div>
+      {/* zone tools */}
+      <ZoneToolsDock zone="act" />
+      <ZoneToolsPortals zone="act" />
     </div>
   );
 };
