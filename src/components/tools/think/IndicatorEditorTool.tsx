@@ -10,7 +10,17 @@ export default function IndicatorEditorTool(){
   const [list,setList]=useState<any[]>([]);
   const [form,setForm]=useState({ name:'', target:0, bandL:0, bandU:1, freq:'monthly' });
 
-  React.useEffect(()=>{ if(open) ds.listIndicators().then(setList); },[open]);
+React.useEffect(()=>{ 
+  if(!open) return;
+  (async ()=>{
+    const inds = await ds.listIndicators();
+    const rows = await Promise.all(inds.map(async i=>{
+      const s = await ds.getBandStatus(i.id);
+      return {...i, status:s.status};
+    }));
+    setList(rows);
+  })();
+},[open]);
 
   const canSave = useMemo(()=> form.name && form.bandU>form.bandL, [form]);
 
@@ -57,7 +67,7 @@ export default function IndicatorEditorTool(){
                       <div className="font-medium">{it.name}</div>
                       <div className="opacity-70">[{it.bandL} , {it.bandU}] target {it.target}</div>
                     </div>
-                    <BandStatusPill status="in" />
+                    <BandStatusPill status={it.status ?? 'in'} />
                   </div>
                 ))}
               </div>
