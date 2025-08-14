@@ -1,126 +1,142 @@
-import {
-  IDataProvider,
-  Indicator,
-  IndicatorValue,
-  RelTicket,
-  RelStage,
-  GateScores,
-  ParticipationPack,
-  TransparencyPack,
-  MetaRel,
+import { get, set, push, uuid, KEYS } from './db';
+import { sha256 } from '@/lib/hash';
+import type {
+  IDataProvider, Indicator, IndicatorValue, BandStatus, RelTicket, GateScores,
+  ParticipationPack, TransparencyPack, MetaRel
 } from '../types';
 
-const genId = (prefix = 'id') => `${prefix}_${Math.random().toString(36).slice(2)}_${Date.now()}`;
+function bandStatusFor(value: number, L: number, U: number): BandStatus {
+  if (value < L || value > U) return 'hard';
+  const mid = (L + U) / 2;
+  const wiggle = (U - L) * 0.15;
+  if (value < mid - wiggle || value > mid + wiggle) return 'soft';
+  return 'in';
+}
 
-// In-memory stores (simple stubs; can be replaced with IndexedDB/localStorage later)
-const indicators: Indicator[] = [];
-const indicatorValues: Record<string, IndicatorValue[]> = {};
-const rels: RelTicket[] = [];
-const packs: TransparencyPack[] = [];
-const metaRels: MetaRel[] = [];
+function gateOutcome(scores: GateScores): 'ALLOW'|'REWORK'|'BLOCK' {
+  const vals = [scores.authority, scores.capacity, scores.data, scores.leverFit, scores.safeguards, scores.participation];
+  if (vals.some(v => v === 0)) return 'BLOCK';
+  const lows = vals.filter(v => v <= 2).length;
+  if (lows >= 2) return 'BLOCK';
+  if (vals.some(v => v <= 2)) return 'REWORK';
+  return 'ALLOW';
+}
 
 export const mockProvider: IDataProvider = {
-  // Signals & Bands
-  async createIndicator(i: Partial<Indicator>): Promise<Indicator> {
-    const ind: Indicator = {
-      id: genId('ind'),
-      name: i.name ?? 'New Indicator',
+  // Indicators
+  async createIndicator(i) {
+    const rec: Indicator = {
+      id: uuid(),
+      name: i.name ?? 'Indicator',
       target: i.target ?? 0,
       bandL: i.bandL ?? -1,
       bandU: i.bandU ?? 1,
-      method: i.method ?? 'zscore',
-      freq: i.freq ?? 'daily',
+      method: (i.method as any) ?? 'zscore',
+      freq: i.freq ?? 'monthly',
     };
-    indicators.push(ind);
-    return ind;
+    const list = await get<Indicator[]>(KEYS.indicators, []);
+    list.push(rec); await set(KEYS.indicators, list);
+    return rec;
   },
-  async upsertIndicatorValue(id: string, v: IndicatorValue): Promise<IndicatorValue> {
-    indicatorValues[id] = indicatorValues[id] ?? [];
-    const idx = indicatorValues[id].findIndex((x) => x.ts === v.ts);
-    if (idx >= 0) indicatorValues[id][idx] = v; else indicatorValues[id].push(v);
+  async upsertIndicatorValue(id, v) {
+    const indicators = await get<Indicator[]>(KEYS.indicators, []);
+    const ind = indicators.find(x => x.id === id);
+    if (!ind) throw new Error('Indicator not found');
+    const arr = await get<IndicatorValue[]>(KEYS.values(id), []);
+    arr.push(v);
+    await set(KEYS.values(id), arr);
     return v;
   },
-  async listIndicators(): Promise<Indicator[]> {
-    return [...indicators];
+  async listIndicators() {
+    return get<Indicator[]>(KEYS.indicators, []);
   },
-  async getBandStatus(id: string): Promise<{ status: 'in' | 'soft' | 'hard' | 'critical'; z?: number }> {
-    const series = indicatorValues[id] ?? [];
-    const last = series[series.length - 1];
-    if (!last) return { status: 'in' };
-    return { status: last.status ?? 'in', z: last.z };
+  async getBandStatus(id) {
+    const inds = await get<Indicator[]>(KEYS.indicators, []);
+    const ind = inds.find(x => x.id === id);
+    if (!ind) throw new Error('Indicator not found');
+    const vals = await get<IndicatorValue[]>(KEYS.values(id), []);
+    const last = vals.at(-1);
+    if (!last) return { status: 'in' as BandStatus, z: 0 };
+    return { status: bandStatusFor(last.value, ind.bandL, ind.bandU), z: last.z ?? 0 };
   },
 
   // REL
-  async openRel(indicatorId: string, breachClass: 'Soft' | 'Hard' | 'Critical'): Promise<RelTicket> {
-    const t: RelTicket = {
-      id: genId('rel'),
-      indicatorId,
-      breachClass,
-      stage: 'sense',
-      openedAt: new Date().toISOString(),
-    };
-    rels.push(t);
-    return t;
+  async openRel(indicatorId, breachClass) {
+    const rel: RelTicket = { id: uuid(), indicatorId, breachClass, stage: 'sense', openedAt: new Date().toISOString() };
+    await push(KEYS.rels, rel);
+    return rel;
   },
-  async advanceRel(id: string, stage: RelStage): Promise<RelTicket> {
-    const r = rels.find((x) => x.id === id);
-    if (!r) throw new Error('REL not found');
-    r.stage = stage;
-    return r;
+  async advanceRel(id, stage, decision) {
+    const rels = await get<RelTicket[]>(KEYS.rels, []);
+    const idx = rels.findIndex(r => r.id === id);
+    if (idx < 0) throw new Error('REL not found');
+    rels[idx] = { ...rels[idx], stage };
+    await set(KEYS.rels, rels);
+    return rels[idx];
   },
-  async listRel(filter?: Partial<Pick<RelTicket, 'stage' | 'indicatorId'>>): Promise<RelTicket[]> {
-    let out = [...rels];
-    if (filter?.stage) out = out.filter((r) => r.stage === filter.stage);
-    if (filter?.indicatorId) out = out.filter((r) => r.indicatorId === filter.indicatorId);
-    return out;
+  async listRel(filter) {
+    const rels = await get<RelTicket[]>(KEYS.rels, []);
+    return rels.filter(r =>
+      (!filter?.stage || r.stage === filter.stage) &&
+      (!filter?.indicatorId || r.indicatorId === filter.indicatorId)
+    );
   },
 
   // Gate & Participation
-  async submitGate(scores: GateScores): Promise<{ itemId: string; outcome: 'ALLOW' | 'REWORK' | 'BLOCK' }> {
-    // Simple stub logic: average score threshold
-    const avg = (scores.authority + scores.capacity + scores.data + scores.leverFit + scores.safeguards + scores.participation) / 6;
-    const outcome = avg >= 3.5 ? 'ALLOW' : avg >= 2.5 ? 'REWORK' : 'BLOCK';
+  async submitGate(scores) {
+    const outcome = gateOutcome(scores);
+    const rec = { ...scores, outcome, createdAt: new Date().toISOString() };
+    await push(KEYS.gate, rec);
     return { itemId: scores.itemId, outcome };
   },
-  async submitParticipation(pack: ParticipationPack): Promise<ParticipationPack> {
-    return { ...pack };
+  async submitParticipation(pack) {
+    await push(KEYS.participation, pack);
+    if (pack.compressed && pack.fullPackDue) {
+      const debt = await get<{overdue:number; items:string[]}>(KEYS.debt, { overdue: 0, items: [] });
+      // mock: mark overdue if due date < today
+      const due = new Date(pack.fullPackDue);
+      const today = new Date();
+      if (due < new Date(today.toDateString())) {
+        debt.overdue += 1;
+        debt.items.push(pack.relId);
+      }
+      await set(KEYS.debt, debt);
+    }
+    return pack;
   },
-  async getParticipationDebt(): Promise<{ overdue: number; items: string[] }> {
-    return { overdue: 0, items: [] };
+  async getParticipationDebt() {
+    return get(KEYS.debt, { overdue: 0, items: [] });
   },
 
   // Transparency
-  async publishPack(p: Omit<TransparencyPack, 'id' | 'hash' | 'publishedAt'>): Promise<TransparencyPack> {
-    const full: TransparencyPack = {
-      ...p,
-      id: genId('pack'),
-      hash: genId('hash'),
-      publishedAt: new Date().toISOString(),
-    };
-    packs.push(full);
-    return full;
+  async publishPack(p) {
+    const id = uuid();
+    const payload = { ...p, id, publishedAt: new Date().toISOString() };
+    const hash = await sha256(JSON.stringify(payload));
+    const pack: TransparencyPack = { ...(payload as any), hash };
+    await push(KEYS.packs, pack);
+    return pack;
   },
-  async listPacks(refType: 'rel' | 'meta', refId: string): Promise<TransparencyPack[]> {
-    return packs.filter((x) => x.refType === refType && x.refId === refId);
+  async listPacks(refType, refId) {
+    const list = await get<TransparencyPack[]>(KEYS.packs, []);
+    return list.filter(p => p.refType === refType && p.refId === refId);
   },
 
   // Meta-Loop
-  async openMetaRel(seed: Partial<MetaRel>): Promise<MetaRel> {
-    const m: MetaRel = {
-      id: genId('mrel'),
-      openedAt: new Date().toISOString(),
-      mlhi: seed.mlhi ?? 0,
-      mismatchPct: seed.mismatchPct ?? 0,
-      conflicts: seed.conflicts ?? [],
-      sequence: seed.sequence ?? [],
+  async openMetaRel(seed) {
+    const rec: MetaRel = {
+      id: uuid(), openedAt: new Date().toISOString(),
+      mlhi: seed.mlhi ?? 80, mismatchPct: seed.mismatchPct ?? 0,
+      conflicts: seed.conflicts ?? [], sequence: seed.sequence ?? []
     };
-    metaRels.push(m);
-    return m;
+    await push(KEYS.meta, rec); return rec;
   },
-  async approveSequence(id: string, sequence: any): Promise<MetaRel> {
-    const m = metaRels.find((x) => x.id === id);
-    if (!m) throw new Error('MetaRel not found');
-    m.sequence = sequence;
-    return m;
+  async approveSequence(id, sequence) {
+    const metas = await get<MetaRel[]>(KEYS.meta, []);
+    const i = metas.findIndex(m => m.id === id);
+    if (i < 0) throw new Error('Meta-REL not found');
+    metas[i] = { ...metas[i], sequence };
+    await set(KEYS.meta, metas);
+    return metas[i];
   },
 };
