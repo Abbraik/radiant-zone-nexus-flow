@@ -40,6 +40,7 @@ export interface IDataProvider {
   // Transparency
   publishPack(p: Omit<TransparencyPack,'id'|'hash'|'publishedAt'>): Promise<TransparencyPack>;
   listPacks(refType:'rel'|'meta', refId: string): Promise<TransparencyPack[]>;
+  listAllPacks(): Promise<TransparencyPack[]>;
 
   // Meta-Loop
   openMetaRel(seed: Partial<MetaRel>): Promise<MetaRel>;

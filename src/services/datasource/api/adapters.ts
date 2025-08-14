@@ -20,6 +20,7 @@ export const apiProvider: IDataProvider = {
 
   async publishPack(){ throw new Error('API provider not implemented'); },
   async listPacks(){ throw new Error('API provider not implemented'); },
+  async listAllPacks(){ throw new Error('API provider not implemented'); },
 
   async openMetaRel(){ throw new Error('API provider not implemented'); },
   async approveSequence(){ throw new Error('API provider not implemented'); },

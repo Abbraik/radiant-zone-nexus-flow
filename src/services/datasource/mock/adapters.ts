@@ -149,6 +149,9 @@ export const mockProvider: IDataProvider = {
     const list = await get<TransparencyPack[]>(KEYS.packs, []);
     return list.filter(p => p.refType === refType && p.refId === refId);
   },
+  async listAllPacks() {
+    return get(KEYS.packs, [] as any[]);
+  },
 
   // Meta-Loop
   async openMetaRel(seed) {
