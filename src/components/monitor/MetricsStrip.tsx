@@ -1,5 +1,6 @@
 import React from 'react';
 import { ds } from '@/services/datasource';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 export default function MetricsStrip() {
   const [metrics, setMetrics] = React.useState({ tri: 0, pci: 0, mttrDays: 0, uptakePct: 0 });
@@ -14,12 +15,12 @@ export default function MetricsStrip() {
     unit?: string; 
     color?: string; 
   }) => (
-    <div className="glass-panel min-w-[160px]">
+    <ParallaxCard className="glass-panel min-w-[160px]">
       <div className="tile-title mb-1">{label}</div>
       <div className={`tile-value ${color}`}>
         {typeof value === 'number' ? value.toFixed(value % 1 === 0 ? 0 : 1) : value}{unit}
       </div>
-    </div>
+    </ParallaxCard>
   );
 
   return (

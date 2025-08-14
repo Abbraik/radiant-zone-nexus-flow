@@ -6,6 +6,7 @@ import { useToolsStore } from '@/stores/toolsStore';
 import RelStageChips from '../shared/RelStageChips';
 import { dueInDays } from '@/lib/relTimers';
 import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 const STAGES: Array<{k:any;label:string}> = [
   {k:'think',label:'Think'},{k:'act',label:'Act'},{k:'monitor',label:'Monitor'},
@@ -39,7 +40,7 @@ export default function RELBoardTool(){
             {rows.map(r=>{
               const due = dueInDays(r.openedAt, r.stage);
               return (
-                <div key={r.id} className="grid grid-cols-[1fr,200px,1fr] items-center gap-3 glass-panel-tight">
+                <ParallaxCard key={r.id} className="grid grid-cols-[1fr,200px,1fr] items-center gap-3 glass-panel-tight">
                   <div>
                     <div className="text-sm font-medium">REL #{r.id.slice(0,8)}</div>
                     <div className="text-xs text-zinc-400">Indicator: {r.indicatorId.slice(0,8)} • Breach: {r.breachClass}</div>
@@ -65,7 +66,7 @@ export default function RELBoardTool(){
                       })}
                     </div>
                   </div>
-                </div>
+                </ParallaxCard>
               );
             })}
             {rows.length===0 && <div className="text-sm text-zinc-300">No REL tickets yet.</div>}

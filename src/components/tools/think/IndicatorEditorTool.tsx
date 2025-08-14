@@ -4,6 +4,7 @@ import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import BandStatusPill from '../shared/BandStatusPill';
 import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 export default function IndicatorEditorTool(){
   const open = useToolsStore(s=>s.think.indicators);
@@ -63,13 +64,13 @@ React.useEffect(()=>{
               <h3 className="text-sm uppercase tracking-wide opacity-60">Current</h3>
               <div className="max-h-[360px] overflow-auto pr-1 space-y-2">
                 {list.map((it)=>(
-                  <div key={it.id} className="flex items-center justify-between glass-panel-tight">
+                  <ParallaxCard key={it.id} className="flex items-center justify-between glass-panel-tight">
                     <div className="text-sm">
                       <div className="font-medium">{it.name}</div>
                       <div className="opacity-70">[{it.bandL} , {it.bandU}] target {it.target}</div>
                     </div>
                     <BandStatusPill status={it.status ?? 'in'} />
-                  </div>
+                  </ParallaxCard>
                 ))}
               </div>
             </div>

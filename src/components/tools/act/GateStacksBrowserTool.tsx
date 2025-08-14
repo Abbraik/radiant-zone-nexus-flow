@@ -4,6 +4,7 @@ import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import { useActDemo } from '@/stores/actDemoStore';
 import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 type Stack = { id:string; code:string; title:string; domain:string; description:string; equity?:string; steps:any[] };
 
@@ -37,12 +38,13 @@ export default function GateStacksBrowserTool(){
           <div className="grid grid-cols-[320px,1fr] gap-4">
             <div className="max-h-[520px] overflow-auto pr-1 space-y-2">
               {stacks.map(s=>(
-                <button key={s.id} onClick={()=>setSel(s)}
-                  className={`w-full text-left rounded-xl border border-white/10 p-3 hover:bg-white/5 transition-colors ${sel?.id===s.id?'bg-white/10':''}`}>
-                  <div className="text-xs text-zinc-400">{s.code.toUpperCase()} • {s.domain}</div>
-                  <div className="text-sm font-medium">{s.title}</div>
-                  <div className="text-xs text-zinc-400 line-clamp-2">{s.description}</div>
-                </button>
+                <ParallaxCard key={s.id} className={`glass-panel-tight hover:bg-white/10 transition-colors ${sel?.id===s.id?'bg-white/10':''}`}>
+                  <button className="w-full text-left" onClick={()=>setSel(s)}>
+                    <div className="text-xs text-zinc-400">{s.code.toUpperCase()} • {s.domain}</div>
+                    <div className="text-sm font-medium">{s.title}</div>
+                    <div className="text-xs text-zinc-400 line-clamp-2">{s.description}</div>
+                  </button>
+                </ParallaxCard>
               ))}
               {!stacks.length && <div className="text-sm text-zinc-300">No stacks yet (seed should have loaded).</div>}
             </div>

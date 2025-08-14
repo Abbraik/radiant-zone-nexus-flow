@@ -1,6 +1,7 @@
 import React from 'react';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 function hoursBetween(a:string,b:string){
   return Math.abs((new Date(a).getTime() - new Date(b).getTime()) / 36e5);
@@ -28,7 +29,7 @@ export default function TransparencyScoreTile(){
   },[]);
 
   return (
-    <div className="glass-panel p-4">
+    <ParallaxCard className="glass-panel p-4">
       <div className="text-xs text-zinc-400 mb-1">Transparency Score (72h SLO)</div>
       <div className="text-3xl font-semibold">{score.pct}%</div>
       <div className="text-xs text-zinc-400 mt-1">{score.timely}/{score.total||0} packs published ≤72h</div>
@@ -39,6 +40,6 @@ export default function TransparencyScoreTile(){
           Open Transparency
         </button>
       </div>
-    </div>
+    </ParallaxCard>
   );
 }

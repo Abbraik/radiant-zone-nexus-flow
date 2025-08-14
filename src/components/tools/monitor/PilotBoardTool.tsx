@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 type Series = Array<{ ts:string; y:number }>;
 
@@ -57,26 +58,27 @@ export default function PilotBoardTool(){
             {/* list */}
             <div className="max-h-[520px] overflow-auto pr-1 space-y-2">
               {rows.map(p=>(
-                <button key={p.id} onClick={()=>setSel(p)}
-                  className={`w-full text-left rounded-xl border border-white/10 p-3 hover:bg-white/5 transition-colors ${sel?.id===p.id?'bg-white/10':''}`}>
-                  <div className="text-xs text-zinc-400">{p.code} • {p.method}</div>
-                  <div className="text-sm font-medium">{p.title}</div>
-                  <div className="mt-2 text-zinc-300">
-                    {p.method==='ITS' && <MiniLine series={itsMerged(p)} />}
-                    {p.method==='DiD' && (
-                      <div className="flex gap-2">
-                        <MiniLine series={(p.treatedGroup ?? [])}/>
-                        <MiniLine series={(p.controlGroup ?? [])}/>
-                      </div>
-                    )}
-                  </div>
-                </button>
+                <ParallaxCard key={p.id} className={`glass-panel-tight hover:bg-white/10 transition-colors ${sel?.id===p.id?'bg-white/10':''}`}>
+                  <button className="w-full text-left" onClick={()=>setSel(p)}>
+                    <div className="text-xs text-zinc-400">{p.code} • {p.method}</div>
+                    <div className="text-sm font-medium">{p.title}</div>
+                    <div className="mt-2 text-zinc-300">
+                      {p.method==='ITS' && <MiniLine series={itsMerged(p)} />}
+                      {p.method==='DiD' && (
+                        <div className="flex gap-2">
+                          <MiniLine series={(p.treatedGroup ?? [])}/>
+                          <MiniLine series={(p.controlGroup ?? [])}/>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </ParallaxCard>
               ))}
               {!rows.length && <div className="text-sm text-zinc-300">No pilots yet (seeds should have loaded).</div>}
             </div>
 
             {/* detail */}
-            <div className="rounded-xl border border-white/10 p-4 min-h-[360px] bg-zinc-800/30">
+            <ParallaxCard className="glass-panel p-4 min-h-[360px] bg-zinc-800/30" maxTilt={4}>
               {sel ? (
                 <>
                   <div className="flex items-center justify-between">
@@ -111,7 +113,7 @@ export default function PilotBoardTool(){
               ) : (
                 <div className="text-sm text-zinc-300">Select a pilot to view details</div>
               )}
-            </div>
+            </ParallaxCard>
           </div>
 
         </MotionContent>

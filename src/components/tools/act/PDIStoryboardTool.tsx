@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 export default function PDIStoryboardTool(){
   const open = useToolsStore(s=>s.act.pdi);
@@ -33,12 +34,12 @@ export default function PDIStoryboardTool(){
 
           <div className="grid grid-cols-3 gap-3">
             {arcs.map((a,i)=>(
-              <div key={i} className="rounded-xl border border-white/10 p-3 bg-zinc-800/30">
+              <ParallaxCard key={i} className="glass-panel-tight bg-zinc-800/30">
                 <div className="text-xs text-zinc-400">{a.stackCode}</div>
                 <div className="text-sm font-medium">{a.actor}</div>
                 <div className="text-xs text-zinc-400">{a.arc} • {a.level}</div>
                 {a.note && <div className="text-xs mt-1 opacity-80">{a.note}</div>}
-              </div>
+              </ParallaxCard>
             ))}
             {!arcs.length && <div className="text-sm text-zinc-300 col-span-3 text-center py-8">No applied arcs yet — open "Stacks" to apply one.</div>}
           </div>

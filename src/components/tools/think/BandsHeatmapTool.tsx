@@ -4,6 +4,7 @@ import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import BandStatusPill from '../shared/BandStatusPill';
 import { Overlay as MotionOverlay, Content as MotionContent } from '@/components/motion/MotionDialog';
+import ParallaxCard from '@/components/motion/ParallaxCard';
 
 export default function BandsHeatmapTool(){
   const open = useToolsStore(s=>s.think.bands);
@@ -31,7 +32,7 @@ export default function BandsHeatmapTool(){
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {rows.map(r=>(
-              <div key={r.id} className="glass-panel p-4">
+              <ParallaxCard key={r.id} className="glass-panel p-4">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-medium mb-2">{r.name}</div>
                   {(r.status==='hard'||r.status==='critical') && (
@@ -44,7 +45,7 @@ export default function BandsHeatmapTool(){
                 </div>
                 <BandStatusPill status={r.status}/>
                 <div className="text-xs text-zinc-300 mt-2">Band [{r.bandL} , {r.bandU}] • Target {r.target}</div>
-              </div>
+              </ParallaxCard>
             ))}
             {rows.length===0 && <div className="opacity-70 text-sm">No indicators yet — add some from “Indicators & Bands”.</div>}
           </div>
