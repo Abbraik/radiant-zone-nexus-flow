@@ -58,7 +58,7 @@ export default function PilotBoardTool(){
               {rows.map(p=>(
                 <button key={p.id} onClick={()=>setSel(p)}
                   className={`w-full text-left rounded-xl border border-white/10 p-3 hover:bg-white/5 transition-colors ${sel?.id===p.id?'bg-white/10':''}`}>
-                  <div className="text-xs opacity-70">{p.code} • {p.method}</div>
+                  <div className="text-xs text-zinc-400">{p.code} • {p.method}</div>
                   <div className="text-sm font-medium">{p.title}</div>
                   <div className="mt-2 text-zinc-300">
                     {p.method==='ITS' && <MiniLine series={itsMerged(p)} />}
@@ -71,7 +71,7 @@ export default function PilotBoardTool(){
                   </div>
                 </button>
               ))}
-              {!rows.length && <div className="opacity-70 text-sm">No pilots yet (seeds should have loaded).</div>}
+              {!rows.length && <div className="text-sm text-zinc-300">No pilots yet (seeds should have loaded).</div>}
             </div>
 
             {/* detail */}
@@ -80,7 +80,7 @@ export default function PilotBoardTool(){
                 <>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-xs opacity-70">{sel.code} • {sel.method}</div>
+                      <div className="text-xs text-zinc-400">{sel.code} • {sel.method}</div>
                       <div className="text-lg font-semibold">{sel.title}</div>
                     </div>
                     <div className="text-sm opacity-70">Started: {new Date(sel.startedAt).toLocaleDateString()}</div>
@@ -89,14 +89,14 @@ export default function PilotBoardTool(){
                   <div className="mt-3">
                     {sel.method==='ITS' && (
                       <>
-                        <div className="text-xs opacity-70 mb-1">Interrupted Time Series</div>
+                        <div className="text-xs text-zinc-400 mb-1">Interrupted Time Series</div>
                         <MiniLine series={itsMerged(sel)} />
-                        <div className="text-xs opacity-70 mt-1">Effect (level shift): {sel.summary?.effect ?? 0}</div>
+                        <div className="text-xs text-zinc-400 mt-1">Effect (level shift): {sel.summary?.effect ?? 0}</div>
                       </>
                     )}
                     {sel.method==='DiD' && (
                       <>
-                        <div className="text-xs opacity-70 mb-1">Difference-in-Differences</div>
+                        <div className="text-xs text-zinc-400 mb-1">Difference-in-Differences</div>
                         <div className="flex gap-2">
                           <div><div className="text-[11px] opacity-70">Treated</div><MiniLine series={(sel.treatedGroup ?? [])}/></div>
                           <div><div className="text-[11px] opacity-70">Control</div><MiniLine series={(sel.controlGroup ?? [])}/></div>
@@ -108,7 +108,7 @@ export default function PilotBoardTool(){
                   </div>
                 </>
               ) : (
-                <div className="opacity-70 text-sm">Select a pilot to view details</div>
+                <div className="text-sm text-zinc-300">Select a pilot to view details</div>
               )}
             </div>
           </div>

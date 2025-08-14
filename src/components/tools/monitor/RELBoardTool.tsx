@@ -41,7 +41,7 @@ export default function RELBoardTool(){
                 <div key={r.id} className="grid grid-cols-[1fr,200px,1fr] items-center gap-3 glass-panel-tight">
                   <div>
                     <div className="text-sm font-medium">REL #{r.id.slice(0,8)}</div>
-                    <div className="text-xs opacity-70">Indicator: {r.indicatorId.slice(0,8)} • Breach: {r.breachClass}</div>
+                    <div className="text-xs text-zinc-400">Indicator: {r.indicatorId.slice(0,8)} • Breach: {r.breachClass}</div>
                   </div>
                   <div className="justify-self-center flex items-center gap-3">
                     <RelStageChips stage={r.stage}/>
@@ -67,7 +67,7 @@ export default function RELBoardTool(){
                 </div>
               );
             })}
-            {rows.length===0 && <div className="opacity-70 text-sm">No REL tickets yet.</div>}
+            {rows.length===0 && <div className="text-sm text-zinc-300">No REL tickets yet.</div>}
           </div>
         </Dialog.Content>
       </Dialog.Portal>

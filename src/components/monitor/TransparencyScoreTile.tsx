@@ -29,9 +29,9 @@ export default function TransparencyScoreTile(){
 
   return (
     <div className="glass-panel p-4">
-      <div className="text-xs opacity-70 mb-1">Transparency Score (72h SLO)</div>
+      <div className="text-xs text-zinc-400 mb-1">Transparency Score (72h SLO)</div>
       <div className="text-3xl font-semibold">{score.pct}%</div>
-      <div className="text-xs opacity-70 mt-1">{score.timely}/{score.total||0} packs published ≤72h</div>
+      <div className="text-xs text-zinc-400 mt-1">{score.timely}/{score.total||0} packs published ≤72h</div>
       <div className="mt-3">
         <button
           onClick={() => toggle('monitor', 'transparency')}

@@ -56,7 +56,7 @@ export default function ParticipationPackTool(){
             </div>
 
             <div className="space-y-3">
-              <div className="rounded-xl border border-white/10 p-3">
+              <div className="glass-panel-tight">
                 <label className="block text-sm opacity-70">Compliance</label>
                 <select className="w-full bg-zinc-800 rounded px-3 py-2"
                   value={pack.compliance} onChange={e=>{
@@ -78,7 +78,7 @@ export default function ParticipationPackTool(){
               <button onClick={submit} className="px-3 py-2 rounded bg-emerald-600">Save Participation</button>
 
               {existing && (
-                <div className="rounded-xl border border-white/10 p-3">
+                <div className="glass-panel-tight">
                   <div className="text-sm opacity-70 mb-1">Latest</div>
                   <div className="text-sm">Compliance: {existing.compliance} {existing.compressed ? '(Compressed)' : ''}</div>
                   {existing.fullPackDue && <div className="text-sm opacity-70">Full Pack due: {existing.fullPackDue}</div>}

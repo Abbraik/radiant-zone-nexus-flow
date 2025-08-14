@@ -83,7 +83,7 @@ const CascadeBar: React.FC<CascadeBarProps> = ({ activeTask, onNodeClick }) => {
               <div className="text-left">
                 <div className="text-sm font-medium">{node.title}</div>
                 {node.progress !== undefined && (
-                  <div className="text-xs opacity-70">
+                  <div className="text-xs text-zinc-400">
                     {node.progress}% complete
                   </div>
                 )}

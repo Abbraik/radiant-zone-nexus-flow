@@ -38,12 +38,12 @@ export default function GateStacksBrowserTool(){
               {stacks.map(s=>(
                 <button key={s.id} onClick={()=>setSel(s)}
                   className={`w-full text-left rounded-xl border border-white/10 p-3 hover:bg-white/5 transition-colors ${sel?.id===s.id?'bg-white/10':''}`}>
-                  <div className="text-xs opacity-70">{s.code.toUpperCase()} • {s.domain}</div>
+                  <div className="text-xs text-zinc-400">{s.code.toUpperCase()} • {s.domain}</div>
                   <div className="text-sm font-medium">{s.title}</div>
-                  <div className="text-xs opacity-70 line-clamp-2">{s.description}</div>
+                  <div className="text-xs text-zinc-400 line-clamp-2">{s.description}</div>
                 </button>
               ))}
-              {!stacks.length && <div className="opacity-70 text-sm">No stacks yet (seed should have loaded).</div>}
+              {!stacks.length && <div className="text-sm text-zinc-300">No stacks yet (seed should have loaded).</div>}
             </div>
 
             <div className="rounded-xl border border-white/10 p-4 min-h-[360px] bg-zinc-800/30">
@@ -51,7 +51,7 @@ export default function GateStacksBrowserTool(){
                 <>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-xs opacity-70">{sel.code} • {sel.domain}</div>
+                      <div className="text-xs text-zinc-400">{sel.code} • {sel.domain}</div>
                       <div className="text-lg font-semibold">{sel.title}</div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -60,9 +60,9 @@ export default function GateStacksBrowserTool(){
                     </div>
                   </div>
                   <p className="text-sm opacity-80 mt-2">{sel.description}</p>
-                  {sel.equity && <p className="text-xs opacity-70 mt-1">Equity: {sel.equity}</p>}
+                  {sel.equity && <p className="text-xs text-zinc-400 mt-1">Equity: {sel.equity}</p>}
                   <div className="mt-3">
-                    <div className="text-xs opacity-70 mb-1">Sequence (macro→meso→micro)</div>
+                    <div className="text-xs text-zinc-400 mb-1">Sequence (macro→meso→micro)</div>
                     <ol className="list-decimal pl-5 space-y-1">
                       {sel.steps.map((st,i)=>(
                         <li key={i} className="text-sm">
@@ -73,7 +73,7 @@ export default function GateStacksBrowserTool(){
                   </div>
                 </>
               ) : (
-                <div className="opacity-70 text-sm">Select a stack to view details and apply.</div>
+                <div className="text-sm text-zinc-300">Select a stack to view details and apply.</div>
               )}
             </div>
           </div>

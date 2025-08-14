@@ -120,7 +120,7 @@ export default function TransparencyTool(){
                   <div className="col-span-3 text-[11px] break-all opacity-80 mt-1">hash: {p.hash}</div>
                 </div>
               ))}
-              {!history.length && <div className="opacity-70 text-sm">No packs yet for this reference.</div>}
+              {!history.length && <div className="text-sm text-zinc-300">No packs yet for this reference.</div>}
             </div>
           ) : (
             <div className="text-sm opacity-70">Publishing creates an immutable version with a SHA-256 hash. Re-publishing the same reference creates a new version.</div>

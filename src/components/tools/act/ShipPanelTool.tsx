@@ -85,7 +85,7 @@ export default function ShipPanelTool(){
           <div className="mt-5">
             <button disabled={!shipEnabled} className="btn-primary disabled:opacity-40">Ship decision</button>
             {(!shipEnabled) && (
-              <p className="text-xs opacity-70 mt-2">
+              <p className="text-xs text-zinc-400 mt-2">
                 {!ok
                   ? 'To ship: map loops/variables, add a PDI arc, pass Gate = ALLOW, and clear/legally compress participation with no overdue debt.'
                   : 'Ship is paused while a Meta-Loop precedence is active.'}

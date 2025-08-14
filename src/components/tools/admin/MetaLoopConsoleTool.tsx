@@ -17,7 +17,7 @@ function Heatmap({cells}:{cells:HeatCell[]}){
     <div className="grid grid-cols-4 gap-2">
       {DOMAINS.map(d=>(
         <div key={d} className="rounded-xl border border-white/10 p-2">
-          <div className="text-xs opacity-70 mb-1">{d}</div>
+          <div className="text-xs text-zinc-400 mb-1">{d}</div>
           <div className="grid grid-cols-3 gap-1 text-center">
             {(['macro','meso','micro'] as const).map(l=>{
               const v = grid[d][l];
@@ -120,7 +120,7 @@ export default function MetaLoopConsoleTool(){
                 {sequence.map((s:any,i:number)=>(
                   <div key={i} className="flex items-center justify-between rounded border border-white/10 p-2 bg-zinc-900/50">
                     <div className="text-sm">{s.label}</div>
-                    <div className="text-xs opacity-70">{s.level}</div>
+                    <div className="text-xs text-zinc-400">{s.level}</div>
                     <div className="flex items-center gap-1">
                       <button disabled={i===0} onClick={()=>setSequence(q=>{
                         const a=[...q]; const t=a[i]; a[i]=a[i-1]; a[i-1]=t; return a;

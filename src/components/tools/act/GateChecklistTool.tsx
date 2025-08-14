@@ -66,12 +66,12 @@ export default function GateChecklistTool(){
             </div>
 
             <div className="space-y-3">
-              <div className="rounded-xl border border-white/10 p-3">
+              <div className="glass-panel-tight">
                 <div className="text-sm opacity-70 mb-1">Last outcome</div>
                 <div className="text-xl font-semibold">{outcome}</div>
               </div>
 
-              <div className="rounded-xl border border-white/10 p-3">
+              <div className="glass-panel-tight">
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={override} onChange={e=>setOverride(e.target.checked)} />
                   Apply Override (requires reason)
