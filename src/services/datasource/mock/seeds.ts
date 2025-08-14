@@ -2,7 +2,7 @@ import { get, set, push, uuid, KEYS } from './db';
 
 // bump SEED_VERSION when you change seed content
 const SEED_FLAG = 'seed:version';
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 
 function isoMonthsAgo(n:number){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString(); }
 function isoWeeksAgo(n:number){ const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString(); }
@@ -73,11 +73,18 @@ export async function seedOnce() {
 
   // 3) REL tickets (so REL Board isn't empty)
   const rels = [
-    { id: uuid(), indicatorId: unemp.id, breachClass:'Hard', stage:'diagnose', openedAt: isoWeeksAgo(1) },
-    { id: uuid(), indicatorId: wait.id,  breachClass:'Hard', stage:'gate',     openedAt: isoWeeksAgo(2) },
-    { id: uuid(), indicatorId: rent.id,  breachClass:'Hard', stage:'participate', openedAt: isoWeeksAgo(2) },
+    { id: uuid(), indicatorId: unemp.id, breachClass:'Hard', stage:'think',    openedAt: isoWeeksAgo(1) },
+    { id: uuid(), indicatorId: wait.id,  breachClass:'Hard', stage:'act',      openedAt: isoWeeksAgo(2) },
+    { id: uuid(), indicatorId: rent.id,  breachClass:'Hard', stage:'monitor',  openedAt: isoWeeksAgo(2) },
   ];
   await set(KEYS.rels, rels);
+
+  // demo gate for a fictional bundle item
+  await push(KEYS.gate, {
+    itemId: 'demo-item-1',
+    authority:4, capacity:4, data:4, leverFit:4, safeguards:3, participation:4,
+    outcome: 'ALLOW', createdAt: new Date().toISOString()
+  });
 
   // 4) One Transparency Pack (Short) linked to the first REL
   const pack = {
