@@ -18,6 +18,16 @@ function Row({ok,label,children}:{ok:boolean;label:string;children?:React.ReactN
 }
 
 export default function ShipPanelTool(){
+  React.useEffect(()=>{
+    // when panel opens, check applied arcs for demo item and set hasPdiArc accordingly
+    const unsub = setInterval(async ()=>{
+      try {
+        const arcs = await ds.listAppliedArcs('demo-item-1');
+        if (arcs && arcs.length) useActDemo.getState().set({ hasPdiArc: true });
+      } catch {}
+    }, 800);
+    return ()=> clearInterval(unsub);
+  },[]);
   const open = useToolsStore(s=>s.act?.ship ?? false);
   const close = useToolsStore(s=>s.close);
 

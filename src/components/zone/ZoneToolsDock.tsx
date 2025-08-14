@@ -33,20 +33,18 @@ export default function ZoneToolsDock({zone}:Props){
         </div>
       )}
       {zone==='act' && (
-        <>
-          <button onClick={()=>useToolsStore.getState().toggle('act','ship' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
-            Ship
-          </button>
+        <div className="flex flex-col items-end gap-2">
+          <button onClick={()=>useToolsStore.getState().toggle('act','stacks' as any)}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Stacks</button>
+          <button onClick={()=>useToolsStore.getState().toggle('act','pdi' as any)}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">PDI</button>
           <button onClick={()=>useToolsStore.getState().toggle('act','gate' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
-            Gate
-          </button>
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Gate</button>
           <button onClick={()=>useToolsStore.getState().toggle('act','participation' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
-            Participation
-          </button>
-        </>
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Part.</button>
+          <button onClick={()=>useToolsStore.getState().toggle('act','ship' as any)}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Ship</button>
+        </div>
       )}
     </div>
   );
