@@ -106,6 +106,12 @@ export const mockProvider: IDataProvider = {
     await push(KEYS.gate, rec);
     return { itemId: scores.itemId, outcome };
   },
+  async getLastGateOutcome(itemId: string) {
+    const all = await get<any[]>(KEYS.gate, []);
+    const rows = all.filter(g => g.itemId === itemId).sort((a,b)=> (a.createdAt>b.createdAt?-1:1));
+    if (!rows.length) return { outcome: null };
+    return { outcome: rows[0].outcome, at: rows[0].createdAt };
+  },
   async submitParticipation(pack) {
     await push(KEYS.participation, pack);
     if (pack.compressed && pack.fullPackDue) {
@@ -120,6 +126,11 @@ export const mockProvider: IDataProvider = {
       await set(KEYS.debt, debt);
     }
     return pack;
+  },
+  async getParticipationForRel(relId: string) {
+    const all = await get<ParticipationPack[]>(KEYS.participation, []);
+    const row = all.slice().reverse().find(p => p.relId === relId);
+    return row ?? null;
   },
   async getParticipationDebt() {
     return get(KEYS.debt, { overdue: 0, items: [] });

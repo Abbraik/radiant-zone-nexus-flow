@@ -32,7 +32,9 @@ export interface IDataProvider {
 
   // Gate & Participation
   submitGate(scores: GateScores): Promise<{ itemId: string; outcome: 'ALLOW'|'REWORK'|'BLOCK' }>;
+  getLastGateOutcome(itemId: string): Promise<{ outcome:'ALLOW'|'REWORK'|'BLOCK'|null; at?: string }>;
   submitParticipation(pack: ParticipationPack): Promise<ParticipationPack>;
+  getParticipationForRel(relId: string): Promise<ParticipationPack | null>;
   getParticipationDebt(): Promise<{ overdue: number; items: string[] }>;
 
   // Transparency

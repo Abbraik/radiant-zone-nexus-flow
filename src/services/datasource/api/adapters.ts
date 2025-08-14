@@ -13,7 +13,9 @@ export const apiProvider: IDataProvider = {
   async listRel(){ throw new Error('API provider not implemented'); },
 
   async submitGate(){ throw new Error('API provider not implemented'); },
+  async getLastGateOutcome(){ throw new Error('API provider not implemented'); },
   async submitParticipation(){ throw new Error('API provider not implemented'); },
+  async getParticipationForRel(){ throw new Error('API provider not implemented'); },
   async getParticipationDebt(){ throw new Error('API provider not implemented'); },
 
   async publishPack(){ throw new Error('API provider not implemented'); },
