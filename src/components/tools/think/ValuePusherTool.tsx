@@ -41,8 +41,8 @@ export default function ValuePusherTool(){
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60" />
-        <Dialog.Content className="fixed inset-x-0 top-24 mx-auto w-[760px] rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-2xl">
+        <Dialog.Overlay className="glass-overlay" />
+        <Dialog.Content className="glass-modal top-24 w-[760px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Push Value &amp; Auto-REL</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -51,7 +51,7 @@ export default function ValuePusherTool(){
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm opacity-80">Indicator</label>
-              <select className="w-full bg-zinc-800 rounded px-3 py-2" value={sel} onChange={e=>setSel(e.target.value)}>
+              <select className="glass-input" value={sel} onChange={e=>setSel(e.target.value)}>
                 {inds.map(i=>
                   <option key={i.id} value={i.id}>{i.name}</option>
                 )}
@@ -59,7 +59,7 @@ export default function ValuePusherTool(){
             </div>
             <div>
               <label className="block text-sm opacity-80">New value</label>
-              <input type="number" className="w-full bg-zinc-800 rounded px-3 py-2" value={val} onChange={e=>setVal(e.target.value)}/>
+              <input type="number" className="glass-input" value={val} onChange={e=>setVal(e.target.value)}/>
             </div>
           </div>
 
@@ -72,9 +72,9 @@ export default function ValuePusherTool(){
           </div>
 
           <div className="mt-5 flex items-center gap-3">
-            <button onClick={pushValue} className="px-3 py-2 rounded bg-emerald-600">Push value</button>
+            <button onClick={pushValue} className="btn-primary">Push value</button>
             {(status==='hard'||status==='critical') && (
-              <button onClick={()=>ds.openRel(sel, breachClass(status) as any)} className="px-3 py-2 rounded border border-white/10">Open REL now</button>
+              <button onClick={()=>ds.openRel(sel, breachClass(status) as any)} className="btn-ghost">Open REL now</button>
             )}
           </div>
         </Dialog.Content>

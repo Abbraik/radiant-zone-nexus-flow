@@ -26,8 +26,8 @@ export default function RELBoardTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('monitor','rel')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60" />
-        <Dialog.Content className="fixed inset-x-0 top-16 mx-auto w-[1000px] rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-2xl">
+        <Dialog.Overlay className="glass-overlay" />
+        <Dialog.Content className="glass-modal top-16 w-[1000px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">REL Board</h2>
             <button className="text-sm underline opacity-80" onClick={refresh}>Refresh</button>
@@ -38,7 +38,7 @@ export default function RELBoardTool(){
             {rows.map(r=>{
               const due = dueInDays(r.openedAt, r.stage);
               return (
-                <div key={r.id} className="grid grid-cols-[1fr,200px,1fr] items-center gap-3 rounded-xl border border-white/10 p-3">
+                <div key={r.id} className="grid grid-cols-[1fr,200px,1fr] items-center gap-3 glass-panel-tight">
                   <div>
                     <div className="text-sm font-medium">REL #{r.id.slice(0,8)}</div>
                     <div className="text-xs opacity-70">Indicator: {r.indicatorId.slice(0,8)} • Breach: {r.breachClass}</div>
@@ -56,7 +56,7 @@ export default function RELBoardTool(){
                         return (
                           <button key={s.k}
                             disabled={paused}
-                            className={`text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5 ${paused?'opacity-40 cursor-not-allowed':''}`}
+                            className={`btn-chip ${paused?'opacity-40 cursor-not-allowed':''}`}
                             onClick={async ()=>{ if(paused) return; await ds.advanceRel(r.id, s.k as any); }}>
                             {s.label}
                           </button>

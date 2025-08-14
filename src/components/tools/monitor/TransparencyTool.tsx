@@ -50,8 +50,8 @@ export default function TransparencyTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('monitor','transparency')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-        <Dialog.Content className="fixed inset-x-0 top-14 mx-auto w-[960px] rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl z-50">
+        <Dialog.Overlay className="glass-overlay z-50" />
+        <Dialog.Content className="glass-modal top-14 w-[960px] z-50">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Transparency Packs</h2>
             <div className="flex items-center gap-3 text-sm">
@@ -65,7 +65,7 @@ export default function TransparencyTool(){
           <div className="flex flex-wrap items-end gap-3 mb-4">
             <div>
               <label className="block text-xs opacity-70">Reference</label>
-              <select className="bg-zinc-800 rounded px-3 py-2 border border-white/10" value={refType} onChange={e=>setRefType(e.target.value as any)}>
+              <select className="glass-input border border-white/10" value={refType} onChange={e=>setRefType(e.target.value as any)}>
                 <option value="rel">REL</option>
                 <option value="meta">Meta-REL</option>
               </select>
@@ -73,11 +73,11 @@ export default function TransparencyTool(){
             <div className="min-w-[320px]">
               <label className="block text-xs opacity-70">{refType==='rel'?'REL ID':'Meta-REL ID'}</label>
               {refType==='rel' ? (
-                <select className="w-full bg-zinc-800 rounded px-3 py-2 border border-white/10" value={refId} onChange={e=>setRefId(e.target.value)}>
+                <select className="glass-input border border-white/10" value={refId} onChange={e=>setRefId(e.target.value)}>
                   {rels.map(r=><option key={r.id} value={r.id}>{r.id.slice(0,8)}</option>)}
                 </select>
               ) : (
-                <select className="w-full bg-zinc-800 rounded px-3 py-2 border border-white/10" value={refId} onChange={e=>setRefId(e.target.value)}>
+                <select className="glass-input border border-white/10" value={refId} onChange={e=>setRefId(e.target.value)}>
                   {metas.length ? metas.map(m=><option key={m.id} value={m.id}>{m.id.slice(0,8)}</option>) : <option value="">(none)</option>}
                 </select>
               )}
@@ -86,16 +86,16 @@ export default function TransparencyTool(){
               <>
                 <div>
                   <label className="block text-xs opacity-70">Type</label>
-                  <select className="bg-zinc-800 rounded px-3 py-2 border border-white/10" value={type} onChange={e=>setType(e.target.value as PackType)}>
+                  <select className="glass-input border border-white/10" value={type} onChange={e=>setType(e.target.value as PackType)}>
                     <option value="short">Short</option>
                     <option value="full">Full</option>
                   </select>
                 </div>
                 <div className="grow">
                   <label className="block text-xs opacity-70">Pack URL</label>
-                  <input className="w-full bg-zinc-800 rounded px-3 py-2 border border-white/10" value={url} onChange={e=>setUrl(e.target.value)} placeholder="/packs/REL-1234-short.pdf"/>
+                  <input className="glass-input border border-white/10" value={url} onChange={e=>setUrl(e.target.value)} placeholder="/packs/REL-1234-short.pdf"/>
                 </div>
-                <button onClick={publish} className="h-10 px-3 rounded bg-emerald-600 hover:bg-emerald-700 transition-colors">Publish</button>
+                <button onClick={publish} className="btn-primary h-10">Publish</button>
               </>
             )}
           </div>
@@ -104,7 +104,7 @@ export default function TransparencyTool(){
           {tab==='history' ? (
             <div className="space-y-2 max-h-[460px] overflow-auto pr-1">
               {history.map((p:any)=>(
-                <div key={p.id} className="rounded-xl border border-white/10 p-3 grid grid-cols-[120px,1fr,1fr] gap-3 bg-zinc-800/50">
+                <div key={p.id} className="glass-panel-tight p-3 grid grid-cols-[120px,1fr,1fr] gap-3">
                   <div className="text-xs">
                     <div className="opacity-70">Type</div>
                     <div className="font-medium uppercase">{p.type}</div>

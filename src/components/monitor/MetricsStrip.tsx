@@ -14,9 +14,9 @@ export default function MetricsStrip() {
     unit?: string; 
     color?: string; 
   }) => (
-    <div className="flex-1 min-w-[120px] rounded-xl border border-white/10 p-3 bg-zinc-900/60">
-      <div className="text-xs opacity-70 mb-1">{label}</div>
-      <div className={`text-2xl font-semibold ${color}`}>
+    <div className="glass-panel min-w-[160px]">
+      <div className="tile-title mb-1">{label}</div>
+      <div className={`tile-value ${color}`}>
         {typeof value === 'number' ? value.toFixed(value % 1 === 0 ? 0 : 1) : value}{unit}
       </div>
     </div>

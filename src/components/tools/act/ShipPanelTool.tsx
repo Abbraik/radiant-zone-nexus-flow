@@ -8,7 +8,7 @@ import { ds } from '@/services/datasource';
 
 function Row({ok,label,children}:{ok:boolean;label:string;children?:React.ReactNode}){
   return (
-    <div className="flex items-center justify-between rounded border border-white/10 p-2">
+    <div className="flex items-center justify-between glass-panel-tight">
       <div className="text-sm">{label}</div>
       <div className={`text-xs px-2 py-0.5 rounded ${ok?'bg-emerald-600/20 text-emerald-200':'bg-zinc-700/40 text-zinc-300'}`}>
         {ok?'OK':'Missing'}
@@ -55,8 +55,8 @@ export default function ShipPanelTool(){
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('act','ship' as any)}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60" />
-        <Dialog.Content className="fixed inset-x-0 top-24 mx-auto w-[720px] rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-2xl">
+        <Dialog.Overlay className="glass-overlay" />
+        <Dialog.Content className="glass-modal top-24 w-[720px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Ship Decision — Guards</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -83,7 +83,7 @@ export default function ShipPanelTool(){
           </div>
 
           <div className="mt-5">
-            <button disabled={!shipEnabled} className="px-3 py-2 rounded bg-emerald-600 disabled:opacity-40">Ship decision</button>
+            <button disabled={!shipEnabled} className="btn-primary disabled:opacity-40">Ship decision</button>
             {(!shipEnabled) && (
               <p className="text-xs opacity-70 mt-2">
                 {!ok

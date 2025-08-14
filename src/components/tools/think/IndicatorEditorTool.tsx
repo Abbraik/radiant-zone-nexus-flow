@@ -27,8 +27,8 @@ React.useEffect(()=>{
   return (
     <Dialog.Root open={open} onOpenChange={(v)=>!v && close('think','indicators')}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/60" />
-        <Dialog.Content className="fixed inset-x-0 top-10 mx-auto w-[880px] rounded-2xl border border-white/10 bg-zinc-900/95 p-6 shadow-2xl">
+        <Dialog.Overlay className="glass-overlay" />
+        <Dialog.Content className="glass-modal top-10 w-[880px]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Indicators &amp; Bands</h2>
             <Dialog.Close className="text-sm opacity-70 hover:opacity-100">Close</Dialog.Close>
@@ -37,20 +37,20 @@ React.useEffect(()=>{
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-3">
               <label className="block text-sm opacity-80">Name</label>
-              <input className="w-full bg-zinc-800 rounded px-3 py-2" value={form.name} onChange={e=>setForm({...form, name:e.target.value})}/>
+              <input className="glass-input" value={form.name} onChange={e=>setForm({...form, name:e.target.value})}/>
               <div className="grid grid-cols-3 gap-3">
                 <div><label className="block text-sm opacity-80">Target</label>
-                  <input type="number" className="w-full bg-zinc-800 rounded px-3 py-2" value={form.target} onChange={e=>setForm({...form, target:+e.target.value})}/>
+                  <input type="number" className="glass-input" value={form.target} onChange={e=>setForm({...form, target:+e.target.value})}/>
                 </div>
                 <div><label className="block text-sm opacity-80">Band L</label>
-                  <input type="number" className="w-full bg-zinc-800 rounded px-3 py-2" value={form.bandL} onChange={e=>setForm({...form, bandL:+e.target.value})}/>
+                  <input type="number" className="glass-input" value={form.bandL} onChange={e=>setForm({...form, bandL:+e.target.value})}/>
                 </div>
                 <div><label className="block text-sm opacity-80">Band U</label>
-                  <input type="number" className="w-full bg-zinc-800 rounded px-3 py-2" value={form.bandU} onChange={e=>setForm({...form, bandU:+e.target.value})}/>
+                  <input type="number" className="glass-input" value={form.bandU} onChange={e=>setForm({...form, bandU:+e.target.value})}/>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <button disabled={!canSave} className="px-3 py-2 rounded bg-emerald-600 disabled:opacity-50"
+                <button disabled={!canSave} className="btn-primary disabled:opacity-50"
                   onClick={async ()=>{
                     const rec = await ds.createIndicator(form as any);
                     setList(l=>[...l,rec]);
@@ -62,7 +62,7 @@ React.useEffect(()=>{
               <h3 className="text-sm uppercase tracking-wide opacity-60">Current</h3>
               <div className="max-h-[360px] overflow-auto pr-1 space-y-2">
                 {list.map((it)=>(
-                  <div key={it.id} className="flex items-center justify-between rounded-lg border border-white/10 p-3">
+                  <div key={it.id} className="flex items-center justify-between glass-panel-tight">
                     <div className="text-sm">
                       <div className="font-medium">{it.name}</div>
                       <div className="opacity-70">[{it.bandL} , {it.bandU}] target {it.target}</div>

@@ -28,14 +28,14 @@ export default function TransparencyScoreTile(){
   },[]);
 
   return (
-    <div className="rounded-2xl border border-white/10 p-4 bg-zinc-900/60">
+    <div className="glass-panel p-4">
       <div className="text-xs opacity-70 mb-1">Transparency Score (72h SLO)</div>
       <div className="text-3xl font-semibold">{score.pct}%</div>
       <div className="text-xs opacity-70 mt-1">{score.timely}/{score.total||0} packs published ≤72h</div>
       <div className="mt-3">
         <button
           onClick={() => toggle('monitor', 'transparency')}
-          className="text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5 transition-colors">
+          className="btn-chip">
           Open Transparency
         </button>
       </div>
