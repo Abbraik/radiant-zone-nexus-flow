@@ -8,11 +8,12 @@ import ParticipationPackTool from '@/components/tools/act/ParticipationPackTool'
 import TransparencyTool from '@/components/tools/monitor/TransparencyTool';
 import GateStacksBrowserTool from '@/components/tools/act/GateStacksBrowserTool';
 import PDIStoryboardTool from '@/components/tools/act/PDIStoryboardTool';
+import PilotBoardTool from '@/components/tools/monitor/PilotBoardTool';
 
 export default function ZoneToolsPortals({ zone }:{ zone:'think'|'monitor'|'act' }){
   // Render overlays for the zone (no DOM unless opened)
   if(zone==='think') return (<><IndicatorEditorTool/><BandsHeatmapTool/></>);
-  if(zone==='monitor') return (<><RELBoardTool/><TransparencyTool/></>);
+  if(zone==='monitor') return (<><RELBoardTool/><TransparencyTool/><PilotBoardTool/></>);
   if(zone==='act') return (<><GateStacksBrowserTool/><PDIStoryboardTool/><GateChecklistTool/><ParticipationPackTool/><ShipPanelTool/></>);
   return null;
 }

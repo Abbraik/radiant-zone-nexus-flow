@@ -30,6 +30,10 @@ export default function ZoneToolsDock({zone}:Props){
             className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
             <FileText className="w-5 h-5" />
           </button>
+          <button onClick={()=>toggle('monitor','pilot')}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            Pilots
+          </button>
         </div>
       )}
       {zone==='act' && (
