@@ -25,6 +25,7 @@ import { LearningPathRecommendations } from '../monitor/LearningPathRecommendati
 import { CollaborativeInsightsEngine } from '../monitor/CollaborativeInsightsEngine';
 import { EnhancedLoop } from '../../types/monitor';
 import { AnalyticsInsight, MicroLoopAlert } from '../../types/analytics';
+import TransparencyScoreTile from '../monitor/TransparencyScoreTile';
 
 // Mock data
 const mockLoops = [
@@ -198,18 +199,30 @@ export const MonitorZoneWorkspace: React.FC = () => {
           />
         </motion.div>
 
-        {/* Advanced Analytics Suite (1/3 width) */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <AdvancedAnalyticsSuite
-            onExportData={(query) => console.log('Export data:', query)}
-            onConfigureAlert={() => console.log('Configure analytics alerts')}
-            onViewInsight={handleAnalyticsInsight}
-          />
-        </motion.div>
+        {/* Right Column: Advanced Analytics & Transparency */}
+        <div className="space-y-6">
+          {/* Advanced Analytics Suite */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <AdvancedAnalyticsSuite
+              onExportData={(query) => console.log('Export data:', query)}
+              onConfigureAlert={() => console.log('Configure analytics alerts')}
+              onViewInsight={handleAnalyticsInsight}
+            />
+          </motion.div>
+
+          {/* Transparency Score Tile */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <TransparencyScoreTile />
+          </motion.div>
+        </div>
       </div>
 
       {/* Alert System */}
