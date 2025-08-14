@@ -25,5 +25,7 @@ export const KEYS = {
   packs: 'packs',
   participation: 'participation',
   debt: 'participation-debt',
-  meta: 'meta-rels'
+  meta: 'meta-rels',
+  stacks: 'gate-stacks',
+  arcs: 'applied-arcs',
 };

@@ -153,6 +153,33 @@ export const mockProvider: IDataProvider = {
     return get(KEYS.packs, [] as any[]);
   },
 
+  // Gate Stacks & PDI arcs
+  async listGateStacks() {
+    return get(KEYS.stacks, [] as any[]);
+  },
+  async applyGateStackToItem(stackId: string, itemId: string) {
+    const stacks = await get<any[]>(KEYS.stacks, []);
+    const stack = stacks.find(s => s.id === stackId);
+    if (!stack) throw new Error('Stack not found');
+    
+    const applied: any[] = stack.steps.map((step: any) => ({
+      ...step,
+      stackId,
+      stackCode: stack.code,
+      itemId
+    }));
+    
+    // Store applied arcs
+    for (const arc of applied) {
+      await push(KEYS.arcs, arc);
+    }
+    return { applied };
+  },
+  async listAppliedArcs(itemId: string) {
+    const arcs = await get<any[]>(KEYS.arcs, []);
+    return arcs.filter(arc => arc.itemId === itemId);
+  },
+
   // Meta-Loop
   async openMetaRel(seed) {
     const rec: MetaRel = {

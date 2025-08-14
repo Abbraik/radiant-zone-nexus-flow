@@ -2,6 +2,32 @@ export type BandStatus = 'in' | 'soft' | 'hard' | 'critical';
 export type RelStage =
   | 'think' | 'act' | 'monitor' | 'learn' | 'innovate' | 'closed';
 
+export type PdiArc = 'P_to_R'|'R_to_PS'|'PS_to_S'|'S_to_P';
+export type PdiLevel = 'macro'|'meso'|'micro';
+
+export interface GateStackStep {
+  arc: PdiArc;
+  actor: string;
+  level: PdiLevel;
+  note?: string;
+}
+
+export interface GateStack {
+  id: string;
+  code: string;       // e.g., 'E-1'
+  title: string;      // 'Rapid Re-employment'
+  domain: 'employment'|'housing'|'health'|'energy'|'digital'|'education'|'other';
+  description: string;
+  steps: GateStackStep[];   // macro→meso→micro
+  equity?: string;
+}
+
+export interface AppliedArc extends GateStackStep {
+  stackId: string;
+  stackCode: string;
+  itemId: string; // bundle item id (we'll use 'demo-item-1')
+}
+
 export interface Indicator { id: string; name: string; target: number; bandL: number; bandU: number; method: 'zscore'|'custom'; freq: string; }
 export interface IndicatorValue { ts: string; value: number; z?: number; status?: BandStatus; }
 
@@ -41,6 +67,11 @@ export interface IDataProvider {
   publishPack(p: Omit<TransparencyPack,'id'|'hash'|'publishedAt'>): Promise<TransparencyPack>;
   listPacks(refType:'rel'|'meta', refId: string): Promise<TransparencyPack[]>;
   listAllPacks(): Promise<TransparencyPack[]>;
+
+  // Gate Stacks & PDI arcs
+  listGateStacks(): Promise<GateStack[]>;
+  applyGateStackToItem(stackId: string, itemId: string): Promise<{ applied: AppliedArc[] }>;
+  listAppliedArcs(itemId: string): Promise<AppliedArc[]>;
 
   // Meta-Loop
   openMetaRel(seed: Partial<MetaRel>): Promise<MetaRel>;
