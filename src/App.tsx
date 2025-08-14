@@ -22,11 +22,13 @@ import NotFound from "./pages/NotFound";
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
+import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 
 const queryClient = createQueryClient();
 
 const App = () => (
   <ErrorBoundary>
+    <DemoBootstrap />
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <FeatureFlagProvider>
