@@ -26,6 +26,7 @@ import { CollaborativeInsightsEngine } from '../monitor/CollaborativeInsightsEng
 import { EnhancedLoop } from '../../types/monitor';
 import { AnalyticsInsight, MicroLoopAlert } from '../../types/analytics';
 import TransparencyScoreTile from '../monitor/TransparencyScoreTile';
+import MetricsStrip from '../monitor/MetricsStrip';
 
 // Mock data
 const mockLoops = [
@@ -173,6 +174,19 @@ export const MonitorZoneWorkspace: React.FC = () => {
           onAlertClick={handleMicroLoopAlert}
           maxVisible={3}
         />
+      </motion.div>
+
+      {/* Metrics Strip and Additional Components */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+        className="mt-4 flex flex-wrap gap-4 items-start"
+      >
+        <MetricsStrip />
+        <div className="max-w-md">
+          <TransparencyScoreTile />
+        </div>
       </motion.div>
 
       {/* Phase 1: Multi-Level Loop Health Dashboard */}
