@@ -23,6 +23,7 @@ import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
+import '@/styles/glass.css';
 
 const queryClient = createQueryClient();
 

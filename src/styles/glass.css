@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Glass tokens ===== */
+:root {
+  --glass-bg: 255 255 255;         /* base on white for soft glass */
+  --glass-tint: 17 24 39;          /* slate-ish */
+  --ring: 255 255 255;             /* white ring */
+  --text-strong: 244 244 245;      /* zinc-100 */
+  --text-soft: 203 213 225;        /* slate-300 */
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* ===== Components layer ===== */
+@layer components {
+  .glass-panel {
+    @apply rounded-3xl border backdrop-blur-xl p-4;
+    @apply border-white/15 bg-white/10 shadow-xl;
+  }
+  .glass-panel-tight { @apply glass-panel p-3; }
+  .glass-modal {
+    @apply fixed inset-x-0 mx-auto rounded-3xl border p-6;
+    @apply border-white/15 bg-white/10 backdrop-blur-2xl shadow-2xl;
+  }
+  .glass-overlay {
+    @apply fixed inset-0;
+    background: radial-gradient(1200px 800px at 50% -10%, rgba(255,255,255,.08), transparent),
+                rgba(2,6,23,.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  .glass-chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs;
+    @apply border-white/20 bg-white/10 backdrop-blur-md;
+  }
+  .glass-dock-btn {
+    @apply rounded-full border p-3 transition;
+    @apply border-white/15 bg-white/10 backdrop-blur-xl;
+  }
+  .glass-dock-btn:hover { @apply bg-white/20 shadow-lg; transform: translateY(-1px); }
+  .glass-dock-btn:active { transform: translateY(0) scale(.98); }
+
+  .glass-input {
+    @apply w-full rounded-xl px-3 py-2 border transition;
+    @apply border-white/15 bg-white/10 backdrop-blur-md text-zinc-100 placeholder:text-zinc-400;
+    @apply focus:outline-none focus:ring-2 focus:ring-white/25;
+  }
+  .glass-select { @apply glass-input pr-8; }
+  .glass-textarea { @apply glass-input min-h-[88px]; }
+
+  .btn-primary {
+    @apply rounded-xl px-3 py-2 text-zinc-900 transition;
+    @apply bg-white hover:bg-zinc-100 active:scale-95;
+  }
+  .btn-ghost {
+    @apply rounded-xl px-3 py-2 border transition;
+    @apply border-white/15 bg-white/10 hover:bg-white/20 active:scale-95;
+  }
+  .btn-chip {
+    @apply text-xs px-2 py-0.5 rounded border border-white/15 hover:bg-white/10;
+  }
+
+  .tile-title { @apply text-xs tracking-wide uppercase text-zinc-300; }
+  .tile-value { @apply text-3xl font-semibold text-zinc-50; }
+
+  .banner-amber {
+    @apply rounded-2xl border px-3 py-2;
+    @apply border-amber-400/30 bg-amber-500/10 text-amber-200;
+  }
+}
+
+/* dark text smoothing */
+html { color-scheme: dark; }
+body { color: rgb(var(--text-strong)); }
