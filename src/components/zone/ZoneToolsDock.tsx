@@ -1,6 +1,6 @@
 import React from 'react';
 import { useToolsStore } from '@/stores/toolsStore';
-import { HelpCircle, Activity, Thermometer } from 'lucide-react';
+import { HelpCircle, Activity, Thermometer, FileText } from 'lucide-react';
 
 type Props = { zone: 'think'|'monitor'|'act' };
 
@@ -21,10 +21,16 @@ export default function ZoneToolsDock({zone}:Props){
         </>
       )}
       {zone==='monitor' && (
-        <button onClick={()=>toggle('monitor','rel')}
-          className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
-          <HelpCircle className="w-5 h-5" />
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          <button onClick={()=>toggle('monitor','rel')}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            <HelpCircle className="w-5 h-5" />
+          </button>
+          <button onClick={()=>toggle('monitor','transparency')}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            <FileText className="w-5 h-5" />
+          </button>
+        </div>
       )}
       {zone==='act' && (
         <>

@@ -5,11 +5,12 @@ import RELBoardTool from '@/components/tools/monitor/RELBoardTool';
 import ShipPanelTool from '@/components/tools/act/ShipPanelTool';
 import GateChecklistTool from '@/components/tools/act/GateChecklistTool';
 import ParticipationPackTool from '@/components/tools/act/ParticipationPackTool';
+import TransparencyTool from '@/components/tools/monitor/TransparencyTool';
 
 export default function ZoneToolsPortals({ zone }:{ zone:'think'|'monitor'|'act' }){
   // Render overlays for the zone (no DOM unless opened)
   if(zone==='think') return (<><IndicatorEditorTool/><BandsHeatmapTool/></>);
-  if(zone==='monitor') return (<><RELBoardTool/></>);
+  if(zone==='monitor') return (<><RELBoardTool/><TransparencyTool/></>);
   if(zone==='act') return (<><ShipPanelTool/><GateChecklistTool/><ParticipationPackTool/></>);
   return null;
 }
