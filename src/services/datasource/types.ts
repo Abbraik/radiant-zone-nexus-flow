@@ -1,6 +1,6 @@
 export type BandStatus = 'in' | 'soft' | 'hard' | 'critical';
 export type RelStage =
-  | 'sense' | 'diagnose' | 'gate' | 'participate' | 'decide' | 'act' | 'learn' | 'closed';
+  | 'think' | 'act' | 'monitor' | 'learn' | 'innovate' | 'closed';
 
 export interface Indicator { id: string; name: string; target: number; bandL: number; bandU: number; method: 'zscore'|'custom'; freq: string; }
 export interface IndicatorValue { ts: string; value: number; z?: number; status?: BandStatus; }

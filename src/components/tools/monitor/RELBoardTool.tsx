@@ -6,8 +6,8 @@ import RelStageChips from '../shared/RelStageChips';
 import { dueInDays } from '@/lib/relTimers';
 
 const STAGES: Array<{k:any;label:string}> = [
-  {k:'sense',label:'Sense'},{k:'diagnose',label:'Diagnose'},{k:'gate',label:'Gate'},
-  {k:'participate',label:'Participate'},{k:'decide',label:'Decide'},{k:'act',label:'Act'},{k:'learn',label:'Learn'},
+  {k:'think',label:'Think'},{k:'act',label:'Act'},{k:'monitor',label:'Monitor'},
+  {k:'learn',label:'Learn'},{k:'innovate',label:'Innovate'},
 ];
 
 export default function RELBoardTool(){

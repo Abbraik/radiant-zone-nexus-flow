@@ -79,7 +79,7 @@ export const mockProvider: IDataProvider = {
 
   // REL
   async openRel(indicatorId, breachClass) {
-    const rel: RelTicket = { id: uuid(), indicatorId, breachClass, stage: 'sense', openedAt: new Date().toISOString() };
+    const rel: RelTicket = { id: uuid(), indicatorId, breachClass, stage: 'think', openedAt: new Date().toISOString() };
     await push(KEYS.rels, rel);
     return rel;
   },
