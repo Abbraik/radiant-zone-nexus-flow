@@ -36,6 +36,10 @@ export default function ZoneToolsDock({zone}:Props){
             className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
             Gate
           </button>
+          <button onClick={()=>useToolsStore.getState().toggle('act','participation' as any)}
+            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            Participation
+          </button>
         </>
       )}
     </div>
