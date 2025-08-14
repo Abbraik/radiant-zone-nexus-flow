@@ -6,6 +6,7 @@ import { useUIStore } from '../../stores/ui-store';
 import { FeatureFlagChip, useFeatureFlags } from './FeatureFlagProvider';
 import { Button } from '../ui/button';
 import type { Zone } from '../../types';
+import { useToolsStore } from '@/stores/toolsStore';
 
 interface ZoneTab {
   id: Zone;
@@ -22,6 +23,15 @@ const zoneTabs: ZoneTab[] = [
 ];
 
 export const Header: React.FC = () => {
+  // Quick tool launchers for Think zone (visible only when Think is active if you track zone in store)
+  /*
+  <button onClick={()=>useToolsStore.getState().toggle('think','indicators')} className="text-xs px-2 py-1 rounded border border-white/10">
+    Indicators
+  </button>
+  <button onClick={()=>useToolsStore.getState().toggle('think','bands')} className="text-xs px-2 py-1 rounded border border-white/10 ml-2">
+    Bands
+  </button>
+  */
   const { currentZone, setCurrentZone } = useUIStore();
   const { updateFlag, isEnabled } = useFeatureFlags();
 
