@@ -43,6 +43,31 @@ export interface TransparencyPack { id: string; refType: 'rel'|'meta'; refId: st
 
 export interface MetaRel { id: string; openedAt: string; mlhi: number; mismatchPct: number; conflicts: any[]; sequence: any[]; closedAt?: string; }
 
+export interface MetricSummary {
+  tri: number;          // Trigger Readiness Index 0–100
+  pci: number;          // Platform Control Index 0–100
+  mttrDays: number;     // Mean Time To Resolve REL (days)
+  uptakePct: number;    // % of target adoption
+}
+
+export type EvalMethod = 'ITS'|'DiD';
+
+export interface Pilot {
+  id: string;
+  code: string;                 // e.g., 'E-1'
+  title: string;                // 'Rapid Re-employment Pilot'
+  relId?: string;
+  startedAt: string;
+  method: EvalMethod;
+  // ITS
+  seriesBefore?: Array<{ ts: string; y: number }>;
+  seriesAfter?: Array<{ ts: string; y: number }>;
+  // DiD
+  treatedGroup?: Array<{ ts: string; y: number }>;
+  controlGroup?: Array<{ ts: string; y: number }>;
+  summary?: { effect: number; p?: number; note?: string };
+}
+
 export interface IDataProvider {
   // Signals & Bands
   createIndicator(i: Partial<Indicator>): Promise<Indicator>;
@@ -72,6 +97,11 @@ export interface IDataProvider {
   listGateStacks(): Promise<GateStack[]>;
   applyGateStackToItem(stackId: string, itemId: string): Promise<{ applied: AppliedArc[] }>;
   listAppliedArcs(itemId: string): Promise<AppliedArc[]>;
+
+  // Metrics & Pilots
+  getMetricsSummary(): Promise<MetricSummary>;
+  listPilots(): Promise<Pilot[]>;
+  upsertPilot(pilot: Pilot): Promise<Pilot>;
 
   // Meta-Loop
   openMetaRel(seed: Partial<MetaRel>): Promise<MetaRel>;

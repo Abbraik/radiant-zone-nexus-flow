@@ -29,4 +29,5 @@ export const KEYS = {
   stacks: 'gate-stacks',
   arcs: 'applied-arcs',
   applied: (itemId: string) => `applied-arcs:${itemId}`,
+  pilots: 'pilots',
 };

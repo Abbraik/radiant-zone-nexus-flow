@@ -2,7 +2,8 @@ import { get, set, push, uuid, KEYS } from './db';
 import { sha256 } from '@/lib/hash';
 import type {
   IDataProvider, Indicator, IndicatorValue, BandStatus, RelTicket, GateScores,
-  ParticipationPack, TransparencyPack, MetaRel, GateStack, AppliedArc, GateStackStep
+  ParticipationPack, TransparencyPack, MetaRel, GateStack, AppliedArc, GateStackStep,
+  MetricSummary, Pilot
 } from '../types';
 
 function bandStatusFor(value: number, L: number, U: number): BandStatus {
@@ -173,6 +174,33 @@ export const mockProvider: IDataProvider = {
     const next = [...existing, ...toApply];
     await set(KEYS.applied(itemId), next);
     return { applied: toApply };
+  },
+
+  // Metrics & Pilots
+  async getMetricsSummary() {
+    const summary: MetricSummary = {
+      tri: 78,
+      pci: 84,
+      mttrDays: 12.5,
+      uptakePct: 67
+    };
+    return summary;
+  },
+  
+  async listPilots() {
+    return get<Pilot[]>(KEYS.pilots, []);
+  },
+  
+  async upsertPilot(pilot: Pilot) {
+    const pilots = await get<Pilot[]>(KEYS.pilots, []);
+    const idx = pilots.findIndex(p => p.id === pilot.id);
+    if (idx >= 0) {
+      pilots[idx] = pilot;
+    } else {
+      pilots.push(pilot);
+    }
+    await set(KEYS.pilots, pilots);
+    return pilot;
   },
 
   // Meta-Loop

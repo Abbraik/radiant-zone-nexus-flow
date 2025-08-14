@@ -26,6 +26,10 @@ export const apiProvider: IDataProvider = {
   async applyGateStackToItem(){ throw new Error('API provider not implemented'); },
   async listAppliedArcs(){ throw new Error('API provider not implemented'); },
 
+  async getMetricsSummary(){ throw new Error('API provider not implemented'); },
+  async listPilots(){ throw new Error('API provider not implemented'); },
+  async upsertPilot(){ throw new Error('API provider not implemented'); },
+
   async openMetaRel(){ throw new Error('API provider not implemented'); },
   async approveSequence(){ throw new Error('API provider not implemented'); },
 };
