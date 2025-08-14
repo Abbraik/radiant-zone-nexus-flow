@@ -129,13 +129,6 @@ export const Header: React.FC = () => {
             </span>
           </Button>
 
-          {/* Demo Atlas quick link */}
-          <NavLink to="/demo-atlas" className="hidden sm:inline-flex">
-            <Button variant="outline" size="sm" className="ml-1 bg-glass-secondary/60">
-              Seed Atlas
-            </Button>
-          </NavLink>
-
           {/* Role Pill */}
           <div className="bg-glass-secondary/60 backdrop-blur-sm rounded-2xl px-4 py-1.5 border border-border/20 hidden lg:block">
             <span className="text-xs font-medium text-foreground-muted">Product Manager</span>

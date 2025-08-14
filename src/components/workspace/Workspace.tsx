@@ -19,17 +19,6 @@ import TaskClaimPopup from './TaskClaimPopup';
 import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
-import ThinkToolsSurface from '@/components/zones/ThinkToolsSurface'
-import ActToolsSurface from '@/components/zones/ActToolsSurface'
-import MonitorToolsSurface from '@/components/zones/MonitorToolsSurface'
-import InnovateToolsSurface from '@/components/zones/InnovateToolsSurface'
-import AdminToolsSurface from '@/components/zones/AdminToolsSurface'
-import DemoToolsSurface from '@/components/zones/DemoToolsSurface'
-
-
-
-
-
 
 export const Workspace: React.FC = () => {
   const { 
@@ -327,19 +316,6 @@ export const Workspace: React.FC = () => {
             isLoading={isClaimingTask}
           />
         )}
-
-        {/* Think Zone Tools Surface */}
-        <ThinkToolsSurface />
-        {/* Act Zone Tools Surface */}
-        <ActToolsSurface />
-        {/* Monitor Zone Tools Surface */}
-        <MonitorToolsSurface />
-        {/* Innovate Zone Tools Surface */}
-        <InnovateToolsSurface />
-        {/* Admin Zone Tools Surface */}
-        <AdminToolsSurface />
-        {/* Demo Tools Surface */}
-        <DemoToolsSurface />
     </div>
   );
 };

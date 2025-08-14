@@ -18,28 +18,11 @@ import MonitorZone from "./pages/MonitorZone";
 import { InnovateLearnZone } from "./pages/InnovateLearnZone";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { createQueryClient } from "./services/api";
-import LoopRegistry from "./pages/think/LoopRegistry";
-import LoopStudioPage from "./pages/think/LoopStudio";
-import VariableRegistry from "./pages/think/VariableRegistry";
-import LeverageLadder from "./pages/think/LeverageLadder";
-import LeverageAnalysis from "./pages/think/LeverageAnalysis";
-import LeverageScenarios from "./pages/think/LeverageScenarios";
-import BundlesList from "./pages/act/BundlesList";
-import BundleEditorPage from "./pages/act/BundleEditorPage";
-import PathwayBuilderPage from "./pages/act/PathwayBuilder";
-import LoopHealthPage from "./pages/monitor/LoopHealth";
-import NetworkExplorer from "./pages/innovate/NetworkExplorer";
-import ShockLab from "./pages/innovate/ShockLab";
-import ChangesQueuePage from "./pages/admin/ChangesQueuePage";
-import DemoAtlas from "./pages/DemoAtlas";
-import { GuidedTourProvider } from "./modules/tours/GuidedTourProvider";
-import { RouteWatcher } from "./components/layout/RouteWatcher";
-import { RouteGuard } from "./components/layout/RouteGuard";
-import Forbidden from "./pages/Forbidden";
-import ZoneRouteAdapter from "./components/layout/ZoneRouteAdapter";
+
 const queryClient = createQueryClient();
 
 const App = () => (
@@ -50,8 +33,6 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <GuidedTourProvider>
-              <RouteWatcher />
             <FeatureFlagGuard 
               flag="newTaskDrivenUI"
               fallback={
@@ -70,16 +51,11 @@ const App = () => (
                       >
                         <Routes>
                           <Route path="/" element={<Index />} />
-                          <Route path="/think" element={<ZoneRouteAdapter />} />
-                          <Route path="/think/*" element={<ZoneRouteAdapter />} />
-                          <Route path="/act" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          
-                          <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                          <Route path="/demo-atlas" element={<Workspace />} />
+                          <Route path="/think" element={<ThinkZone />} />
+                          <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
+                          <Route path="/act" element={<ActZone />} />
+                          <Route path="/monitor" element={<MonitorZone />} />
+                          <Route path="/innovate" element={<InnovateLearnZone />} />
                           <Route path="*" element={<NotFound />} />
                          </Routes>
                       </FeatureFlagGuard>
@@ -105,29 +81,23 @@ const App = () => (
                       <Dashboard />
                     </div>
                   } />
-                  {/* Admin Pages via Zone Adapter */}
-                  <Route path="/admin" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/admin/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
+                  {/* Admin Pages */}
+                  <Route path="/admin" element={<AdminPage />} />
                   <Route path="/plugins" element={<AdminPage />} />
                   <Route path="/offline" element={<AdminPage />} />
                   <Route path="/security" element={<AdminPage />} />
                   <Route path="/mission-control" element={<MissionControl />} />
                   {/* Legacy Zone Access */}
-                  <Route path="/think" element={<ZoneRouteAdapter />} />
-                  <Route path="/think/*" element={<ZoneRouteAdapter />} />
-                  <Route path="/act" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/act/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/monitor" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/monitor/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/innovate" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/innovate/*" element={<ZoneRouteAdapter redirectToWorkspace={false} />} />
-                  <Route path="/demo-atlas" element={<Workspace />} />
-                  <Route path="/forbidden" element={<Forbidden />} />
+                  <Route path="/think" element={<ThinkZone />} />
+                  <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
+                  <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
+                  <Route path="/act" element={<ActZone />} />
+                  <Route path="/monitor" element={<MonitorZone />} />
+                  <Route path="/innovate" element={<InnovateLearnZone />} />
                    <Route path="*" element={<Workspace />} />
                 </Routes>
               </Shell>
             </FeatureFlagGuard>
-            </GuidedTourProvider>
           </BrowserRouter>
         </FeatureFlagProvider>
       </TooltipProvider>
