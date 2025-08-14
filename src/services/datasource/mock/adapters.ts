@@ -3,7 +3,7 @@ import { sha256 } from '@/lib/hash';
 import type {
   IDataProvider, Indicator, IndicatorValue, BandStatus, RelTicket, GateScores,
   ParticipationPack, TransparencyPack, MetaRel, GateStack, AppliedArc, GateStackStep,
-  MetricSummary, Pilot
+  MetricSummary, Pilot, PrecedenceState
 } from '../types';
 
 function bandStatusFor(value: number, L: number, U: number): BandStatus {
@@ -205,11 +205,24 @@ export const mockProvider: IDataProvider = {
     await push(KEYS.meta, rec); return rec;
   },
   async approveSequence(id, sequence) {
-    const metas = await get<MetaRel[]>(KEYS.meta, []);
-    const i = metas.findIndex(m => m.id === id);
-    if (i < 0) throw new Error('Meta-REL not found');
-    metas[i] = { ...metas[i], sequence };
-    await set(KEYS.meta, metas);
-    return metas[i];
+    const list = await get<MetaRel[]>(KEYS.meta, []);
+    const i = list.findIndex(m => m.id === id);
+    if (i >= 0) {
+      list[i].sequence = sequence;
+      await set(KEYS.meta, list);
+      return list[i];
+    }
+    throw new Error('Meta-REL not found');
+  },
+
+  // Meta-Loop precedence
+  async getPrecedence() {
+    return get<PrecedenceState>(KEYS.precedence, { active:false, relIds: [] });
+  },
+  async setPrecedence(p: PrecedenceState) {
+    await set(KEYS.precedence, p); return p;
+  },
+  async clearPrecedence() {
+    await set(KEYS.precedence, { active:false, relIds: [] });
   },
 };

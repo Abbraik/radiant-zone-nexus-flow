@@ -43,6 +43,13 @@ export interface TransparencyPack { id: string; refType: 'rel'|'meta'; refId: st
 
 export interface MetaRel { id: string; openedAt: string; mlhi: number; mismatchPct: number; conflicts: any[]; sequence: any[]; closedAt?: string; }
 
+export interface PrecedenceState {
+  active: boolean;
+  metaRelId?: string;
+  relIds: string[];     // RELs paused by meta sequence
+  banner?: string;
+}
+
 export interface MetricSummary {
   tri: number;          // Trigger Readiness Index 0–100
   pci: number;          // Platform Control Index 0–100
@@ -104,6 +111,10 @@ export interface IDataProvider {
   upsertPilot(pilot: Pilot): Promise<Pilot>;
 
   // Meta-Loop
+  /** Meta-Loop precedence */
+  getPrecedence(): Promise<PrecedenceState>;
+  setPrecedence(p: PrecedenceState): Promise<PrecedenceState>;
+  clearPrecedence(): Promise<void>;
   openMetaRel(seed: Partial<MetaRel>): Promise<MetaRel>;
   approveSequence(id: string, sequence: any): Promise<MetaRel>;
 }

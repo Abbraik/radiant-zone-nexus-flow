@@ -31,4 +31,5 @@ export const KEYS = {
   applied: (itemId: string) => `applied-arcs:${itemId}`,
   metrics: 'metrics:summary',
   pilots: 'pilots',
+  precedence: 'meta:precedence',
 };

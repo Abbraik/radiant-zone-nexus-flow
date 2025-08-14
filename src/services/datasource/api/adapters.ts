@@ -32,4 +32,8 @@ export const apiProvider: IDataProvider = {
 
   async openMetaRel(){ throw new Error('API provider not implemented'); },
   async approveSequence(){ throw new Error('API provider not implemented'); },
+
+  async getPrecedence(){ throw new Error('API provider not implemented'); },
+  async setPrecedence(){ throw new Error('API provider not implemented'); },
+  async clearPrecedence(){ throw new Error('API provider not implemented'); },
 };

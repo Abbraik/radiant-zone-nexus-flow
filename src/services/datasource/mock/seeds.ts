@@ -3,7 +3,7 @@ import { sha256 } from '@/lib/hash';
 
 // bump SEED_VERSION when you change seed content
 const SEED_FLAG = 'seed:version';
-const SEED_VERSION = 6;
+const SEED_VERSION = 7;
 
 function isoMonthsAgo(n:number){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString(); }
 function isoWeeksAgo(n:number){ const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString(); }
@@ -129,6 +129,26 @@ export async function seedOnce() {
   };
   pMeta.hash = await sha256(JSON.stringify(pMeta));
   await push(KEYS.packs, pMeta);
+
+  // 5) Meta-Loop conflicts (heatmap-friendly) and active precedence
+  const conflicts = [
+    { relId: rels[0].id, domain: 'employment', level: 'macro' },
+    { relId: rels[2].id, domain: 'housing',    level: 'meso'  },
+    { relId: rels[1].id, domain: 'health',     level: 'micro' },
+  ];
+  // attach to meta
+  const metas = await get<any[]>(KEYS.meta, []);
+  if (metas.length) {
+    metas[0].conflicts = conflicts;
+    await set(KEYS.meta, metas);
+  }
+  // active precedence pauses two RELs
+  await set(KEYS.precedence, {
+    active: true,
+    metaRelId: metas[0]?.id,
+    relIds: [rels[0].id, rels[2].id],
+    banner: 'Meta-Loop sequence in effect: employment & housing RELs paused',
+  });
 
   // 5) Participation (compressed & overdue) to demo Ship guard
   const overdueDue = new Date(); overdueDue.setDate(overdueDue.getDate()-3);
