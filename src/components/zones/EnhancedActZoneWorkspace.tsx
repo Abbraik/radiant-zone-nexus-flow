@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PrecedenceBanner from '../shared/PrecedenceBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -621,6 +622,7 @@ export const EnhancedActZoneWorkspace: React.FC = () => {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
+      <PrecedenceBanner />
       <div className="p-8 space-y-8">
         {/* Header */}
         <div className="text-center">

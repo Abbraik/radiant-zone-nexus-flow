@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PrecedenceBanner from '../shared/PrecedenceBanner';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Save, Play } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -463,6 +464,7 @@ export const ThinkZoneWorkspace: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col glass-hero">
+      <PrecedenceBanner />
       {/* Header */}
       <div className="glass-secondary border-b border-border/50 sticky top-0 z-10">
         <div className="p-6">

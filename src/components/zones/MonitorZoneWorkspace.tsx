@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PrecedenceBanner from '../shared/PrecedenceBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -163,6 +164,7 @@ export const MonitorZoneWorkspace: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <PrecedenceBanner />
       {/* Phase 2: Micro-Loop Alert Rail */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
