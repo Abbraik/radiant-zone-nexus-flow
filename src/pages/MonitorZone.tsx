@@ -24,6 +24,7 @@ import { GlobalSearchPanel } from '@/components/monitor/GlobalSearchPanel';
 import { LearningModeToggle } from '@/components/monitor/LearningModeToggle';
 import ZoneToolsDock from '@/components/zone/ZoneToolsDock';
 import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
+import { useToolsStore } from '@/stores/toolsStore';
 
 type UserRole = 'C-Suite' | 'Ops Manager' | 'Analyst';
 
@@ -171,6 +172,7 @@ export default function MonitorZone() {
         <div className="flex items-center justify-between h-full px-6">
           <div className="flex items-center space-x-6">
             <h1 className="text-xl font-semibold text-foreground">Monitor Zone</h1>
+            <button onClick={()=>useToolsStore.getState().openAbout('entities')} className="btn-chip ml-4">What is this? (entities)</button>
             
             {/* Enhanced Global Search */}
             <GlobalSearchPanel
