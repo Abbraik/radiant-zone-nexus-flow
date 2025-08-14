@@ -1,8 +1,9 @@
 import { get, set, push, uuid, KEYS } from './db';
+import { sha256 } from '@/lib/hash';
 
 // bump SEED_VERSION when you change seed content
 const SEED_FLAG = 'seed:version';
-const SEED_VERSION = 3;
+const SEED_VERSION = 4;
 
 function isoMonthsAgo(n:number){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString(); }
 function isoWeeksAgo(n:number){ const d=new Date(); d.setDate(d.getDate()-7*n); return d.toISOString(); }
@@ -86,17 +87,48 @@ export async function seedOnce() {
     outcome: 'ALLOW', createdAt: new Date().toISOString()
   });
 
-  // 4) One Transparency Pack (Short) linked to the first REL
-  const pack = {
-    id: uuid(),
-    refType: 'rel',
-    refId: rels[0].id,
-    type: 'short',
-    url: '/packs/REL-demo-short.pdf',
-    hash: 'demo-hash-placeholder',
-    publishedAt: new Date().toISOString(),
+  // 4) Transparency Packs (hashed; both timely and late)
+  const opened0 = new Date(rels[0].openedAt).getTime();
+  const opened1 = new Date(rels[1].openedAt).getTime();
+  // timely: 48h after open
+  const p0 = {
+    id: uuid(), refType:'rel', refId: rels[0].id, type:'short',
+    url:'/packs/REL-0-short-v1.pdf',
+    publishedAt: new Date(opened0 + 48*3600*1000).toISOString(),
+    hash: ''
   };
-  await push(KEYS.packs, pack);
+  p0.hash = await sha256(JSON.stringify(p0));
+  await push(KEYS.packs, p0);
+  // late update: 7 days after open (Full)
+  const p1 = {
+    id: uuid(), refType:'rel', refId: rels[0].id, type:'full',
+    url:'/packs/REL-0-full-v2.pdf',
+    publishedAt: new Date(opened0 + 7*24*3600*1000).toISOString(),
+    hash: ''
+  };
+  p1.hash = await sha256(JSON.stringify(p1));
+  await push(KEYS.packs, p1);
+  // late short for second REL (to affect score)
+  const p2 = {
+    id: uuid(), refType:'rel', refId: rels[1].id, type:'short',
+    url:'/packs/REL-1-short-v1.pdf',
+    publishedAt: new Date(opened1 + 6*24*3600*1000).toISOString(),
+    hash: ''
+  };
+  p2.hash = await sha256(JSON.stringify(p2));
+  await push(KEYS.packs, p2);
+
+  // 4b) One Meta-REL + Full pack (timely) so the meta tab isn't empty
+  const meta = { id: uuid(), openedAt: isoWeeksAgo(3), mlhi: 65, mismatchPct: 0.18, conflicts: [], sequence: [] };
+  await push(KEYS.meta, meta as any);
+  const pMeta = {
+    id: uuid(), refType:'meta', refId: meta.id, type:'full',
+    url:'/packs/META-0-full.pdf',
+    publishedAt: new Date(new Date(meta.openedAt).getTime() + 60*3600*1000).toISOString(),
+    hash: ''
+  };
+  pMeta.hash = await sha256(JSON.stringify(pMeta));
+  await push(KEYS.packs, pMeta);
 
   // 5) Participation (compressed & overdue) to demo Ship guard
   const overdueDue = new Date(); overdueDue.setDate(overdueDue.getDate()-3);
