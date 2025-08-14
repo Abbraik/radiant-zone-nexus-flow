@@ -22,6 +22,8 @@ import { DashboardCustomizer } from '@/components/monitor/DashboardCustomizer';
 import { ExportSharePanel } from '@/components/monitor/ExportSharePanel';
 import { GlobalSearchPanel } from '@/components/monitor/GlobalSearchPanel';
 import { LearningModeToggle } from '@/components/monitor/LearningModeToggle';
+import ZoneToolsDock from '@/components/zone/ZoneToolsDock';
+import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 
 type UserRole = 'C-Suite' | 'Ops Manager' | 'Analyst';
 
@@ -347,6 +349,8 @@ export default function MonitorZone() {
           </motion.div>
         </ResizablePanel>
       </ResizablePanelGroup>
+      <ZoneToolsDock zone="monitor" />
+      <ZoneToolsPortals zone="monitor" />
     </div>
   );
 }
