@@ -178,13 +178,9 @@ export const mockProvider: IDataProvider = {
 
   // Metrics & Pilots
   async getMetricsSummary() {
-    const summary: MetricSummary = {
-      tri: 78,
-      pci: 84,
-      mttrDays: 12.5,
-      uptakePct: 67
-    };
-    return summary;
+    // if not seeded yet, provide a safe default
+    const def: MetricSummary = { tri: 60, pci: 60, mttrDays: 12, uptakePct: 50 };
+    return get<MetricSummary>(KEYS.metrics, def);
   },
   
   async listPilots() {
@@ -192,14 +188,10 @@ export const mockProvider: IDataProvider = {
   },
   
   async upsertPilot(pilot: Pilot) {
-    const pilots = await get<Pilot[]>(KEYS.pilots, []);
-    const idx = pilots.findIndex(p => p.id === pilot.id);
-    if (idx >= 0) {
-      pilots[idx] = pilot;
-    } else {
-      pilots.push(pilot);
-    }
-    await set(KEYS.pilots, pilots);
+    const list = await get<Pilot[]>(KEYS.pilots, []);
+    const i = list.findIndex(p => p.id === pilot.id);
+    if (i >= 0) list[i] = pilot; else list.push(pilot);
+    await set(KEYS.pilots, list);
     return pilot;
   },
 
