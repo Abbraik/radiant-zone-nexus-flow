@@ -11,11 +11,11 @@ export default function ZoneToolsDock({zone}:Props){
       {zone==='think' && (
         <>
           <button onClick={()=>toggle('think','indicators')}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            className="glass-dock-btn">
             <Thermometer className="w-5 h-5" />
           </button>
           <button onClick={()=>toggle('think','bands')}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            className="glass-dock-btn">
             <Activity className="w-5 h-5" />
           </button>
         </>
@@ -23,37 +23,37 @@ export default function ZoneToolsDock({zone}:Props){
       {zone==='monitor' && (
         <div className="flex flex-col items-end gap-2">
           <button onClick={()=>toggle('monitor','rel')}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            className="glass-dock-btn">
             <HelpCircle className="w-5 h-5" />
           </button>
           <button onClick={()=>toggle('monitor','transparency')}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            className="glass-dock-btn">
             <FileText className="w-5 h-5" />
           </button>
           <button onClick={()=>toggle('monitor','pilot')}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+            className="glass-dock-btn">
             Pilots
           </button>
         </div>
       )}
       {zone==='admin' && (
         <button onClick={()=>useToolsStore.getState().toggle('admin','meta' as any)}
-          className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">
+          className="glass-dock-btn">
           Meta
         </button>
       )}
       {zone==='act' && (
         <div className="flex flex-col items-end gap-2">
           <button onClick={()=>useToolsStore.getState().toggle('act','stacks' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Stacks</button>
+            className="glass-dock-btn">Stacks</button>
           <button onClick={()=>useToolsStore.getState().toggle('act','pdi' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">PDI</button>
+            className="glass-dock-btn">PDI</button>
           <button onClick={()=>useToolsStore.getState().toggle('act','gate' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Gate</button>
+            className="glass-dock-btn">Gate</button>
           <button onClick={()=>useToolsStore.getState().toggle('act','participation' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Part.</button>
+            className="glass-dock-btn">Part.</button>
           <button onClick={()=>useToolsStore.getState().toggle('act','ship' as any)}
-            className="rounded-full bg-white/10 hover:bg-white/20 p-3 border border-white/10 backdrop-blur">Ship</button>
+            className="glass-dock-btn">Ship</button>
         </div>
       )}
     </div>
