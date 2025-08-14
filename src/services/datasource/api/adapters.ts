@@ -1,29 +1,23 @@
-import { IDataProvider } from '../types';
-
-const notImpl = (name: string) => () => Promise.reject(new Error(`[apiProvider] ${name} not implemented`));
+import type { IDataProvider } from '../types';
 
 export const apiProvider: IDataProvider = {
-  // Signals & Bands
-  createIndicator: notImpl('createIndicator'),
-  upsertIndicatorValue: notImpl('upsertIndicatorValue'),
-  listIndicators: notImpl('listIndicators'),
-  getBandStatus: notImpl('getBandStatus'),
+  // Throw to make it obvious if someone flips to api prematurely
+  async createIndicator(){ throw new Error('API provider not implemented'); },
+  async upsertIndicatorValue(){ throw new Error('API provider not implemented'); },
+  async listIndicators(){ throw new Error('API provider not implemented'); },
+  async getBandStatus(){ throw new Error('API provider not implemented'); },
 
-  // REL
-  openRel: notImpl('openRel'),
-  advanceRel: notImpl('advanceRel'),
-  listRel: notImpl('listRel'),
+  async openRel(){ throw new Error('API provider not implemented'); },
+  async advanceRel(){ throw new Error('API provider not implemented'); },
+  async listRel(){ throw new Error('API provider not implemented'); },
 
-  // Gate & Participation
-  submitGate: notImpl('submitGate'),
-  submitParticipation: notImpl('submitParticipation'),
-  getParticipationDebt: notImpl('getParticipationDebt'),
+  async submitGate(){ throw new Error('API provider not implemented'); },
+  async submitParticipation(){ throw new Error('API provider not implemented'); },
+  async getParticipationDebt(){ throw new Error('API provider not implemented'); },
 
-  // Transparency
-  publishPack: notImpl('publishPack'),
-  listPacks: notImpl('listPacks'),
+  async publishPack(){ throw new Error('API provider not implemented'); },
+  async listPacks(){ throw new Error('API provider not implemented'); },
 
-  // Meta-Loop
-  openMetaRel: notImpl('openMetaRel'),
-  approveSequence: notImpl('approveSequence'),
+  async openMetaRel(){ throw new Error('API provider not implemented'); },
+  async approveSequence(){ throw new Error('API provider not implemented'); },
 };
