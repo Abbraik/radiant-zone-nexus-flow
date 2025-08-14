@@ -2,7 +2,7 @@ import { get, set, push, uuid, KEYS } from './db';
 import { sha256 } from '@/lib/hash';
 import type {
   IDataProvider, Indicator, IndicatorValue, BandStatus, RelTicket, GateScores,
-  ParticipationPack, TransparencyPack, MetaRel
+  ParticipationPack, TransparencyPack, MetaRel, GateStack, AppliedArc, GateStackStep
 } from '../types';
 
 function bandStatusFor(value: number, L: number, U: number): BandStatus {
@@ -155,29 +155,24 @@ export const mockProvider: IDataProvider = {
 
   // Gate Stacks & PDI arcs
   async listGateStacks() {
-    return get(KEYS.stacks, [] as any[]);
+    return get<GateStack[]>(KEYS.stacks, []);
   },
+  
+  async listAppliedArcs(itemId: string) {
+    return get<AppliedArc[]>(KEYS.applied(itemId), []);
+  },
+  
   async applyGateStackToItem(stackId: string, itemId: string) {
-    const stacks = await get<any[]>(KEYS.stacks, []);
+    const stacks = await get<GateStack[]>(KEYS.stacks, []);
     const stack = stacks.find(s => s.id === stackId);
     if (!stack) throw new Error('Stack not found');
-    
-    const applied: any[] = stack.steps.map((step: any) => ({
-      ...step,
-      stackId,
-      stackCode: stack.code,
-      itemId
+    const existing = await get<AppliedArc[]>(KEYS.applied(itemId), []);
+    const toApply: AppliedArc[] = stack.steps.map((s: GateStackStep) => ({
+      ...s, itemId, stackId: stack.id, stackCode: stack.code
     }));
-    
-    // Store applied arcs
-    for (const arc of applied) {
-      await push(KEYS.arcs, arc);
-    }
-    return { applied };
-  },
-  async listAppliedArcs(itemId: string) {
-    const arcs = await get<any[]>(KEYS.arcs, []);
-    return arcs.filter(arc => arc.itemId === itemId);
+    const next = [...existing, ...toApply];
+    await set(KEYS.applied(itemId), next);
+    return { applied: toApply };
   },
 
   // Meta-Loop

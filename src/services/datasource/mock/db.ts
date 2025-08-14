@@ -28,4 +28,5 @@ export const KEYS = {
   meta: 'meta-rels',
   stacks: 'gate-stacks',
   arcs: 'applied-arcs',
+  applied: (itemId: string) => `applied-arcs:${itemId}`,
 };
