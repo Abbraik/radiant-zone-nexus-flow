@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ds } from '@/services/datasource';
 import { useToolsStore } from '@/stores/toolsStore';
 import RelStageChips from '../shared/RelStageChips';
+import { dueInDays } from '@/lib/relTimers';
 
 const STAGES: Array<{k:any;label:string}> = [
   {k:'sense',label:'Sense'},{k:'diagnose',label:'Diagnose'},{k:'gate',label:'Gate'},
@@ -32,26 +33,34 @@ export default function RELBoardTool(){
           </div>
 
           <div className="space-y-2 max-h-[520px] overflow-auto pr-1">
-            {rows.map(r=>(
-              <div key={r.id} className="grid grid-cols-[1fr,120px,1fr] items-center gap-3 rounded-xl border border-white/10 p-3">
-                <div>
-                  <div className="text-sm font-medium">REL #{r.id.slice(0,8)}</div>
-                  <div className="text-xs opacity-70">Indicator: {r.indicatorId.slice(0,8)} • Breach: {r.breachClass}</div>
-                </div>
-                <div className="justify-self-center"><RelStageChips stage={r.stage}/></div>
-                <div className="justify-self-end">
-                  <div className="flex items-center gap-2">
-                    {STAGES.map(s=>(
-                      <button key={s.k}
-                        className="text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5"
-                        onClick={async ()=>{ await ds.advanceRel(r.id, s.k as any); refresh(); }}>
-                        {s.label}
-                      </button>
-                    ))}
+            {rows.map(r=>{
+              const due = dueInDays(r.openedAt, r.stage);
+              return (
+                <div key={r.id} className="grid grid-cols-[1fr,200px,1fr] items-center gap-3 rounded-xl border border-white/10 p-3">
+                  <div>
+                    <div className="text-sm font-medium">REL #{r.id.slice(0,8)}</div>
+                    <div className="text-xs opacity-70">Indicator: {r.indicatorId.slice(0,8)} • Breach: {r.breachClass}</div>
+                  </div>
+                  <div className="justify-self-center flex items-center gap-3">
+                    <RelStageChips stage={r.stage}/>
+                    <span className={`text-xs px-2 py-0.5 rounded border ${due.overdue?'border-rose-400/30 bg-rose-500/10':'border-white/10 bg-white/5'}`}>
+                      {due.overdue ? 'Overdue' : `Due in ${due.days}d ${due.hours}h`}
+                    </span>
+                  </div>
+                  <div className="justify-self-end">
+                    <div className="flex items-center gap-2">
+                      {STAGES.map(s=>(
+                        <button key={s.k}
+                          className="text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5"
+                          onClick={async ()=>{ await ds.advanceRel(r.id, s.k as any); }}>
+                          {s.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {rows.length===0 && <div className="opacity-70 text-sm">No REL tickets yet.</div>}
           </div>
         </Dialog.Content>
