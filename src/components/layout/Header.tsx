@@ -150,6 +150,12 @@ export const Header: React.FC = () => {
           </button>
         </motion.div>
       </div>
+      
+      {/* Quick Meta-Loop access */}
+      {/* <button onClick={()=>useToolsStore.getState().toggle('admin','meta' as any)}
+        className="ml-3 text-xs px-2 py-1 rounded border border-white/10 hover:bg-white/5">
+        Meta-Loop
+      </button> */}
     </motion.header>
   );
 };
