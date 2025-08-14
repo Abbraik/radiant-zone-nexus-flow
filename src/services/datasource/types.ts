@@ -23,7 +23,8 @@ export interface IDataProvider {
   upsertIndicatorValue(id: string, v: IndicatorValue): Promise<IndicatorValue>;
   listIndicators(): Promise<Indicator[]>;
   getBandStatus(id: string): Promise<{ status: BandStatus; z?: number }>;
-
+  /** Raw values for an indicator (latest last) */
+  listIndicatorValues(indicatorId: string): Promise<IndicatorValue[]>;
   // REL
   openRel(indicatorId: string, breachClass: 'Soft'|'Hard'|'Critical'): Promise<RelTicket>;
   advanceRel(id: string, stage: RelStage, decision?: string): Promise<RelTicket>;

@@ -12,6 +12,19 @@ function bandStatusFor(value: number, L: number, U: number): BandStatus {
   if (value < mid - wiggle || value > mid + wiggle) return 'soft';
   return 'in';
 }
+function evaluateBandStatus(values: {value:number}[], L:number, U:number): {status:BandStatus; persist:number} {
+  const n = values.length;
+  if (n===0) return { status:'in', persist:0 };
+  const s = bandStatusFor(values[n-1].value, L, U);
+  let persist = 0;
+  for (let i=n-1; i>=0; i--) {
+    const st = bandStatusFor(values[i].value, L, U);
+    if (st==='hard') persist++; else break;
+  }
+  // simple mock: 'critical' if 3+ consecutive out-of-band points
+  const status = (persist>=3) ? 'critical' : s;
+  return { status, persist };
+}
 
 function gateOutcome(scores: GateScores): 'ALLOW'|'REWORK'|'BLOCK' {
   const vals = [scores.authority, scores.capacity, scores.data, scores.leverFit, scores.safeguards, scores.participation];
@@ -55,9 +68,13 @@ export const mockProvider: IDataProvider = {
     const ind = inds.find(x => x.id === id);
     if (!ind) throw new Error('Indicator not found');
     const vals = await get<IndicatorValue[]>(KEYS.values(id), []);
+    const { status } = evaluateBandStatus(vals, ind.bandL, ind.bandU);
     const last = vals.at(-1);
-    if (!last) return { status: 'in' as BandStatus, z: 0 };
-    return { status: bandStatusFor(last.value, ind.bandL, ind.bandU), z: last.z ?? 0 };
+    return { status, z: last?.z ?? 0 };
+  },
+
+  async listIndicatorValues(indicatorId: string) {
+    return get<IndicatorValue[]>(KEYS.values(indicatorId), []);
   },
 
   // REL

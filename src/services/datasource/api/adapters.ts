@@ -6,6 +6,7 @@ export const apiProvider: IDataProvider = {
   async upsertIndicatorValue(){ throw new Error('API provider not implemented'); },
   async listIndicators(){ throw new Error('API provider not implemented'); },
   async getBandStatus(){ throw new Error('API provider not implemented'); },
+  async listIndicatorValues(){ throw new Error('API provider not implemented'); },
 
   async openRel(){ throw new Error('API provider not implemented'); },
   async advanceRel(){ throw new Error('API provider not implemented'); },
