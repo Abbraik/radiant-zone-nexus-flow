@@ -456,6 +456,150 @@ export type Database = {
           },
         ]
       }
+      task_artifacts: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          meta: Json | null
+          ref_id: string | null
+          task_id: string
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          meta?: Json | null
+          ref_id?: string | null
+          task_id: string
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          meta?: Json | null
+          ref_id?: string | null
+          task_id?: string
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      task_checklist_items: {
+        Row: {
+          created_at: string
+          done: boolean
+          id: string
+          label: string
+          order_index: number
+          required: boolean
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          done?: boolean
+          id?: string
+          label: string
+          order_index?: number
+          required?: boolean
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          done?: boolean
+          id?: string
+          label?: string
+          order_index?: number
+          required?: boolean
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      task_events: {
+        Row: {
+          actor: string
+          at: string
+          details: Json | null
+          event_type: string
+          id: string
+          task_id: string
+        }
+        Insert: {
+          actor: string
+          at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          task_id: string
+        }
+        Update: {
+          actor?: string
+          at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          task_id?: string
+        }
+        Relationships: []
+      }
+      task_locks: {
+        Row: {
+          expires_at: string
+          id: string
+          locked_at: string
+          locked_by: string
+          task_id: string
+        }
+        Insert: {
+          expires_at?: string
+          id?: string
+          locked_at?: string
+          locked_by: string
+          task_id: string
+        }
+        Update: {
+          expires_at?: string
+          id?: string
+          locked_at?: string
+          locked_by?: string
+          task_id?: string
+        }
+        Relationships: []
+      }
+      task_payloads: {
+        Row: {
+          created_at: string
+          id: string
+          payload: Json
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string | null
@@ -463,12 +607,17 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          locked_at: string | null
+          locked_by: string | null
+          payload: Json | null
           priority: string | null
           sprint_id: string | null
           status: string | null
+          task_type: string | null
           title: string
           updated_at: string | null
           user_id: string
+          zone: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -476,12 +625,17 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          payload?: Json | null
           priority?: string | null
           sprint_id?: string | null
           status?: string | null
+          task_type?: string | null
           title: string
           updated_at?: string | null
           user_id: string
+          zone?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -489,12 +643,17 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          payload?: Json | null
           priority?: string | null
           sprint_id?: string | null
           status?: string | null
+          task_type?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
+          zone?: string | null
         }
         Relationships: [
           {
