@@ -37,7 +37,8 @@ export const Workspace: React.FC = () => {
     cancelClaimTask,
     claimingTask,
     showClaimPopup,
-    isClaimingTask
+    isClaimingTask,
+    updateTaskPayload
   } = useEnhancedTasks();
   
   // Debug state values on every render
@@ -266,11 +267,14 @@ export const Workspace: React.FC = () => {
                     
                     <DynamicZoneBundleLoader
                       zone={activeTask.zone as Zone}
-                      taskType={activeTask.type as TaskType}
+                      taskType={activeTask.task_type as TaskType}
                       taskId={activeTask.id}
                       taskData={activeTask}
-                      payload={{}}
-                      onPayloadUpdate={(payload) => console.log('Zone bundle payload updated:', payload)}
+                      payload={activeTask.payload || {}}
+                      onPayloadUpdate={(payload) => {
+                        console.log('Zone bundle payload updated:', payload);
+                        updateTaskPayload(activeTask.id, payload);
+                      }}
                       onValidationChange={(isValid, errors) => console.log('Zone bundle validation:', isValid, errors)}
                       readonly={false}
                     />
