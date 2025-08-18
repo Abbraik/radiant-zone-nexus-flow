@@ -760,6 +760,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      reset_all_tasks: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
