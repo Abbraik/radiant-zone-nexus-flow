@@ -160,15 +160,18 @@ export const useEnhancedTasks = () => {
       // Navigate to appropriate zone workspace based on task zone
       const navigationMap: Record<string, string> = {
         'think': '/think',
-        'act': '/act',
-        'monitor': '/monitor', 
+        'act': '/act', 
+        'monitor': '/monitor',
         'innovate-learn': '/innovate'
       };
       
       const route = navigationMap[claimedTask.zone];
       if (route) {
         console.log(`Navigating to zone workspace: ${claimedTask.zone} -> ${route}`);
-        setTimeout(() => navigate(route), 100);
+        // Force navigation to the zone-specific page
+        window.location.href = route;
+      } else {
+        console.warn(`No route found for zone: ${claimedTask.zone}`);
       }
     },
     onError: (error) => {
