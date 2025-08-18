@@ -116,17 +116,136 @@ export type Database = {
         }
         Relationships: []
       }
+      claim_checkpoints: {
+        Row: {
+          attachments: Json | null
+          claim_id: string
+          created_at: string
+          created_by: string
+          id: string
+          summary: string
+          tag: string | null
+          tri_values: Json | null
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          claim_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          summary: string
+          tag?: string | null
+          tri_values?: Json | null
+          user_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          claim_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          summary?: string
+          tag?: string | null
+          tri_values?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      claim_dependencies: {
+        Row: {
+          child_substep_id: string
+          created_at: string
+          id: string
+          parent_substep_id: string
+        }
+        Insert: {
+          child_substep_id: string
+          created_at?: string
+          id?: string
+          parent_substep_id: string
+        }
+        Update: {
+          child_substep_id?: string
+          created_at?: string
+          id?: string
+          parent_substep_id?: string
+        }
+        Relationships: []
+      }
+      claim_substeps: {
+        Row: {
+          alert_id: string | null
+          attachments: Json | null
+          checklist: Json | null
+          claim_id: string
+          created_at: string
+          description: string | null
+          finished_at: string | null
+          id: string
+          ordering: number
+          owner: string | null
+          planned_duration: unknown | null
+          started_at: string | null
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_id?: string | null
+          attachments?: Json | null
+          checklist?: Json | null
+          claim_id: string
+          created_at?: string
+          description?: string | null
+          finished_at?: string | null
+          id?: string
+          ordering?: number
+          owner?: string | null
+          planned_duration?: unknown | null
+          started_at?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_id?: string | null
+          attachments?: Json | null
+          checklist?: Json | null
+          claim_id?: string
+          created_at?: string
+          description?: string | null
+          finished_at?: string | null
+          id?: string
+          ordering?: number
+          owner?: string | null
+          planned_duration?: unknown | null
+          started_at?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       claims: {
         Row: {
           assignee: string
           created_at: string
           evidence: Json | null
+          finished_at: string | null
           id: string
+          last_checkpoint_at: string | null
           leverage: Database["public"]["Enums"]["leverage_type"]
           loop_id: string
           mandate_status: Database["public"]["Enums"]["mandate_status"] | null
+          pause_reason: string | null
+          paused_at: string | null
           raci: Json | null
           sprint_id: string | null
+          started_at: string | null
           status: Database["public"]["Enums"]["claim_status"] | null
           task_id: string
           updated_at: string
@@ -136,12 +255,17 @@ export type Database = {
           assignee: string
           created_at?: string
           evidence?: Json | null
+          finished_at?: string | null
           id?: string
+          last_checkpoint_at?: string | null
           leverage?: Database["public"]["Enums"]["leverage_type"]
           loop_id: string
           mandate_status?: Database["public"]["Enums"]["mandate_status"] | null
+          pause_reason?: string | null
+          paused_at?: string | null
           raci?: Json | null
           sprint_id?: string | null
+          started_at?: string | null
           status?: Database["public"]["Enums"]["claim_status"] | null
           task_id: string
           updated_at?: string
@@ -151,12 +275,17 @@ export type Database = {
           assignee?: string
           created_at?: string
           evidence?: Json | null
+          finished_at?: string | null
           id?: string
+          last_checkpoint_at?: string | null
           leverage?: Database["public"]["Enums"]["leverage_type"]
           loop_id?: string
           mandate_status?: Database["public"]["Enums"]["mandate_status"] | null
+          pause_reason?: string | null
+          paused_at?: string | null
           raci?: Json | null
           sprint_id?: string | null
+          started_at?: string | null
           status?: Database["public"]["Enums"]["claim_status"] | null
           task_id?: string
           updated_at?: string
@@ -209,6 +338,36 @@ export type Database = {
         }
         Relationships: []
       }
+      execution_logs: {
+        Row: {
+          actor: string
+          at: string
+          claim_id: string
+          id: string
+          kind: string
+          payload: Json | null
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          at?: string
+          claim_id: string
+          id?: string
+          kind: string
+          payload?: Json | null
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          at?: string
+          claim_id?: string
+          id?: string
+          kind?: string
+          payload?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       gate_stacks: {
         Row: {
           created_at: string | null
@@ -238,6 +397,90 @@ export type Database = {
           status?: string | null
           steps?: Json | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      guardrails: {
+        Row: {
+          created_at: string
+          id: string
+          loop_id: string
+          max_concurrent_substeps: number | null
+          max_coverage_pct: number | null
+          max_delta_per_day: number | null
+          override_active: boolean | null
+          override_at: string | null
+          override_by: string | null
+          override_reason: string | null
+          timebox_minutes: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          loop_id: string
+          max_concurrent_substeps?: number | null
+          max_coverage_pct?: number | null
+          max_delta_per_day?: number | null
+          override_active?: boolean | null
+          override_at?: string | null
+          override_by?: string | null
+          override_reason?: string | null
+          timebox_minutes?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          loop_id?: string
+          max_concurrent_substeps?: number | null
+          max_coverage_pct?: number | null
+          max_delta_per_day?: number | null
+          override_active?: boolean | null
+          override_at?: string | null
+          override_by?: string | null
+          override_reason?: string | null
+          timebox_minutes?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      harmonization_decisions: {
+        Row: {
+          actor: string
+          conflicting_claims: Json
+          created_at: string
+          created_by: string
+          decision: string
+          id: string
+          rationale: string
+          resolution_actions: Json | null
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          conflicting_claims: Json
+          created_at?: string
+          created_by: string
+          decision: string
+          id?: string
+          rationale: string
+          resolution_actions?: Json | null
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          conflicting_claims?: Json
+          created_at?: string
+          created_by?: string
+          decision?: string
+          id?: string
+          rationale?: string
+          resolution_actions?: Json | null
           user_id?: string
         }
         Relationships: []
@@ -1081,6 +1324,48 @@ export type Database = {
           user_id?: string
           window_end?: string
           window_start?: string
+        }
+        Relationships: []
+      }
+      substep_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          loop_type: string | null
+          name: string
+          scale: string | null
+          tags: string[] | null
+          template_steps: Json
+          updated_at: string
+          usage_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          loop_type?: string | null
+          name: string
+          scale?: string | null
+          tags?: string[] | null
+          template_steps: Json
+          updated_at?: string
+          usage_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          loop_type?: string | null
+          name?: string
+          scale?: string | null
+          tags?: string[] | null
+          template_steps?: Json
+          updated_at?: string
+          usage_count?: number | null
+          user_id?: string
         }
         Relationships: []
       }
