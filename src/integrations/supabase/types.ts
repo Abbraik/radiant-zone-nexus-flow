@@ -338,6 +338,47 @@ export type Database = {
         }
         Relationships: []
       }
+      decision_records: {
+        Row: {
+          attachments: Json | null
+          created_at: string
+          created_by: string
+          id: string
+          option_set_id: string | null
+          rationale: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string
+          created_by: string
+          id?: string
+          option_set_id?: string | null
+          rationale: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          option_set_id?: string | null
+          rationale?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_records_option_set_id_fkey"
+            columns: ["option_set_id"]
+            isOneToOne: false
+            referencedRelation: "option_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       execution_logs: {
         Row: {
           actor: string
@@ -879,6 +920,155 @@ export type Database = {
           total_indicators?: number | null
           trend_direction?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      option_effects: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          delta_estimate: number
+          edge_refs: string[] | null
+          id: string
+          indicator: string
+          loop_id: string
+          option_id: string
+          user_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          delta_estimate: number
+          edge_refs?: string[] | null
+          id?: string
+          indicator: string
+          loop_id: string
+          option_id: string
+          user_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          delta_estimate?: number
+          edge_refs?: string[] | null
+          id?: string
+          indicator?: string
+          loop_id?: string
+          option_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "option_effects_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      option_sets: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          mcda_snapshot: Json | null
+          name: string
+          option_ids: string[] | null
+          rationale: string | null
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          mcda_snapshot?: Json | null
+          name: string
+          option_ids?: string[] | null
+          rationale?: string | null
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          mcda_snapshot?: Json | null
+          name?: string
+          option_ids?: string[] | null
+          rationale?: string | null
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      options: {
+        Row: {
+          actor: string
+          assumptions: Json | null
+          cost: number | null
+          created_at: string
+          dependencies: Json | null
+          effect: Json
+          effort: number | null
+          evidence: Json | null
+          id: string
+          lever: string
+          loop_id: string
+          name: string
+          risks: Json | null
+          status: string | null
+          task_id: string
+          time_to_impact: unknown | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          assumptions?: Json | null
+          cost?: number | null
+          created_at?: string
+          dependencies?: Json | null
+          effect?: Json
+          effort?: number | null
+          evidence?: Json | null
+          id?: string
+          lever: string
+          loop_id: string
+          name: string
+          risks?: Json | null
+          status?: string | null
+          task_id: string
+          time_to_impact?: unknown | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          assumptions?: Json | null
+          cost?: number | null
+          created_at?: string
+          dependencies?: Json | null
+          effect?: Json
+          effort?: number | null
+          evidence?: Json | null
+          id?: string
+          lever?: string
+          loop_id?: string
+          name?: string
+          risks?: Json | null
+          status?: string | null
+          task_id?: string
+          time_to_impact?: unknown | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -1783,6 +1973,17 @@ export type Database = {
       }
     }
     Functions: {
+      add_substep: {
+        Args: {
+          claim_uuid: string
+          planned_duration_text?: string
+          step_description?: string
+          step_owner?: string
+          step_title: string
+          template_id?: string
+        }
+        Returns: Json
+      }
       apply_retune: {
         Args: {
           approver_id?: string
@@ -1798,9 +1999,17 @@ export type Database = {
         Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
         Returns: string
       }
+      evaluate_anti_windup: {
+        Args: { claim_uuid: string }
+        Returns: Json
+      }
       evaluate_mandate: {
         Args: { actor_name: string; leverage_level: string }
         Returns: string
+      }
+      finish_claim: {
+        Args: { claim_uuid: string }
+        Returns: Json
       }
       get_loop_hydrate: {
         Args: { loop_uuid: string }
@@ -1850,6 +2059,24 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_conflicts: {
+        Args: { actor_name: string }
+        Returns: Json
+      }
+      mark_checkpoint: {
+        Args: {
+          attachments_json?: Json
+          checkpoint_tag?: string
+          claim_uuid: string
+          summary_text: string
+          tri_values_json?: Json
+        }
+        Returns: Json
+      }
+      pause_claim: {
+        Args: { claim_uuid: string; rationale_text: string }
+        Returns: Json
+      }
       publish_loop: {
         Args: { loop_uuid: string }
         Returns: Json
@@ -1858,6 +2085,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      reorder_substeps: {
+        Args: { claim_uuid: string; substep_ids: string[] }
+        Returns: Json
+      }
       reset_all_tasks: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1865,6 +2096,10 @@ export type Database = {
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      start_claim: {
+        Args: { claim_uuid: string }
+        Returns: Json
       }
       suggest_retunes: {
         Args: { lookback_days?: number; loop_uuid: string }
