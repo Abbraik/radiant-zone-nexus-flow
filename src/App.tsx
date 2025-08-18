@@ -19,6 +19,7 @@ import { InnovateLearnZone } from './pages/InnovateLearnZoneNew';
 import { Index } from "./pages/Index";
 import LoopRegistry from "./pages/LoopRegistry";
 import LoopDetail from "./pages/LoopDetail";
+import LoopDashboard from "./pages/LoopDashboard";
 import NotFound from "./pages/NotFound";
 
 import AdminPage from "./pages/AdminPage";
@@ -87,6 +88,7 @@ const App = () => (
                   <Route path="/demo" element={<Demo />} />
                   <Route path="/registry" element={<LoopRegistry />} />
                   <Route path="/registry/:id" element={<LoopDetail />} />
+                  <Route path="/dashboard/loops" element={<LoopDashboard />} />
                   <Route path="/dashboard" element={
                     <div className="pt-4">
                       <Dashboard />

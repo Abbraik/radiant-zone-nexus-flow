@@ -1298,6 +1298,10 @@ export type Database = {
       }
     }
     Functions: {
+      create_redesign_task: {
+        Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
+        Returns: string
+      }
       evaluate_mandate: {
         Args: { actor_name: string; leverage_level: string }
         Returns: string
@@ -1349,6 +1353,10 @@ export type Database = {
       publish_loop: {
         Args: { loop_uuid: string }
         Returns: Json
+      }
+      refresh_loop_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       reset_all_tasks: {
         Args: Record<PropertyKey, never>

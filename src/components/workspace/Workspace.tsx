@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AlertRail } from '@/components/alerts/AlertRail';
 import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
@@ -380,6 +381,8 @@ export const Workspace: React.FC = () => {
             isLoading={isClaimingTask}
           />
         )}
-    </div>
+        {/* Alert Rail */}
+        <AlertRail />
+      </div>
   );
 };
