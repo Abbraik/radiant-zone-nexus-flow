@@ -197,14 +197,41 @@ export const EnhancedWorkspace: React.FC = () => {
             />
           }
         >
-          <CascadeSidebar
-            myTasks={myTasks}
-            availableTasks={availableTasks}
-            activeTask={activeTask}
-            onTaskClaim={openClaimPopup}
-            isCollapsed={isSidebarCollapsed}
-            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          />
+            <CascadeSidebar
+              myTasks={myTasks.map(task => ({
+                ...task,
+                type: task.task_type,
+                components: [],
+                status: task.status as any,
+                owner_id: task.user_id,
+                due_at: task.due_date ? new Date(task.due_date) : undefined,
+                created_at: new Date(task.created_at),
+                updated_at: new Date(task.updated_at)
+              }))}
+              availableTasks={availableTasks.map(task => ({
+                ...task,
+                type: task.task_type,
+                components: [],
+                status: task.status as any,
+                owner_id: task.user_id,
+                due_at: task.due_date ? new Date(task.due_date) : undefined,
+                created_at: new Date(task.created_at),
+                updated_at: new Date(task.updated_at)
+              }))}
+              activeTask={activeTask ? {
+                ...activeTask,
+                type: activeTask.task_type,
+                components: [],
+                status: activeTask.status as any,
+                owner_id: activeTask.user_id,
+                due_at: activeTask.due_date ? new Date(activeTask.due_date) : undefined,
+                created_at: new Date(activeTask.created_at),
+                updated_at: new Date(activeTask.updated_at)
+              } : null}
+              onTaskClaim={openClaimPopup}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            />
         </FeatureFlagGuard>
         
         <main className="flex-1 p-6 overflow-auto">
@@ -217,7 +244,16 @@ export const EnhancedWorkspace: React.FC = () => {
             <div className="mb-6">
               <FeatureFlagGuard flag="useTeamsButton">
                 <EnhancedTaskCard
-                  task={activeTask}
+                  task={{
+                    ...activeTask,
+                    type: activeTask.task_type,
+                    components: [],
+                    status: activeTask.status as any,
+                    owner_id: activeTask.user_id,
+                    due_at: activeTask.due_date ? new Date(activeTask.due_date) : undefined,
+                    created_at: new Date(activeTask.created_at),
+                    updated_at: new Date(activeTask.updated_at)
+                  }}
                   onComplete={handleCompleteTask}
                   isCompleting={isCompletingTask}
                   showTeamsButton={true}
@@ -266,7 +302,16 @@ export const EnhancedWorkspace: React.FC = () => {
       <CopilotDrawer
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
-        activeTask={activeTask}
+        activeTask={activeTask ? {
+          ...activeTask,
+          type: activeTask.task_type,
+          components: [],
+          status: activeTask.status as any,
+          owner_id: activeTask.user_id,
+          due_at: activeTask.due_date ? new Date(activeTask.due_date) : undefined,
+          created_at: new Date(activeTask.created_at),
+          updated_at: new Date(activeTask.updated_at)
+        } : undefined}
       />
       
       <TeamsDrawer
