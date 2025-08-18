@@ -339,29 +339,38 @@ export type Database = {
       }
       loop_scorecards: {
         Row: {
+          breach_days: number | null
           claim_velocity: number | null
           de_state: string | null
           fatigue: number | null
+          heartbeat_at: string | null
           last_tri: Json | null
           loop_id: string
+          tri_slope: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          breach_days?: number | null
           claim_velocity?: number | null
           de_state?: string | null
           fatigue?: number | null
+          heartbeat_at?: string | null
           last_tri?: Json | null
           loop_id: string
+          tri_slope?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          breach_days?: number | null
           claim_velocity?: number | null
           de_state?: string | null
           fatigue?: number | null
+          heartbeat_at?: string | null
           last_tri?: Json | null
           loop_id?: string
+          tri_slope?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -682,6 +691,36 @@ export type Database = {
         }
         Relationships: []
       }
+      reflex_memory: {
+        Row: {
+          after: Json | null
+          before: Json | null
+          created_at: string
+          id: string
+          loop_id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          after?: Json | null
+          before?: Json | null
+          created_at?: string
+          id?: string
+          loop_id: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          after?: Json | null
+          before?: Json | null
+          created_at?: string
+          id?: string
+          loop_id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rel_tickets: {
         Row: {
           cohort: string | null
@@ -742,6 +781,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "loops"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rel_tickets_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "mv_loop_metrics"
+            referencedColumns: ["loop_id"]
           },
         ]
       }
@@ -825,6 +871,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "loops"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sprints_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "mv_loop_metrics"
+            referencedColumns: ["loop_id"]
           },
         ]
       }
@@ -1193,6 +1246,26 @@ export type Database = {
         }
         Relationships: []
       }
+      mv_loop_metrics: {
+        Row: {
+          breach_count: number | null
+          breach_days: number | null
+          claim_velocity: number | null
+          de_state: string | null
+          fatigue_score: number | null
+          heartbeat_at: string | null
+          last_breach_at: string | null
+          latest_i_value: number | null
+          latest_r_value: number | null
+          latest_t_value: number | null
+          latest_tri_at: string | null
+          loop_id: string | null
+          loop_name: string | null
+          loop_status: string | null
+          tri_slope: number | null
+        }
+        Relationships: []
+      }
       vw_breach_current: {
         Row: {
           cohort: string | null
@@ -1214,6 +1287,13 @@ export type Database = {
             referencedRelation: "loops"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "rel_tickets_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "mv_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
         ]
       }
     }
@@ -1223,6 +1303,10 @@ export type Database = {
         Returns: string
       }
       get_loop_hydrate: {
+        Args: { loop_uuid: string }
+        Returns: Json
+      }
+      get_scorecard: {
         Args: { loop_uuid: string }
         Returns: Json
       }
