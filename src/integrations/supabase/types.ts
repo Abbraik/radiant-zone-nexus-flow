@@ -71,6 +71,51 @@ export type Database = {
         }
         Relationships: []
       }
+      breach_events: {
+        Row: {
+          at: string
+          breach_type: string
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          indicator_name: string
+          loop_id: string
+          resolved_at: string | null
+          severity_score: number | null
+          threshold_value: number
+          user_id: string
+          value: number
+        }
+        Insert: {
+          at?: string
+          breach_type: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          indicator_name: string
+          loop_id: string
+          resolved_at?: string | null
+          severity_score?: number | null
+          threshold_value: number
+          user_id: string
+          value: number
+        }
+        Update: {
+          at?: string
+          breach_type?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          indicator_name?: string
+          loop_id?: string
+          resolved_at?: string | null
+          severity_score?: number | null
+          threshold_value?: number
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       claims: {
         Row: {
           assignee: string
@@ -128,7 +173,9 @@ export type Database = {
           loop_id: string
           lower_bound: number | null
           notes: string | null
+          smoothing_alpha: number | null
           updated_at: string
+          updated_by: string | null
           upper_bound: number | null
           user_id: string
         }
@@ -140,7 +187,9 @@ export type Database = {
           loop_id: string
           lower_bound?: number | null
           notes?: string | null
+          smoothing_alpha?: number | null
           updated_at?: string
+          updated_by?: string | null
           upper_bound?: number | null
           user_id: string
         }
@@ -152,7 +201,9 @@ export type Database = {
           loop_id?: string
           lower_bound?: number | null
           notes?: string | null
+          smoothing_alpha?: number | null
           updated_at?: string
+          updated_by?: string | null
           upper_bound?: number | null
           user_id?: string
         }
@@ -791,6 +842,105 @@ export type Database = {
           },
         ]
       }
+      retune_approvals: {
+        Row: {
+          approval_reason: string | null
+          approval_status: string | null
+          approver_id: string | null
+          created_at: string
+          id: string
+          requested_at: string
+          requested_by: string
+          retune_id: string
+          reviewed_at: string | null
+        }
+        Insert: {
+          approval_reason?: string | null
+          approval_status?: string | null
+          approver_id?: string | null
+          created_at?: string
+          id?: string
+          requested_at?: string
+          requested_by: string
+          retune_id: string
+          reviewed_at?: string | null
+        }
+        Update: {
+          approval_reason?: string | null
+          approval_status?: string | null
+          approver_id?: string | null
+          created_at?: string
+          id?: string
+          requested_at?: string
+          requested_by?: string
+          retune_id?: string
+          reviewed_at?: string | null
+        }
+        Relationships: []
+      }
+      retune_suggestions: {
+        Row: {
+          applied_at: string | null
+          applied_by: string | null
+          confidence: number
+          created_at: string
+          description: string
+          expected_improvement: Json | null
+          false_positive_risk: number | null
+          id: string
+          impact_level: string | null
+          loop_id: string
+          proposed_changes: Json
+          rationale: string
+          risk_score: number
+          status: string | null
+          suggestion_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          applied_by?: string | null
+          confidence?: number
+          created_at?: string
+          description: string
+          expected_improvement?: Json | null
+          false_positive_risk?: number | null
+          id?: string
+          impact_level?: string | null
+          loop_id: string
+          proposed_changes?: Json
+          rationale: string
+          risk_score?: number
+          status?: string | null
+          suggestion_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          applied_by?: string | null
+          confidence?: number
+          created_at?: string
+          description?: string
+          expected_improvement?: Json | null
+          false_positive_risk?: number | null
+          id?: string
+          impact_level?: string | null
+          loop_id?: string
+          proposed_changes?: Json
+          rationale?: string
+          risk_score?: number
+          status?: string | null
+          suggestion_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       shared_nodes: {
         Row: {
           created_at: string
@@ -883,31 +1033,37 @@ export type Database = {
       }
       srt_windows: {
         Row: {
+          cadence: unknown | null
           created_at: string
           id: string
           loop_id: string
           reflex_horizon: unknown | null
           updated_at: string
+          updated_by: string | null
           user_id: string
           window_end: string
           window_start: string
         }
         Insert: {
+          cadence?: unknown | null
           created_at?: string
           id?: string
           loop_id: string
           reflex_horizon?: unknown | null
           updated_at?: string
+          updated_by?: string | null
           user_id: string
           window_end: string
           window_start: string
         }
         Update: {
+          cadence?: unknown | null
           created_at?: string
           id?: string
           loop_id?: string
           reflex_horizon?: unknown | null
           updated_at?: string
+          updated_by?: string | null
           user_id?: string
           window_end?: string
           window_start?: string
@@ -1186,6 +1342,7 @@ export type Database = {
           loop_id: string
           r_value: number
           t_value: number
+          tag: string | null
           task_id: string | null
           user_id: string
         }
@@ -1197,6 +1354,7 @@ export type Database = {
           loop_id: string
           r_value?: number
           t_value?: number
+          tag?: string | null
           task_id?: string | null
           user_id: string
         }
@@ -1208,6 +1366,7 @@ export type Database = {
           loop_id?: string
           r_value?: number
           t_value?: number
+          tag?: string | null
           task_id?: string | null
           user_id?: string
         }
@@ -1298,6 +1457,17 @@ export type Database = {
       }
     }
     Functions: {
+      apply_retune: {
+        Args: {
+          approver_id?: string
+          band_changes?: Json
+          loop_uuid: string
+          rationale_text?: string
+          srt_changes?: Json
+          task_uuid?: string
+        }
+        Returns: Json
+      }
       create_redesign_task: {
         Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
         Returns: string
@@ -1307,6 +1477,10 @@ export type Database = {
         Returns: string
       }
       get_loop_hydrate: {
+        Args: { loop_uuid: string }
+        Returns: Json
+      }
+      get_reflexive_context: {
         Args: { loop_uuid: string }
         Returns: Json
       }
@@ -1365,6 +1539,10 @@ export type Database = {
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      suggest_retunes: {
+        Args: { lookback_days?: number; loop_uuid: string }
+        Returns: Json
       }
       upsert_loop_scorecard: {
         Args: { loop_uuid: string; payload: Json }
