@@ -87,7 +87,7 @@ export const useEnhancedTasks = () => {
   const [showClaimPopup, setShowClaimPopup] = useState(false);
   
   // Mock current user ID - replace with real auth later
-  const getCurrentUserId = () => 'mock-user-id';
+  const getCurrentUserId = () => '00000000-0000-4000-8000-000000000000'; // Valid UUID format
 
   const { data: supabaseTasks = [], isLoading } = useQuery({
     queryKey: ['enhanced-tasks'],
