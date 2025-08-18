@@ -601,6 +601,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      seed_demo_data_for_user: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
