@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Brain, Network, Target, Settings } from 'lucide-react';
-import { EnhancedCLDBuilder } from '@/components/think-zone/EnhancedCLDBuilder';
+import { LoopStudio } from '@/components/think-zone/LoopStudio';
 import { VariablePalette } from '@/components/think-zone/VariablePalette';
 import { ParameterPanel } from '@/components/think-zone/ParameterPanel';
 import { LeverageDomainMapper } from '@/components/think-zone/LeverageDomainMapper';
@@ -184,9 +184,12 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
                 <CardTitle>Causal Loop Diagram Builder</CardTitle>
               </CardHeader>
               <CardContent className="h-full">
-                <EnhancedCLDBuilder
-                  onModelChange={handleModelChange}
-                  onSave={handleModelSave}
+                <LoopStudio
+                  taskId={taskId}
+                  payload={payload}
+                  onPayloadUpdate={onPayloadUpdate}
+                  onValidationChange={onValidationChange}
+                  readonly={readonly}
                 />
               </CardContent>
             </Card>
