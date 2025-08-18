@@ -132,7 +132,7 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
   const [isDraft, setIsDraft] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  // Show wizard if task is claimed or has sprint data
+  // Show wizard if explicitly set, task is assigned, or has sprint data
   const shouldShowWizard = showSprintWizard || taskData?.assignee || payload?.sprint;
 
   // Update payload when sprint data changes
@@ -382,9 +382,15 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
                     ) : (
                       <Button 
                         size="sm" 
-                        onClick={() => {
-                          claimTask(task.id);
-                          setShowSprintWizard(true);
+                        onClick={async () => {
+                          console.log('Claiming task:', task.id);
+                          try {
+                            await claimTask(task.id);
+                            console.log('Task claimed, showing wizard');
+                            setShowSprintWizard(true);
+                          } catch (error) {
+                            console.error('Failed to claim task:', error);
+                          }
                         }}
                       >
                         Claim
