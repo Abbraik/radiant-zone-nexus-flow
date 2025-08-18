@@ -1125,6 +1125,39 @@ export type Database = {
       }
     }
     Functions: {
+      evaluate_mandate: {
+        Args: { actor_name: string; leverage_level: string }
+        Returns: string
+      }
+      get_task_by_id: {
+        Args: { task_uuid: string }
+        Returns: {
+          assigned_to: string | null
+          capacity: Database["public"]["Enums"]["capacity_type"] | null
+          created_at: string | null
+          de_band_id: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          leverage: Database["public"]["Enums"]["leverage_type"] | null
+          locked_at: string | null
+          locked_by: string | null
+          loop_id: string | null
+          payload: Json | null
+          priority: string | null
+          scale: Database["public"]["Enums"]["scale_type"] | null
+          sprint_id: string | null
+          srt_id: string | null
+          status: string | null
+          task_type: string | null
+          title: string
+          tri: Json | null
+          type: Database["public"]["Enums"]["loop_type"] | null
+          updated_at: string | null
+          user_id: string
+          zone: string | null
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1138,6 +1171,10 @@ export type Database = {
       }
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      upsert_loop_scorecard: {
+        Args: { loop_uuid: string; payload: Json }
         Returns: undefined
       }
     }

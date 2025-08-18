@@ -173,6 +173,16 @@ export interface UIState {
   activePanel?: string;
 }
 
+// New Capacity-Mode Architecture Types
+export type Capacity = 'responsive' | 'reflexive' | 'deliberative' | 'anticipatory' | 'structural';
+export type LoopType = 'reactive' | 'structural' | 'perceptual';
+export type Scale = 'micro' | 'meso' | 'macro';
+export type Leverage = 'N' | 'P' | 'S';
+export type TaskStatus = 'open' | 'claimed' | 'active' | 'done' | 'blocked';
+export type ClaimStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'implemented';
+export type MandateStatus = 'allowed' | 'restricted' | 'forbidden';
+
+// Legacy type for backward compatibility
 export type Zone = 'think' | 'act' | 'monitor' | 'innovate-learn';
 
 // Form Types

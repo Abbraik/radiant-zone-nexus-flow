@@ -12,8 +12,8 @@ interface UIStore extends UIState {
 }
 
 const defaultFeatureFlags: FeatureFlags = {
-  newRgsUI: true, // Enable by default for new UI
-  newTaskDrivenUI: true, // New task-driven workspace - ENABLED
+  newRgsUI: true,
+  newTaskDrivenUI: true,
   cldStudio: true,
   advancedAnalytics: false,
   mockDataMode: process.env.NODE_ENV === 'development',
@@ -22,27 +22,32 @@ const defaultFeatureFlags: FeatureFlags = {
   aiCopilot: true,
   automation: true,
   pluginSystem: false,
-  // New Cascade Features - ENABLED
   useCascadeBar: true,
   useTaskClaimPopup: true,
   useEnhancedTaskPopup: true,
   useTeamsButton: true,
-  // Phase 1: Ultimate Workspace Foundation
   useUltimateWorkspace: true,
   useAIcopilot: true,
   useDigitalTwin: true,
   useCascade3D: true,
   useCollabEngine: true,
-  use3DCLD: false, // Phase 3
-  useKnowledgeGraph: false, // Phase 2
-  useGamification: true, // Phase 3 - ENABLED
-  useOfflinePWA: true, // Phase 3 - ENABLED
-  usePluginEcosystem: true, // Phase 3 - ENABLED
-  useSecuritySuite: true, // Phase 3 - ENABLED
-  useMissionControl: true, // Mission Control Dashboard - ENABLED
-  // Zone-Aware Dynamic Task View
-  CLAIMANT_ZONE_VIEW_MVP: true, // ENABLED for development
-  useZoneBundles: true // Zone Bundle Integration - ENABLED
+  use3DCLD: false,
+  useKnowledgeGraph: false,
+  useGamification: true,
+  useOfflinePWA: true,
+  usePluginEcosystem: true,
+  useSecuritySuite: true,
+  useMissionControl: true,
+  CLAIMANT_ZONE_VIEW_MVP: true,
+  useZoneBundles: true,
+  // New Capacity-Mode Architecture flags
+  META_LOOP_CONSOLE: true,
+  CAPACITY_WORKSPACE: true,
+  SUPABASE_LIVE: false,
+  LEGACY_TAMLI: false,
+  MANDATE_GATE: true,
+  EQUILIBRIUM_SCORECARD: true,
+  REL_CADENCE: true,
 };
 
 const initialState: UIState = {
