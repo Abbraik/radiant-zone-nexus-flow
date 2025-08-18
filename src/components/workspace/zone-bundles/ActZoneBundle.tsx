@@ -319,7 +319,7 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
         animate={{ opacity: 1, y: 0 }}
         className="h-full flex flex-col bg-background"
       >
-        {/* Original ACT Zone Layout */}
+        {/* Enhanced ACT Zone Layout with Task Cards */}
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
           <div className="p-4">
             <div className="flex items-center justify-between">
@@ -336,86 +336,112 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
           </div>
         </div>
 
-        {/* Tasks Grid */}
-        <div className="flex-1 overflow-auto p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {actTasks.map((task) => (
-              <Card key={task.id} className="hover:bg-accent/50 transition-colors cursor-pointer"
-                    onClick={() => setShowSprintWizard(true)}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center justify-between">
-                    <span>{task.title}</span>
-                    <Badge variant={task.status === 'completed' ? 'default' : 'outline'}>
-                      {task.status}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {task.description}
-                  </p>
-                  <div className="mt-2 flex items-center justify-between">
+        {/* Tasks List */}
+        <div className="flex-1 overflow-auto p-4 space-y-4">
+          {actTasks.map((task) => (
+            <Card key={task.id} className="glass hover:bg-glass-accent transition-all duration-200">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-base font-medium text-foreground line-clamp-1">
+                      {task.title}
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {task.description}
+                    </p>
+                  </div>
+                  <Badge 
+                    variant={task.status === 'completed' ? 'default' : 'outline'}
+                    className="ml-3 shrink-0"
+                  >
+                    {task.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     <Badge variant="outline" className="text-amber-500 border-amber-500/30">
                       ACT
                     </Badge>
-                    <Button 
-                      size="sm" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowSprintWizard(true);
-                      }}
-                    >
-                      Start Sprint
-                    </Button>
+                    {task.due_date && (
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        Due {new Date(task.due_date).toLocaleDateString()}
+                      </div>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <div className="flex items-center gap-2">
+                    {task.assigned_to ? (
+                      <Button 
+                        size="sm"
+                        onClick={() => setShowSprintWizard(true)}
+                      >
+                        Continue Sprint
+                      </Button>
+                    ) : (
+                      <Button 
+                        size="sm" 
+                        onClick={() => {
+                          claimTask(task.id);
+                          setShowSprintWizard(true);
+                        }}
+                      >
+                        Claim
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
 
           {/* Zone Tools */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <CheckSquare className="h-4 w-4" />
-                  Gate Checklist
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
-                  Validate intervention readiness and mandate
-                </p>
-              </CardContent>
-            </Card>
+          <div className="mt-8">
+            <h3 className="text-lg font-medium mb-4">Zone Tools</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <CheckSquare className="h-4 w-4" />
+                    Gate Checklist
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    Validate intervention readiness and mandate
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Participation Pack
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
-                  Build engagement strategies and materials
-                </p>
-              </CardContent>
-            </Card>
+              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Participation Pack
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    Build engagement strategies and materials
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Layers className="h-4 w-4" />
-                  PDI Storyboard
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
-                  Design implementation pathway and timeline
-                </p>
-              </CardContent>
-            </Card>
+              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Layers className="h-4 w-4" />
+                    PDI Storyboard
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    Design implementation pathway and timeline
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </motion.div>
