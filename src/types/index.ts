@@ -190,7 +190,7 @@ export type ClaimStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'imple
 export type MandateStatus = 'allowed' | 'restricted' | 'forbidden';
 
 // Legacy type for backward compatibility
-export type Zone = 'think' | 'act' | 'monitor' | 'innovate-learn';
+export type Zone = 'think' | 'act' | 'monitor' | 'innovate-learn' | 'responsive';
 
 // Form Types
 export interface ThinkFormData {

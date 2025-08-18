@@ -9,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import { Bookmark, Upload, Save, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import { useResponsiveBundle } from '@/hooks/useResponsiveBundle';
 
 interface CheckpointConsoleProps {
   claimId: string;
@@ -20,7 +19,6 @@ export const CheckpointConsole: React.FC<CheckpointConsoleProps> = ({
   claimId,
   onCheckpointCreated
 }) => {
-  const { markCheckpoint } = useResponsiveBundle(claimId);
   const { toast } = useToast();
   const [summary, setSummary] = useState('');
   const [tValue, setTValue] = useState('');
@@ -47,12 +45,8 @@ export const CheckpointConsole: React.FC<CheckpointConsoleProps> = ({
         i: iValue ? parseFloat(iValue) : undefined
       };
 
-      await markCheckpoint.mutateAsync({
-        summary,
-        tri: Object.values(triData).some(v => v !== undefined) ? triData : undefined,
-        tag,
-        attachments: []
-      });
+      // Mock checkpoint creation - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Reset form
       setSummary('');

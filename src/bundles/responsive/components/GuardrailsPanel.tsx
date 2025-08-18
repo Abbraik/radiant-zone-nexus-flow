@@ -9,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import { AlertTriangle, Shield, Clock, Users, TrendingUp, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import { useResponsiveBundle } from '@/hooks/useResponsiveBundle';
 
 interface GuardrailsPanelProps {
   claimId: string;
@@ -20,7 +19,6 @@ export const GuardrailsPanel: React.FC<GuardrailsPanelProps> = ({
   claimId,
   isManager = false
 }) => {
-  const { guardrailStatus } = useResponsiveBundle(claimId);
   const { toast } = useToast();
   const [overrideActive, setOverrideActive] = useState(false);
   const [overrideReason, setOverrideReason] = useState('');
