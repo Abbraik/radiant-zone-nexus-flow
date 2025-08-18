@@ -55,6 +55,7 @@ import { Badge } from '../components/ui/badge';
 import { toast } from '../hooks/use-toast';
 import ZoneToolsDock from '@/components/zone/ZoneToolsDock';
 import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
+import { useToolsStore } from '@/stores/toolsStore';
 
 // Mock data
 const availableInterventions = [
@@ -208,7 +209,7 @@ const SortableInterventionCard: React.FC<{
   );
 };
 
-export const ActZone: React.FC = () => {
+const ActZoneWorkspace: React.FC = () => {
   const [bundleItems, setBundleItems] = useState<BundleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -972,5 +973,23 @@ export const ActZone: React.FC = () => {
       <ZoneToolsDock zone="act" />
       <ZoneToolsPortals zone="act" />
     </div>
+  );
+};
+
+export const ActZone: React.FC = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="h-screen w-full relative"
+    >
+      <div className="absolute top-4 right-4 z-10">
+        <button onClick={()=>useToolsStore.getState().openAbout('workflow')} className="btn-chip">What is this? (workflow)</button>
+      </div>
+      <ActZoneWorkspace />
+      <ZoneToolsDock zone="act" />
+      <ZoneToolsPortals zone="act" />
+    </motion.div>
   );
 };

@@ -14,8 +14,8 @@ import { ThinkZone } from "./pages/ThinkZone";
 import { ThinkZoneStudio } from "./pages/ThinkZoneStudio";
 import { ScenarioPlannerPage } from "./pages/ScenarioPlanner";
 import { ActZone } from "./pages/ActZone";
-import MonitorZone from "./pages/MonitorZone";
-import { InnovateLearnZone } from "./pages/InnovateLearnZone";
+import { MonitorZone } from './pages/MonitorZoneNew';
+import { InnovateLearnZone } from './pages/InnovateLearnZoneNew';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
