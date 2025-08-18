@@ -1995,6 +1995,10 @@ export type Database = {
         }
         Returns: Json
       }
+      compute_coverage: {
+        Args: { loop_uuid: string; option_ids: string[] }
+        Returns: Json
+      }
       create_redesign_task: {
         Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
         Returns: string
@@ -2073,6 +2077,10 @@ export type Database = {
         }
         Returns: Json
       }
+      package_for_execution: {
+        Args: { option_set_uuid: string }
+        Returns: Json
+      }
       pause_claim: {
         Args: { claim_uuid: string; rationale_text: string }
         Returns: Json
@@ -2092,6 +2100,19 @@ export type Database = {
       reset_all_tasks: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      run_mcda: {
+        Args: { option_ids: string[]; task_uuid: string; weights?: Json }
+        Returns: Json
+      }
+      save_decision_record: {
+        Args: {
+          mcda_snapshot?: Json
+          option_set_uuid: string
+          rationale_text: string
+          task_uuid: string
+        }
+        Returns: Json
       }
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
