@@ -41,6 +41,123 @@ export type Database = {
         }
         Relationships: []
       }
+      band_crossings: {
+        Row: {
+          at: string
+          created_at: string
+          direction: string
+          id: string
+          loop_id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          at?: string
+          created_at?: string
+          direction: string
+          id?: string
+          loop_id: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          at?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          loop_id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      claims: {
+        Row: {
+          assignee: string
+          created_at: string
+          evidence: Json | null
+          id: string
+          leverage: Database["public"]["Enums"]["leverage_type"]
+          loop_id: string
+          mandate_status: Database["public"]["Enums"]["mandate_status"] | null
+          raci: Json | null
+          sprint_id: string | null
+          status: Database["public"]["Enums"]["claim_status"] | null
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assignee: string
+          created_at?: string
+          evidence?: Json | null
+          id?: string
+          leverage?: Database["public"]["Enums"]["leverage_type"]
+          loop_id: string
+          mandate_status?: Database["public"]["Enums"]["mandate_status"] | null
+          raci?: Json | null
+          sprint_id?: string | null
+          status?: Database["public"]["Enums"]["claim_status"] | null
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assignee?: string
+          created_at?: string
+          evidence?: Json | null
+          id?: string
+          leverage?: Database["public"]["Enums"]["leverage_type"]
+          loop_id?: string
+          mandate_status?: Database["public"]["Enums"]["mandate_status"] | null
+          raci?: Json | null
+          sprint_id?: string | null
+          status?: Database["public"]["Enums"]["claim_status"] | null
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      de_bands: {
+        Row: {
+          asymmetry: number | null
+          created_at: string
+          id: string
+          indicator: string
+          loop_id: string
+          lower_bound: number | null
+          notes: string | null
+          updated_at: string
+          upper_bound: number | null
+          user_id: string
+        }
+        Insert: {
+          asymmetry?: number | null
+          created_at?: string
+          id?: string
+          indicator: string
+          loop_id: string
+          lower_bound?: number | null
+          notes?: string | null
+          updated_at?: string
+          upper_bound?: number | null
+          user_id: string
+        }
+        Update: {
+          asymmetry?: number | null
+          created_at?: string
+          id?: string
+          indicator?: string
+          loop_id?: string
+          lower_bound?: number | null
+          notes?: string | null
+          updated_at?: string
+          upper_bound?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       gate_stacks: {
         Row: {
           created_at: string | null
@@ -145,12 +262,106 @@ export type Database = {
         }
         Relationships: []
       }
+      interventions: {
+        Row: {
+          claim_id: string
+          created_at: string
+          description: string | null
+          effort: number | null
+          id: string
+          impact: number | null
+          label: string
+          ordering: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          description?: string | null
+          effort?: number | null
+          id?: string
+          impact?: number | null
+          label: string
+          ordering?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          description?: string | null
+          effort?: number | null
+          id?: string
+          impact?: number | null
+          label?: string
+          ordering?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loop_scorecards: {
+        Row: {
+          claim_velocity: number | null
+          de_state: string | null
+          fatigue: number | null
+          last_tri: Json | null
+          loop_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claim_velocity?: number | null
+          de_state?: string | null
+          fatigue?: number | null
+          last_tri?: Json | null
+          loop_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claim_velocity?: number | null
+          de_state?: string | null
+          fatigue?: number | null
+          last_tri?: Json | null
+          loop_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      loop_shared_nodes: {
+        Row: {
+          created_at: string
+          id: string
+          loop_id: string
+          node_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          loop_id: string
+          node_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          loop_id?: string
+          node_id?: string
+        }
+        Relationships: []
+      }
       loops: {
         Row: {
           created_at: string | null
           description: string | null
           id: string
+          leverage_default: Database["public"]["Enums"]["leverage_type"] | null
+          loop_type: Database["public"]["Enums"]["loop_type"] | null
+          metadata: Json | null
           name: string
+          scale: Database["public"]["Enums"]["scale_type"] | null
           status: string | null
           type: string | null
           updated_at: string | null
@@ -160,7 +371,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          leverage_default?: Database["public"]["Enums"]["leverage_type"] | null
+          loop_type?: Database["public"]["Enums"]["loop_type"] | null
+          metadata?: Json | null
           name: string
+          scale?: Database["public"]["Enums"]["scale_type"] | null
           status?: string | null
           type?: string | null
           updated_at?: string | null
@@ -170,10 +385,44 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          leverage_default?: Database["public"]["Enums"]["leverage_type"] | null
+          loop_type?: Database["public"]["Enums"]["loop_type"] | null
+          metadata?: Json | null
           name?: string
+          scale?: Database["public"]["Enums"]["scale_type"] | null
           status?: string | null
           type?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mandate_rules: {
+        Row: {
+          actor: string
+          allowed_levers: string[] | null
+          created_at: string
+          id: string
+          restrictions: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          allowed_levers?: string[] | null
+          created_at?: string
+          id?: string
+          restrictions?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          allowed_levers?: string[] | null
+          created_at?: string
+          id?: string
+          restrictions?: Json | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -406,6 +655,36 @@ export type Database = {
           },
         ]
       }
+      shared_nodes: {
+        Row: {
+          created_at: string
+          description: string | null
+          domain: string | null
+          id: string
+          label: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          domain?: string | null
+          id?: string
+          label: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          domain?: string | null
+          id?: string
+          label?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sprints: {
         Row: {
           created_at: string | null
@@ -455,6 +734,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      srt_windows: {
+        Row: {
+          created_at: string
+          id: string
+          loop_id: string
+          reflex_horizon: unknown | null
+          updated_at: string
+          user_id: string
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          loop_id: string
+          reflex_horizon?: unknown | null
+          updated_at?: string
+          user_id: string
+          window_end: string
+          window_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          loop_id?: string
+          reflex_horizon?: unknown | null
+          updated_at?: string
+          user_id?: string
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
       }
       task_artifacts: {
         Row: {
@@ -603,54 +915,78 @@ export type Database = {
       tasks: {
         Row: {
           assigned_to: string | null
+          capacity: Database["public"]["Enums"]["capacity_type"] | null
           created_at: string | null
+          de_band_id: string | null
           description: string | null
           due_date: string | null
           id: string
+          leverage: Database["public"]["Enums"]["leverage_type"] | null
           locked_at: string | null
           locked_by: string | null
+          loop_id: string | null
           payload: Json | null
           priority: string | null
+          scale: Database["public"]["Enums"]["scale_type"] | null
           sprint_id: string | null
+          srt_id: string | null
           status: string | null
           task_type: string | null
           title: string
+          tri: Json | null
+          type: Database["public"]["Enums"]["loop_type"] | null
           updated_at: string | null
           user_id: string
           zone: string | null
         }
         Insert: {
           assigned_to?: string | null
+          capacity?: Database["public"]["Enums"]["capacity_type"] | null
           created_at?: string | null
+          de_band_id?: string | null
           description?: string | null
           due_date?: string | null
           id?: string
+          leverage?: Database["public"]["Enums"]["leverage_type"] | null
           locked_at?: string | null
           locked_by?: string | null
+          loop_id?: string | null
           payload?: Json | null
           priority?: string | null
+          scale?: Database["public"]["Enums"]["scale_type"] | null
           sprint_id?: string | null
+          srt_id?: string | null
           status?: string | null
           task_type?: string | null
           title: string
+          tri?: Json | null
+          type?: Database["public"]["Enums"]["loop_type"] | null
           updated_at?: string | null
           user_id: string
           zone?: string | null
         }
         Update: {
           assigned_to?: string | null
+          capacity?: Database["public"]["Enums"]["capacity_type"] | null
           created_at?: string | null
+          de_band_id?: string | null
           description?: string | null
           due_date?: string | null
           id?: string
+          leverage?: Database["public"]["Enums"]["leverage_type"] | null
           locked_at?: string | null
           locked_by?: string | null
+          loop_id?: string | null
           payload?: Json | null
           priority?: string | null
+          scale?: Database["public"]["Enums"]["scale_type"] | null
           sprint_id?: string | null
+          srt_id?: string | null
           status?: string | null
           task_type?: string | null
           title?: string
+          tri?: Json | null
+          type?: Database["public"]["Enums"]["loop_type"] | null
           updated_at?: string | null
           user_id?: string
           zone?: string | null
@@ -691,6 +1027,42 @@ export type Database = {
           id?: string
           name?: string
           published_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tri_events: {
+        Row: {
+          at: string
+          created_at: string
+          i_value: number
+          id: string
+          loop_id: string
+          r_value: number
+          t_value: number
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          at?: string
+          created_at?: string
+          i_value?: number
+          id?: string
+          loop_id: string
+          r_value?: number
+          t_value?: number
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          at?: string
+          created_at?: string
+          i_value?: number
+          id?: string
+          loop_id?: string
+          r_value?: number
+          t_value?: number
+          task_id?: string | null
           user_id?: string
         }
         Relationships: []
@@ -771,6 +1143,23 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      capacity_type:
+        | "responsive"
+        | "reflexive"
+        | "deliberative"
+        | "anticipatory"
+        | "structural"
+      claim_status:
+        | "draft"
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "implemented"
+      leverage_type: "N" | "P" | "S"
+      loop_type: "reactive" | "structural" | "perceptual"
+      mandate_status: "allowed" | "restricted" | "forbidden"
+      scale_type: "micro" | "meso" | "macro"
+      task_status: "open" | "claimed" | "active" | "done" | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -899,6 +1288,19 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      capacity_type: [
+        "responsive",
+        "reflexive",
+        "deliberative",
+        "anticipatory",
+        "structural",
+      ],
+      claim_status: ["draft", "pending", "approved", "rejected", "implemented"],
+      leverage_type: ["N", "P", "S"],
+      loop_type: ["reactive", "structural", "perceptual"],
+      mandate_status: ["allowed", "restricted", "forbidden"],
+      scale_type: ["micro", "meso", "macro"],
+      task_status: ["open", "claimed", "active", "done", "blocked"],
     },
   },
 } as const
