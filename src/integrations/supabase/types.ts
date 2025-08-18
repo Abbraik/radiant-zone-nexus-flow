@@ -301,6 +301,42 @@ export type Database = {
         }
         Relationships: []
       }
+      loop_edges: {
+        Row: {
+          created_at: string
+          delay_ms: number | null
+          from_node: string
+          id: string
+          loop_id: string
+          note: string | null
+          polarity: number
+          to_node: string
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string
+          delay_ms?: number | null
+          from_node: string
+          id?: string
+          loop_id: string
+          note?: string | null
+          polarity: number
+          to_node: string
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string
+          delay_ms?: number | null
+          from_node?: string
+          id?: string
+          loop_id?: string
+          note?: string | null
+          polarity?: number
+          to_node?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
       loop_scorecards: {
         Row: {
           claim_velocity: number | null
@@ -352,8 +388,51 @@ export type Database = {
         }
         Relationships: []
       }
+      loop_tags: {
+        Row: {
+          created_at: string
+          loop_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          loop_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          loop_id?: string
+          tag?: string
+        }
+        Relationships: []
+      }
+      loop_versions: {
+        Row: {
+          created_at: string
+          id: string
+          loop_id: string
+          payload: Json
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          loop_id: string
+          payload?: Json
+          version: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          loop_id?: string
+          payload?: Json
+          version?: number
+        }
+        Relationships: []
+      }
       loops: {
         Row: {
+          controller: Json | null
           created_at: string | null
           description: string | null
           id: string
@@ -361,13 +440,17 @@ export type Database = {
           loop_type: Database["public"]["Enums"]["loop_type"] | null
           metadata: Json | null
           name: string
+          notes: string | null
           scale: Database["public"]["Enums"]["scale_type"] | null
           status: string | null
+          thresholds: Json | null
           type: string | null
           updated_at: string | null
           user_id: string
+          version: number | null
         }
         Insert: {
+          controller?: Json | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -375,13 +458,17 @@ export type Database = {
           loop_type?: Database["public"]["Enums"]["loop_type"] | null
           metadata?: Json | null
           name: string
+          notes?: string | null
           scale?: Database["public"]["Enums"]["scale_type"] | null
           status?: string | null
+          thresholds?: Json | null
           type?: string | null
           updated_at?: string | null
           user_id: string
+          version?: number | null
         }
         Update: {
+          controller?: Json | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -389,11 +476,14 @@ export type Database = {
           loop_type?: Database["public"]["Enums"]["loop_type"] | null
           metadata?: Json | null
           name?: string
+          notes?: string | null
           scale?: Database["public"]["Enums"]["scale_type"] | null
           status?: string | null
+          thresholds?: Json | null
           type?: string | null
           updated_at?: string | null
           user_id?: string
+          version?: number | null
         }
         Relationships: []
       }
@@ -659,6 +749,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          descriptor: string | null
           domain: string | null
           id: string
           label: string
@@ -668,6 +759,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          descriptor?: string | null
           domain?: string | null
           id?: string
           label: string
@@ -677,6 +769,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          descriptor?: string | null
           domain?: string | null
           id?: string
           label?: string
@@ -1129,6 +1222,10 @@ export type Database = {
         Args: { actor_name: string; leverage_level: string }
         Returns: string
       }
+      get_loop_hydrate: {
+        Args: { loop_uuid: string }
+        Returns: Json
+      }
       get_task_by_id: {
         Args: { task_uuid: string }
         Returns: {
@@ -1164,6 +1261,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      publish_loop: {
+        Args: { loop_uuid: string }
+        Returns: Json
       }
       reset_all_tasks: {
         Args: Record<PropertyKey, never>
