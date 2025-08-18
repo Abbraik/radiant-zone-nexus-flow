@@ -130,7 +130,6 @@ export type TrendDirection = 'up' | 'down' | 'stable' | 'volatile';
 export type InsightCategory = 'opportunity' | 'risk' | 'pattern' | 'anomaly';
 export type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
 
-// Feature Flag Types
 export interface FeatureFlags {
   newRgsUI: boolean;
   newTaskDrivenUI: boolean;
@@ -163,6 +162,14 @@ export interface FeatureFlags {
   // Zone-Aware Dynamic Task View
   CLAIMANT_ZONE_VIEW_MVP: boolean;
   useZoneBundles: boolean;
+  // New Capacity-Mode Architecture flags
+  META_LOOP_CONSOLE: boolean;
+  CAPACITY_WORKSPACE: boolean;
+  SUPABASE_LIVE: boolean;
+  LEGACY_TAMLI: boolean;
+  MANDATE_GATE: boolean;
+  EQUILIBRIUM_SCORECARD: boolean;
+  REL_CADENCE: boolean;
 }
 
 // UI State Types

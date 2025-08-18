@@ -114,7 +114,15 @@ export class SupabaseCapacityService implements CapacityAPIService {
   async createLoop(loop: Partial<Loop>): Promise<Loop> {
     const { data, error } = await supabase
       .from('loops')
-      .insert(loop)
+      .insert({
+        name: loop.name || 'Untitled Loop',
+        description: loop.description,
+        loop_type: loop.loop_type || 'reactive',
+        scale: loop.scale || 'micro',
+        leverage_default: loop.leverage_default || 'N',
+        metadata: loop.metadata || {},
+        user_id: loop.user_id || ''
+      })
       .select()
       .single();
     
@@ -136,7 +144,18 @@ export class SupabaseCapacityService implements CapacityAPIService {
   async createClaim(claim: Partial<Claim>): Promise<Claim> {
     const { data, error } = await supabase
       .from('claims')
-      .insert(claim)
+      .insert({
+        task_id: claim.task_id || '',
+        loop_id: claim.loop_id || '',
+        assignee: claim.assignee || '',
+        raci: claim.raci || {},
+        leverage: claim.leverage || 'N',
+        mandate_status: claim.mandate_status || 'allowed',
+        evidence: claim.evidence || {},
+        sprint_id: claim.sprint_id,
+        status: claim.status || 'draft',
+        user_id: claim.user_id || ''
+      })
       .select()
       .single();
     
@@ -187,7 +206,15 @@ export class SupabaseCapacityService implements CapacityAPIService {
   async createTRIEvent(event: Partial<TRIEvent>): Promise<TRIEvent> {
     const { data, error } = await supabase
       .from('tri_events')
-      .insert(event)
+      .insert({
+        loop_id: event.loop_id || '',
+        task_id: event.task_id,
+        t_value: event.t_value || 0,
+        r_value: event.r_value || 0,
+        i_value: event.i_value || 0,
+        at: event.at || new Date().toISOString(),
+        user_id: event.user_id || ''
+      })
       .select()
       .single();
     
