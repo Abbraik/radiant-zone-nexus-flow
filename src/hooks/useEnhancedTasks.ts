@@ -94,7 +94,7 @@ export const useEnhancedTasks = () => {
       if (claimedTask.zone === 'monitor') {
         setTimeout(() => navigate('/monitor'), 100);
       } else if (claimedTask.zone === 'act') {
-        setTimeout(() => navigate('/act'), 100);
+        setTimeout(() => navigate('/act-wizard'), 100);
       } else if (claimedTask.zone === 'think') {
         setTimeout(() => navigate('/think'), 100);
       } else if (claimedTask.zone === 'innovate-learn') {
