@@ -160,6 +160,8 @@ export interface FeatureFlags {
   usePluginEcosystem: boolean;
   useSecuritySuite: boolean;
   useMissionControl: boolean;
+  // Zone-Aware Dynamic Task View
+  CLAIMANT_ZONE_VIEW_MVP: boolean;
 }
 
 // UI State Types

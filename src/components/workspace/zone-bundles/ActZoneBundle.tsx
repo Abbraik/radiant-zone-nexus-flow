@@ -4,8 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Target, Users, CheckCircle } from 'lucide-react';
-import { InterventionPicker } from '@/components/widgets/InterventionPicker';
-import { RACIMatrix } from '@/components/widgets/RACIMatrix';
+import InterventionPicker from '@/components/widgets/InterventionPicker';
+import RACIMatrix from '@/components/widgets/RACIMatrix';
 import { SixLeverSelector } from '@/components/widgets/SixLeverSelector';
 import type { ZoneBundleProps } from '@/types/zone-bundles';
 
@@ -184,12 +184,21 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
               <CardContent className="h-full">
                 <div className="space-y-6">
                   <SixLeverSelector
-                    selectedLevers={selectedInstruments}
-                    onLeverChange={handleInstrumentsUpdate}
+                    selectedSubLevers={selectedInstruments.map(i => i.id)}
+                    onSubLeverSelect={(id) => {
+                      const newInstrument = { id, name: `Instrument ${id}` };
+                      handleInstrumentsUpdate([...selectedInstruments, newInstrument]);
+                    }}
+                    onSubLeverDeselect={(id) => {
+                      handleInstrumentsUpdate(selectedInstruments.filter(i => i.id !== id));
+                    }}
                   />
                   <InterventionPicker
-                    selectedInterventions={selectedInstruments}
-                    onInterventionChange={handleInstrumentsUpdate}
+                    task={{ 
+                      id: taskId, 
+                      title: taskData?.title || 'ACT Task',
+                      ...taskData 
+                    } as any}
                   />
                 </div>
               </CardContent>
@@ -272,8 +281,11 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
               </CardHeader>
               <CardContent className="h-full">
                 <RACIMatrix
-                  matrix={raciMatrix}
-                  onMatrixChange={handleRaciUpdate}
+                  task={{ 
+                    id: taskId, 
+                    title: taskData?.title || 'ACT Task',
+                    ...taskData 
+                  } as any}
                 />
               </CardContent>
             </Card>

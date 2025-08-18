@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, FlaskConical, BookOpen, Target } from 'lucide-react';
-import { ExperimentStudio } from '@/components/widgets/ExperimentStudio';
-import { ScenarioPlanner } from '@/components/widgets/ScenarioPlanner';
+import ExperimentStudio from '@/components/widgets/ExperimentStudio';
+import ScenarioPlanner from '@/components/widgets/ScenarioPlanner';
 import type { ZoneBundleProps } from '@/types/zone-bundles';
 
 interface InnovateZoneBundleProps extends ZoneBundleProps {}
@@ -310,12 +310,9 @@ const InnovateZoneBundle: React.FC<InnovateZoneBundleProps> = ({
                 {evaluationDesign.type && (
                   <div className="p-4 bg-muted/50 rounded-lg">
                     <h4 className="font-medium mb-2">Configuration</h4>
-                    <ExperimentStudio
-                      experimentType={evaluationDesign.type}
-                      onConfigUpdate={(config) => 
-                        handleEvaluationDesignSelect({ ...evaluationDesign, config })
-                      }
-                    />
+                    <div className="text-sm text-muted-foreground">
+                      Configuration for {evaluationDesign.type} will be available in the next phase.
+                    </div>
                   </div>
                 )}
               </CardContent>

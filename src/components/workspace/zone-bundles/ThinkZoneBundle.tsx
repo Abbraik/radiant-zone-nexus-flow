@@ -204,7 +204,7 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
                     const newNode = {
                       id: `node_${Date.now()}`,
                       type: 'variable',
-                      data: { label: variable.name, variable },
+                      data: { label: variable.label, variable },
                       position: { x: Math.random() * 400, y: Math.random() * 300 }
                     };
                     
@@ -226,10 +226,9 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
                 <CardTitle>Parameters & Bands</CardTitle>
               </CardHeader>
               <CardContent className="h-full">
-                <ParameterPanel
-                  indicators={indicators}
-                  onIndicatorsUpdate={handleIndicatorsUpdate}
-                />
+                <div className="text-sm text-muted-foreground">
+                  Parameter panel integration will be available in the next phase.
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -240,10 +239,9 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
                 <CardTitle>Leverage Domain Mapping</CardTitle>
               </CardHeader>
               <CardContent className="h-full">
-                <LeverageDomainMapper
-                  leveragePoints={leveragePoints}
-                  onLeverageUpdate={handleLeverageUpdate}
-                />
+                <div className="text-sm text-muted-foreground">
+                  Leverage domain mapper integration will be available in the next phase.
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

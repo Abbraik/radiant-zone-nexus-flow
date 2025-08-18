@@ -39,7 +39,9 @@ const defaultFeatureFlags: FeatureFlags = {
   useOfflinePWA: true, // Phase 3 - ENABLED
   usePluginEcosystem: true, // Phase 3 - ENABLED
   useSecuritySuite: true, // Phase 3 - ENABLED
-  useMissionControl: true // Mission Control Dashboard - ENABLED
+  useMissionControl: true, // Mission Control Dashboard - ENABLED
+  // Zone-Aware Dynamic Task View
+  CLAIMANT_ZONE_VIEW_MVP: true // ENABLED for development
 };
 
 const initialState: UIState = {
