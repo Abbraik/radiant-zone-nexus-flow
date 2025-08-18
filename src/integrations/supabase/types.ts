@@ -1145,6 +1145,48 @@ export type Database = {
         }
         Relationships: []
       }
+      playbooks: {
+        Row: {
+          auto_action: boolean | null
+          created_at: string
+          guards: Json | null
+          id: string
+          lever_order: string[] | null
+          loop_id: string
+          steps: Json
+          success_criteria: Json | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_action?: boolean | null
+          created_at?: string
+          guards?: Json | null
+          id?: string
+          lever_order?: string[] | null
+          loop_id: string
+          steps?: Json
+          success_criteria?: Json | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_action?: boolean | null
+          created_at?: string
+          guards?: Json | null
+          id?: string
+          lever_order?: string[] | null
+          loop_id?: string
+          steps?: Json
+          success_criteria?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1381,6 +1423,45 @@ export type Database = {
         }
         Relationships: []
       }
+      scenarios: {
+        Row: {
+          charts: Json | null
+          created_at: string
+          id: string
+          loop_id: string
+          name: string
+          params: Json
+          pinned: boolean | null
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          charts?: Json | null
+          created_at?: string
+          id?: string
+          loop_id: string
+          name: string
+          params?: Json
+          pinned?: boolean | null
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          charts?: Json | null
+          created_at?: string
+          id?: string
+          loop_id?: string
+          name?: string
+          params?: Json
+          pinned?: boolean | null
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       shared_nodes: {
         Row: {
           created_at: string
@@ -1411,6 +1492,48 @@ export type Database = {
           label?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      signal_events: {
+        Row: {
+          auto_action_taken: boolean | null
+          created_at: string
+          event_type: string
+          id: string
+          indicator_value: number
+          loop_id: string
+          playbook_executed: Json | null
+          severity: string | null
+          threshold_crossed: number | null
+          user_id: string
+          watchpoint_id: string
+        }
+        Insert: {
+          auto_action_taken?: boolean | null
+          created_at?: string
+          event_type: string
+          id?: string
+          indicator_value: number
+          loop_id: string
+          playbook_executed?: Json | null
+          severity?: string | null
+          threshold_crossed?: number | null
+          user_id: string
+          watchpoint_id: string
+        }
+        Update: {
+          auto_action_taken?: boolean | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          indicator_value?: number
+          loop_id?: string
+          playbook_executed?: Json | null
+          severity?: string | null
+          threshold_crossed?: number | null
+          user_id?: string
+          watchpoint_id?: string
         }
         Relationships: []
       }
@@ -1514,6 +1637,48 @@ export type Database = {
           user_id?: string
           window_end?: string
           window_start?: string
+        }
+        Relationships: []
+      }
+      stress_tests: {
+        Row: {
+          created_at: string
+          expected_impact: Json | null
+          id: string
+          loop_id: string
+          name: string
+          result: Json | null
+          scenario_id: string | null
+          severity: number | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expected_impact?: Json | null
+          id?: string
+          loop_id: string
+          name: string
+          result?: Json | null
+          scenario_id?: string | null
+          severity?: number | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expected_impact?: Json | null
+          id?: string
+          loop_id?: string
+          name?: string
+          result?: Json | null
+          scenario_id?: string | null
+          severity?: number | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1878,6 +2043,57 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      watchpoints: {
+        Row: {
+          armed: boolean | null
+          created_at: string
+          direction: string
+          id: string
+          indicator: string
+          last_eval: string | null
+          last_result: Json | null
+          loop_id: string
+          owner: string
+          playbook_id: string | null
+          threshold_band: Json | null
+          threshold_value: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          armed?: boolean | null
+          created_at?: string
+          direction: string
+          id?: string
+          indicator: string
+          last_eval?: string | null
+          last_result?: Json | null
+          loop_id: string
+          owner: string
+          playbook_id?: string | null
+          threshold_band?: Json | null
+          threshold_value?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          armed?: boolean | null
+          created_at?: string
+          direction?: string
+          id?: string
+          indicator?: string
+          last_eval?: string | null
+          last_result?: Json | null
+          loop_id?: string
+          owner?: string
+          playbook_id?: string | null
+          threshold_band?: Json | null
+          threshold_value?: number | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
