@@ -24,84 +24,20 @@ export interface SupabaseTask {
   locked_at?: string;
 }
 
-// Task interface compatible with the workspace
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  zone: 'think' | 'act' | 'monitor' | 'innovate-learn';
-  type: string;
-  components: string[];
-  status: 'available' | 'claimed' | 'in_progress' | 'completed';
-  owner_id?: string;
-  assignee?: string;
-  assigned_to?: string;
-  loop_id?: string;
-  due_at?: Date;
-  due_date?: string;
-  created_at: Date;
-  updated_at: Date;
-  task_type?: string;
-  payload?: any;
-}
-
-// Convert SupabaseTask to Task format
-const convertToTask = (supabaseTask: SupabaseTask): Task => {
-  // Map zones properly for navigation and consistency
-  const zoneMap: Record<string, 'think' | 'act' | 'monitor' | 'innovate-learn'> = {
-    'THINK': 'think',
-    'ACT': 'act', 
-    'MONITOR': 'monitor',
-    'INNOVATE': 'innovate-learn'
-  };
-  
-  const zone = zoneMap[supabaseTask.zone as string] || supabaseTask.zone as 'think' | 'act' | 'monitor' | 'innovate-learn';
-  
-  return {
-    id: supabaseTask.id,
-    title: supabaseTask.title,
-    description: supabaseTask.description || '',
-    zone: zone,
-    type: supabaseTask.task_type || 'general',
-    components: [], // Default empty array
-    status: supabaseTask.status === 'todo' ? 'available' :
-           supabaseTask.assigned_to ? 'claimed' : 
-           supabaseTask.status as 'available' | 'claimed' | 'in_progress' | 'completed',
-    owner_id: supabaseTask.user_id,
-    assignee: supabaseTask.assigned_to,
-    assigned_to: supabaseTask.assigned_to,
-    due_at: supabaseTask.due_date ? new Date(supabaseTask.due_date) : undefined,
-    due_date: supabaseTask.due_date,
-    created_at: new Date(supabaseTask.created_at),
-    updated_at: new Date(supabaseTask.updated_at),
-    task_type: supabaseTask.task_type,
-    payload: supabaseTask.payload
-  };
-};
-
 export const useEnhancedTasks = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [claimingTask, setClaimingTask] = useState<Task | null>(null);
+  const [claimingTask, setClaimingTask] = useState<SupabaseTask | null>(null);
   const [showClaimPopup, setShowClaimPopup] = useState(false);
   
   // Mock current user ID - replace with real auth later
-  const getCurrentUserId = () => '00000000-0000-4000-8000-000000000000'; // Valid UUID format
+  const getCurrentUserId = () => 'mock-user-id';
 
-  const { data: supabaseTasks = [], isLoading } = useQuery({
+  const { data: allTasks = [], isLoading } = useQuery({
     queryKey: ['enhanced-tasks'],
     queryFn: async (): Promise<SupabaseTask[]> => {
       console.log('Fetching tasks from Supabase...');
-      
-      // Reset all tasks to available state when fetching
-      try {
-        await supabase.rpc('reset_all_tasks');
-        console.log('Tasks reset to available state');
-      } catch (error) {
-        console.warn('Failed to reset tasks:', error);
-      }
-      
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
@@ -117,15 +53,12 @@ export const useEnhancedTasks = () => {
     }
   });
 
-  // Convert to Task format
-  const allTasks = supabaseTasks.map(convertToTask);
-
   const myTasks = allTasks.filter(task => 
-    task.assignee === getCurrentUserId() && task.status !== 'completed'
+    task.assigned_to === getCurrentUserId() && task.status !== 'completed'
   );
   
   const availableTasks = allTasks.filter(task => 
-    !task.assignee && task.status === 'available'
+    !task.assigned_to && task.status === 'todo'
   );
   
   const activeTask = myTasks.find(task => task.status === 'in_progress') || myTasks[0] || null;
@@ -157,8 +90,16 @@ export const useEnhancedTasks = () => {
         duration: 3000
       });
 
-      // No navigation needed - workspace will adapt dynamically to the claimed task
-      console.log(`Task claimed for zone: ${claimedTask.zone}. Workspace will adapt dynamically.`);
+      // Navigate to appropriate zone workspace based on task zone
+      if (claimedTask.zone === 'monitor') {
+        setTimeout(() => navigate('/monitor'), 100);
+      } else if (claimedTask.zone === 'act') {
+        setTimeout(() => navigate('/act'), 100);
+      } else if (claimedTask.zone === 'think') {
+        setTimeout(() => navigate('/think'), 100);
+      } else if (claimedTask.zone === 'innovate-learn') {
+        setTimeout(() => navigate('/innovate-learn'), 100);
+      }
     },
     onError: (error) => {
       console.error('Error claiming task:', error);

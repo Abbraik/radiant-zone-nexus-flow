@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEnhancedTasks } from '../../hooks/useEnhancedTasks';
+import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
@@ -37,9 +37,8 @@ export const Workspace: React.FC = () => {
     cancelClaimTask,
     claimingTask,
     showClaimPopup,
-    isClaimingTask,
-    updateTaskPayload
-  } = useEnhancedTasks();
+    isClaimingTask
+  } = useTasks();
   
   // Debug state values on every render
   console.log('Workspace render - Popup state:', { 
@@ -267,14 +266,11 @@ export const Workspace: React.FC = () => {
                     
                     <DynamicZoneBundleLoader
                       zone={activeTask.zone as Zone}
-                      taskType={activeTask.task_type as TaskType}
+                      taskType={activeTask.type as TaskType}
                       taskId={activeTask.id}
                       taskData={activeTask}
-                      payload={activeTask.payload || {}}
-                      onPayloadUpdate={(payload) => {
-                        console.log('Zone bundle payload updated:', payload);
-                        updateTaskPayload(activeTask.id, payload);
-                      }}
+                      payload={{}}
+                      onPayloadUpdate={(payload) => console.log('Zone bundle payload updated:', payload)}
                       onValidationChange={(isValid, errors) => console.log('Zone bundle validation:', isValid, errors)}
                       readonly={false}
                     />
