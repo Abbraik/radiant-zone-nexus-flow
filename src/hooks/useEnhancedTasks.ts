@@ -22,6 +22,14 @@ export interface SupabaseTask {
   sprint_id?: string;
   locked_by?: string;
   locked_at?: string;
+  claim_id?: string;
+  loop_id?: string;
+  loop?: {
+    id: string;
+    name: string;
+    type?: string;
+    scale?: string;
+  };
 }
 
 export const useEnhancedTasks = () => {
