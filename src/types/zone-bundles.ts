@@ -6,7 +6,7 @@ export interface ZoneBundleProps {
   taskData: any;
   payload: any;
   onPayloadUpdate: (payload: any) => void;
-  onValidationChange: (isValid: boolean) => void;
+  onValidationChange: (isValid: boolean, errors?: string[]) => void;
   readonly?: boolean;
 }
 

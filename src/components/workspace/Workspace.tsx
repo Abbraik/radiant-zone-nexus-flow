@@ -19,6 +19,8 @@ import TaskClaimPopup from './TaskClaimPopup';
 import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
+import { DynamicZoneBundleLoader } from './DynamicZoneBundleLoader';
+import type { Zone, TaskType } from '../../types/zone-bundles';
 
 export const Workspace: React.FC = () => {
   const { 
@@ -229,19 +231,51 @@ export const Workspace: React.FC = () => {
               </FeatureFlagGuard>
             </div>
 
-            {/* Dynamic Widgets */}
+            {/* Zone Bundle or Dynamic Widgets */}
             <div className="space-y-6">
-              <AnimatePresence>
-                {components.map((componentName) => (
-                  <DynamicWidget
-                    key={componentName}
-                    widgetName={componentName}
-                    task={activeTask}
+              <FeatureFlagGuard flag="useZoneBundles">
+                {activeTask.zone ? (
+                  <DynamicZoneBundleLoader
+                    zone={activeTask.zone as Zone}
+                    taskType={activeTask.type as TaskType}
+                    taskId={activeTask.id}
+                    taskData={activeTask}
+                    payload={{}}
+                    onPayloadUpdate={(payload) => console.log('Payload updated:', payload)}
+                    onValidationChange={(isValid, errors) => console.log('Validation:', isValid, errors)}
+                    readonly={false}
                   />
-                ))}
-              </AnimatePresence>
+                ) : (
+                  <AnimatePresence>
+                    {components.map((componentName) => (
+                      <DynamicWidget
+                        key={componentName}
+                        widgetName={componentName}
+                        task={activeTask}
+                      />
+                    ))}
+                  </AnimatePresence>
+                )}
+              </FeatureFlagGuard>
 
-              {components.length === 0 && (
+              <FeatureFlagGuard 
+                flag="useZoneBundles" 
+                fallback={
+                  <AnimatePresence>
+                    {components.map((componentName) => (
+                      <DynamicWidget
+                        key={componentName}
+                        widgetName={componentName}
+                        task={activeTask}
+                      />
+                    ))}
+                  </AnimatePresence>
+                }
+              >
+                <div />
+              </FeatureFlagGuard>
+
+              {!flags.useZoneBundles && components.length === 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

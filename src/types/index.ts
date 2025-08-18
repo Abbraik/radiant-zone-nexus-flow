@@ -162,6 +162,7 @@ export interface FeatureFlags {
   useMissionControl: boolean;
   // Zone-Aware Dynamic Task View
   CLAIMANT_ZONE_VIEW_MVP: boolean;
+  useZoneBundles: boolean;
 }
 
 // UI State Types

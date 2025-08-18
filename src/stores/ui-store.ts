@@ -41,7 +41,8 @@ const defaultFeatureFlags: FeatureFlags = {
   useSecuritySuite: true, // Phase 3 - ENABLED
   useMissionControl: true, // Mission Control Dashboard - ENABLED
   // Zone-Aware Dynamic Task View
-  CLAIMANT_ZONE_VIEW_MVP: true // ENABLED for development
+  CLAIMANT_ZONE_VIEW_MVP: true, // ENABLED for development
+  useZoneBundles: true // Zone Bundle Integration - ENABLED
 };
 
 const initialState: UIState = {
