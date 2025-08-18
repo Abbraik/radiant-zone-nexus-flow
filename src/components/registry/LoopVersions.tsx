@@ -24,7 +24,10 @@ export const LoopVersions: React.FC<LoopVersionsProps> = ({ loopId }) => {
         .order('version', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []).map(version => ({
+        ...version,
+        payload: version.payload as Record<string, any>
+      })) as LoopVersion[];
     },
   });
 

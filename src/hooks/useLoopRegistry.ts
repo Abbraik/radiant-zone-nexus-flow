@@ -72,6 +72,9 @@ export const useLoopRegistry = () => {
 
   const createLoop = useMutation({
     mutationFn: async (loop: Partial<LoopData>) => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('User not authenticated');
+
       const { data, error } = await supabase
         .from('loops')
         .insert({
@@ -82,13 +85,18 @@ export const useLoopRegistry = () => {
           controller: loop.controller || {},
           thresholds: loop.thresholds || {},
           notes: loop.notes,
-          status: 'draft'
+          status: 'draft',
+          user_id: user.id
         })
         .select()
         .single();
       
       if (error) throw error;
-      return data;
+      return {
+        ...data,
+        controller: data.controller as Record<string, any>,
+        thresholds: data.thresholds as Record<string, any>
+      } as LoopData;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loops'] });
@@ -140,7 +148,7 @@ export const useLoopHydration = (loopId?: string) => {
       });
       
       if (error) throw error;
-      return data as HydratedLoop;
+      return data as unknown as HydratedLoop;
     },
     enabled: !!loopId,
   });
