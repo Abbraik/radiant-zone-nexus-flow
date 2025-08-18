@@ -18,7 +18,8 @@ import {
   Upload,
   User,
   AlertTriangle,
-  Eye
+  Eye,
+  ArrowLeft
 } from 'lucide-react';
 import { PAGSGraphEditor } from './PAGSGraphEditor';
 import { IndicatorsBandsEditor } from './IndicatorsBandsEditor';
@@ -32,6 +33,7 @@ interface LoopStudioProps {
   onPayloadUpdate: (payload: any) => void;
   onValidationChange: (isValid: boolean, errors?: string[]) => void;
   readonly?: boolean;
+  onClose?: () => void;
 }
 
 interface LoopData {
@@ -97,7 +99,8 @@ export const LoopStudio: React.FC<LoopStudioProps> = ({
   payload,
   onPayloadUpdate,
   onValidationChange,
-  readonly = false
+  readonly = false,
+  onClose
 }) => {
   const [loopData, setLoopData] = useState<LoopData>(
     payload?.loop || initialLoopData
@@ -275,6 +278,12 @@ export const LoopStudio: React.FC<LoopStudioProps> = ({
         <div className="p-4 space-y-4">
           {/* Main Controls */}
           <div className="flex items-center gap-4">
+            {onClose && (
+              <Button variant="ghost" size="sm" onClick={onClose}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-3">
                 <Input
