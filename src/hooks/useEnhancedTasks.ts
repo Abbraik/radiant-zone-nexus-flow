@@ -47,17 +47,24 @@ export interface Task {
 
 // Convert SupabaseTask to Task format
 const convertToTask = (supabaseTask: SupabaseTask): Task => {
-  // Map ACT zone to act for consistency - handle both string types
-  const zone = (supabaseTask.zone as string).toLowerCase() === 'act' ? 'act' : supabaseTask.zone;
+  // Map zones properly for navigation and consistency
+  const zoneMap: Record<string, 'think' | 'act' | 'monitor' | 'innovate-learn'> = {
+    'THINK': 'think',
+    'ACT': 'act', 
+    'MONITOR': 'monitor',
+    'INNOVATE': 'innovate-learn'
+  };
+  
+  const zone = zoneMap[supabaseTask.zone as string] || supabaseTask.zone as 'think' | 'act' | 'monitor' | 'innovate-learn';
   
   return {
     id: supabaseTask.id,
     title: supabaseTask.title,
     description: supabaseTask.description || '',
-    zone: zone as 'think' | 'act' | 'monitor' | 'innovate-learn',
+    zone: zone,
     type: supabaseTask.task_type || 'general',
     components: [], // Default empty array
-    status: supabaseTask.status === 'todo' ? 'available' : 
+    status: supabaseTask.status === 'todo' ? 'available' :
            supabaseTask.assigned_to ? 'claimed' : 
            supabaseTask.status as 'available' | 'claimed' | 'in_progress' | 'completed',
     owner_id: supabaseTask.user_id,
@@ -142,14 +149,17 @@ export const useEnhancedTasks = () => {
       });
 
       // Navigate to appropriate zone workspace based on task zone
-      if (claimedTask.zone === 'monitor') {
-        setTimeout(() => navigate('/monitor'), 100);
-      } else if (claimedTask.zone === 'ACT' || claimedTask.zone === 'act') {
-        setTimeout(() => navigate('/act'), 100);
-      } else if (claimedTask.zone === 'think') {
-        setTimeout(() => navigate('/think'), 100);
-      } else if (claimedTask.zone === 'innovate-learn') {
-        setTimeout(() => navigate('/innovate-learn'), 100);
+      const navigationMap: Record<string, string> = {
+        'think': '/think',
+        'act': '/act',
+        'monitor': '/monitor', 
+        'innovate-learn': '/innovate'
+      };
+      
+      const route = navigationMap[claimedTask.zone];
+      if (route) {
+        console.log(`Navigating to zone workspace: ${claimedTask.zone} -> ${route}`);
+        setTimeout(() => navigate(route), 100);
       }
     },
     onError: (error) => {
