@@ -13,6 +13,7 @@ import { PairWorkOverlay } from '../../modules/collab/components/PairWorkOverlay
 import { useFeatureFlags, FeatureFlagGuard } from '../layout/FeatureFlagProvider';
 import { Button } from '../ui/button';
 import { CheckCircle, AlertCircle } from 'lucide-react';
+import { Badge } from '../ui/badge';
 import { OKR } from '../../modules/collab/data/mockData';
 import CascadeSidebar from './CascadeSidebar';
 import TaskClaimPopup from './TaskClaimPopup';
@@ -21,6 +22,7 @@ import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
 import { DynamicZoneBundleLoader } from './DynamicZoneBundleLoader';
 import { ZoneBundleTest } from './ZoneBundleTest';
+import { ZoneAwareSystemStatus } from './ZoneAwareSystemStatus';
 import type { Zone, TaskType } from '../../types/zone-bundles';
 
 export const Workspace: React.FC = () => {
@@ -128,6 +130,9 @@ export const Workspace: React.FC = () => {
               <FeatureFlagGuard flag="useZoneBundles">
                 <ZoneBundleTest />
               </FeatureFlagGuard>
+
+              {/* System Status Display */}
+              <ZoneAwareSystemStatus />
             </motion.div>
           </main>
         </div>
@@ -241,16 +246,35 @@ export const Workspace: React.FC = () => {
             <div className="space-y-6">
               <FeatureFlagGuard flag="useZoneBundles">
                 {activeTask.zone ? (
-                  <DynamicZoneBundleLoader
-                    zone={activeTask.zone as Zone}
-                    taskType={activeTask.type as TaskType}
-                    taskId={activeTask.id}
-                    taskData={activeTask}
-                    payload={{}}
-                    onPayloadUpdate={(payload) => console.log('Payload updated:', payload)}
-                    onValidationChange={(isValid, errors) => console.log('Validation:', isValid, errors)}
-                    readonly={false}
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-400 to-blue-400"></div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {activeTask.zone.toUpperCase()} Zone Bundle
+                        </h3>
+                      </div>
+                      <Badge variant="outline" className="capitalize">
+                        {activeTask.type}
+                      </Badge>
+                    </div>
+                    
+                    <DynamicZoneBundleLoader
+                      zone={activeTask.zone as Zone}
+                      taskType={activeTask.type as TaskType}
+                      taskId={activeTask.id}
+                      taskData={activeTask}
+                      payload={{}}
+                      onPayloadUpdate={(payload) => console.log('Zone bundle payload updated:', payload)}
+                      onValidationChange={(isValid, errors) => console.log('Zone bundle validation:', isValid, errors)}
+                      readonly={false}
+                    />
+                  </motion.div>
                 ) : (
                   <AnimatePresence>
                     {components.map((componentName) => (
