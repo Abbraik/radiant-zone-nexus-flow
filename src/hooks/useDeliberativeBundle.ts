@@ -152,6 +152,9 @@ export const useDeliberativeBundle = (taskId: string) => {
   // Mutation to create option
   const createOption = useMutation({
     mutationFn: async (optionData: Partial<Option>) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+      
       const { data, error } = await supabase
         .from('options')
         .insert({
@@ -167,7 +170,8 @@ export const useDeliberativeBundle = (taskId: string) => {
           risks: optionData.risks || [],
           assumptions: optionData.assumptions || [],
           dependencies: optionData.dependencies || [],
-          evidence: optionData.evidence || []
+          evidence: optionData.evidence || [],
+          user_id: user.id
         })
         .select()
         .single();
