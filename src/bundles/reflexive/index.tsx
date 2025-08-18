@@ -91,8 +91,8 @@ export const ReflexiveBundle: React.FC<CapacityBundleProps> = ({
           <RetuneSuggestionsPanel
             suggestions={context.suggestions}
             onPreview={handlePreviewSuggestion}
-            onDismiss={dismissSuggestion.mutate}
-            onGenerateNew={() => generateSuggestions.mutate()}
+            onDismiss={(suggestionId) => dismissSuggestion.mutate(suggestionId)}
+            onGenerateNew={() => generateSuggestions.mutate(60)}
             isGenerating={generateSuggestions.isPending}
           />
           

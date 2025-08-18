@@ -211,7 +211,7 @@ export const useReflexiveBundle = (loopId: string) => {
         return {
           before: { in_band_percentage: 0, breach_count: 0 },
           after: { in_band_percentage: 0, breach_count: 0 },
-          improvement: { variance_reduction: 0, false_positive_reduction: 0 }
+          improvement: { variance_reduction: 0, false_positive_reduction: 0, risk_grade: 'low' }
         };
       }
 
