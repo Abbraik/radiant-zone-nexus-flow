@@ -93,6 +93,15 @@ export const useEnhancedTasks = () => {
     queryKey: ['enhanced-tasks'],
     queryFn: async (): Promise<SupabaseTask[]> => {
       console.log('Fetching tasks from Supabase...');
+      
+      // Reset all tasks to available state when fetching
+      try {
+        await supabase.rpc('reset_all_tasks');
+        console.log('Tasks reset to available state');
+      } catch (error) {
+        console.warn('Failed to reset tasks:', error);
+      }
+      
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
