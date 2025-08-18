@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTasks } from '../../hooks/useTasks';
+import { useEnhancedTasks } from '../../hooks/useEnhancedTasks';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
@@ -38,7 +38,7 @@ export const Workspace: React.FC = () => {
     claimingTask,
     showClaimPopup,
     isClaimingTask
-  } = useTasks();
+  } = useEnhancedTasks();
   
   // Debug state values on every render
   console.log('Workspace render - Popup state:', { 
