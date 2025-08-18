@@ -2211,6 +2211,10 @@ export type Database = {
         }
         Returns: Json
       }
+      attach_playbook: {
+        Args: { playbook_uuid: string; watchpoint_uuid: string }
+        Returns: Json
+      }
       compute_coverage: {
         Args: { loop_uuid: string; option_ids: string[] }
         Returns: Json
@@ -2219,6 +2223,22 @@ export type Database = {
         Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
         Returns: string
       }
+      create_watchpoint: {
+        Args: { loop_uuid: string; payload: Json }
+        Returns: Json
+      }
+      dry_run_trip: {
+        Args: { scenario_snapshot?: Json; watchpoint_uuid: string }
+        Returns: Json
+      }
+      enqueue_stress_test: {
+        Args: {
+          loop_uuid: string
+          scenario_uuid: string
+          test_severity?: number
+        }
+        Returns: Json
+      }
       evaluate_anti_windup: {
         Args: { claim_uuid: string }
         Returns: Json
@@ -2226,6 +2246,10 @@ export type Database = {
       evaluate_mandate: {
         Args: { actor_name: string; leverage_level: string }
         Returns: string
+      }
+      evaluate_watchpoints: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       finish_claim: {
         Args: { claim_uuid: string }
@@ -2319,6 +2343,10 @@ export type Database = {
       }
       run_mcda: {
         Args: { option_ids: string[]; task_uuid: string; weights?: Json }
+        Returns: Json
+      }
+      run_scenario: {
+        Args: { loop_uuid: string; params: Json }
         Returns: Json
       }
       save_decision_record: {
