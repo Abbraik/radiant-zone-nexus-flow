@@ -11,11 +11,14 @@ import { Separator } from '@/components/ui/separator';
 import { 
   Zap, Target, Users, CheckCircle, AlertTriangle, 
   ArrowLeft, ArrowRight, Save, Send, Calendar,
-  Shield, TrendingUp, FileText, Link2
+  Shield, TrendingUp, FileText, Link2, Plus,
+  CheckSquare, Settings, Layers
 } from 'lucide-react';
 import { SixLeverSelector } from '@/components/widgets/SixLeverSelector';
 import RACIMatrix from '@/components/widgets/RACIMatrix';
+import EnhancedTaskCard from '@/components/workspace/EnhancedTaskCard';
 import { toast } from '@/hooks/use-toast';
+import { useEnhancedTasks } from '@/hooks/useEnhancedTasks';
 import type { ZoneBundleProps } from '@/types/zone-bundles';
 
 interface ActZoneBundleProps extends ZoneBundleProps {}
@@ -119,6 +122,8 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
   onValidationChange,
   readonly = false
 }) => {
+  const { allTasks, claimTask } = useEnhancedTasks();
+  const [showSprintWizard, setShowSprintWizard] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [sprintData, setSprintData] = useState<SprintData>(
     payload?.sprint || initialSprintData
@@ -126,6 +131,9 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
   const [stepValidations, setStepValidations] = useState<Record<string, boolean>>({});
   const [isDraft, setIsDraft] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // Show wizard if task is claimed or has sprint data
+  const shouldShowWizard = showSprintWizard || taskData?.assignee || payload?.sprint;
 
   // Update payload when sprint data changes
   const updateSprintData = useCallback((updates: Partial<SprintData>) => {
@@ -300,6 +308,119 @@ const ActZoneBundle: React.FC<ActZoneBundleProps> = ({
 
   const currentStepData = WIZARD_STEPS[currentStep];
   const progress = ((currentStep + 1) / WIZARD_STEPS.length) * 100;
+
+  // Filter ACT zone tasks  
+  const actTasks = allTasks.filter(task => task.zone === 'act');
+
+  if (!shouldShowWizard) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="h-full flex flex-col bg-background"
+      >
+        {/* Original ACT Zone Layout */}
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
+          <div className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">ACT Zone</h2>
+                <p className="text-sm text-muted-foreground">
+                  Execute interventions and ship solutions
+                </p>
+              </div>
+              <Badge variant="outline" className="text-amber-500 border-amber-500/30">
+                ACT
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Tasks Grid */}
+        <div className="flex-1 overflow-auto p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {actTasks.map((task) => (
+              <Card key={task.id} className="hover:bg-accent/50 transition-colors cursor-pointer"
+                    onClick={() => setShowSprintWizard(true)}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center justify-between">
+                    <span>{task.title}</span>
+                    <Badge variant={task.status === 'completed' ? 'default' : 'outline'}>
+                      {task.status}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {task.description}
+                  </p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <Badge variant="outline" className="text-amber-500 border-amber-500/30">
+                      ACT
+                    </Badge>
+                    <Button 
+                      size="sm" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowSprintWizard(true);
+                      }}
+                    >
+                      Start Sprint
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Zone Tools */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <CheckSquare className="h-4 w-4" />
+                  Gate Checklist
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Validate intervention readiness and mandate
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Participation Pack
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Build engagement strategies and materials
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Layers className="h-4 w-4" />
+                  PDI Storyboard
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Design implementation pathway and timeline
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
