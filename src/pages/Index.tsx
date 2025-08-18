@@ -1,257 +1,258 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, ChevronRight, Play, TrendingUp, AlertCircle, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { Progress } from '../components/ui/progress';
+import { useFeatureFlags } from '@/components/layout/FeatureFlagProvider';
+import { 
+  Zap, 
+  Brain, 
+  Building, 
+  RefreshCw, 
+  Telescope, 
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  Settings
+} from 'lucide-react';
 
-const Index = () => {
+export const Index: React.FC = () => {
   const navigate = useNavigate();
-  
-  // Mock data
-  const currentSprint = {
-    week: 2,
-    totalWeeks: 6,
-    dueIn: 28,
-    progress: 33
-  };
+  const { flags } = useFeatureFlags();
 
-  const systemHealth = {
-    healthy: 5,
-    warnings: 2,
-    critical: 1,
-    nextCheck: 5
-  };
-
-  const recentInsights = [
-    { title: "Population growth trend shows acceleration", timestamp: "2 hours ago" },
-    { title: "Resource allocation optimization identified", timestamp: "4 hours ago" },
-    { title: "Social tension indicators stabilizing", timestamp: "1 day ago" }
+  const demoTasks = [
+    {
+      id: 'task-responsive-1',
+      title: 'Supply Chain Disruption Response',
+      description: 'Immediate response to shipping delays affecting Q1 deliveries',
+      capacity: 'responsive',
+      type: 'reactive',
+      scale: 'micro',
+      leverage: 'N',
+      status: 'open',
+      priority: 'high'
+    },
+    {
+      id: 'task-deliberative-1',
+      title: 'Strategic Market Analysis',
+      description: 'Comprehensive analysis of market opportunities for expansion',
+      capacity: 'deliberative',
+      type: 'structural',
+      scale: 'macro',
+      leverage: 'S',
+      status: 'open',
+      priority: 'medium'
+    },
+    {
+      id: 'task-structural-1',
+      title: 'Organizational Restructure',
+      description: 'Redesign departmental structure for improved efficiency',
+      capacity: 'structural',
+      type: 'structural',
+      scale: 'macro',
+      leverage: 'S',
+      status: 'open',
+      priority: 'high'
+    }
   ];
 
-  const notifications = [
-    { icon: AlertCircle, text: "Loop A breached DE-Band", time: "2 h ago", color: "text-red-400" },
-    { icon: Users, text: "3 Juror approvals pending", time: "5 h ago", color: "text-yellow-400" },
-    { icon: TrendingUp, text: "New anomaly detected in Resource loop", time: "1 d ago", color: "text-blue-400" }
-  ];
-
-  const containerAnimation = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
+  const handleClaimTask = (taskId: string) => {
+    if (flags.CAPACITY_WORKSPACE) {
+      navigate(`/workspace?task=${taskId}`);
+    } else {
+      navigate('/dashboard');
     }
   };
 
-  const itemAnimation = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+  const capacityIcons = {
+    responsive: Zap,
+    reflexive: RefreshCw,
+    deliberative: Brain,
+    anticipatory: Telescope,
+    structural: Building
+  };
+
+  const capacityColors = {
+    responsive: 'text-orange-500 bg-orange-50 border-orange-200',
+    reflexive: 'text-green-500 bg-green-50 border-green-200',
+    deliberative: 'text-blue-500 bg-blue-50 border-blue-200',
+    anticipatory: 'text-indigo-500 bg-indigo-50 border-indigo-200',
+    structural: 'text-purple-500 bg-purple-50 border-purple-200'
   };
 
   return (
-    <div className="h-full w-full relative">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background-secondary to-background-tertiary" />
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <div className="inline-block mb-4">
+            <Badge variant="outline" className="mb-4">
+              {flags.CAPACITY_WORKSPACE ? 'Capacity-Mode Architecture' : 'Multi-Value UI'}
+            </Badge>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
+            RGS {flags.CAPACITY_WORKSPACE ? 'Capacity System' : 'MVUI'}
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+            {flags.CAPACITY_WORKSPACE 
+              ? 'Advanced governance through responsive, reflexive, deliberative, anticipatory, and structural capacities'
+              : 'Multi-Value User Interface for Rapid Governance Sprints'
+            }
+          </p>
+
+          {flags.CAPACITY_WORKSPACE && (
+            <div className="flex justify-center gap-2 mb-8">
+              {Object.entries(capacityIcons).map(([capacity, Icon]) => (
+                <div key={capacity} className={`p-3 rounded-lg border ${capacityColors[capacity as keyof typeof capacityColors]}`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              onClick={() => flags.CAPACITY_WORKSPACE ? navigate('/workspace') : navigate('/dashboard')}
+              className="text-lg px-8"
+            >
+              {flags.CAPACITY_WORKSPACE ? 'Enter Workspace' : 'Get Started'}
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => navigate('/mission-control')}>
+              View Reports
+            </Button>
+            {flags.CAPACITY_WORKSPACE && (
+              <Button variant="outline" size="lg" onClick={() => navigate('/demo')}>
+                <Settings className="mr-2 w-4 h-4" />
+                Demo
+              </Button>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Capacity-Mode Task Cards */}
+        {flags.CAPACITY_WORKSPACE && demoTasks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-16"
+          >
+            <h2 className="text-2xl font-bold text-center mb-8">Available Capacity Tasks</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {demoTasks.map((task, index) => {
+                const CapacityIcon = capacityIcons[task.capacity as keyof typeof capacityIcons];
+                return (
+                  <motion.div
+                    key={task.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                  >
+                    <Card className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer group" 
+                          onClick={() => handleClaimTask(task.id)}>
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className={`p-2 rounded-lg ${capacityColors[task.capacity as keyof typeof capacityColors]}`}>
+                            <CapacityIcon className="w-5 h-5" />
+                          </div>
+                          <div className="flex gap-2">
+                            <Badge variant="outline" className="text-xs">{task.scale}</Badge>
+                            <Badge variant={task.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                              {task.priority}
+                            </Badge>
+                          </div>
+                        </div>
+                        <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                          {task.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                          {task.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-xs capitalize">
+                              {task.capacity}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {task.type}
+                            </Badge>
+                          </div>
+                          <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            Claim <ArrowRight className="ml-1 w-3 h-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* System Status */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mb-16"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                System Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-500 mb-1">94%</div>
+                  <div className="text-sm text-muted-foreground">System Health</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-500 mb-1">{demoTasks.length}</div>
+                  <div className="text-sm text-muted-foreground">Available Tasks</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-500 mb-1">5</div>
+                  <div className="text-sm text-muted-foreground">Active Capacities</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-500 mb-1">
+                    <Clock className="w-5 h-5 inline" />
+                  </div>
+                  <div className="text-sm text-muted-foreground">Real-time</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="text-center text-muted-foreground"
+        >
+          <p className="text-sm">
+            {flags.CAPACITY_WORKSPACE 
+              ? 'Powered by Capacity-Mode Architecture • Built for Adaptive Governance'
+              : 'Powered by Multi-Value UI • Built for Rapid Governance Sprints'
+            }
+          </p>
+        </motion.div>
       </div>
-
-      <motion.div 
-        className="relative z-10 h-full flex flex-col max-w-7xl mx-auto p-6"
-        variants={containerAnimation}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex-1 flex flex-col justify-center space-y-8">
-        {/* Top Row: Status Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Sprint Status Card */}
-          <motion.div variants={itemAnimation} className="lg:col-span-3">
-            <Card className="glass p-8 h-full">
-              <div className="flex items-center justify-between h-full">
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-3xl font-semibold text-foreground mb-2">Current Sprint</h2>
-                    <p className="text-foreground-muted text-lg">Week {currentSprint.week} of {currentSprint.totalWeeks}</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 text-foreground-muted">
-                    <Calendar className="w-5 h-5" />
-                    <span className="text-base">Due in {currentSprint.dueIn} days</span>
-                  </div>
-
-                  <Button 
-                    onClick={() => navigate('/think')}
-                    className="btn-primary text-lg px-8 py-4 group"
-                  >
-                    Go to Think Zone
-                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-
-                {/* Progress Ring */}
-                <div className="relative">
-                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
-                    <circle
-                      cx="60"
-                      cy="60"
-                      r="50"
-                      fill="none"
-                      stroke="hsl(var(--border))"
-                      strokeWidth="8"
-                    />
-                    <motion.circle
-                      cx="60"
-                      cy="60"
-                      r="50"
-                      fill="none"
-                      stroke="hsl(var(--primary))"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 50}`}
-                      initial={{ strokeDashoffset: 2 * Math.PI * 50 }}
-                      animate={{ strokeDashoffset: 2 * Math.PI * 50 * (1 - currentSprint.progress / 100) }}
-                      transition={{ duration: 1.2, ease: "easeOut" }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold text-primary">{currentSprint.progress}%</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* System Health Card */}
-          <motion.div variants={itemAnimation} className="lg:col-span-2">
-            <Card className="glass-secondary p-6 h-full">
-              <h2 className="text-2xl font-semibold text-foreground mb-6">System Health</h2>
-              
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-500/20 text-green-300 text-sm font-medium">
-                    <CheckCircle2 className="w-3 h-3" />
-                    {systemHealth.healthy} Healthy
-                  </span>
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-sm font-medium">
-                    <AlertTriangle className="w-3 h-3" />
-                    {systemHealth.warnings} Warnings
-                  </span>
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-sm font-medium">
-                    <AlertCircle className="w-3 h-3" />
-                    {systemHealth.critical} Critical
-                  </span>
-                </div>
-                
-                <div className="pt-4">
-                  <p className="text-sm text-foreground-muted mb-4">Next check in {systemHealth.nextCheck} days</p>
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => navigate('/monitor')}
-                    className="text-primary hover:text-primary-hover"
-                  >
-                    View Monitor Zone →
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Bottom Row: Actions & Insights */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Quick Actions Panel */}
-          <motion.div variants={itemAnimation}>
-            <Card className="glass-secondary p-6 h-full">
-              <h3 className="text-xl font-semibold text-foreground mb-6">Quick Actions</h3>
-              <div className="space-y-3">
-                <Button 
-                  onClick={() => navigate('/think')}
-                  className="btn-primary w-full justify-start"
-                >
-                  Start Sprint
-                </Button>
-                <Button 
-                  onClick={() => navigate('/act')}
-                  variant="outline"
-                  className="w-full justify-start btn-secondary"
-                >
-                  Publish Bundle
-                </Button>
-                <Button 
-                  onClick={() => navigate('/innovate')}
-                  variant="outline"
-                  className="w-full justify-start btn-secondary"
-                >
-                  Run Simulation
-                </Button>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Recent Insights Panel */}
-          <motion.div variants={itemAnimation}>
-            <Card className="glass-secondary p-6 h-full">
-              <h3 className="text-xl font-semibold text-foreground mb-6">Recent Insights</h3>
-              <div className="space-y-3">
-                {recentInsights.map((insight, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 + 0.3 }}
-                    className="glass rounded-xl p-3 hover:glass-accent transition-all cursor-pointer group"
-                  >
-                    <p className="text-sm text-foreground mb-1">{insight.title}</p>
-                    <p className="text-xs text-foreground-subtle mb-2">{insight.timestamp}</p>
-                    <button className="text-primary text-sm group-hover:text-primary-hover transition-colors">
-                      Try Experiment <Play className="inline w-3 h-3 ml-1" />
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Notifications Panel */}
-          <motion.div variants={itemAnimation}>
-            <Card className="glass-secondary p-6 h-full">
-              <h3 className="text-xl font-semibold text-foreground mb-6">Notifications</h3>
-              <div className="space-y-3">
-                {notifications.map((notification, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 + 0.4 }}
-                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
-                  >
-                    <notification.icon className={`w-4 h-4 mt-1 ${notification.color}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground">{notification.text}</p>
-                      <p className="text-xs text-foreground-subtle mt-1">{notification.time}</p>
-                    </div>
-                  </motion.div>
-                ))}
-                <Button variant="ghost" className="text-primary text-sm mt-4">
-                  View All →
-                </Button>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-        </div>
-      </motion.div>
     </div>
   );
 };
-
-export default Index;

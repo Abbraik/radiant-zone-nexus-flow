@@ -16,11 +16,12 @@ import { ScenarioPlannerPage } from "./pages/ScenarioPlanner";
 import { ActZone } from "./pages/ActZone";
 import { MonitorZone } from './pages/MonitorZoneNew';
 import { InnovateLearnZone } from './pages/InnovateLearnZoneNew';
-import Index from "./pages/Index";
+import { Index } from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
+import { Demo } from "./pages/Demo";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 import GlobalPortals from '@/components/global/GlobalPortals';
@@ -79,8 +80,9 @@ const App = () => (
               {/* Ultimate Workspace Mode */}
               <Shell>
                 <Routes>
-                  <Route path="/" element={<Workspace />} />
+                  <Route path="/" element={<Index />} />
                   <Route path="/workspace" element={<Workspace />} />
+                  <Route path="/demo" element={<Demo />} />
                   <Route path="/dashboard" element={
                     <div className="pt-4">
                       <Dashboard />
@@ -99,7 +101,7 @@ const App = () => (
                   <Route path="/act" element={<ActZone />} />
                   <Route path="/monitor" element={<MonitorZone />} />
                   <Route path="/innovate" element={<InnovateLearnZone />} />
-                   <Route path="*" element={<Workspace />} />
+                   <Route path="*" element={<Index />} />
                 </Routes>
               </Shell>
             </FeatureFlagGuard>
