@@ -1,4 +1,4 @@
-export type Zone = 'THINK' | 'ACT' | 'MONITOR' | 'INNOVATE';
+export type Zone = 'think' | 'act' | 'monitor' | 'innovate-learn';
 export type TaskType = 'loop_design' | 'sprint_planning' | 'breach_response' | 'experiment_design' | 'general';
 
 export interface ZoneBundleProps {

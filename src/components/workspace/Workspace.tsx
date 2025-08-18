@@ -20,6 +20,7 @@ import EnhancedTaskClaimPopup from '../../modules/taskClaimPopup/TaskClaimPopup'
 import EnhancedTaskCard from './EnhancedTaskCard';
 import { taskRegistry } from '../../config/taskRegistry';
 import { DynamicZoneBundleLoader } from './DynamicZoneBundleLoader';
+import { ZoneBundleTest } from './ZoneBundleTest';
 import type { Zone, TaskType } from '../../types/zone-bundles';
 
 export const Workspace: React.FC = () => {
@@ -122,6 +123,11 @@ export const Workspace: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Zone Bundle Integration Test */}
+              <FeatureFlagGuard flag="useZoneBundles">
+                <ZoneBundleTest />
+              </FeatureFlagGuard>
             </motion.div>
           </main>
         </div>

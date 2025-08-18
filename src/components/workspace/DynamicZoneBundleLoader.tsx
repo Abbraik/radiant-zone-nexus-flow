@@ -11,8 +11,8 @@ const InnovateZoneBundle = React.lazy(() => import('./zone-bundles/InnovateZoneB
 
 // Zone bundle registry with mapping matrix
 const ZONE_BUNDLE_REGISTRY: Record<Zone, ZoneBundleDefinition> = {
-  THINK: {
-    zone: 'THINK',
+  'think': {
+    zone: 'think',
     taskTypes: ['loop_design', 'general'],
     component: ThinkZoneBundle,
     validationRules: [
@@ -43,8 +43,8 @@ const ZONE_BUNDLE_REGISTRY: Record<Zone, ZoneBundleDefinition> = {
       { id: 'publish', label: 'Validate + Publish to MONITOR', required: true, order: 5 }
     ]
   },
-  ACT: {
-    zone: 'ACT',
+  'act': {
+    zone: 'act',
     taskTypes: ['sprint_planning', 'general'],
     component: ActZoneBundle,
     validationRules: [
@@ -75,8 +75,8 @@ const ZONE_BUNDLE_REGISTRY: Record<Zone, ZoneBundleDefinition> = {
       { id: 'submit', label: 'Submit sprint plan', required: true, order: 5 }
     ]
   },
-  MONITOR: {
-    zone: 'MONITOR',
+  'monitor': {
+    zone: 'monitor',
     taskTypes: ['breach_response', 'general'],
     component: MonitorZoneBundle,
     validationRules: [
@@ -106,8 +106,8 @@ const ZONE_BUNDLE_REGISTRY: Record<Zone, ZoneBundleDefinition> = {
       { id: 'link', label: 'Link to loop/sprint', required: true, order: 4 }
     ]
   },
-  INNOVATE: {
-    zone: 'INNOVATE',
+  'innovate-learn': {
+    zone: 'innovate-learn',
     taskTypes: ['experiment_design', 'general'],
     component: InnovateZoneBundle,
     validationRules: [
