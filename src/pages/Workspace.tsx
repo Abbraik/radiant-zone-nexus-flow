@@ -7,6 +7,7 @@ import { EnhancedTask } from '@/types/capacity';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { DynamicCapacityBundle } from '@/components/workspace/DynamicCapacityBundle';
 import { ArrowLeft, Settings, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -253,24 +254,16 @@ export const Workspace: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Settings className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {task.capacity.charAt(0).toUpperCase() + task.capacity.slice(1)} Bundle
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Capacity-specific tools will be loaded here based on the task type and requirements.
-                </p>
-                <Badge variant="outline">
-                  Bundle: {task.capacity} • Type: {task.type} • Scale: {task.scale}
-                </Badge>
-              </motion.div>
+              <DynamicCapacityBundle 
+                capacity={task.capacity}
+                taskId={task.id}
+                taskData={task}
+                payload={task.payload}
+                onPayloadUpdate={handlePayloadUpdate}
+                onValidationChange={(isValid, errors) => {
+                  console.log('Validation:', isValid, errors);
+                }}
+              />
             </CardContent>
           </Card>
 
