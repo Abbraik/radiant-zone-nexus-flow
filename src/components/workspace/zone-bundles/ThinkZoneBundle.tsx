@@ -24,7 +24,9 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
   }, [onValidationChange]);
 
   const handleCreateNewLoop = () => {
+    console.log('Create New Loop button clicked');
     setShowLoopStudio(true);
+    console.log('showLoopStudio set to true');
   };
 
   const handleCloseLoopStudio = () => {
@@ -32,6 +34,7 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
   };
 
   if (showLoopStudio) {
+    console.log('Rendering LoopStudio');
     return (
       <LoopStudio
         taskId={taskId}
@@ -43,6 +46,8 @@ const ThinkZoneBundle: React.FC<ThinkZoneBundleProps> = ({
       />
     );
   }
+
+  console.log('Rendering Create New Loop button, showLoopStudio:', showLoopStudio);
 
   return (
     <motion.div 
