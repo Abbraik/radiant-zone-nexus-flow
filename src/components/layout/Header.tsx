@@ -149,6 +149,12 @@ export const Header: React.FC = () => {
             <User className="w-4 h-4 text-foreground-muted" />
           </button>
 
+          <NavLink
+            to="/mission-control"
+            className="btn-chip ml-2 hover:bg-primary/10 transition-colors">
+            Mission Control
+          </NavLink>
+          
           <button
             onClick={()=>useToolsStore.getState().openAbout('overview')}
             className="btn-chip ml-2">

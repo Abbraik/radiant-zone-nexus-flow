@@ -12,6 +12,8 @@ import { TimelineChart } from '../components/ui/timeline-chart-gantt';
 import { ResourceHeatmap } from '../components/ui/resource-heatmap';
 import { GoalTreeMinimap } from '../components/ui/goal-tree-minimap';
 import { useMissionControlData, useMissionControlActions } from './missionControl/useMissionControlData';
+import { MetaLoopCompass } from '../components/mission-control/MetaLoopCompass';
+import { BreachTicker } from '../components/mission-control/BreachTicker';
 import { formatDistanceToNow } from 'date-fns';
 
 // Icon mapping for KPIs
@@ -162,6 +164,25 @@ const MissionControl: React.FC = () => {
               </div>
             </div>
           </Card>
+        </motion.div>
+
+        {/* Governance Spine - Meta-Loop Compass & Breach Ticker */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.25 }} 
+          className="col-span-1 md:col-span-2 lg:col-span-3"
+        >
+          <MetaLoopCompass />
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.25 }} 
+          className="col-span-1 md:col-span-1 lg:col-span-1"
+        >
+          <BreachTicker />
         </motion.div>
 
         {/* Mission Timeline & Calendar - Full Width */}
