@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
+import Workspace5C from "./pages/Workspace5C";
 import { Demo } from "./pages/Demo";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
@@ -100,6 +101,7 @@ const App = () => (
                   <Route path="/offline" element={<AdminPage />} />
                   <Route path="/security" element={<AdminPage />} />
                   <Route path="/mission-control" element={<MissionControl />} />
+                  <Route path="/workspace-5c" element={<Workspace5C />} />
                   {/* Legacy Zone Access */}
                   <Route path="/think" element={<ThinkZone />} />
                   <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />

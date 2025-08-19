@@ -2,7 +2,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { getTask5CById } from '@/5c/services';
+import { getTasks5C, getTask5CById } from '@/5c/services';
 import { QUERY_KEYS_5C } from '@/5c/types';
 import { use5cStore } from '@/5c/state/use5cStore';
 import { WORKSPACE_SHELL_CLASSES } from '@/5c/utils/uiParity';
@@ -29,6 +29,11 @@ export default function Workspace5C() {
   const taskId = searchParams.get('task5c');
   const { sidebarCollapsed } = use5cStore();
 
+  const { data: allTasks } = useQuery({
+    queryKey: QUERY_KEYS_5C.tasks(),
+    queryFn: () => getTasks5C()
+  });
+
   const { data: task, isLoading, error } = useQuery({
     queryKey: QUERY_KEYS_5C.task(taskId!),
     queryFn: () => getTask5CById(taskId!),
@@ -39,10 +44,55 @@ export default function Workspace5C() {
     return (
       <div className={WORKSPACE_SHELL_CLASSES.container}>
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-2">No Task Selected</h2>
-            <p className="text-muted-foreground">Select a 5C task to get started</p>
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="max-w-2xl w-full">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-semibold mb-4">5C Workspace</h2>
+              <p className="text-muted-foreground mb-6">
+                Select a capacity-based task to get started with the 5C workspace
+              </p>
+            </div>
+            
+            {allTasks && allTasks.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Available Tasks</h3>
+                <div className="grid gap-3">
+                  {allTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      onClick={() => window.location.href = `/workspace-5c?task5c=${task.id}`}
+                      className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium">{task.title}</h4>
+                          <p className="text-sm text-muted-foreground">{task.description}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            task.capacity === 'responsive' ? 'bg-blue-100 text-blue-800' :
+                            task.capacity === 'reflexive' ? 'bg-green-100 text-green-800' :
+                            task.capacity === 'deliberative' ? 'bg-orange-100 text-orange-800' :
+                            task.capacity === 'anticipatory' ? 'bg-purple-100 text-purple-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {task.capacity}
+                          </span>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            task.status === 'active' ? 'bg-green-100 text-green-800' :
+                            task.status === 'claimed' ? 'bg-blue-100 text-blue-800' :
+                            task.status === 'blocked' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {task.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

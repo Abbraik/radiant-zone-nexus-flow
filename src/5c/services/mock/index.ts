@@ -12,52 +12,12 @@ import type {
   Leverage5C
 } from '../../types';
 
-// Mock data store
-let mockTasks5C: EnhancedTask5C[] = [
-  {
-    id: 'task-5c-1',
-    capacity: 'responsive',
-    loop_id: 'loop-emergency',
-    type: 'reactive',
-    scale: 'micro',
-    leverage: 'N',
-    title: 'Emergency Response Action',
-    description: 'Respond to system breach requiring immediate stabilization',
-    status: 'open',
-    tri: { t_value: 0.7, r_value: 0.3, i_value: 0.8 },
-    payload: {
-      breach_type: 'threshold_exceeded',
-      severity: 'high',
-      auto_generated: true
-    },
-    user_id: 'mock-user',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'task-5c-2',
-    capacity: 'reflexive',
-    loop_id: 'loop-optimization',
-    type: 'perceptual',
-    scale: 'meso',
-    leverage: 'P',
-    title: 'System Retune Required',
-    description: 'KPI oscillation detected, band adjustment needed',
-    status: 'claimed',
-    tri: { t_value: 0.5, r_value: 0.5, i_value: 0.4 },
-    payload: {
-      oscillation_detected: true,
-      retune_suggestions: ['narrow_upper_bound', 'adjust_asymmetry']
-    },
-    user_id: 'mock-user',
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
+import { mockTasks5C, mockClaims5C, mockTRIEvents5C } from './fixtures';
 
-let mockClaims5C: Claim5C[] = [];
-let mockTRIEvents5C: TRIEvent5C[] = [];
-let mockScoreCards5C: LoopScorecard5C[] = [];
+// Mock data store - initialized from fixtures
+let tasks5C = [...mockTasks5C];
+let claims5C = [...mockClaims5C];
+let triEvents5C = [...mockTRIEvents5C];
 
 // Simulate async operations
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -65,12 +25,12 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 // Task operations
 export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> => {
   await delay(100);
-  return mockTasks5C.find(task => task.id === id) || null;
+  return tasks5C.find(task => task.id === id) || null;
 };
 
 export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
   await delay(150);
-  let tasks = [...mockTasks5C];
+  let tasks = [...tasks5C];
   
   if (filters?.capacity) {
     tasks = tasks.filter(task => task.capacity === filters.capacity);
@@ -101,29 +61,29 @@ export const createTask5C = async (task: Partial<EnhancedTask5C>): Promise<Enhan
     updated_at: new Date().toISOString()
   };
   
-  mockTasks5C.push(newTask);
+  tasks5C.push(newTask);
   return newTask;
 };
 
 export const updateTask5C = async (id: string, updates: Partial<EnhancedTask5C>): Promise<EnhancedTask5C> => {
   await delay(150);
   
-  const taskIndex = mockTasks5C.findIndex(task => task.id === id);
+  const taskIndex = tasks5C.findIndex(task => task.id === id);
   if (taskIndex === -1) throw new Error('Task not found');
   
-  mockTasks5C[taskIndex] = {
-    ...mockTasks5C[taskIndex],
+  tasks5C[taskIndex] = {
+    ...tasks5C[taskIndex],
     ...updates,
     updated_at: new Date().toISOString()
   };
   
-  return mockTasks5C[taskIndex];
+  return tasks5C[taskIndex];
 };
 
 // Claim operations
 export const getClaims5C = async (taskId: string): Promise<Claim5C[]> => {
   await delay(100);
-  return mockClaims5C.filter(claim => claim.task_id === taskId);
+  return claims5C.filter(claim => claim.task_id === taskId);
 };
 
 export const createClaim5C = async (claim: Partial<Claim5C>): Promise<Claim5C> => {
@@ -144,23 +104,23 @@ export const createClaim5C = async (claim: Partial<Claim5C>): Promise<Claim5C> =
     updated_at: new Date().toISOString()
   };
   
-  mockClaims5C.push(newClaim);
+  claims5C.push(newClaim);
   return newClaim;
 };
 
 export const updateClaim5C = async (id: string, updates: Partial<Claim5C>): Promise<Claim5C> => {
   await delay(150);
   
-  const claimIndex = mockClaims5C.findIndex(claim => claim.id === id);
+  const claimIndex = claims5C.findIndex(claim => claim.id === id);
   if (claimIndex === -1) throw new Error('Claim not found');
   
-  mockClaims5C[claimIndex] = {
-    ...mockClaims5C[claimIndex],
+  claims5C[claimIndex] = {
+    ...claims5C[claimIndex],
     ...updates,
     updated_at: new Date().toISOString()
   };
   
-  return mockClaims5C[claimIndex];
+  return claims5C[claimIndex];
 };
 
 // TRI Events
@@ -202,7 +162,7 @@ export const createTRIEvent5C = async (event: Partial<TRIEvent5C>): Promise<TRIE
     created_at: new Date().toISOString()
   };
   
-  mockTRIEvents5C.push(newEvent);
+  triEvents5C.push(newEvent);
   return newEvent;
 };
 
