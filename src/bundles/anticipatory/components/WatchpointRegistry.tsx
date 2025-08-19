@@ -38,6 +38,29 @@ export default function WatchpointRegistry({ taskId, loopId }: WatchpointRegistr
     threshold_value: 0,
     owner: ''
   });
+
+  const handleCreateWatchpoint = () => {
+    createWatchpoint.mutate({
+      loop_id: loopId,
+      indicator: newWatchpoint.indicator,
+      direction: newWatchpoint.direction,
+      threshold_value: newWatchpoint.threshold_value,
+      owner: newWatchpoint.owner
+    }, {
+      onSuccess: () => {
+        setNewWatchpointOpen(false);
+        setNewWatchpoint({
+          indicator: '',
+          direction: 'up',
+          threshold_value: 0,
+          owner: ''
+        });
+        toast({
+          title: "Watchpoint created",
+          description: "New watchpoint has been registered."
+        });
+      }
+    });
   };
 
   const handleToggleArm = (watchpoint: Watchpoint) => {
