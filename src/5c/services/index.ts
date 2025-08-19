@@ -1,5 +1,6 @@
 // Workspace 5C Service Router - Routes to Supabase or Mock based on flag
-const SUPABASE_LIVE = process.env.SUPABASE_LIVE !== 'false';
+// For now, default to mock service for development
+const SUPABASE_LIVE = import.meta.env.VITE_SUPABASE_LIVE === 'true' || false;
 
 // Import both service implementations
 import * as supabaseService from './supabase';
