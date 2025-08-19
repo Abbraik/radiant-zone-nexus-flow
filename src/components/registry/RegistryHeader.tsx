@@ -66,9 +66,17 @@ export const RegistryHeader: React.FC<RegistryHeaderProps> = ({
           </Button>
           
           <Button 
-            onClick={() => {
-              // Simple alert for now - the actual seeding would be done via backend
-              alert('Atlas seeding functionality will be implemented via backend. Please run the seed_atlas.ts script manually for now.');
+            onClick={async () => {
+              try {
+                const { seedSampleLoops } = await import('@/utils/seedSampleLoops');
+                const result = await seedSampleLoops();
+                if (result.success) {
+                  window.location.reload();
+                }
+              } catch (error) {
+                console.error('Error seeding atlas:', error);
+                alert('Please sign in first to seed the atlas data.');
+              }
             }}
             className="gap-2 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:opacity-90"
           >

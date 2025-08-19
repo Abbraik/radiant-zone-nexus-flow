@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useFeatureFlags } from '@/components/layout/FeatureFlagProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Zap, 
   Brain, 
@@ -14,12 +16,17 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock,
-  Settings
+  Settings,
+  LogIn,
+  UserPlus,
+  Database,
+  GitBranch
 } from 'lucide-react';
 
 export const Index: React.FC = () => {
   const navigate = useNavigate();
   const { flags } = useFeatureFlags();
+  const { user } = useAuth();
 
   const demoTasks = [
     {
@@ -92,56 +99,116 @@ export const Index: React.FC = () => {
         >
           <div className="inline-block mb-4">
             <Badge variant="outline" className="mb-4">
-              {flags.CAPACITY_WORKSPACE ? 'Capacity-Mode Architecture' : 'Multi-Value UI'}
+              NCF-PAGS Atlas v1.0
             </Badge>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
-            RGS {flags.CAPACITY_WORKSPACE ? 'Capacity System' : 'MVUI'}
+            System Dynamics Atlas
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            {flags.CAPACITY_WORKSPACE 
-              ? 'Advanced governance through responsive, reflexive, deliberative, anticipatory, and structural capacities'
-              : 'Multi-Value User Interface for Rapid Governance Sprints'
-            }
+            Explore, analyze, and manage complex system dynamics through our comprehensive 
+            loop registry featuring 32 backbone loops across meta, macro, meso, and micro layers.
           </p>
 
-          {flags.CAPACITY_WORKSPACE && (
-            <div className="flex justify-center gap-2 mb-8">
-              {Object.entries(capacityIcons).map(([capacity, Icon]) => (
-                <div key={capacity} className={`p-3 rounded-lg border ${capacityColors[capacity as keyof typeof capacityColors]}`}>
-                  <Icon className="w-6 h-6" />
-                </div>
-              ))}
+          {!user ? (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90">
+                <Link to="/auth">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Sign In
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link to="/auth">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Create Account
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                onClick={() => navigate('/registry')}
+                className="text-lg px-8 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90"
+              >
+                Explore Registry
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+              <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
+                View Dashboard
+              </Button>
+              {flags.CAPACITY_WORKSPACE && (
+                <Button variant="outline" size="lg" onClick={() => navigate('/demo')}>
+                  <Settings className="mr-2 w-4 h-4" />
+                  Demo
+                </Button>
+              )}
             </div>
           )}
+        </motion.div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              onClick={() => flags.CAPACITY_WORKSPACE ? navigate('/workspace') : navigate('/dashboard')}
-              className="text-lg px-8"
-            >
-              {flags.CAPACITY_WORKSPACE ? 'Enter Workspace' : 'Get Started'}
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            <Button variant="outline" size="lg" onClick={() => navigate('/mission-control')}>
-              View Reports
-            </Button>
-            {flags.CAPACITY_WORKSPACE && (
-              <Button variant="outline" size="lg" onClick={() => navigate('/demo')}>
-                <Settings className="mr-2 w-4 h-4" />
-                Demo
-              </Button>
-            )}
+        {/* Atlas Features */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-16"
+        >
+          <h2 className="text-2xl font-bold text-center mb-8">Atlas Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: <Building className="h-6 w-6" />,
+                title: "32 Backbone Loops",
+                description: "Meta, Macro, Meso, and Micro layer loops for comprehensive system modeling"
+              },
+              {
+                icon: <Database className="h-6 w-6" />,
+                title: "SNL Integration", 
+                description: "Shared Node Layer with 50+ domain-mapped entities for cross-loop connectivity"
+              },
+              {
+                icon: <GitBranch className="h-6 w-6" />,
+                title: "CLD Generation",
+                description: "Auto-generated Causal Loop Diagrams based on motif templates (B/R/C/T)"
+              },
+              {
+                icon: <CheckCircle2 className="h-6 w-6" />,
+                title: "Analytics Ready",
+                description: "Built-in indicators, DE bands, and SRT windows for immediate analysis"
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <Card className="h-full hover:shadow-lg transition-all duration-200">
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                      {feature.icon}
+                    </div>
+                    <CardTitle className="text-lg">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
-        {/* Capacity-Mode Task Cards */}
-        {flags.CAPACITY_WORKSPACE && demoTasks.length > 0 && (
+        {/* Capacity-Mode Task Cards - Only show if user is logged in */}
+        {user && flags.CAPACITY_WORKSPACE && demoTasks.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
             className="mb-16"
           >
             <h2 className="text-2xl font-bold text-center mb-8">Available Capacity Tasks</h2>
@@ -203,7 +270,7 @@ export const Index: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
           className="mb-16"
         >
           <Card>
@@ -220,8 +287,8 @@ export const Index: React.FC = () => {
                   <div className="text-sm text-muted-foreground">System Health</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-500 mb-1">{demoTasks.length}</div>
-                  <div className="text-sm text-muted-foreground">Available Tasks</div>
+                  <div className="text-2xl font-bold text-blue-500 mb-1">32</div>
+                  <div className="text-sm text-muted-foreground">Atlas Loops</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-500 mb-1">5</div>
@@ -242,14 +309,11 @@ export const Index: React.FC = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="text-center text-muted-foreground"
         >
           <p className="text-sm">
-            {flags.CAPACITY_WORKSPACE 
-              ? 'Powered by Capacity-Mode Architecture • Built for Adaptive Governance'
-              : 'Powered by Multi-Value UI • Built for Rapid Governance Sprints'
-            }
+            Powered by NCF-PAGS Atlas • Built for System Dynamics Analysis
           </p>
         </motion.div>
       </div>
