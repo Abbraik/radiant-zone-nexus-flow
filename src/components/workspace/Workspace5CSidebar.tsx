@@ -83,7 +83,7 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
           </span>
         </div>
         
-        {task.tri && (
+        {task.tri && task.tri.t_value !== undefined && task.tri.r_value !== undefined && task.tri.i_value !== undefined && (
           <div className="flex items-center gap-1 text-xs">
             <span className="text-red-300">T:{task.tri.t_value.toFixed(1)}</span>
             <span className="text-blue-300">R:{task.tri.r_value.toFixed(1)}</span>
