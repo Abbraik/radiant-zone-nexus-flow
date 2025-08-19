@@ -11,24 +11,11 @@ export const useLoopRegistry = () => {
     queryKey: ['loops', 'search'],
     queryFn: async (): Promise<LoopData[]> => {
       try {
-        // Check if user is authenticated
-        const { data: { user } } = await supabase.auth.getUser();
-        console.log('Registry user state:', user ? 'authenticated' : 'anonymous');
-        
-        let query = supabase
+        // Fetch all loops (public access enabled via RLS policy)
+        const { data, error } = await supabase
           .from('loops')
           .select('*')
-          .neq('status', 'deprecated');
-        
-        // If not authenticated, only show published loops
-        if (!user) {
-          query = query.eq('status', 'published');
-          console.log('Filtering for published loops only');
-        } else {
-          console.log('Showing all user loops + published loops');
-        }
-        
-        const { data, error } = await query
+          .neq('status', 'deprecated')
           .order('source_tag', { ascending: false }) // Atlas loops first
           .order('created_at', { ascending: false });
         
@@ -38,7 +25,6 @@ export const useLoopRegistry = () => {
         }
 
         console.log('Fetched loops count:', data?.length || 0);
-        console.log('Sample loop data:', data?.[0]);
 
         return (data || []).map(loop => ({
           ...loop,
