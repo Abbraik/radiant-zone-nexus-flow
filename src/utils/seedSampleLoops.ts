@@ -87,6 +87,8 @@ export const seedSampleLoops = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     const systemUserId = '00000000-0000-0000-0000-000000000000'; // System user for atlas loops
     const userId = user?.id || systemUserId;
+    
+    console.log('Using user ID:', userId, user ? '(authenticated)' : '(system user)');
 
     const createdLoops = [];
     for (const loop of sampleLoops) {

@@ -10,26 +10,47 @@ export const useLoopRegistry = () => {
   const searchLoops = useQuery({
     queryKey: ['loops', 'search'],
     queryFn: async (): Promise<LoopData[]> => {
-      // Fetch real loops from database, prioritizing atlas loops
-      const { data, error } = await supabase
-        .from('loops')
-        .select('*')
-        .neq('status', 'deprecated')
-        .order('source_tag', { ascending: false }) // Atlas loops first
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error fetching loops:', error);
+      try {
+        // Check if user is authenticated
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log('Registry user state:', user ? 'authenticated' : 'anonymous');
+        
+        let query = supabase
+          .from('loops')
+          .select('*')
+          .neq('status', 'deprecated');
+        
+        // If not authenticated, only show published loops
+        if (!user) {
+          query = query.eq('status', 'published');
+          console.log('Filtering for published loops only');
+        } else {
+          console.log('Showing all user loops + published loops');
+        }
+        
+        const { data, error } = await query
+          .order('source_tag', { ascending: false }) // Atlas loops first
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('Error fetching loops:', error);
+          throw error;
+        }
+
+        console.log('Fetched loops count:', data?.length || 0);
+        console.log('Sample loop data:', data?.[0]);
+
+        return (data || []).map(loop => ({
+          ...loop,
+          controller: loop.controller as Record<string, any>,
+          thresholds: loop.thresholds as Record<string, any>,
+          tags: (loop.metadata as any)?.tags || [],
+          node_count: 0 // Will be populated by hydration if needed
+        })) as LoopData[];
+      } catch (error) {
+        console.error('Registry query failed:', error);
         throw error;
       }
-
-      return (data || []).map(loop => ({
-        ...loop,
-        controller: loop.controller as Record<string, any>,
-        thresholds: loop.thresholds as Record<string, any>,
-        tags: (loop.metadata as any)?.tags || [],
-        node_count: 0 // Will be populated by hydration if needed
-      })) as LoopData[];
     },
   });
 
