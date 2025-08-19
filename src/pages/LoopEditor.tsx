@@ -128,7 +128,7 @@ export default function LoopEditor() {
     try {
       if (isNewLoop) {
         const newLoop = await createLoop.mutateAsync(editorData);
-        navigate(`/registry/${newLoop.id}/editor`);
+        navigate(`/registry/${newLoop.id}/edit`);
       } else {
         await updateLoop.mutateAsync({
           id: id!,
