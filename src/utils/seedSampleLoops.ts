@@ -14,9 +14,14 @@ export const seedSampleLoops = async () => {
       { label: 'Hospitals', domain: 'institution', descriptor: 'Secondary/tertiary care facilities' },
     ];
 
+    // Try to create shared nodes (if RPC function exists)
     for (const node of sharedNodes) {
-      const { error } = await supabase.rpc('upsert_snl', node);
-      if (error) console.error('Error creating shared node:', error);
+      try {
+        const { error } = await supabase.rpc('upsert_snl', node);
+        if (error) console.error('Error creating shared node:', error);
+      } catch (error) {
+        console.log('Skipping shared node creation - RPC function not available');
+      }
     }
 
     // Create sample loops directly in the database
@@ -78,10 +83,10 @@ export const seedSampleLoops = async () => {
       }
     ];
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      throw new Error('User not authenticated');
-    }
+    // Try to get authenticated user, otherwise use system user for atlas loops
+    const { data: { user } } = await supabase.auth.getUser();
+    const systemUserId = '00000000-0000-0000-0000-000000000000'; // System user for atlas loops
+    const userId = user?.id || systemUserId;
 
     const createdLoops = [];
     for (const loop of sampleLoops) {
@@ -92,7 +97,7 @@ export const seedSampleLoops = async () => {
           leverage_default: loop.leverage_default as 'N' | 'P' | 'S',
           loop_type: loop.loop_type as 'reactive' | 'structural' | 'perceptual',
           scale: loop.scale as 'micro' | 'meso' | 'macro',
-          user_id: user.id
+          user_id: userId
         })
         .select()
         .single();
@@ -147,7 +152,7 @@ export const seedSampleLoops = async () => {
         const { error: indicatorError } = await supabase
           .from('indicators')
           .insert({
-            user_id: user.id,
+            user_id: userId,
             name: `${loop.name} Performance`,
             type: 'quantity',
             unit: 'units',
@@ -169,27 +174,31 @@ export const seedSampleLoops = async () => {
             lower_bound: 50,
             upper_bound: 100,
             asymmetry: 0,
-            user_id: user.id
+            user_id: userId
           });
         
         if (bandError) {
           console.error('Error creating DE band:', bandError);
         }
         
-        // Create SRT window
-        const { error: srtError } = await supabase
-          .from('srt_windows')
-          .insert({
-            loop_id: loopId,
-            window_start: new Date().toISOString(),
-            window_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-            reflex_horizon: '30 days',
-            cadence: '1 week',
-            user_id: user.id
-          });
-        
-        if (srtError) {
-          console.error('Error creating SRT window:', srtError);
+        // Create SRT window (if table exists)
+        try {
+          const { error: srtError } = await supabase
+            .from('srt_windows')
+            .insert({
+              loop_id: loopId,
+              window_start: new Date().toISOString(),
+              window_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+              reflex_horizon: '30 days',
+              cadence: '1 week',
+              user_id: userId
+            });
+          
+          if (srtError) {
+            console.error('Error creating SRT window (table may not exist):', srtError);
+          }
+        } catch (srtError) {
+          console.log('Skipping SRT window creation - table not available');
         }
       }
     }
