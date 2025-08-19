@@ -108,6 +108,13 @@ export const Workspace5C: React.FC = () => {
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Auto-collapse sidebar when task is active to maximize workspace space
+  React.useEffect(() => {
+    if (activeTask && !isSidebarCollapsed) {
+      setIsSidebarCollapsed(true);
+    }
+  }, [activeTask]);
+
   if (!activeTask) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -238,29 +245,51 @@ export const Workspace5C: React.FC = () => {
         <FeatureFlagGuard 
           flag="useCascadeBar" 
           fallback={
-            <WorkspaceProSidebar 
-              myTasks={myTasks} 
-              availableTasks={availableTasks}
-              activeTask={workspaceTask}
-            />
+            !isSidebarCollapsed && (
+              <WorkspaceProSidebar 
+                myTasks={myTasks} 
+                availableTasks={availableTasks}
+                activeTask={workspaceTask}
+              />
+            )
           }
         >
-          <CascadeSidebar
-            myTasks={myTasks}
-            availableTasks={availableTasks}
-            activeTask={workspaceTask}
-            onTaskClaim={openClaimPopup}
-            isCollapsed={isSidebarCollapsed}
-            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          />
+          {!isSidebarCollapsed && (
+            <CascadeSidebar
+              myTasks={myTasks}
+              availableTasks={availableTasks}
+              activeTask={workspaceTask}
+              onTaskClaim={openClaimPopup}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            />
+          )}
         </FeatureFlagGuard>
         
-        <main className="flex-1 p-6 overflow-auto">
+        {/* Full-screen workspace when sidebar is collapsed */}
+        <main className={`flex-1 p-6 overflow-auto transition-all duration-300 ${
+          isSidebarCollapsed ? 'w-full' : ''
+        }`}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto"
+            className={`mx-auto transition-all duration-300 ${
+              isSidebarCollapsed ? 'max-w-none' : 'max-w-4xl'
+            }`}
           >
+            {/* Sidebar Toggle Button when collapsed */}
+            {isSidebarCollapsed && (
+              <motion.button
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                onClick={() => setIsSidebarCollapsed(false)}
+                className="fixed top-20 left-4 z-50 p-2 bg-glass/70 backdrop-blur-20 rounded-lg border border-white/10 hover:bg-glass/90 transition-all duration-200 text-white"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </motion.button>
+            )}
             {/* Enhanced Task Card */}
             <div className="mb-6">
               <FeatureFlagGuard flag="useTeamsButton">
@@ -273,13 +302,15 @@ export const Workspace5C: React.FC = () => {
               </FeatureFlagGuard>
             </div>
 
-            {/* 5C Capacity Bundle */}
+            {/* 5C Capacity Bundle - Full screen when sidebar collapsed */}
             <div className="space-y-6">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10"
+                className={`p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10 transition-all duration-300 ${
+                  isSidebarCollapsed ? 'min-h-[calc(100vh-200px)]' : ''
+                }`}
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -287,10 +318,26 @@ export const Workspace5C: React.FC = () => {
                     <h3 className="text-lg font-semibold text-white">
                       {activeTask.capacity.toUpperCase()} Capacity Bundle
                     </h3>
+                    {isSidebarCollapsed && (
+                      <span className="text-sm text-gray-400 ml-2">• Full Screen Mode</span>
+                    )}
                   </div>
-                  <Badge variant="outline" className="capitalize">
-                    {activeTask.capacity}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="capitalize">
+                      {activeTask.capacity}
+                    </Badge>
+                    {!isSidebarCollapsed && (
+                      <button
+                        onClick={() => setIsSidebarCollapsed(true)}
+                        className="p-1 text-gray-400 hover:text-white transition-colors"
+                        title="Expand to full screen"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M8 3H5C3.89543 3 3 3.89543 3 5V8M21 8V5C21 3.89543 20.1046 3 19 3H16M16 21H19C20.1046 21 21 20.1046 21 19V16M8 21H5C3.89543 21 3 20.1046 3 19V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
                 
                 <DynamicCapacityBundle
