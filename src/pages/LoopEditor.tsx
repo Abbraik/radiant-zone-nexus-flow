@@ -70,7 +70,7 @@ export default function LoopEditor() {
 
   // Autosave with 2s debounce
   useEffect(() => {
-    if (!isDirty || !editorData?.loop) return;
+    if (!isDirty || !editorData) return;
     
     const timeoutId = setTimeout(async () => {
       setAutosaveStatus('saving');
@@ -81,7 +81,7 @@ export default function LoopEditor() {
         } else {
           await updateLoop.mutateAsync({
             id: id!,
-            updates: editorData.loop
+            updates: editorData
           });
           setAutosaveStatus('saved');
         }
@@ -110,7 +110,7 @@ export default function LoopEditor() {
       if (!prev) return prev;
       
       if (section === 'metadata') {
-        return { ...prev, loop: { ...prev.loop, ...data } };
+        return { ...prev, ...data };
       } else if (section === 'nodes') {
         return { ...prev, nodes: data };
       } else if (section === 'edges') {
@@ -123,16 +123,16 @@ export default function LoopEditor() {
   }, []);
 
   const handleSaveDraft = async () => {
-    if (!editorData?.loop) return;
+    if (!editorData) return;
     
     try {
       if (isNewLoop) {
-        const newLoop = await createLoop.mutateAsync(editorData.loop);
+        const newLoop = await createLoop.mutateAsync(editorData);
         navigate(`/registry/${newLoop.id}/editor`);
       } else {
         await updateLoop.mutateAsync({
           id: id!,
-          updates: editorData.loop
+          updates: editorData
         });
       }
       setIsDirty(false);
@@ -164,11 +164,7 @@ export default function LoopEditor() {
   const handleExport = () => {
     if (!editorData) return;
     
-    const exportData = {
-      loop: editorData.loop,
-      nodes: editorData.nodes,
-      edges: editorData.edges
-    };
+    const exportData = editorData;
     
     const blob = new Blob([JSON.stringify(exportData, null, 2)], {
       type: 'application/json'
@@ -176,7 +172,7 @@ export default function LoopEditor() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${editorData.loop?.name || 'loop'}.json`;
+    a.download = `${editorData.name || 'loop'}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -188,7 +184,7 @@ export default function LoopEditor() {
       case 'metadata':
         return (
           <MetadataEditor
-            data={editorData.loop}
+            data={editorData}
             onChange={(data) => handleDataChange('metadata', data)}
           />
         );
@@ -259,8 +255,8 @@ export default function LoopEditor() {
             <h1 className="text-2xl font-bold text-foreground">
               {isNewLoop ? 'Create New Loop' : 'Edit Loop'}
             </h1>
-            {editorData?.loop?.name && (
-              <Badge variant="secondary">{editorData.loop.name}</Badge>
+            {editorData?.name && (
+              <Badge variant="secondary">{editorData.name}</Badge>
             )}
           </div>
           

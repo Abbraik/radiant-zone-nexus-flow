@@ -561,7 +561,7 @@ export const CLDGraphEditor: React.FC<CLDGraphEditorProps> = ({
                   onChange={(e) => {
                     onEdgesChange(edges.map(e => 
                       e.id === selectedEdge 
-                        ? { ...e, weight: parseFloat(event.target.value) || 1 }
+                        ? { ...e, weight: parseFloat((e as any).target.value) || 1 }
                         : e
                     ));
                   }}
@@ -576,7 +576,7 @@ export const CLDGraphEditor: React.FC<CLDGraphEditorProps> = ({
                   onChange={(e) => {
                     onEdgesChange(edges.map(e => 
                       e.id === selectedEdge 
-                        ? { ...e, delay_ms: parseInt(event.target.value) || 0 }
+                        ? { ...e, delay_ms: parseInt((e as any).target.value) || 0 }
                         : e
                     ));
                   }}
