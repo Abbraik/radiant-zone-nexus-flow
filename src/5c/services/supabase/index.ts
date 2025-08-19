@@ -47,6 +47,7 @@ export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
   
   return (data || []).map(item => ({
     ...item,
+    status: item.status as EnhancedTask5C['status'],
     tri: item.tri as any || undefined,
     payload: item.payload as any || {}
   }));
@@ -73,6 +74,7 @@ export const createTask5C = async (task: Partial<EnhancedTask5C>): Promise<Enhan
   
   return {
     ...data,
+    status: data.status as EnhancedTask5C['status'],
     tri: data.tri as any || undefined,
     payload: data.payload as any || {}
   };
@@ -90,6 +92,7 @@ export const updateTask5C = async (id: string, updates: Partial<EnhancedTask5C>)
   
   return {
     ...data,
+    status: data.status as EnhancedTask5C['status'],
     tri: data.tri as any || undefined,
     payload: data.payload as any || {}
   };
