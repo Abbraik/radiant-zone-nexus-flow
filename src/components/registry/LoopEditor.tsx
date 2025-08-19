@@ -188,7 +188,7 @@ export const LoopEditor: React.FC<LoopEditorProps> = ({ loop }) => {
                   <SelectValue placeholder="Select default leverage" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="N">N (Narrow)</SelectItem>
                   <SelectItem value="P">P (Policy)</SelectItem>
                   <SelectItem value="S">S (Structural)</SelectItem>

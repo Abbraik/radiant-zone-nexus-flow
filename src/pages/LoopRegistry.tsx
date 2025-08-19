@@ -105,7 +105,7 @@ const LoopRegistry: React.FC = () => {
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="reactive">Reactive</SelectItem>
                 <SelectItem value="structural">Structural</SelectItem>
                 <SelectItem value="perceptual">Perceptual</SelectItem>
@@ -117,7 +117,7 @@ const LoopRegistry: React.FC = () => {
                 <SelectValue placeholder="Scale" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Scales</SelectItem>
+                <SelectItem value="all">All Scales</SelectItem>
                 <SelectItem value="micro">Micro</SelectItem>
                 <SelectItem value="meso">Meso</SelectItem>
                 <SelectItem value="macro">Macro</SelectItem>
@@ -129,7 +129,7 @@ const LoopRegistry: React.FC = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="published">Published</SelectItem>
               </SelectContent>

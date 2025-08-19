@@ -164,7 +164,7 @@ const LoopDashboard: React.FC = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="in-band">In-Band</SelectItem>
                 <SelectItem value="breached">Breached</SelectItem>
                 <SelectItem value="fatigued">Fatigued</SelectItem>

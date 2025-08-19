@@ -337,7 +337,7 @@ export const AuditTrailSystem: React.FC<AuditTrailSystemProps> = ({
               <SelectValue placeholder="All Users" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Users</SelectItem>
+              <SelectItem value="all">All Users</SelectItem>
               {uniqueUsers.map(user => (
                 <SelectItem key={user!.userId} value={user!.userId}>
                   {user!.userName}
@@ -354,7 +354,7 @@ export const AuditTrailSystem: React.FC<AuditTrailSystemProps> = ({
               <SelectValue placeholder="All Actions" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Actions</SelectItem>
+              <SelectItem value="all">All Actions</SelectItem>
               {uniqueActions.map(action => (
                 <SelectItem key={action} value={action}>
                   {action.charAt(0).toUpperCase() + action.slice(1)}
@@ -371,7 +371,7 @@ export const AuditTrailSystem: React.FC<AuditTrailSystemProps> = ({
               <SelectValue placeholder="All Impact" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Impact</SelectItem>
+              <SelectItem value="all">All Impact</SelectItem>
               {uniqueImpacts.map(impact => (
                 <SelectItem key={impact} value={impact}>
                   {impact.charAt(0).toUpperCase() + impact.slice(1)}

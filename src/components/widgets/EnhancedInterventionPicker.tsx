@@ -250,7 +250,7 @@ export const EnhancedInterventionPicker: React.FC<EnhancedInterventionPickerProp
                       <SelectValue placeholder="All categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All categories</SelectItem>
+                      <SelectItem value="all">All categories</SelectItem>
                       {categories.map(category => (
                         <SelectItem key={category} value={category}>{category}</SelectItem>
                       ))}
@@ -265,7 +265,7 @@ export const EnhancedInterventionPicker: React.FC<EnhancedInterventionPickerProp
                       <SelectValue placeholder="All impacts" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All impacts</SelectItem>
+                      <SelectItem value="all">All impacts</SelectItem>
                       {impacts.map(impact => (
                         <SelectItem key={impact} value={impact}>{impact}</SelectItem>
                       ))}
