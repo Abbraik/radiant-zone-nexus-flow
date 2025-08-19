@@ -66,7 +66,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => window.location.href = `/registry/${loop.id}/edit`}>
               <ExternalLink className="w-4 h-4" />
               Open in Editor
             </Button>
