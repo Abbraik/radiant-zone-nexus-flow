@@ -61,6 +61,14 @@ const workspaceNavigation: NavigationItem[] = [
     description: 'Real-time system overview'
   },
   { 
+    id: 'workspace-5c', 
+    label: '5C Workspace', 
+    icon: Package, 
+    path: '/workspace-5c', 
+    description: 'Capacity-based workspace',
+    badge: 'Beta'
+  },
+  { 
     id: 'admin', 
     label: 'Admin', 
     icon: Settings, 

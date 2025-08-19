@@ -154,6 +154,12 @@ export const Header: React.FC = () => {
             className="btn-chip ml-2 hover:bg-primary/10 transition-colors">
             Mission Control
           </NavLink>
+
+          <NavLink
+            to="/workspace-5c"
+            className="btn-chip ml-2 hover:bg-accent/10 transition-colors">
+            5C Workspace
+          </NavLink>
           
           <button
             onClick={()=>useToolsStore.getState().openAbout('overview')}
