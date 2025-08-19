@@ -2730,6 +2730,16 @@ export type Database = {
         Args: { loop_uuid: string; option_ids: string[] }
         Returns: Json
       }
+      create_loop: {
+        Args: {
+          layer?: string
+          loop_name: string
+          loop_synopsis?: string
+          loop_type?: string
+          motif?: string
+        }
+        Returns: string
+      }
       create_qa_fixtures: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -2893,6 +2903,23 @@ export type Database = {
           task_uuid: string
         }
         Returns: Json
+      }
+      search_loops: {
+        Args: { filters?: Json; limit_count?: number; search_query?: string }
+        Returns: {
+          default_leverage: string
+          edge_count: number
+          id: string
+          layer: string
+          loop_type: string
+          motif: string
+          name: string
+          node_count: number
+          status: string
+          synopsis: string
+          tags: string[]
+          updated_at: string
+        }[]
       }
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
