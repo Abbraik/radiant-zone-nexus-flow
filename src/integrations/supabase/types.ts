@@ -379,6 +379,39 @@ export type Database = {
           },
         ]
       }
+      entity_links: {
+        Row: {
+          created_at: string
+          id: string
+          link_context: Json | null
+          source_id: string
+          source_type: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link_context?: Json | null
+          source_id: string
+          source_type: string
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link_context?: Json | null
+          source_id?: string
+          source_type?: string
+          target_id?: string
+          target_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       execution_logs: {
         Row: {
           actor: string
@@ -920,6 +953,42 @@ export type Database = {
           total_indicators?: number | null
           trend_direction?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mode_events: {
+        Row: {
+          capacity: string | null
+          confidence: number | null
+          created_at: string
+          event_type: string
+          id: string
+          loop_id: string | null
+          metadata: Json | null
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          capacity?: string | null
+          confidence?: number | null
+          created_at?: string
+          event_type: string
+          id?: string
+          loop_id?: string | null
+          metadata?: Json | null
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          capacity?: string | null
+          confidence?: number | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          loop_id?: string | null
+          metadata?: Json | null
+          task_id?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1820,6 +1889,36 @@ export type Database = {
         }
         Relationships: []
       }
+      task_links: {
+        Row: {
+          context: Json | null
+          created_at: string
+          from_task_id: string
+          id: string
+          link_type: string
+          to_task_id: string
+          user_id: string
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string
+          from_task_id: string
+          id?: string
+          link_type: string
+          to_task_id: string
+          user_id: string
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string
+          from_task_id?: string
+          id?: string
+          link_type?: string
+          to_task_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       task_locks: {
         Row: {
           expires_at: string
@@ -2223,6 +2322,15 @@ export type Database = {
         Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
         Returns: string
       }
+      create_task_with_link: {
+        Args: {
+          capacity_param: string
+          context_param?: Json
+          from_task_param: string
+          loop_id_param: string
+        }
+        Returns: Json
+      }
       create_watchpoint: {
         Args: { loop_uuid: string; payload: Json }
         Returns: Json
@@ -2296,12 +2404,20 @@ export type Database = {
           zone: string | null
         }[]
       }
+      global_search: {
+        Args: { limit_param?: number; query_param: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      link_entities: {
+        Args: { source_param: Json; target_param: Json }
+        Returns: string
       }
       list_conflicts: {
         Args: { actor_name: string }
@@ -2364,6 +2480,10 @@ export type Database = {
       }
       start_claim: {
         Args: { claim_uuid: string }
+        Returns: Json
+      }
+      suggest_capacity: {
+        Args: { context_param?: Json; loop_id_param: string }
         Returns: Json
       }
       suggest_retunes: {
