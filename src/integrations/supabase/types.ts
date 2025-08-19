@@ -71,6 +71,36 @@ export type Database = {
         }
         Relationships: []
       }
+      band_crossings_5c: {
+        Row: {
+          at: string | null
+          created_at: string | null
+          direction: string
+          id: string
+          loop_id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          at?: string | null
+          created_at?: string | null
+          direction: string
+          id?: string
+          loop_id: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          at?: string | null
+          created_at?: string | null
+          direction?: string
+          id?: string
+          loop_id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       breach_events: {
         Row: {
           at: string
@@ -293,6 +323,83 @@ export type Database = {
         }
         Relationships: []
       }
+      claims_5c: {
+        Row: {
+          assignee: string
+          created_at: string | null
+          evidence: Json | null
+          finished_at: string | null
+          id: string
+          last_checkpoint_at: string | null
+          leverage: Database["public"]["Enums"]["leverage_5c"]
+          loop_id: string
+          mandate_status:
+            | Database["public"]["Enums"]["mandate_status_5c"]
+            | null
+          pause_reason: string | null
+          paused_at: string | null
+          raci: Json | null
+          sprint_id: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["claim_status_5c"] | null
+          task_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assignee: string
+          created_at?: string | null
+          evidence?: Json | null
+          finished_at?: string | null
+          id?: string
+          last_checkpoint_at?: string | null
+          leverage?: Database["public"]["Enums"]["leverage_5c"]
+          loop_id: string
+          mandate_status?:
+            | Database["public"]["Enums"]["mandate_status_5c"]
+            | null
+          pause_reason?: string | null
+          paused_at?: string | null
+          raci?: Json | null
+          sprint_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["claim_status_5c"] | null
+          task_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assignee?: string
+          created_at?: string | null
+          evidence?: Json | null
+          finished_at?: string | null
+          id?: string
+          last_checkpoint_at?: string | null
+          leverage?: Database["public"]["Enums"]["leverage_5c"]
+          loop_id?: string
+          mandate_status?:
+            | Database["public"]["Enums"]["mandate_status_5c"]
+            | null
+          pause_reason?: string | null
+          paused_at?: string | null
+          raci?: Json | null
+          sprint_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["claim_status_5c"] | null
+          task_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_5c_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks_5c"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       de_bands: {
         Row: {
           asymmetry: number | null
@@ -332,6 +439,51 @@ export type Database = {
           notes?: string | null
           smoothing_alpha?: number | null
           updated_at?: string
+          updated_by?: string | null
+          upper_bound?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      de_bands_5c: {
+        Row: {
+          asymmetry: number | null
+          created_at: string | null
+          id: string
+          indicator: string
+          loop_id: string
+          lower_bound: number | null
+          notes: string | null
+          smoothing_alpha: number | null
+          updated_at: string | null
+          updated_by: string | null
+          upper_bound: number | null
+          user_id: string
+        }
+        Insert: {
+          asymmetry?: number | null
+          created_at?: string | null
+          id?: string
+          indicator?: string
+          loop_id: string
+          lower_bound?: number | null
+          notes?: string | null
+          smoothing_alpha?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+          upper_bound?: number | null
+          user_id: string
+        }
+        Update: {
+          asymmetry?: number | null
+          created_at?: string | null
+          id?: string
+          indicator?: string
+          loop_id?: string
+          lower_bound?: number | null
+          notes?: string | null
+          smoothing_alpha?: number | null
+          updated_at?: string | null
           updated_by?: string | null
           upper_bound?: number | null
           user_id?: string
@@ -744,6 +896,45 @@ export type Database = {
         }
         Relationships: []
       }
+      loop_scorecards_5c: {
+        Row: {
+          breach_days: number | null
+          claim_velocity: number | null
+          de_state: string | null
+          fatigue: number | null
+          heartbeat_at: string | null
+          last_tri: Json | null
+          loop_id: string
+          tri_slope: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          breach_days?: number | null
+          claim_velocity?: number | null
+          de_state?: string | null
+          fatigue?: number | null
+          heartbeat_at?: string | null
+          last_tri?: Json | null
+          loop_id: string
+          tri_slope?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          breach_days?: number | null
+          claim_velocity?: number | null
+          de_state?: string | null
+          fatigue?: number | null
+          heartbeat_at?: string | null
+          last_tri?: Json | null
+          loop_id?: string
+          tri_slope?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       loop_shared_nodes: {
         Row: {
           created_at: string
@@ -890,6 +1081,42 @@ export type Database = {
           id?: string
           restrictions?: Json | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mandate_rules_5c: {
+        Row: {
+          actor: string
+          allowed_levers: string[] | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          org_id: string | null
+          restrictions: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          allowed_levers?: string[] | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string | null
+          restrictions?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          allowed_levers?: string[] | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          org_id?: string | null
+          restrictions?: Json | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -1316,6 +1543,45 @@ export type Database = {
         }
         Relationships: []
       }
+      reflex_memory_5c: {
+        Row: {
+          actor: string
+          after: Json | null
+          attachments: Json | null
+          before: Json | null
+          created_at: string | null
+          id: string
+          kind: string
+          loop_id: string
+          rationale: string
+          user_id: string
+        }
+        Insert: {
+          actor: string
+          after?: Json | null
+          attachments?: Json | null
+          before?: Json | null
+          created_at?: string | null
+          id?: string
+          kind: string
+          loop_id: string
+          rationale: string
+          user_id: string
+        }
+        Update: {
+          actor?: string
+          after?: Json | null
+          attachments?: Json | null
+          before?: Json | null
+          created_at?: string | null
+          id?: string
+          kind?: string
+          loop_id?: string
+          rationale?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rel_tickets: {
         Row: {
           cohort: string | null
@@ -1709,6 +1975,45 @@ export type Database = {
         }
         Relationships: []
       }
+      srt_windows_5c: {
+        Row: {
+          cadence: unknown | null
+          created_at: string | null
+          id: string
+          loop_id: string
+          reflex_horizon: unknown | null
+          updated_at: string | null
+          updated_by: string | null
+          user_id: string
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          cadence?: unknown | null
+          created_at?: string | null
+          id?: string
+          loop_id: string
+          reflex_horizon?: unknown | null
+          updated_at?: string | null
+          updated_by?: string | null
+          user_id: string
+          window_end: string
+          window_start: string
+        }
+        Update: {
+          cadence?: unknown | null
+          created_at?: string | null
+          id?: string
+          loop_id?: string
+          reflex_horizon?: unknown | null
+          updated_at?: string | null
+          updated_by?: string | null
+          user_id?: string
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       stress_tests: {
         Row: {
           created_at: string
@@ -2056,6 +2361,66 @@ export type Database = {
           },
         ]
       }
+      tasks_5c: {
+        Row: {
+          assigned_to: string | null
+          capacity: Database["public"]["Enums"]["capacity_5c"]
+          created_at: string | null
+          de_band_id: string | null
+          description: string | null
+          id: string
+          leverage: Database["public"]["Enums"]["leverage_5c"]
+          loop_id: string
+          payload: Json | null
+          scale: Database["public"]["Enums"]["scale_5c"]
+          srt_id: string | null
+          status: string
+          title: string
+          tri: Json | null
+          type: Database["public"]["Enums"]["loop_type_5c"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          capacity: Database["public"]["Enums"]["capacity_5c"]
+          created_at?: string | null
+          de_band_id?: string | null
+          description?: string | null
+          id?: string
+          leverage?: Database["public"]["Enums"]["leverage_5c"]
+          loop_id: string
+          payload?: Json | null
+          scale?: Database["public"]["Enums"]["scale_5c"]
+          srt_id?: string | null
+          status?: string
+          title: string
+          tri?: Json | null
+          type?: Database["public"]["Enums"]["loop_type_5c"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          capacity?: Database["public"]["Enums"]["capacity_5c"]
+          created_at?: string | null
+          de_band_id?: string | null
+          description?: string | null
+          id?: string
+          leverage?: Database["public"]["Enums"]["leverage_5c"]
+          loop_id?: string
+          payload?: Json | null
+          scale?: Database["public"]["Enums"]["scale_5c"]
+          srt_id?: string | null
+          status?: string
+          title?: string
+          tri?: Json | null
+          type?: Database["public"]["Enums"]["loop_type_5c"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       transparency_packs: {
         Row: {
           content: Json | null
@@ -2124,6 +2489,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      tri_events_5c: {
+        Row: {
+          at: string | null
+          created_at: string | null
+          i_value: number
+          id: string
+          loop_id: string
+          r_value: number
+          t_value: number
+          tag: string | null
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          at?: string | null
+          created_at?: string | null
+          i_value?: number
+          id?: string
+          loop_id: string
+          r_value?: number
+          t_value?: number
+          tag?: string | null
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          at?: string | null
+          created_at?: string | null
+          i_value?: number
+          id?: string
+          loop_id?: string
+          r_value?: number
+          t_value?: number
+          tag?: string | null
+          task_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tri_events_5c_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks_5c"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -2505,6 +2917,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      capacity_5c:
+        | "responsive"
+        | "reflexive"
+        | "deliberative"
+        | "anticipatory"
+        | "structural"
       capacity_type:
         | "responsive"
         | "reflexive"
@@ -2517,9 +2935,14 @@ export type Database = {
         | "approved"
         | "rejected"
         | "implemented"
+      claim_status_5c: "draft" | "active" | "paused" | "done" | "blocked"
+      leverage_5c: "N" | "P" | "S"
       leverage_type: "N" | "P" | "S"
       loop_type: "reactive" | "structural" | "perceptual"
+      loop_type_5c: "reactive" | "structural" | "perceptual"
       mandate_status: "allowed" | "restricted" | "forbidden"
+      mandate_status_5c: "allowed" | "warning_required" | "blocked"
+      scale_5c: "micro" | "meso" | "macro"
       scale_type: "micro" | "meso" | "macro"
       task_status: "open" | "claimed" | "active" | "done" | "blocked"
     }
@@ -2650,6 +3073,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      capacity_5c: [
+        "responsive",
+        "reflexive",
+        "deliberative",
+        "anticipatory",
+        "structural",
+      ],
       capacity_type: [
         "responsive",
         "reflexive",
@@ -2658,9 +3088,14 @@ export const Constants = {
         "structural",
       ],
       claim_status: ["draft", "pending", "approved", "rejected", "implemented"],
+      claim_status_5c: ["draft", "active", "paused", "done", "blocked"],
+      leverage_5c: ["N", "P", "S"],
       leverage_type: ["N", "P", "S"],
       loop_type: ["reactive", "structural", "perceptual"],
+      loop_type_5c: ["reactive", "structural", "perceptual"],
       mandate_status: ["allowed", "restricted", "forbidden"],
+      mandate_status_5c: ["allowed", "warning_required", "blocked"],
+      scale_5c: ["micro", "meso", "macro"],
       scale_type: ["micro", "meso", "macro"],
       task_status: ["open", "claimed", "active", "done", "blocked"],
     },
