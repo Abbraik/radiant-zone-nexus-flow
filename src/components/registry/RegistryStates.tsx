@@ -10,6 +10,7 @@ import {
   Filter,
   Database
 } from 'lucide-react';
+import { SeedLoopsButton } from './SeedLoopsButton';
 
 interface EmptyStateProps {
   hasQuery: boolean;
@@ -104,13 +105,16 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             Create your first loop to get started.
           </p>
           
-          <Button
-            onClick={onNew}
-            className="gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create Your First Loop
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button
+              onClick={onNew}
+              className="gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Create Your First Loop
+            </Button>
+            <SeedLoopsButton />
+          </div>
         </CardContent>
       </Card>
     </motion.div>

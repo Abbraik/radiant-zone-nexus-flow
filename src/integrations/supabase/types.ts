@@ -2841,6 +2841,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      import_loop: {
+        Args: { as_draft?: boolean; payload: Json }
+        Returns: string
+      }
       link_entities: {
         Args: { source_param: Json; target_param: Json }
         Returns: string
@@ -2940,6 +2944,10 @@ export type Database = {
       upsert_loop_scorecard: {
         Args: { loop_uuid: string; payload: Json }
         Returns: undefined
+      }
+      upsert_snl: {
+        Args: { descriptor: string; domain: string; label: string; meta?: Json }
+        Returns: string
       }
     }
     Enums: {
