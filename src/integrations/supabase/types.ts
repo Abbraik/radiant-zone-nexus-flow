@@ -2318,6 +2318,10 @@ export type Database = {
         Args: { loop_uuid: string; option_ids: string[] }
         Returns: Json
       }
+      create_qa_fixtures: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       create_redesign_task: {
         Args: { loop_uuid: string; reason_text: string; task_capacity?: string }
         Returns: string
@@ -2456,6 +2460,10 @@ export type Database = {
       reset_all_tasks: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      reset_qa_scenario: {
+        Args: { scenario_name: string }
+        Returns: Json
       }
       run_mcda: {
         Args: { option_ids: string[]; task_uuid: string; weights?: Json }
