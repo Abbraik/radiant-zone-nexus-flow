@@ -24,7 +24,7 @@ import NotFound from "./pages/NotFound";
 
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
-import Workspace5C from "./pages/Workspace5C";
+import { Workspace5C } from "./pages/Workspace5C";
 import { Demo } from "./pages/Demo";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
