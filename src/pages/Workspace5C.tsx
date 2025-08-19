@@ -23,16 +23,17 @@ import EnhancedTaskClaimPopup from '@/modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from '@/components/workspace/EnhancedTaskCard';
 import { ZoneBundleTest } from '@/components/workspace/ZoneBundleTest';
 import { ZoneAwareSystemStatus } from '@/components/workspace/ZoneAwareSystemStatus';
+import { Workspace5CSidebar } from '@/components/workspace/Workspace5CSidebar';
 import { getTasks5C, getTask5CById } from '@/5c/services';
 import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import type { CapacityBundleProps } from '@/types/capacity';
 
 // Hook to mimic the workspace task management for 5C tasks
 const use5cTasks = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const taskId = searchParams.get('task5c');
   
-  const { data: allTasks = [] } = useQuery({
+  const { data: allTasks = [], isLoading: isLoadingTasks } = useQuery({
     queryKey: QUERY_KEYS_5C.tasks(),
     queryFn: () => getTasks5C()
   });
@@ -42,6 +43,15 @@ const use5cTasks = () => {
     queryFn: () => getTask5CById(taskId!),
     enabled: !!taskId
   });
+
+  // Add logging for debugging
+  React.useEffect(() => {
+    console.log('5C Tasks loaded:', allTasks?.length || 0, allTasks);
+  }, [allTasks]);
+
+  React.useEffect(() => {
+    console.log('5C Active task:', activeTask);
+  }, [activeTask]);
 
   // Convert 5C tasks to workspace task format
   const convertToWorkspaceTask = (task5c: EnhancedTask5C): any => ({
@@ -64,11 +74,20 @@ const use5cTasks = () => {
             'claimed' as const
   });
 
+  // Handle task claiming with URL navigation
+  const handleTaskClaim = (task: any) => {
+    console.log('5C Task claiming:', task);
+    setSearchParams({ task5c: task.id });
+  };
+
   // Mock the workspace task management interface
   const mockTaskFunctions = {
-    completeTask: (taskId: string) => console.log('5C Task completed:', taskId),
+    completeTask: (taskId: string) => {
+      console.log('5C Task completed:', taskId);
+      setSearchParams({});
+    },
     isCompletingTask: false,
-    openClaimPopup: (task: any) => console.log('5C Task claim popup:', task),
+    openClaimPopup: handleTaskClaim,
     confirmClaimTask: () => console.log('5C Task claim confirmed'),
     cancelClaimTask: () => console.log('5C Task claim cancelled'),
     claimingTask: null,
@@ -80,12 +99,13 @@ const use5cTasks = () => {
     myTasks: allTasks.filter(t => t.status === 'claimed').map(convertToWorkspaceTask),
     activeTask,
     availableTasks: allTasks.filter(t => t.status === 'open').map(convertToWorkspaceTask),
+    isLoading: isLoadingTasks || isLoadingTask,
     ...mockTaskFunctions
   };
 };
 
 export const Workspace5C: React.FC = () => {
-  const {
+  const { 
     myTasks, 
     activeTask, 
     availableTasks, 
@@ -96,7 +116,8 @@ export const Workspace5C: React.FC = () => {
     cancelClaimTask,
     claimingTask,
     showClaimPopup,
-    isClaimingTask
+    isClaimingTask,
+    isLoading
   } = use5cTasks();
   
   const { flags } = useFeatureFlags();
@@ -115,29 +136,32 @@ export const Workspace5C: React.FC = () => {
     }
   }, [activeTask]);
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400 mx-auto mb-4"></div>
+            <p className="text-white">Loading 5C Workspace...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!activeTask) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex">
-        <FeatureFlagGuard 
-          flag="useCascadeBar" 
-          fallback={
-            <WorkspaceProSidebar 
-              myTasks={myTasks} 
-              availableTasks={availableTasks}
-              activeTask={null}
-            />
-          }
-        >
-          <CascadeSidebar
-            myTasks={myTasks}
-            availableTasks={availableTasks}
+          <Workspace5CSidebar
+            myTasks={myTasks.map(t => t as any)}
+            availableTasks={availableTasks.map(t => t as any)}
             activeTask={null}
             onTaskClaim={openClaimPopup}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
-        </FeatureFlagGuard>
           
           <main className="flex-1 p-6 overflow-auto">
             <motion.div
@@ -153,7 +177,7 @@ export const Workspace5C: React.FC = () => {
                     Claim a capacity-based task from the sidebar to get started with your 5C workspace
                   </p>
                   <div className="text-sm text-gray-400">
-                    {availableTasks.length} capacity tasks available
+                    {availableTasks.length} capacity tasks available • {myTasks.length} claimed tasks
                   </div>
                 </div>
               </div>
@@ -242,29 +266,16 @@ export const Workspace5C: React.FC = () => {
       />
       
       <div className="flex">
-        <FeatureFlagGuard 
-          flag="useCascadeBar" 
-          fallback={
-            !isSidebarCollapsed && (
-              <WorkspaceProSidebar 
-                myTasks={myTasks} 
-                availableTasks={availableTasks}
-                activeTask={workspaceTask}
-              />
-            )
-          }
-        >
-          {!isSidebarCollapsed && (
-            <CascadeSidebar
-              myTasks={myTasks}
-              availableTasks={availableTasks}
-              activeTask={workspaceTask}
-              onTaskClaim={openClaimPopup}
-              isCollapsed={isSidebarCollapsed}
-              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            />
-          )}
-        </FeatureFlagGuard>
+        {!isSidebarCollapsed && (
+          <Workspace5CSidebar
+            myTasks={myTasks.map(t => t as any)}
+            availableTasks={availableTasks.map(t => t as any)}
+            activeTask={activeTask}
+            onTaskClaim={openClaimPopup}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          />
+        )}
         
         {/* Full-screen workspace when sidebar is collapsed */}
         <main className={`flex-1 p-6 overflow-auto transition-all duration-300 ${
