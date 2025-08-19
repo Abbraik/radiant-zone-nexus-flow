@@ -140,10 +140,10 @@ export default function QADashboard() {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: "Scenario Reset",
-        description: `${data.scenario} has been reset to initial state.`
+        description: `${data?.scenario || 'Scenario'} has been reset to initial state.`
       });
     }
   });
@@ -155,6 +155,7 @@ export default function QADashboard() {
     supabase.from('mode_events').insert({
       event_type: 'qa_scenario_start',
       capacity: scenario.capacity,
+      user_id: 'test-user', // Default for QA scenarios
       metadata: { 
         scenario_id: scenario.id,
         scenario_name: scenario.name 
@@ -237,12 +238,14 @@ export default function QADashboard() {
                 <p className="text-muted-foreground">Watchpoints</p>
                 <p className="font-medium">1 Armed</p>
               </div>
-              <div>
-                <p className="text-muted-foreground">Created</p>
-                <p className="font-medium">
-                  {new Date(fixtures.created_at).toLocaleTimeString()}
-                </p>
-              </div>
+                <div>
+                  <p className="text-muted-foreground">Created</p>
+                  <p className="font-medium">
+                    {typeof fixtures === 'object' && fixtures && 'created_at' in fixtures 
+                      ? new Date(fixtures.created_at as string).toLocaleTimeString() 
+                      : 'Unknown'}
+                  </p>
+                </div>
             </div>
           </CardContent>
         </Card>

@@ -13,7 +13,7 @@ async function waitForPageLoad(page: Page) {
   
   // Check for console errors
   const errors = await page.evaluate(() => {
-    return window.console.error.calls || [];
+    return (window as any).consoleErrors || [];
   });
   
   expect(errors).toHaveLength(0);

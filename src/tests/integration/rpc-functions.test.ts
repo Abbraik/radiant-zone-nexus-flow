@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { supabase } from '@/integrations/supabase/client';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock supabase for testing
 const mockSupabase = {
