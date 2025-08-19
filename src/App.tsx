@@ -137,21 +137,9 @@ const App = () => (
                         <Demo />
                       </ProtectedRoute>
                     } />
-                    <Route path="/registry" element={
-                      <ProtectedRoute>
-                        <LoopRegistry />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/registry/:id" element={
-                      <ProtectedRoute>
-                        <LoopDetail />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/registry/:id/edit" element={
-                      <ProtectedRoute>
-                        <LoopEditor />
-                      </ProtectedRoute>
-                    } />
+                    <Route path="/registry" element={<LoopRegistry />} />
+                    <Route path="/registry/:id" element={<LoopDetail />} />
+                    <Route path="/registry/:id/edit" element={<LoopEditor />} />
                     <Route path="/dashboard/loops" element={
                       <ProtectedRoute>
                         <LoopDashboard />
