@@ -1,9 +1,11 @@
 export interface LoopNode {
   id: string;
   label: string;
-  domain: 'population' | 'resource' | 'products' | 'social' | 'institution';
+  kind: 'stock' | 'flow' | 'aux' | 'actor' | 'indicator';
+  domain?: 'population' | 'resource' | 'products' | 'social' | 'institution';
   descriptor?: string;
   role?: string;
+  meta?: Record<string, any>;
 }
 
 export interface LoopEdge {
@@ -19,7 +21,10 @@ export interface LoopEdge {
 export interface LoopData {
   id: string;
   name: string;
+  synopsis?: string;
   loop_type: 'reactive' | 'structural' | 'perceptual';
+  motif?: 'B' | 'R' | 'N' | 'C' | 'T';
+  layer?: 'meta' | 'macro' | 'meso' | 'micro';
   scale: 'micro' | 'meso' | 'macro';
   leverage_default?: 'N' | 'P' | 'S';
   controller: Record<string, any>;
