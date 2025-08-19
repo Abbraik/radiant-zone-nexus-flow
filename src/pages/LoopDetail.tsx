@@ -1,212 +1,137 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, Suspense } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Download, GitBranch, Settings, Eye, Network } from 'lucide-react';
+import { useLoopRegistry, useLoopHydration } from '@/hooks/useLoopRegistry';
+import { LoopHeader } from '@/components/registry/LoopHeader';
+import { TabNav } from '@/components/registry/TabNav';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useLoopRegistry } from '@/hooks/useLoopRegistry';
-import { useLoopHydration } from '@/hooks/useLoopRegistry';
-import { SNLBrowser } from '@/components/registry/SNLBrowser';
-import { LoopOverview } from '@/components/registry/LoopOverview';
-import { LoopEditor } from '@/components/registry/LoopEditor';
-import { LoopVersions } from '@/components/registry/LoopVersions';
+
+// Lazy load heavy tab components
+const OverviewTab = React.lazy(() => import('@/components/registry/tabs/OverviewTab'));
+const StructureTab = React.lazy(() => import('@/components/registry/tabs/StructureTab'));
+const IndicatorsTab = React.lazy(() => import('@/components/registry/tabs/IndicatorsTab'));
+const SRTTab = React.lazy(() => import('@/components/registry/tabs/SRTTab'));
+const SNLTab = React.lazy(() => import('@/components/registry/tabs/SNLTab'));
+const CascadesTab = React.lazy(() => import('@/components/registry/tabs/CascadesTab'));
+const VersionsTab = React.lazy(() => import('@/components/registry/tabs/VersionsTab'));
+const ChecksTab = React.lazy(() => import('@/components/registry/tabs/ChecksTab'));
+
+const TABS = [
+  { id: 'overview', label: 'Overview', component: OverviewTab },
+  { id: 'structure', label: 'Structure', component: StructureTab },
+  { id: 'indicators', label: 'Indicators & DE-Bands', component: IndicatorsTab },
+  { id: 'srt', label: 'SRT & Cadence', component: SRTTab },
+  { id: 'snl', label: 'Shared Nodes', component: SNLTab },
+  { id: 'cascades', label: 'Cascades', component: CascadesTab },
+  { id: 'versions', label: 'Versions', component: VersionsTab },
+  { id: 'checks', label: 'Checks', component: ChecksTab }
+] as const;
+
+type TabId = typeof TABS[number]['id'];
 
 const LoopDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'overview';
+  const [searchParams, setSearchParams] = useSearchParams();
   
-  const { getLoop, publishLoop } = useLoopRegistry();
-  const { data: hydratedLoop } = useLoopHydration(id);
-  const { data: loop, isLoading } = getLoop(id!);
+  const activeTab = (searchParams.get('tab') as TabId) || 'overview';
+  const [loadedTabs, setLoadedTabs] = useState<Set<TabId>>(new Set(['overview']));
+  
+  const { getLoop } = useLoopRegistry();
+  const loopQuery = getLoop(id!);
+  const hydrationQuery = useLoopHydration(id);
+  
+  const loop = loopQuery.data;
+  const hydratedLoop = hydrationQuery.data;
 
-  if (isLoading || !loop) {
+  const setActiveTab = (tabId: TabId) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('tab', tabId);
+    setSearchParams(newParams);
+    setLoadedTabs(prev => new Set(prev).add(tabId));
+  };
+
+  if (!id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading loop details...</p>
+        <Alert className="max-w-md">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Invalid loop ID.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (loopQuery.error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-6">
+          <Button variant="ghost" onClick={() => navigate('/registry')} className="mb-4 gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Registry
+          </Button>
+          <Alert variant="destructive" className="max-w-md">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Failed to load loop: {loopQuery.error.message}</AlertDescription>
+          </Alert>
         </div>
       </div>
     );
   }
 
-  const handlePublish = () => {
-    if (loop.status === 'draft') {
-      publishLoop.mutate(loop.id);
-    }
-  };
+  if (loopQuery.isLoading || !loop) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-center h-32">
+            <LoadingSpinner size="lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const handleExport = () => {
-    const exportData = {
-      ...loop,
-      nodes: hydratedLoop?.nodes || [],
-      edges: hydratedLoop?.edges || [],
-    };
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: 'application/json'
-    });
-    
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${loop.name.replace(/\s+/g, '_')}_v${loop.version}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const getLoopTypeColor = (type: string) => {
-    switch (type) {
-      case 'reactive': return 'bg-blue-100 text-blue-800';
-      case 'structural': return 'bg-green-100 text-green-800';
-      case 'perceptual': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getScaleColor = (scale: string) => {
-    switch (scale) {
-      case 'micro': return 'bg-orange-100 text-orange-800';
-      case 'meso': return 'bg-yellow-100 text-yellow-800';
-      case 'macro': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const ActiveTabComponent = TABS.find(tab => tab.id === activeTab)?.component || OverviewTab;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between"
-          >
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/registry')}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Registry
-              </Button>
-              
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-foreground">{loop.name}</h1>
-                <div className="flex gap-2">
-                  <Badge className={getLoopTypeColor(loop.loop_type)}>
-                    {loop.loop_type}
-                  </Badge>
-                  <Badge className={getScaleColor(loop.scale)}>
-                    {loop.scale}
-                  </Badge>
-                  <Badge variant={loop.status === 'published' ? 'default' : 'secondary'}>
-                    {loop.status}
-                  </Badge>
-                </div>
-              </div>
-            </div>
+      <div className="container mx-auto px-4 py-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <Button variant="ghost" onClick={() => navigate('/registry')} className="mb-4 gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Registry
+          </Button>
 
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <GitBranch className="h-4 w-4" />
-                v{loop.version}
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExport}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-              
-              {loop.status === 'draft' && (
-                <Button
-                  onClick={handlePublish}
-                  className="flex items-center gap-2"
-                  disabled={publishLoop.isPending}
-                >
-                  <Share2 className="h-4 w-4" />
-                  {publishLoop.isPending ? 'Publishing...' : 'Publish'}
-                </Button>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      </div>
+          <LoopHeader 
+            loop={loop} 
+            onEdit={() => navigate(`/registry/${id}/editor`)}
+            onExport={() => console.log('Export loop:', id)}
+            onPublish={() => console.log('Publish loop:', id)}
+          />
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Tabs defaultValue={initialTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="controller" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Controller
-              </TabsTrigger>
-              <TabsTrigger value="snl" className="flex items-center gap-2">
-                <Network className="h-4 w-4" />
-                SNL
-              </TabsTrigger>
-              <TabsTrigger value="edit" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Edit
-              </TabsTrigger>
-              <TabsTrigger value="versions" className="flex items-center gap-2">
-                <GitBranch className="h-4 w-4" />
-                Versions
-              </TabsTrigger>
-            </TabsList>
+          <TabNav tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-            <TabsContent value="overview">
-              <LoopOverview loop={loop} hydratedLoop={hydratedLoop} />
-            </TabsContent>
-
-            <TabsContent value="controller">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Loop Controller</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <pre className="bg-muted p-4 rounded-lg text-sm overflow-auto">
-                    {JSON.stringify(loop.controller, null, 2)}
-                  </pre>
+          <div className="min-h-[500px]">
+            <Suspense fallback={
+              <Card className="glass-secondary">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center h-32">
+                    <LoadingSpinner size="lg" />
+                  </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-
-            <TabsContent value="snl">
-              <SNLBrowser loopId={loop.id} />
-            </TabsContent>
-
-            <TabsContent value="edit">
-              <LoopEditor loop={loop} />
-            </TabsContent>
-
-            <TabsContent value="versions">
-              <LoopVersions loopId={loop.id} />
-            </TabsContent>
-          </Tabs>
+            }>
+              {(loadedTabs.has(activeTab) || activeTab === 'overview') && (
+                <motion.div key={activeTab} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                  <ActiveTabComponent loop={loop} hydratedLoop={hydratedLoop} isLoading={hydrationQuery.isLoading} />
+                </motion.div>
+              )}
+            </Suspense>
+          </div>
         </motion.div>
       </div>
     </div>
