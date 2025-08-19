@@ -294,7 +294,8 @@ export const Workspace5C: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 onClick={() => setIsSidebarCollapsed(false)}
-                className="fixed top-20 left-4 z-50 p-2 bg-glass/70 backdrop-blur-20 rounded-lg border border-white/10 hover:bg-glass/90 transition-all duration-200 text-white"
+                className="fixed top-20 left-4 z-50 p-3 bg-glass/80 backdrop-blur-20 rounded-lg border border-white/20 hover:bg-glass/95 transition-all duration-200 text-white shadow-lg"
+                title="Expand sidebar"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
