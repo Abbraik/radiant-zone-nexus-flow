@@ -857,6 +857,33 @@ export type Database = {
         }
         Relationships: []
       }
+      loop_nodes: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          label: string
+          loop_id: string
+          meta: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          label: string
+          loop_id: string
+          meta?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string
+          loop_id?: string
+          meta?: Json | null
+        }
+        Relationships: []
+      }
       loop_scorecards: {
         Row: {
           breach_days: number | null
@@ -1005,11 +1032,13 @@ export type Database = {
           description: string | null
           id: string
           leverage_default: Database["public"]["Enums"]["leverage_type"] | null
+          loop_code: string | null
           loop_type: Database["public"]["Enums"]["loop_type"] | null
           metadata: Json | null
           name: string
           notes: string | null
           scale: Database["public"]["Enums"]["scale_type"] | null
+          source_tag: string | null
           status: string | null
           thresholds: Json | null
           type: string | null
@@ -1023,11 +1052,13 @@ export type Database = {
           description?: string | null
           id?: string
           leverage_default?: Database["public"]["Enums"]["leverage_type"] | null
+          loop_code?: string | null
           loop_type?: Database["public"]["Enums"]["loop_type"] | null
           metadata?: Json | null
           name: string
           notes?: string | null
           scale?: Database["public"]["Enums"]["scale_type"] | null
+          source_tag?: string | null
           status?: string | null
           thresholds?: Json | null
           type?: string | null
@@ -1041,11 +1072,13 @@ export type Database = {
           description?: string | null
           id?: string
           leverage_default?: Database["public"]["Enums"]["leverage_type"] | null
+          loop_code?: string | null
           loop_type?: Database["public"]["Enums"]["loop_type"] | null
           metadata?: Json | null
           name?: string
           notes?: string | null
           scale?: Database["public"]["Enums"]["scale_type"] | null
+          source_tag?: string | null
           status?: string | null
           thresholds?: Json | null
           type?: string | null

@@ -7,6 +7,7 @@ export interface RegistryFilters {
   scale: string[];
   status: string[];
   tags: string[];
+  atlas_codes: string[];
   has_snl: boolean;
   has_de_band: boolean;
   has_srt: boolean;
@@ -22,6 +23,7 @@ export const defaultFilters: RegistryFilters = {
   scale: [],
   status: [],
   tags: [],
+  atlas_codes: [],
   has_snl: false,
   has_de_band: false,
   has_srt: false

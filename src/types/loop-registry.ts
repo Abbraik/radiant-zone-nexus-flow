@@ -22,7 +22,7 @@ export interface LoopData {
   id: string;
   name: string;
   synopsis?: string;
-  loop_type: 'reactive' | 'structural' | 'perceptual';
+  loop_type: 'reactive' | 'structural' | 'perceptual' | 'anticipatory';
   motif?: 'B' | 'R' | 'N' | 'C' | 'T';
   layer?: 'meta' | 'macro' | 'meso' | 'micro';
   scale: 'micro' | 'meso' | 'macro';
@@ -30,8 +30,8 @@ export interface LoopData {
   controller: Record<string, any>;
   thresholds: Record<string, any>;
   notes?: string;
-  status: 'draft' | 'published';
-  version: number;
+  status: 'draft' | 'published' | 'deprecated';
+  version?: number;
   user_id: string;
   created_at: string;
   updated_at: string;
@@ -39,6 +39,9 @@ export interface LoopData {
   edges?: LoopEdge[];
   tags?: string[];
   node_count?: number;
+  loop_code?: string;
+  source_tag?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface LoopVersion {

@@ -66,8 +66,20 @@ export const RegistryHeader: React.FC<RegistryHeaderProps> = ({
           </Button>
           
           <Button 
+            onClick={() => {
+              // Simple alert for now - the actual seeding would be done via backend
+              alert('Atlas seeding functionality will be implemented via backend. Please run the seed_atlas.ts script manually for now.');
+            }}
+            className="gap-2 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground hover:opacity-90"
+          >
+            <Plus className="w-4 h-4" />
+            Seed Atlas
+          </Button>
+          
+          <Button 
             onClick={onNew}
             disabled={isCreating}
+            variant="outline"
             className="gap-2"
           >
             {isCreating ? (
