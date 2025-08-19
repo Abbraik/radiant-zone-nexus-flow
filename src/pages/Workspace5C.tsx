@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { PairWorkOverlay } from '@/modules/collab/components/PairWorkOverlay';
 import { useFeatureFlags, FeatureFlagGuard } from '@/components/layout/FeatureFlagProvider';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { OKR } from '@/modules/collab/data/mockData';
 import CascadeSidebar from '@/components/workspace/CascadeSidebar';
@@ -24,6 +24,8 @@ import EnhancedTaskCard from '@/components/workspace/EnhancedTaskCard';
 import { ZoneBundleTest } from '@/components/workspace/ZoneBundleTest';
 import { ZoneAwareSystemStatus } from '@/components/workspace/ZoneAwareSystemStatus';
 import { Workspace5CSidebar } from '@/components/workspace/Workspace5CSidebar';
+import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
+import { useToolsStore } from '@/stores/toolsStore';
 import { getTasks5C, getTask5CById } from '@/5c/services';
 import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import type { CapacityBundleProps } from '@/types/capacity';
@@ -128,6 +130,10 @@ export const Workspace5C: React.FC = () => {
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  const openMetaLoopConsole = () => {
+    useToolsStore.getState().open('admin', 'meta');
+  };
 
   // Auto-collapse sidebar when task is active to maximize workspace space
   React.useEffect(() => {
@@ -338,6 +344,15 @@ export const Workspace5C: React.FC = () => {
                     <Badge variant="outline" className="capitalize">
                       {activeTask.capacity}
                     </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={openMetaLoopConsole}
+                      className="gap-2"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Meta-Loop Console
+                    </Button>
                     {!isSidebarCollapsed && (
                       <button
                         onClick={() => setIsSidebarCollapsed(true)}
@@ -426,6 +441,9 @@ export const Workspace5C: React.FC = () => {
           isLoading={isClaimingTask}
         />
       )}
+      
+      {/* Zone Tools Portals - Admin zone for Meta Loop Console */}
+      <ZoneToolsPortals zone="admin" />
       
       {/* Alert Rail */}
       <AlertRail />
