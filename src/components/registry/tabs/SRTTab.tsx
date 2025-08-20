@@ -247,6 +247,56 @@ const getSRTForLoop = (loopId: string): SRTConfig | null => {
       description: 'Firm hiring optimization with matching incentives and onboarding',
       reviewFrequency: 'Monthly ATS integration validation with diversity guardrail monitoring',
       escalationThreshold: 'Time-to-fill > 45 days or attrition > 12% triggers process review'
+    },
+    // Add Batch 5 missing loops
+    'atlas-MAC-L01': {
+      reflexHorizon: 'P365D',
+      cadence: 'annual',
+      description: 'Long-horizon cohort tracking with annual reviews',
+      reviewFrequency: 'Annual with demographic census reconciliation',
+      escalationThreshold: 'Support ratio < 1.8 for 2+ years triggers policy review'
+    },
+    'atlas-MAC-L02': {
+      reflexHorizon: 'P90D',
+      cadence: 'quarterly',
+      description: 'Sector pact and recognition framework optimization',
+      reviewFrequency: 'Quarterly labor market assessment with vacancy matching analysis',
+      escalationThreshold: 'Vacancy-unemployment gap > 2pp for 2+ quarters triggers intervention'
+    },
+    'atlas-MAC-L03': {
+      reflexHorizon: 'P90D',
+      cadence: 'quarterly',
+      description: 'Fiscal–monetary coordination and indexation rules',
+      reviewFrequency: 'Quarterly coordination meetings with central bank',
+      escalationThreshold: 'Inflation outside 2-5% band for 2+ quarters triggers policy review'
+    },
+    'atlas-MAC-L04': {
+      reflexHorizon: 'P180D',
+      cadence: 'semiannual',
+      description: 'One-stop approvals and digital cadaster integration',
+      reviewFrequency: 'Semiannual planning approval process review',
+      escalationThreshold: 'Price-to-income > 6 or formation lag > 18 months triggers reform'
+    },
+    'atlas-MES-L05': {
+      reflexHorizon: 'P90D',
+      cadence: 'quarterly',
+      description: 'Stage telemetry and one-stop control toggles for housing delivery',
+      reviewFrequency: 'Quarterly housing pipeline review with stage performance analysis',
+      escalationThreshold: 'Stage conversion < 55% or time > 180 days triggers process review'
+    },
+    'atlas-MIC-L11': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Assisted channels and onboarding kits for digital adoption',
+      reviewFrequency: 'Monthly digital adoption funnel analysis with A/B testing',
+      escalationThreshold: 'Drop-off > 35% or DAU/MAU < 0.25 triggers intervention'
+    },
+    'atlas-MIC-L12': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'Micro-grants and community support flows for local participation',
+      reviewFrequency: 'Monthly community engagement assessment with trust tracking',
+      escalationThreshold: 'Participation < 10% or trust < 0.5 triggers outreach program'
     }
   };
 

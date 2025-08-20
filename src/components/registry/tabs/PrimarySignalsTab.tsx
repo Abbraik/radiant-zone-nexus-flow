@@ -179,6 +179,42 @@ const getSignalsForLoop = (loopId: string): Signal[] => {
       { name: 'Churn Trap', description: 'Vacancy re-open cycles (churn traps)', type: 'event', priority: 'high', status: 'normal', lastTriggered: '2025-07-12' },
       { name: 'Low Acceptance', description: 'Low acceptance rate', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-06-22' },
       { name: 'Attrition Burst', description: 'Attrition bursts by role/tenure', type: 'event', priority: 'high', status: 'normal', lastTriggered: '2025-05-28' }
+    ],
+    // Batch 5 additions
+    'atlas-MAC-L01': [
+      { signal: 'Support ratio outside band for ≥ k periods', type: 'threshold', severity: 'high', frequency: 'rare', description: 'Worker-to-dependent ratio breaching sustainable bounds', lastTriggered: '2025-07-20', status: 'monitoring' },
+      { signal: 'Sharp decline in fertility with housing/childcare constraints', type: 'composite', severity: 'high', frequency: 'occasional', description: 'Fertility rate drops linked to affordability pressures', lastTriggered: '2025-08-10', status: 'active' },
+      { signal: 'Migration flow volatility affecting cohort structure', type: 'trend', severity: 'medium', frequency: 'occasional', description: 'Migration patterns disrupting demographic balance', lastTriggered: '2025-08-05', status: 'monitoring' }
+    ],
+    'atlas-MAC-L02': [
+      { signal: 'Persistent vacancy–unemployment gap > 2 pp', type: 'threshold', severity: 'high', frequency: 'occasional', description: 'Large mismatch between job vacancies and unemployment', lastTriggered: '2025-08-12', status: 'active' },
+      { signal: 'Fill-time increases across sectors', type: 'trend', severity: 'medium', frequency: 'frequent', description: 'Time to fill job vacancies increasing broadly', lastTriggered: '2025-08-18', status: 'monitoring' },
+      { signal: 'Credentialing/recognition coverage gaps', type: 'composite', severity: 'medium', frequency: 'occasional', description: 'Skills recognition system missing key occupations', lastTriggered: '2025-08-01', status: 'resolved' }
+    ],
+    'atlas-MAC-L03': [
+      { signal: 'Inflation > 5% or < 2% for ≥ 2 quarters', type: 'threshold', severity: 'critical', frequency: 'rare', description: 'Price stability outside target range persistently', lastTriggered: '2025-06-30', status: 'resolved' },
+      { signal: 'Rising inflation expectations dispersion', type: 'trend', severity: 'high', frequency: 'occasional', description: 'Public expectations of inflation becoming more volatile', lastTriggered: '2025-08-15', status: 'monitoring' },
+      { signal: 'Energy/food price shocks feeding into CPI', type: 'event', severity: 'high', frequency: 'occasional', description: 'Essential goods price increases affecting general inflation', lastTriggered: '2025-08-08', status: 'active' }
+    ],
+    'atlas-MAC-L04': [
+      { signal: 'Price-to-income rising above 6', type: 'threshold', severity: 'critical', frequency: 'rare', description: 'Housing affordability reaching crisis levels', lastTriggered: '2025-07-15', status: 'resolved' },
+      { signal: 'Stage-bottlenecks in approvals/starts/completions', type: 'composite', severity: 'high', frequency: 'frequent', description: 'Housing delivery pipeline showing systematic delays', lastTriggered: '2025-08-19', status: 'active' },
+      { signal: 'Household formation delays > 18 months', type: 'threshold', severity: 'medium', frequency: 'occasional', description: 'Young adults delaying household formation due to housing costs', lastTriggered: '2025-08-05', status: 'monitoring' }
+    ],
+    'atlas-MES-L05': [
+      { signal: 'Starts-to-completions conversion falling', type: 'trend', severity: 'high', frequency: 'occasional', description: 'Housing construction pipeline experiencing conversion issues', lastTriggered: '2025-08-14', status: 'active' },
+      { signal: 'Time-in-stage > 180 days', type: 'threshold', severity: 'medium', frequency: 'frequent', description: 'Housing delivery stages taking longer than target timeframes', lastTriggered: '2025-08-19', status: 'active' },
+      { signal: 'Cost spikes not explained by inputs', type: 'event', severity: 'high', frequency: 'occasional', description: 'Unexplained housing cost increases beyond input price changes', lastTriggered: '2025-08-12', status: 'monitoring' }
+    ],
+    'atlas-MIC-L11': [
+      { signal: 'Onboarding failures or long session times', type: 'composite', severity: 'medium', frequency: 'frequent', description: 'Digital service onboarding showing usability issues', lastTriggered: '2025-08-18', status: 'active' },
+      { signal: 'High drop-off at critical steps', type: 'threshold', severity: 'high', frequency: 'frequent', description: 'Users abandoning digital services at key interaction points', lastTriggered: '2025-08-20', status: 'active' },
+      { signal: 'Low literacy zones with access gaps', type: 'composite', severity: 'medium', frequency: 'occasional', description: 'Digital divide affecting service adoption in underserved areas', lastTriggered: '2025-08-10', status: 'monitoring' }
+    ],
+    'atlas-MIC-L12': [
+      { signal: 'Low turnout to participatory budgeting', type: 'threshold', severity: 'medium', frequency: 'occasional', description: 'Community engagement levels below targets for local decision-making', lastTriggered: '2025-08-15', status: 'monitoring' },
+      { signal: 'Weak co-production capacity in target areas', type: 'composite', severity: 'high', frequency: 'rare', description: 'Community capacity for co-producing services is insufficient', lastTriggered: '2025-07-28', status: 'active' },
+      { signal: 'Trust dips not explained by service quality', type: 'event', severity: 'medium', frequency: 'rare', description: 'Local trust declining despite stable service performance', lastTriggered: '2025-08-05', status: 'monitoring' }
     ]
   };
 

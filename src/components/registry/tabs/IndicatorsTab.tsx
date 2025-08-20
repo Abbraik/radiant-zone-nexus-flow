@@ -182,6 +182,42 @@ const getIndicatorsForLoop = (loopId: string): Indicator[] => {
       { name: 'Time-to-Fill', band: { min: 15, max: 45 }, alpha: 0.3, unit: 'days', currentValue: 32, trend: 'down', status: 'normal' },
       { name: 'Attrition Rate', band: { min: 0, max: 12 }, alpha: 0.3, unit: '%', currentValue: 9.2, trend: 'stable', status: 'normal' },
       { name: 'Offer Acceptance Rate', band: { min: 60, max: 90 }, alpha: 0.3, unit: '%', currentValue: 76, trend: 'up', status: 'normal' }
+    ],
+    // Add Batch 5 missing loops
+    'atlas-MAC-L01': [
+      { name: 'Support Ratio', band: { min: 1.8, max: 2.6 }, alpha: 0.2, unit: 'workers/dependents', currentValue: 2.2, trend: 'down', status: 'normal' },
+      { name: 'Dependency Ratio', band: { min: 45, max: 65 }, alpha: 0.2, unit: '%', currentValue: 52, trend: 'up', status: 'normal' },
+      { name: 'Fertility Rate', band: { min: 1.7, max: 2.4 }, alpha: 0.2, unit: 'children/woman', currentValue: 2.1, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MAC-L02': [
+      { name: 'Vacancy–Unemployment Gap', band: { min: -1, max: 2 }, alpha: 0.3, unit: 'pp', currentValue: 0.8, trend: 'stable', status: 'normal' },
+      { name: 'Participation Rate', band: { min: 60, max: 75 }, alpha: 0.3, unit: '%', currentValue: 68, trend: 'up', status: 'normal' },
+      { name: 'Wage Drift', band: { min: 2, max: 6 }, alpha: 0.3, unit: '%YoY', currentValue: 4.2, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MAC-L03': [
+      { name: 'Inflation (YoY)', band: { min: 2, max: 5 }, alpha: 0.3, unit: '%', currentValue: 3.8, trend: 'up', status: 'normal' },
+      { name: 'Output Gap', band: { min: -1.5, max: 1.5 }, alpha: 0.3, unit: '% potential', currentValue: 0.5, trend: 'stable', status: 'normal' },
+      { name: 'Expectation Dispersion', band: { min: 0.1, max: 0.4 }, alpha: 0.3, unit: 'index', currentValue: 0.25, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MAC-L04': [
+      { name: 'Price-to-Income', band: { min: 3, max: 6 }, alpha: 0.3, unit: 'ratio', currentValue: 4.8, trend: 'up', status: 'normal' },
+      { name: 'Approvals Throughput', band: { min: 1000, max: 4000 }, alpha: 0.3, unit: 'permits/mo', currentValue: 2800, trend: 'up', status: 'normal' },
+      { name: 'Formation Lag', band: { min: 6, max: 18 }, alpha: 0.3, unit: 'months', currentValue: 12, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MES-L05': [
+      { name: 'Stage Conversion Rate', band: { min: 55, max: 85 }, alpha: 0.3, unit: '%', currentValue: 72, trend: 'up', status: 'normal' },
+      { name: 'Avg. Time in Stage', band: { min: 60, max: 180 }, alpha: 0.3, unit: 'days', currentValue: 125, trend: 'down', status: 'normal' },
+      { name: 'Unit Cost', band: { min: 600, max: 1200 }, alpha: 0.3, unit: '$/m²', currentValue: 850, trend: 'up', status: 'normal' }
+    ],
+    'atlas-MIC-L11': [
+      { name: 'DAU/MAU', band: { min: 0.25, max: 0.5 }, alpha: 0.3, unit: 'ratio', currentValue: 0.38, trend: 'up', status: 'normal' },
+      { name: 'Funnel Drop-off', band: { min: 0, max: 35 }, alpha: 0.3, unit: '%', currentValue: 28, trend: 'down', status: 'normal' },
+      { name: 'Assisted Share', band: { min: 5, max: 25 }, alpha: 0.3, unit: '% sessions', currentValue: 18, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MIC-L12': [
+      { name: 'Participation Rate', band: { min: 10, max: 35 }, alpha: 0.3, unit: '% adults', currentValue: 24, trend: 'up', status: 'normal' },
+      { name: 'Local Trust Index', band: { min: 0.5, max: 0.8 }, alpha: 0.3, unit: 'index', currentValue: 0.68, trend: 'stable', status: 'normal' },
+      { name: 'Co-prod Hours', band: { min: 20, max: 120 }, alpha: 0.3, unit: 'hrs/1k pop', currentValue: 85, trend: 'up', status: 'normal' }
     ]
   };
 
