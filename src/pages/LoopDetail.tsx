@@ -20,14 +20,17 @@ const CascadesTab = React.lazy(() => import('@/components/registry/tabs/Cascades
 const VersionsTab = React.lazy(() => import('@/components/registry/tabs/VersionsTab'));
 const ChecksTab = React.lazy(() => import('@/components/registry/tabs/ChecksTab'));
 
+const PrimarySignalsTab = React.lazy(() => import('@/components/registry/tabs/PrimarySignalsTab'));
+
 const TABS = [
   { id: 'overview', label: 'Overview', component: OverviewTab },
   { id: 'structure', label: 'Structure', component: StructureTab },
   { id: 'indicators', label: 'Indicators & DE-Bands', component: IndicatorsTab },
+  { id: 'signals', label: 'Primary Signals', component: PrimarySignalsTab },
   { id: 'srt', label: 'SRT & Cadence', component: SRTTab },
-  { id: 'snl', label: 'Shared Nodes', component: SNLTab },
-  { id: 'cascades', label: 'Cascades', component: CascadesTab },
-  { id: 'versions', label: 'Versions', component: VersionsTab },
+  { id: 'cascades', label: 'Cascade Hooks', component: CascadesTab },
+  { id: 'snl', label: 'Shared Nodes (SNL)', component: SNLTab },
+  { id: 'versions', label: 'Version Seed', component: VersionsTab },
   { id: 'checks', label: 'Checks', component: ChecksTab }
 ] as const;
 
