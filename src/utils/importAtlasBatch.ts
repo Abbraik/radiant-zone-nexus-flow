@@ -194,8 +194,13 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
 
       // Insert indicators
       if (loopData.indicators?.length) {
-        const indicatorsData = loopData.indicators.map(indicator => ({
-          id: crypto.randomUUID(),
+        const indicatorsWithIds = loopData.indicators.map(indicator => ({
+          ...indicator,
+          dbId: crypto.randomUUID()
+        }));
+
+        const indicatorsData = indicatorsWithIds.map(indicator => ({
+          id: indicator.dbId,
           name: indicator.name,
           type: indicator.kind,
           unit: indicator.unit,
@@ -213,16 +218,24 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
 
         // Insert DE bands
         if (insertedIndicators && loopData.de_bands?.length) {
-          const bandsData = loopData.de_bands.map((band, idx) => ({
-            indicator_id: insertedIndicators[idx]?.id,
-            loop_id: loopId,
-            indicator: insertedIndicators[idx]?.name || 'primary',
-            lower_bound: band.lower_bound,
-            upper_bound: band.upper_bound,
-            asymmetry: band.asymmetry,
-            smoothing_alpha: band.smoothing_alpha,
-            user_id: user.id,
-          })).filter(band => band.indicator_id); // Only include valid indicator IDs
+          const bandsData = loopData.de_bands.map((band, idx) => {
+            const matchingIndicator = insertedIndicators.find(ind => 
+              ind.id === indicatorsWithIds[idx]?.dbId
+            );
+            
+            if (!matchingIndicator) return null;
+
+            return {
+              indicator_id: matchingIndicator.id,
+              loop_id: loopId,
+              indicator: matchingIndicator.name || 'primary',
+              lower_bound: band.lower_bound,
+              upper_bound: band.upper_bound,
+              asymmetry: band.asymmetry,
+              smoothing_alpha: band.smoothing_alpha,
+              user_id: user.id,
+            };
+          }).filter(Boolean) as any[];
 
           if (bandsData.length > 0) {
             const { error: bandsError } = await supabase
