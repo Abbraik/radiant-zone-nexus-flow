@@ -17,16 +17,33 @@ function mapISOtoDays(iso: string) {
 }
 
 export function composeTasksFromDecision(decision: DecisionResult, loopCode: string): Task[] {
-  const blocks: CapacityAction[] = decision.templateActions?.length
-    ? decision.templateActions
-    : decision.order.map((c, i) => ({
+  // Provide defaults for missing properties to prevent runtime errors
+  const safeDecision = {
+    order: ["responsive" as const],
+    templateActions: [] as CapacityAction[],
+    decisionId: `decision-${Date.now()}`,
+    srt: { horizon: "P30D", cadence: "1 hour" },
+    guardrails: { caps: [] as string[] },
+    consent: { requireDeliberative: false },
+    scores: { responsive: 1.0 },
+    primary: "responsive" as const,
+    secondary: undefined,
+    ...decision,
+    // Ensure loopCode and indicator are set
+    loopCode: decision.loopCode || loopCode,
+    indicator: decision.indicator || "primary"
+  };
+
+  const blocks: CapacityAction[] = safeDecision.templateActions?.length
+    ? safeDecision.templateActions
+    : (safeDecision.order || ["responsive"]).map((c, i) => ({
         capacity: c,
         order: i+1,
-        sprintLevel: c === "structural" ? "S" : c === "responsive" || c === "anticipatory" ? "P" : "N",
+        sprintLevel: c === "structural" ? "S" as Leverage : c === "responsive" || c === "anticipatory" ? "P" as Leverage : "N" as Leverage,
         actions: []
       }));
 
-  const horizonDays = mapISOtoDays(decision.srt.horizon);
+  const horizonDays = mapISOtoDays(safeDecision.srt.horizon);
   const dueAt = new Date(Date.now() + Math.min(horizonDays, 30)*24*3600*1000).toISOString();
 
   const tasks = blocks.flatMap((b) =>
@@ -35,15 +52,15 @@ export function composeTasksFromDecision(decision: DecisionResult, loopCode: str
       description: a,
       capacity: b.capacity,
       leverage: b.sprintLevel,
-      guardrails: decision.guardrails?.caps,
+      guardrails: safeDecision.guardrails?.caps,
       dueAt,
-      meta: { order: b.order, loopCode, srt: decision.srt, consent: decision.consent }
+      meta: { order: b.order, loopCode, srt: safeDecision.srt, consent: safeDecision.consent }
     }))
   );
 
   // Idempotency key on (decisionHash + title)
   return tasks.map(t => ({
     ...t,
-    id: `${decision.decisionId}:${t.title}`
+    id: `${safeDecision.decisionId}:${t.title}`
   }));
 }

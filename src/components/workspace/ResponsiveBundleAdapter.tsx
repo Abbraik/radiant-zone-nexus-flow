@@ -26,8 +26,16 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
   const decision = payload?.decision || {
     severity: 0.5,
     guardrails: { timeboxDays: 14, caps: [] },
-    srt: { cadence: '1 hour' },
-    consent: { requireDeliberative: false }
+    srt: { cadence: '1 hour', horizon: 'P14D' },
+    consent: { requireDeliberative: false },
+    order: ['responsive' as const],
+    templateActions: [],
+    decisionId: `decision-${Date.now()}`,
+    scores: { responsive: 1.0 },
+    primary: 'responsive' as const,
+    secondary: undefined,
+    loopCode: loopCode,
+    indicator: indicator
   };
   const reading = payload?.reading;
   const lastIncidentId = payload?.lastIncidentId;
