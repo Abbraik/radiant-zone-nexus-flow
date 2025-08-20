@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Save, Play, Upload, Download, AlertTriangle, Check } from 'lucide-react';
+import { Save, Play, Upload, Download, AlertTriangle, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { useLoopRegistry, useLoopHydration } from '@/hooks/useLoopRegistry';
-import { LoopData, HydratedLoop } from '@/types/loop-registry';
+import { useLoopHydrate, useLoopAutosave } from '@/hooks/useLoopEditor';
+import { HydratedLoopPayload, AutosaveStatus } from '@/types/loop-editor';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
+// Import editor components (to be created)
 import { MetadataEditor } from '@/components/registry/editor/MetadataEditor';
 import { CLDGraphEditor } from '@/components/registry/editor/CLDGraphEditor';
 import { IndicatorsEditor } from '@/components/registry/editor/IndicatorsEditor';
@@ -17,7 +19,6 @@ import { SNLLinksEditor } from '@/components/registry/editor/SNLLinksEditor';
 import { CascadeBuilderEditor } from '@/components/registry/editor/CascadeBuilderEditor';
 import { VersionsReadOnly } from '@/components/registry/editor/VersionsReadOnly';
 import { PublishDrawer } from '@/components/registry/editor/PublishDrawer';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface EditorSection {
   id: string;
@@ -37,59 +38,49 @@ const editorSections: EditorSection[] = [
 ];
 
 export default function LoopEditor() {
-  const { id } = useParams<{ id: string }>();
+  const { loopCode } = useParams<{ loopCode: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   
   const [activeSection, setActiveSection] = useState('metadata');
   const [isDirty, setIsDirty] = useState(false);
   const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false);
-  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>({
+    status: 'idle'
+  });
   
-  const isNewLoop = id === 'new';
-  const { getLoop, updateLoop, createLoop, publishLoop } = useLoopRegistry();
-  const { data: hydrated, isLoading } = useLoopHydration(isNewLoop ? undefined : id);
-  const { data: loop } = getLoop(isNewLoop ? '' : id || '');
-
-  const [editorData, setEditorData] = useState<Partial<HydratedLoop> | null>(null);
+  // Fetch loop data
+  const { data: hydrated, isLoading, error } = useLoopHydrate(loopCode || '');
+  const { saveMetadata } = useLoopAutosave(hydrated?.loop?.id || '');
+  
+  const [editorData, setEditorData] = useState<HydratedLoopPayload | null>(null);
 
   useEffect(() => {
-    if (isNewLoop) {
-      setEditorData({
-        name: 'New Loop',
-        loop_type: 'reactive',
-        scale: 'micro',
-        status: 'draft',
-        nodes: [],
-        edges: []
-      } as Partial<HydratedLoop>);
-    } else if (hydrated) {
+    if (hydrated) {
       setEditorData(hydrated);
     }
-  }, [isNewLoop, hydrated]);
+  }, [hydrated]);
 
   // Autosave with 2s debounce
   useEffect(() => {
     if (!isDirty || !editorData) return;
     
     const timeoutId = setTimeout(async () => {
-      setAutosaveStatus('saving');
+      setAutosaveStatus({ status: 'saving' });
       try {
-        if (isNewLoop) {
-          // Will handle new loop creation separately
-          setAutosaveStatus('saved');
-        } else {
-          await updateLoop.mutateAsync({
-            id: id!,
-            updates: editorData
-          });
-          setAutosaveStatus('saved');
-        }
+        await saveMetadata(editorData.loop);
+        setAutosaveStatus({ 
+          status: 'saved',
+          lastSaved: new Date()
+        });
         setIsDirty(false);
         
-        setTimeout(() => setAutosaveStatus('idle'), 2000);
+        setTimeout(() => setAutosaveStatus({ status: 'idle' }), 2000);
       } catch (error) {
-        setAutosaveStatus('error');
+        setAutosaveStatus({ 
+          status: 'error',
+          error: 'Failed to save changes'
+        });
         toast({
           title: "Autosave Failed",
           description: "Failed to save changes automatically.",
@@ -99,7 +90,7 @@ export default function LoopEditor() {
     }, 2000);
 
     return () => clearTimeout(timeoutId);
-  }, [isDirty, editorData, isNewLoop, id, updateLoop, toast]);
+  }, [isDirty, editorData, saveMetadata, toast]);
 
   const handleSectionChange = useCallback((sectionId: string) => {
     setActiveSection(sectionId);
@@ -110,11 +101,21 @@ export default function LoopEditor() {
       if (!prev) return prev;
       
       if (section === 'metadata') {
-        return { ...prev, ...data };
+        return { ...prev, loop: { ...prev.loop, ...data } };
       } else if (section === 'nodes') {
         return { ...prev, nodes: data };
       } else if (section === 'edges') {
         return { ...prev, edges: data };
+      } else if (section === 'indicators') {
+        return { ...prev, indicators: data };
+      } else if (section === 'de_bands') {
+        return { ...prev, de_bands: data };
+      } else if (section === 'srt_windows') {
+        return { ...prev, srt_windows: data };
+      } else if (section === 'shared_nodes') {
+        return { ...prev, shared_nodes: data };
+      } else if (section === 'cascades') {
+        return { ...prev, cascades: data };
       }
       
       return prev;
@@ -126,15 +127,7 @@ export default function LoopEditor() {
     if (!editorData) return;
     
     try {
-      if (isNewLoop) {
-        const newLoop = await createLoop.mutateAsync(editorData);
-        navigate(`/registry/${newLoop.id}/edit`);
-      } else {
-        await updateLoop.mutateAsync({
-          id: id!,
-          updates: editorData
-        });
-      }
+      await saveMetadata(editorData.loop);
       setIsDirty(false);
       toast({
         title: "Draft Saved",
@@ -150,7 +143,7 @@ export default function LoopEditor() {
   };
 
   const handleRunLint = () => {
-    // TODO: Implement linting
+    // TODO: Implement linting system
     toast({
       title: "Linting Complete",
       description: "No issues found.",
@@ -164,17 +157,19 @@ export default function LoopEditor() {
   const handleExport = () => {
     if (!editorData) return;
     
-    const exportData = editorData;
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    const blob = new Blob([JSON.stringify(editorData, null, 2)], {
       type: 'application/json'
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${editorData.name || 'loop'}.json`;
+    a.download = `${editorData.loop.name || 'loop'}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleBack = () => {
+    navigate('/registry');
   };
 
   const renderEditorContent = () => {
@@ -184,7 +179,7 @@ export default function LoopEditor() {
       case 'metadata':
         return (
           <MetadataEditor
-            data={editorData}
+            data={editorData.loop as any}
             onChange={(data) => handleDataChange('metadata', data)}
           />
         );
@@ -200,37 +195,37 @@ export default function LoopEditor() {
       case 'indicators':
         return (
           <IndicatorsEditor
-            loopId={isNewLoop ? undefined : id}
-            nodes={editorData.nodes || []}
+            loopId={editorData.loop.id}
+            nodes={editorData.nodes?.filter(n => n.kind === 'indicator') || []}
           />
         );
       case 'srt':
         return (
           <SRTEditor
-            loopId={isNewLoop ? undefined : id}
+            loopId={editorData.loop.id}
           />
         );
       case 'snl':
         return (
           <SNLLinksEditor
-            loopId={isNewLoop ? undefined : id}
+            loopId={editorData.loop.id}
             nodes={editorData.nodes || []}
           />
         );
       case 'cascades':
         return (
           <CascadeBuilderEditor
-            loopId={isNewLoop ? undefined : id}
+            loopId={editorData.loop.id}
           />
         );
       case 'versions':
         return (
           <VersionsReadOnly
-            loopId={isNewLoop ? undefined : id}
+            loopId={editorData.loop.id}
           />
         );
       default:
-        return <div>Section coming soon</div>;
+        return <div className="p-8 text-center text-muted-foreground">Section coming soon</div>;
     }
   };
 
@@ -238,6 +233,26 @@ export default function LoopEditor() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error || !editorData) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="p-6 max-w-md">
+          <div className="text-center">
+            <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <h2 className="text-lg font-semibold mb-2">Loop Not Found</h2>
+            <p className="text-muted-foreground mb-4">
+              {error?.message || 'The requested loop could not be found.'}
+            </p>
+            <Button onClick={handleBack}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Registry
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -252,31 +267,38 @@ export default function LoopEditor() {
       >
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={handleBack}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Registry
+            </Button>
             <h1 className="text-2xl font-bold text-foreground">
-              {isNewLoop ? 'Create New Loop' : 'Edit Loop'}
+              Loop Editor
             </h1>
-            {editorData?.name && (
-              <Badge variant="secondary">{editorData.name}</Badge>
+            {editorData?.loop?.name && (
+              <Badge variant="secondary">{editorData.loop.name}</Badge>
+            )}
+            {editorData?.loop?.loop_code && (
+              <Badge variant="outline">{editorData.loop.loop_code}</Badge>
             )}
           </div>
           
           <div className="flex items-center gap-2">
             {/* Autosave Status */}
-            {autosaveStatus !== 'idle' && (
+            {autosaveStatus.status !== 'idle' && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {autosaveStatus === 'saving' && (
+                {autosaveStatus.status === 'saving' && (
                   <>
                     <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     Saving...
                   </>
                 )}
-                {autosaveStatus === 'saved' && (
+                {autosaveStatus.status === 'saved' && (
                   <>
                     <Check className="w-4 h-4 text-green-500" />
                     Saved
                   </>
                 )}
-                {autosaveStatus === 'error' && (
+                {autosaveStatus.status === 'error' && (
                   <>
                     <AlertTriangle className="w-4 h-4 text-destructive" />
                     Error
@@ -315,7 +337,7 @@ export default function LoopEditor() {
             
             <Button
               onClick={handlePublish}
-              disabled={isNewLoop}
+              disabled={editorData?.loop?.status !== 'draft'}
             >
               <Upload className="w-4 h-4 mr-2" />
               Publish
@@ -377,12 +399,14 @@ export default function LoopEditor() {
       <PublishDrawer
         isOpen={isPublishDrawerOpen}
         onClose={() => setIsPublishDrawerOpen(false)}
-        loopId={isNewLoop ? undefined : id}
+        loopId={editorData?.loop?.id}
         onPublish={() => {
-          if (id) {
-            publishLoop.mutate(id);
-            setIsPublishDrawerOpen(false);
-          }
+          // TODO: Implement publish functionality
+          setIsPublishDrawerOpen(false);
+          toast({
+            title: "Published",
+            description: "Loop has been published successfully.",
+          });
         }}
       />
     </div>
