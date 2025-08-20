@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import ResponsiveBundle from '@/bundles/responsive';
+import { ResponsiveCapacityPage } from '@/pages/ResponsiveCapacityPage';
 import type { CapacityBundleProps } from '@/types/capacity';
 import { useResponsiveIntegration } from '@/hooks/useResponsiveIntegration';
 
@@ -37,7 +37,18 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
     loopCode: loopCode,
     indicator: indicator
   };
-  const reading = payload?.reading;
+  const reading = payload?.reading || {
+    value: 42.3,
+    lower: 35,
+    upper: 45,
+    slope: 0.12,
+    oscillation: 0.6,
+    dispersion: 0.4,
+    persistencePk: 0.3,
+    integralError: 0.2,
+    hubSaturation: 0.7,
+    guardrailViolation: payload?.guardrailViolation || null
+  };
   const lastIncidentId = payload?.lastIncidentId;
 
   const handleHandoff = useCallback((to: "reflexive"|"deliberative"|"structural", reason: string) => {
@@ -81,36 +92,23 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
   }, [onValidationChange]);
 
   return (
-    <div className="space-y-4">
-      <ResponsiveBundle
-        loopCode={loopCode}
-        indicator={indicator}
-        decision={decision}
-        reading={reading}
-        lastIncidentId={lastIncidentId}
-        onHandoff={handleHandoff}
-      />
-      
-      {payload?.handoffRequest && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-center gap-2 text-amber-800">
-            <span className="font-medium">Handoff Requested:</span>
-            <span>{payload.handoffRequest.to} capacity</span>
-          </div>
-          <div className="text-sm text-amber-700 mt-1">
-            {payload.handoffRequest.reason}
-          </div>
-        </div>
-      )}
-      
-      {payload?.availableTasks && payload.availableTasks.length > 0 && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <div className="flex items-center gap-2 text-blue-800">
-            <span className="font-medium">Tasks Available:</span>
-            <span>{payload.availableTasks.length} tasks ready for claiming</span>
-          </div>
-        </div>
-      )}
-    </div>
+    <ResponsiveCapacityPage
+      decision={decision}
+      reading={reading}
+      playbook={{
+        id: 'health-surge-v2',
+        name: 'Health Capacity Surge',
+        rationale: 'Re-enter band faster with mobile units and triage v2',
+        tasks: [
+          { title: 'Deploy mobile triage units', description: 'Activate standby capacity', capacity: 'responsive' },
+          { title: 'Update care protocols', description: 'Switch to crisis triage v2', capacity: 'responsive' },
+          { title: 'Coordinate with regional hubs', description: 'Balance load across network', capacity: 'responsive' }
+        ]
+      }}
+      onUpsertIncident={handleUpsertIncident}
+      onAppendIncidentEvent={handleAppendIncidentEvent}
+      onCreateSprintWithTasks={handleCreateSprintWithTasks}
+      onOpenClaimDrawer={handleOpenClaimDrawer}
+    />
   );
 };
