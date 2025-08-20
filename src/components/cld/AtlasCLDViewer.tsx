@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -253,8 +253,20 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
 }) => {
   const atlasData = useMemo(() => CLDEngine.extractAtlasData(loop), [loop]);
   const stats = useMemo(() => CLDEngine.getStructureStats(loop), [loop]);
+  const [showDemo, setShowDemo] = useState(false);
   
-  if (!atlasData || !CLDEngine.hasStructureData(loop)) {
+  // For loops without structure data, optionally show demo
+  const displayData = useMemo(() => {
+    if (atlasData && CLDEngine.hasStructureData(loop)) {
+      return atlasData;
+    }
+    if (showDemo) {
+      return CLDEngine.generateDemoStructure(loop);
+    }
+    return null;
+  }, [atlasData, loop, showDemo]);
+  
+  if (!displayData) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -263,18 +275,57 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
       >
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertDescription>
-            This loop doesn't have any structural elements yet. 
-            {onEdit && !readonly && 'Use the Editor to add nodes and define causal relationships.'}
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              This loop doesn't have structural elements defined yet. 
+              {onEdit && !readonly && ' Use the Editor to add nodes and define causal relationships.'}
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowDemo(true)}
+              className="ml-4"
+            >
+              Show Demo Structure
+            </Button>
           </AlertDescription>
         </Alert>
+        
+        {/* Loop Information Card */}
+        <Card className="glass-secondary">
+          <CardHeader>
+            <CardTitle className="text-lg">Loop Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium">Type:</span> {loop.loop_type}
+              </div>
+              <div>
+                <span className="font-medium">Scale:</span> {loop.scale}
+              </div>
+              <div>
+                <span className="font-medium">Status:</span> {loop.status}
+              </div>
+              <div>
+                <span className="font-medium">Default Leverage:</span> {loop.leverage_default}
+              </div>
+            </div>
+            {loop.notes && (
+              <div className="mt-4">
+                <span className="font-medium">Notes:</span>
+                <p className="text-muted-foreground mt-1">{loop.notes}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </motion.div>
     );
   }
 
-  // Find isolated nodes
-  const nodes = atlasData.nodes || [];
-  const edges = atlasData.edges || [];
+  // Find isolated nodes using displayData instead of atlasData
+  const nodes = displayData.nodes || [];
+  const edges = displayData.edges || [];
   const connectedNodeIds = new Set([
     ...edges.map((e: any) => e.from_node),
     ...edges.map((e: any) => e.to_node)
@@ -288,6 +339,25 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
+      {/* Demo structure warning */}
+      {showDemo && !CLDEngine.hasStructureData(loop) && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              Showing demo structure for illustration purposes. This is not the actual loop structure.
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowDemo(false)}
+            >
+              Hide Demo
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+      
       {/* Warnings */}
       {isolatedNodes.length > 0 && (
         <Alert variant="destructive">
@@ -300,12 +370,12 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
         </Alert>
       )}
       
-      {/* Structure Overview */}
+      {/* Structure Overview - use displayData stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="glass-secondary">
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">{stats.nodeCount}</div>
+              <div className="text-2xl font-bold text-foreground">{nodes.length}</div>
               <div className="text-sm text-muted-foreground">Total Nodes</div>
             </div>
           </CardContent>
@@ -314,7 +384,7 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
         <Card className="glass-secondary">
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">{stats.edgeCount}</div>
+              <div className="text-2xl font-bold text-foreground">{edges.length}</div>
               <div className="text-sm text-muted-foreground">Causal Links</div>
             </div>
           </CardContent>
@@ -324,7 +394,7 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-foreground">
-                {stats.avgConnections.toFixed(1)}
+                {nodes.length > 0 ? (edges.length / nodes.length).toFixed(1) : '0.0'}
               </div>
               <div className="text-sm text-muted-foreground">Avg Connections</div>
             </div>
@@ -342,6 +412,7 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
             <CardTitle className="text-lg flex items-center gap-2">
               <Network className="w-5 h-5" />
               Causal Loop Diagram
+              {showDemo && <Badge variant="secondary" className="ml-2">Demo</Badge>}
             </CardTitle>
             {onEdit && (
               <Button variant="outline" size="sm" onClick={onEdit}>
@@ -352,12 +423,12 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          <AtlasCLDGraph atlasData={atlasData} readonly={readonly} />
+          <AtlasCLDGraph atlasData={displayData} readonly={readonly} />
         </CardContent>
       </Card>
 
       {/* Motif Analysis */}
-      {stats.edgeCount > 0 && (
+      {edges.length > 0 && (
         <Card className="glass-secondary">
           <CardHeader>
             <CardTitle className="text-lg">Motif Analysis</CardTitle>
@@ -369,11 +440,11 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm text-green-400">Reinforcing (+)</span>
-                    <span className="text-sm">{stats.reinforcingLinks}</span>
+                    <span className="text-sm">{edges.filter((e: any) => e.polarity === 1).length}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-red-400">Balancing (-)</span>
-                    <span className="text-sm">{stats.balancingLinks}</span>
+                    <span className="text-sm">{edges.filter((e: any) => e.polarity === -1).length}</span>
                   </div>
                 </div>
               </div>
@@ -382,11 +453,11 @@ export const AtlasCLDViewer: React.FC<AtlasCLDViewerProps> = ({
                 <h4 className="font-medium mb-2">Structure Health</h4>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${stats.isolatedNodes === 0 ? 'bg-green-400' : 'bg-red-400'}`} />
+                    <div className={`w-2 h-2 rounded-full ${isolatedNodes.length === 0 ? 'bg-green-400' : 'bg-red-400'}`} />
                     <span className="text-sm">Node Connectivity</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${stats.edgeCount > 0 ? 'bg-green-400' : 'bg-yellow-400'}`} />
+                    <div className={`w-2 h-2 rounded-full ${edges.length > 0 ? 'bg-green-400' : 'bg-yellow-400'}`} />
                     <span className="text-sm">Causal Links</span>
                   </div>
                 </div>

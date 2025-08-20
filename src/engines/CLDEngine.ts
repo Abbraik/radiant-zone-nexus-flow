@@ -39,12 +39,54 @@ export class CLDEngine {
       return metadata.atlas_data;
     }
     
-    // If the loop has nodes/edges directly
+    // If the loop has nodes/edges directly in metadata
     if (metadata?.nodes && metadata?.edges) {
       return {
         nodes: metadata.nodes,
         edges: metadata.edges
       };
+    }
+    
+    // Check if loop has direct nodes/edges properties
+    if (loop.nodes && loop.edges) {
+      return {
+        nodes: loop.nodes.map((node: any) => ({
+          id: node.id,
+          label: node.label,
+          kind: node.kind || 'aux',
+          meta: node.meta || {}
+        })),
+        edges: loop.edges.map((edge: any) => ({
+          id: edge.id,
+          from_node: edge.from_node,
+          to_node: edge.to_node,
+          polarity: edge.polarity,
+          weight: edge.weight,
+          note: edge.note
+        }))
+      };
+    }
+    
+    // Try to extract from other common formats
+    if (metadata?.structure) {
+      const structure = metadata.structure;
+      if (structure.nodes && structure.edges) {
+        return {
+          nodes: structure.nodes,
+          edges: structure.edges
+        };
+      }
+    }
+    
+    // Check if it's stored in the controller field (some loops store data there)
+    if (loop.controller && typeof loop.controller === 'object') {
+      const controller = loop.controller as any;
+      if (controller.nodes && controller.edges) {
+        return {
+          nodes: controller.nodes,
+          edges: controller.edges
+        };
+      }
     }
     
     return null;
@@ -303,6 +345,62 @@ export class CLDEngine {
   static hasStructureData(loop: LoopData): boolean {
     const atlasData = this.extractAtlasData(loop);
     return !!(atlasData?.nodes && atlasData.nodes.length > 0);
+  }
+
+  /**
+   * Generate a simple demo structure for loops without data
+   */
+  static generateDemoStructure(loop: LoopData): AtlasLoop {
+    // Create a simple demo structure based on loop metadata
+    const nodes = [
+      {
+        id: 'node1',
+        label: 'System State',
+        kind: 'stock',
+        meta: {}
+      },
+      {
+        id: 'node2', 
+        label: 'Action',
+        kind: 'flow',
+        meta: {}
+      },
+      {
+        id: 'node3',
+        label: 'Feedback',
+        kind: 'aux',
+        meta: {}
+      }
+    ];
+
+    const edges = [
+      {
+        id: 'edge1',
+        from_node: 'node1',
+        to_node: 'node2',
+        polarity: 1,
+        weight: 1.0
+      },
+      {
+        id: 'edge2',
+        from_node: 'node2',
+        to_node: 'node3',
+        polarity: 1,
+        weight: 1.0
+      },
+      {
+        id: 'edge3',
+        from_node: 'node3',
+        to_node: 'node1',
+        polarity: -1,
+        weight: 1.0
+      }
+    ];
+
+    return {
+      nodes,
+      edges
+    };
   }
 
   /**

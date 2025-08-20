@@ -14,7 +14,15 @@ const StructureTab: React.FC<StructureTabProps> = ({
   hydratedLoop, 
   isLoading 
 }) => {
-  // Use the new AtlasCLDViewer for all loops
+  // Debug logging
+  console.log('StructureTab rendering for loop:', loop?.id, {
+    hasMetadata: !!loop?.metadata,
+    metadataKeys: loop?.metadata ? Object.keys(loop.metadata) : [],
+    hasAtlasData: !!(loop?.metadata as any)?.atlas_data,
+    hasNodes: !!(loop?.nodes),
+    hasEdges: !!(loop?.edges)
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
