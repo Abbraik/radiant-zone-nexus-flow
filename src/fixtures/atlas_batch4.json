@@ -1,0 +1,464 @@
+{
+  "snl_catalog_additions": [
+    {"label":"Institutions.Guardrails","domain":"institution","descriptor":"Caps, time-boxes, safety limits"},
+    {"label":"Institutions.LegalProcess","domain":"institution","descriptor":"Process for structural change"},
+    {"label":"Environment.Risk","domain":"resource","descriptor":"Composite environmental risk"},
+    {"label":"SupplyChainRisk","domain":"resource","descriptor":"Supply chain fragility index"},
+    {"label":"GeopoliticsRisk","domain":"resource","descriptor":"Geopolitical tension index"},
+    {"label":"Receivables","domain":"resource","descriptor":"Accounts receivable days (DSO)"},
+    {"label":"Payables","domain":"resource","descriptor":"Accounts payable days (DPO)"},
+    {"label":"WCgap","domain":"resource","descriptor":"Working capital gap (days)"},
+    {"label":"Defaults","domain":"product","descriptor":"Default/arrears incidence"},
+    {"label":"LocalInventory","domain":"resource","descriptor":"Local inventory coverage"},
+    {"label":"ShortageIndex","domain":"product","descriptor":"Composite local shortage index"},
+    {"label":"Access.Childcare","domain":"product","descriptor":"Access to childcare services"},
+    {"label":"Access.Housing","domain":"product","descriptor":"Access to adequate housing"},
+    {"label":"DesiredFertility","domain":"product","descriptor":"Desired number of children"},
+    {"label":"OpportunityCost","domain":"product","descriptor":"Opportunity cost of childbearing"},
+    {"label":"WageDifferential","domain":"resource","descriptor":"Destination–origin wage differential"},
+    {"label":"SocialNetworks","domain":"social","descriptor":"Migrant network strength"},
+    {"label":"EnforcementVisibility","domain":"institution","descriptor":"Visibility of fair enforcement"},
+    {"label":"Norms","domain":"social","descriptor":"Prevailing social norms"},
+    {"label":"PerceivedLegitimacy","domain":"social","descriptor":"Perceived legitimacy of rules"}
+  ],
+  "loops": [
+    {
+      "loop": {
+        "name": "META-L05 — Threshold Guardrail Auditor",
+        "description": "Audits caps and time-boxes; tightens guardrails and enforces interim evaluation when violations or renewals accumulate.",
+        "loop_type": "perceptual",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Prevents silent drift behind safety caps; reduces oscillation and overrun.",
+        "metadata": { "motif": "B", "tags": ["meta","guardrails","safety"], "domain": "governance", "loop_code": "META-L05" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Guardrail Violation Rate","kind":"indicator"},
+        {"id":"N2","label":"Renewal Counter (no eval)","kind":"indicator"},
+        {"id":"N3","label":"Guardrail Tightness","kind":"aux","meta":{"snl":"Institutions.Guardrails"}},
+        {"id":"N4","label":"Interim Evaluation Required","kind":"aux"},
+        {"id":"N5","label":"Oscillation Score","kind":"indicator"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N3","polarity":1,"weight":0.5,"note":"Violations trigger tightening"},
+        {"id":"E2","from_node":"N3","to_node":"N1","polarity":-1,"weight":0.6},
+        {"id":"E3","from_node":"N2","to_node":"N4","polarity":1,"weight":0.7},
+        {"id":"E4","from_node":"N4","to_node":"N3","polarity":1,"weight":0.4},
+        {"id":"E5","from_node":"N5","to_node":"N3","polarity":1,"weight":0.5,"note":"Oscillation → tighter caps/time-box"},
+        {"id":"E6","from_node":"N3","to_node":"N5","polarity":-1,"weight":0.4}
+      ],
+      "shared_nodes": [
+        {"label":"Institutions.Guardrails","role":"system"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Violation Rate","kind":"rate","unit":"% periods"},
+        {"id":"I2","name":"Renewal Rate (no eval)","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Oscillation Score","kind":"state","unit":"index"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":5,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":20,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":0.3,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "META-L06 — Structural Proposal Pipeline",
+        "description": "Converts chronic Tier-1 shortfalls and sectoral bottlenecks into vetted structural proposals; adoption reduces drift.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Nested under escalation governance; measures adoption latency and post-adoption trend breaks.",
+        "metadata": { "motif": "B", "tags": ["meta","structure","pipeline"], "domain": "governance", "loop_code": "META-L06" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Chronic T1 Shortfall","kind":"indicator"},
+        {"id":"N2","label":"Sectoral Bottleneck Degree","kind":"indicator"},
+        {"id":"N3","label":"Proposal Backlog","kind":"indicator"},
+        {"id":"N4","label":"Legal Process Throughput","kind":"indicator","meta":{"snl":"Institutions.LegalProcess"}},
+        {"id":"N5","label":"Adoption Rate","kind":"indicator"},
+        {"id":"N6","label":"Authority & Budget Readiness","kind":"aux","meta":{"snl":"Institutions.Authority"}}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N4","to_node":"N5","polarity":1,"weight":0.6},
+        {"id":"E4","from_node":"N6","to_node":"N5","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N5","to_node":"N1","polarity":-1,"weight":0.6,"note":"Adoption reduces shortfall"},
+        {"id":"E6","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.5}
+      ],
+      "shared_nodes": [
+        {"label":"Institutions.LegalProcess","role":"system"},
+        {"label":"Institutions.Authority","role":"actor"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Adoption Latency","kind":"state","unit":"days"},
+        {"id":"I2","name":"Backlog Size","kind":"state","unit":"proposals"},
+        {"id":"I3","name":"Post-Adoption Trend Break","kind":"state","unit":"σ"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":30,"upper_bound":180,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":50,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":0.5,"upper_bound":2.0,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "META-L07 — Legitimacy & Participation Coupler",
+        "description": "Couples transparency and participatory sprints to close service–trust gaps; raises trust and participation in a reinforcing loop.",
+        "loop_type": "perceptual",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "N",
+        "notes": "Event-study tracks trust response to participatory cycles.",
+        "metadata": { "motif": "R", "tags": ["meta","legitimacy","participation"], "domain": "society", "loop_code": "META-L07" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Trust","kind":"indicator","meta":{"snl":"Society.Trust"}},
+        {"id":"N2","label":"Participation","kind":"indicator","meta":{"snl":"Society.Participation"}},
+        {"id":"N3","label":"Service–Trust Congruence Gap","kind":"indicator"},
+        {"id":"N4","label":"Transparency Package","kind":"aux"},
+        {"id":"N5","label":"Participatory Sprint Activation","kind":"aux"},
+        {"id":"N6","label":"Perceived Legitimacy","kind":"indicator","meta":{"snl":"PerceivedLegitimacy"}}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N4","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N5","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N2","to_node":"N1","polarity":1,"weight":0.5},
+        {"id":"E4","from_node":"N1","to_node":"N6","polarity":1,"weight":0.6},
+        {"id":"E5","from_node":"N6","to_node":"N2","polarity":1,"weight":0.3},
+        {"id":"E6","from_node":"N3","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E7","from_node":"N3","to_node":"N5","polarity":1,"weight":0.5},
+        {"id":"E8","from_node":"N3","to_node":"N1","polarity":-1,"weight":0.4,"note":"Bigger gap depresses trust"}
+      ],
+      "shared_nodes": [
+        {"label":"Society.Trust","role":"signal"},
+        {"label":"Society.Participation","role":"signal"},
+        {"label":"PerceivedLegitimacy","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Trust Index","kind":"state","unit":"index"},
+        {"id":"I2","name":"Participation Rate","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Congruence Gap","kind":"state","unit":"index"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0.55,"upper_bound":0.75,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":35,"upper_bound":65,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0.0,"upper_bound":0.3,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P90D","cadence":"quarterly"}
+    },
+    {
+      "loop": {
+        "name": "META-L08 — Early Warning & Risk Orchestrator",
+        "description": "Aggregates sentinel indices to raise early-warning scores; arms watchpoints, pre-positions bundles, and triggers contingency governance.",
+        "loop_type": "anticipatory",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Measures lead-time gained and loss averted from anticipatory actions.",
+        "metadata": { "motif": "C", "tags": ["meta","early-warning","risk"], "domain": "governance", "loop_code": "META-L08" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Environmental Risk","kind":"indicator","meta":{"snl":"Environment.Risk"}},
+        {"id":"N2","label":"Supply Chain Risk","kind":"indicator","meta":{"snl":"SupplyChainRisk"}},
+        {"id":"N3","label":"Geopolitics Risk","kind":"indicator","meta":{"snl":"GeopoliticsRisk"}},
+        {"id":"N4","label":"Early Warning Score","kind":"indicator"},
+        {"id":"N5","label":"Pre-positioned Bundles","kind":"aux"},
+        {"id":"N6","label":"Contingency Governance Armed","kind":"aux"},
+        {"id":"N7","label":"Lead-Time Gained","kind":"indicator"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N2","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N3","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E4","from_node":"N4","to_node":"N5","polarity":1,"weight":0.6},
+        {"id":"E5","from_node":"N5","to_node":"N7","polarity":1,"weight":0.6},
+        {"id":"E6","from_node":"N4","to_node":"N6","polarity":1,"weight":0.4}
+      ],
+      "shared_nodes": [
+        {"label":"Environment.Risk","role":"signal"},
+        {"label":"SupplyChainRisk","role":"signal"},
+        {"label":"GeopoliticsRisk","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Early Warning Score","kind":"state","unit":"index"},
+        {"id":"I2","name":"Lead-Time Gained","kind":"state","unit":"days"},
+        {"id":"I3","name":"Watchpoints Armed","kind":"state","unit":"count"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0.3,"upper_bound":0.7,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":3,"upper_bound":21,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":1,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L05 — Firm Working Capital & Delayed Payments",
+        "description": "e-Invoicing, prompt-payment mandates and factoring reduce receivables days and WC gap, lowering defaults.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Link to MES-L04 guarantees for SME credit multipliers.",
+        "metadata": { "motif": "B", "tags": ["micro","sme","working-capital"], "domain": "finance", "loop_code": "MIC-L05" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Receivables (DSO)","kind":"indicator","meta":{"snl":"Receivables"}},
+        {"id":"N2","label":"Payables (DPO)","kind":"indicator","meta":{"snl":"Payables"}},
+        {"id":"N3","label":"Working Capital Gap","kind":"indicator","meta":{"snl":"WCgap"}},
+        {"id":"N4","label":"Defaults","kind":"indicator","meta":{"snl":"Defaults"}},
+        {"id":"N5","label":"e-Invoicing Rails","kind":"aux"},
+        {"id":"N6","label":"Prompt-Payment Mandate","kind":"aux"},
+        {"id":"N7","label":"Factoring Availability","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N1","polarity":-1,"weight":0.6},
+        {"id":"E2","from_node":"N6","to_node":"N1","polarity":-1,"weight":0.6},
+        {"id":"E3","from_node":"N1","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E4","from_node":"N2","to_node":"N3","polarity":-1,"weight":0.4,"note":"Longer DPO eases WC gap (bounded)"},
+        {"id":"E5","from_node":"N7","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E6","from_node":"N3","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E7","from_node":"N4","to_node":"N7","polarity":1,"weight":0.3,"note":"Defaults trigger more factoring programs"}
+      ],
+      "shared_nodes": [
+        {"label":"Receivables","role":"signal"},
+        {"label":"Payables","role":"signal"},
+        {"label":"WCgap","role":"beneficiary"},
+        {"label":"Defaults","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"DSO","kind":"state","unit":"days"},
+        {"id":"I2","name":"WC Gap","kind":"state","unit":"days"},
+        {"id":"I3","name":"Default Rate","kind":"rate","unit":"%"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":30,"upper_bound":60,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":-5,"upper_bound":15,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":6,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P45D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L06 — Service Ticket Resolution (Frontline)",
+        "description": "Surge staffing and self-service flows cut queues and SLA breaches; higher resolution rates reinforce trust.",
+        "loop_type": "reactive",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Pairs with MES-L09 (digital reliability) where relevant.",
+        "metadata": { "motif": "B", "tags": ["micro","services","sla"], "domain": "service", "loop_code": "MIC-L06" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Ticket Queue","kind":"indicator","meta":{"snl":"TicketQueue"}},
+        {"id":"N2","label":"SLA Breach Rate","kind":"indicator","meta":{"snl":"SLA"}},
+        {"id":"N3","label":"Resolution Rate","kind":"indicator","meta":{"snl":"ResolutionRate"}},
+        {"id":"N4","label":"Surge Staffing","kind":"aux"},
+        {"id":"N5","label":"Self-Service Flows","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N4","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N5","to_node":"N3","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N3","to_node":"N1","polarity":-1,"weight":0.7},
+        {"id":"E4","from_node":"N1","to_node":"N2","polarity":1,"weight":0.6},
+        {"id":"E5","from_node":"N3","to_node":"N2","polarity":-1,"weight":0.6}
+      ],
+      "shared_nodes": [
+        {"label":"TicketQueue","role":"signal"},
+        {"label":"SLA","role":"signal"},
+        {"label":"ResolutionRate","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Queue Size","kind":"state","unit":"tickets"},
+        {"id":"I2","name":"SLA Breach %","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Resolution Rate","kind":"rate","unit":"%/day"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":500,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":20,"upper_bound":60,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L07 — Price Adjustment to Local Shortages",
+        "description": "Targeted buffers and competition rules mitigate shortage spikes; logistics surges stabilize local inventory and prices.",
+        "loop_type": "reactive",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Connects to MAC-L03 inflation dynamics and MES-L06 transport.",
+        "metadata": { "motif": "B", "tags": ["micro","prices","shortages"], "domain": "markets", "loop_code": "MIC-L07" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Local Inventory","kind":"indicator","meta":{"snl":"LocalInventory"}},
+        {"id":"N2","label":"Shortage Index","kind":"indicator","meta":{"snl":"ShortageIndex"}},
+        {"id":"N3","label":"Local Prices","kind":"indicator","meta":{"snl":"Prices"}},
+        {"id":"N4","label":"Targeted Buffers","kind":"aux"},
+        {"id":"N5","label":"Local Competition Rules","kind":"aux"},
+        {"id":"N6","label":"Logistics Surge","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N2","polarity":-1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E3","from_node":"N4","to_node":"N1","polarity":1,"weight":0.5},
+        {"id":"E4","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.3},
+        {"id":"E5","from_node":"N6","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N3","to_node":"N4","polarity":1,"weight":0.2,"note":"Price spike triggers buffers"}
+      ],
+      "shared_nodes": [
+        {"label":"LocalInventory","role":"system"},
+        {"label":"ShortageIndex","role":"signal"},
+        {"label":"Prices","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Shortage Index","kind":"state","unit":"index"},
+        {"id":"I2","name":"Price Spike Magnitude","kind":"state","unit":"%Δ"},
+        {"id":"I3","name":"Days of Inventory","kind":"state","unit":"days"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0.2,"upper_bound":0.6,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":12,"upper_bound":35,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L08 — Household Fertility Decision Support",
+        "description": "Childcare/housing access and opportunity cost shape the gap between desired and actual fertility; supports close the gap.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Feeds MAC-L01 demographic regime.",
+        "metadata": { "motif": "B", "tags": ["micro","fertility","household"], "domain": "population", "loop_code": "MIC-L08" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Desired Fertility","kind":"indicator","meta":{"snl":"DesiredFertility"}},
+        {"id":"N2","label":"Actual Fertility Rate","kind":"indicator"},
+        {"id":"N3","label":"Childcare Access","kind":"indicator","meta":{"snl":"Access.Childcare"}},
+        {"id":"N4","label":"Housing Access","kind":"indicator","meta":{"snl":"Access.Housing"}},
+        {"id":"N5","label":"Opportunity Cost","kind":"indicator","meta":{"snl":"OpportunityCost"}},
+        {"id":"N6","label":"Waiting Lists","kind":"indicator"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N3","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E2","from_node":"N4","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N5","to_node":"N2","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N6","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N1","to_node":"N3","polarity":1,"weight":0.2,"note":"Policy attention when gap visible"},
+        {"id":"E6","from_node":"N1","to_node":"N4","polarity":1,"weight":0.2}
+      ],
+      "shared_nodes": [
+        {"label":"Access.Childcare","role":"lever"},
+        {"label":"Access.Housing","role":"lever"},
+        {"label":"OpportunityCost","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Gap (Desired−Actual)","kind":"state","unit":"children/woman"},
+        {"id":"I2","name":"Childcare Access","kind":"rate","unit":"% eligible"},
+        {"id":"I3","name":"Housing Access","kind":"rate","unit":"% eligible"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":0.5,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":60,"upper_bound":85,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":55,"upper_bound":80,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2028-12-31","reflex_horizon":"P120D","cadence":"quarterly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L09 — Migration Micro-Decision (Intent→Move)",
+        "description": "Wage differentials and network strength raise intent and completion; housing access and onboarding support reduce drop-off.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Aligns with MAC-L02 labor balance and MAC-L04 housing constraints.",
+        "metadata": { "motif": "C", "tags": ["micro","migration","labor"], "domain": "labor", "loop_code": "MIC-L09" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Wage Differential","kind":"indicator","meta":{"snl":"WageDifferential"}},
+        {"id":"N2","label":"Social Networks","kind":"indicator","meta":{"snl":"SocialNetworks"}},
+        {"id":"N3","label":"Intent Rate","kind":"indicator"},
+        {"id":"N4","label":"Move Completion Rate","kind":"indicator"},
+        {"id":"N5","label":"Housing Access","kind":"indicator","meta":{"snl":"Access.Housing"}},
+        {"id":"N6","label":"Onboarding & Info Services","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N3","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E4","from_node":"N5","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N6","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N4","to_node":"N2","polarity":1,"weight":0.2,"note":"Successful moves strengthen networks"}
+      ],
+      "shared_nodes": [
+        {"label":"WageDifferential","role":"signal"},
+        {"label":"SocialNetworks","role":"signal"},
+        {"label":"Access.Housing","role":"constraint"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Intent Rate","kind":"rate","unit":"% pop"},
+        {"id":"I2","name":"Completion Rate","kind":"rate","unit":"% intents"},
+        {"id":"I3","name":"Drop-off Rate","kind":"rate","unit":"% intents"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":2,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":35,"upper_bound":70,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":40,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L10 — Compliance & Rule Adherence",
+        "description": "Perceived legitimacy, visible fair enforcement, and norm cues reduce violations; transparency loops back to legitimacy.",
+        "loop_type": "perceptual",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "N",
+        "notes": "Use hot-spot diff-in-diff to evaluate interventions.",
+        "metadata": { "motif": "B", "tags": ["micro","compliance","legitimacy"], "domain": "governance", "loop_code": "MIC-L10" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Perceived Legitimacy","kind":"indicator","meta":{"snl":"PerceivedLegitimacy"}},
+        {"id":"N2","label":"Enforcement Visibility","kind":"indicator","meta":{"snl":"EnforcementVisibility"}},
+        {"id":"N3","label":"Norm Cues","kind":"indicator","meta":{"snl":"Norms"}},
+        {"id":"N4","label":"Violation Rate","kind":"indicator"},
+        {"id":"N5","label":"Transparency Package","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N4","polarity":-1,"weight":0.5},
+        {"id":"E2","from_node":"N2","to_node":"N4","polarity":-1,"weight":0.5},
+        {"id":"E3","from_node":"N3","to_node":"N4","polarity":-1,"weight":0.4},
+        {"id":"E4","from_node":"N5","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E5","from_node":"N4","to_node":"N2","polarity":1,"weight":0.2,"note":"Breaches trigger visible checks"}
+      ],
+      "shared_nodes": [
+        {"label":"PerceivedLegitimacy","role":"signal"},
+        {"label":"EnforcementVisibility","role":"lever"},
+        {"label":"Norms","role":"lever"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Violation Rate","kind":"rate","unit":"per 1k"},
+        {"id":"I2","name":"Legitimacy Index","kind":"state","unit":"index"},
+        {"id":"I3","name":"Enforcement Visibility","kind":"state","unit":"index"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0.55,"upper_bound":0.8,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0.5,"upper_bound":0.8,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    }
+  ]
+}
