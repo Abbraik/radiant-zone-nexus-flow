@@ -48,8 +48,10 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   hydratedLoop, 
   isLoading 
 }) => {
-  const nodeCount = hydratedLoop?.nodes?.length || loop.node_count || 0;
-  const edgeCount = hydratedLoop?.edges?.length || 0;
+  // Use metadata from atlas data if available, fallback to hydrated data or defaults
+  const nodeCount = loop.metadata?.node_count || hydratedLoop?.nodes?.length || loop.node_count || 0;
+  const edgeCount = loop.metadata?.edge_count || hydratedLoop?.edges?.length || 0;
+  const indicatorCount = loop.metadata?.indicator_count || 0;
   const snlCount = 0; // TODO: Get from shared nodes
   
   return (
@@ -103,9 +105,9 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             />
             <QuickStat
               icon={<Database className="w-5 h-5" />}
-              label="Shared Nodes"
-              value={snlCount}
-              description="Cross-loop connections"
+              label="Indicators"
+              value={indicatorCount}
+              description="Performance measures"
             />
             <QuickStat
               icon={<GitBranch className="w-5 h-5" />}
@@ -205,9 +207,27 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
               <label className="text-sm font-medium text-muted-foreground">Owner</label>
               <div className="text-foreground flex items-center gap-2">
                 <User className="w-4 h-4 text-muted-foreground" />
-                {loop.user_id.slice(0, 8)}...
+                NCF-PAGS Atlas
               </div>
             </div>
+
+            {loop.metadata?.loop_code && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Loop Code</label>
+                <div className="text-foreground font-mono text-sm">
+                  {loop.metadata.loop_code}
+                </div>
+              </div>
+            )}
+
+            {loop.metadata?.batch && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Atlas Batch</label>
+                <div className="text-foreground">
+                  Batch #{loop.metadata.batch}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,7 +1,7 @@
 import React, { useState, Suspense } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useLoopRegistry, useLoopHydration } from '@/hooks/useLoopRegistry';
+import { useAtlasRegistry } from '@/hooks/useAtlasRegistry';
 import { LoopHeader } from '@/components/registry/LoopHeader';
 import { TabNav } from '@/components/registry/TabNav';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -41,12 +41,10 @@ const LoopDetail: React.FC = () => {
   const activeTab = (searchParams.get('tab') as TabId) || 'overview';
   const [loadedTabs, setLoadedTabs] = useState<Set<TabId>>(new Set(['overview']));
   
-  const { getLoop } = useLoopRegistry();
+  const { getLoop } = useAtlasRegistry();
   const loopQuery = getLoop(id!);
-  const hydrationQuery = useLoopHydration(id);
   
   const loop = loopQuery.data;
-  const hydratedLoop = hydrationQuery.data;
 
   const setActiveTab = (tabId: TabId) => {
     const newParams = new URLSearchParams(searchParams);
@@ -76,7 +74,7 @@ const LoopDetail: React.FC = () => {
           </Button>
           <Alert variant="destructive" className="max-w-md">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>Failed to load loop: {loopQuery.error.message}</AlertDescription>
+            <AlertDescription>Failed to load loop</AlertDescription>
           </Alert>
         </div>
       </div>
@@ -87,9 +85,30 @@ const LoopDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-6">
+          <Button variant="ghost" onClick={() => navigate('/registry')} className="mb-4 gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Registry
+          </Button>
           <div className="flex items-center justify-center h-32">
             <LoadingSpinner size="lg" />
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!loop) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-6">
+          <Button variant="ghost" onClick={() => navigate('/registry')} className="mb-4 gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Registry
+          </Button>
+          <Alert className="max-w-md">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Loop not found. This loop may not exist in the atlas.</AlertDescription>
+          </Alert>
         </div>
       </div>
     );
@@ -127,7 +146,7 @@ const LoopDetail: React.FC = () => {
             }>
               {(loadedTabs.has(activeTab) || activeTab === 'overview') && (
                 <motion.div key={activeTab} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                  <ActiveTabComponent loop={loop} hydratedLoop={hydratedLoop} isLoading={hydrationQuery.isLoading} />
+                  <ActiveTabComponent loop={loop} />
                 </motion.div>
               )}
             </Suspense>

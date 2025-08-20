@@ -15,12 +15,17 @@ export const useAtlasRegistry = () => {
     refetch: () => Promise.resolve()
   };
 
-  const getLoop = (id: string) => ({
-    data: getAtlasLoop(id),
-    isLoading: false,
-    error: null,
-    enabled: !!id
-  });
+  const getLoop = (id: string) => {
+    const loop = useMemo(() => {
+      return id ? getAtlasLoop(id) : null;
+    }, [id]);
+
+    return {
+      data: loop,
+      isLoading: false,
+      error: null
+    };
+  };
 
   // Filter and search function
   const searchWithFilters = (query?: string, filters?: any): LoopData[] => {
