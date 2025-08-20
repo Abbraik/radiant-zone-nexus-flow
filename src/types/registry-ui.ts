@@ -4,7 +4,6 @@ export interface RegistryFilters {
   loop_type: string[];
   motif: string[];
   layer: string[];
-  scale: string[];
   status: string[];
   tags: string[];
   atlas_codes: string[];
@@ -20,11 +19,10 @@ export const defaultFilters: RegistryFilters = {
   loop_type: [],
   motif: [],
   layer: [],
-  scale: [],
   status: [],
   tags: [],
   atlas_codes: [],
   has_snl: false,
   has_de_band: false,
-  has_srt: false
+  has_srt: false,
 };

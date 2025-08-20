@@ -184,13 +184,6 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
       });
     }
     
-    // Scale filter
-    if (filters.scale?.length > 0) {
-      filtered = filtered.filter(loop => {
-        return filters.scale.includes(loop.scale);
-      });
-    }
-    
     // Status filter
     if (filters.status?.length > 0) {
       filtered = filtered.filter(loop => {

@@ -33,9 +33,6 @@ const LoopRegistry: React.FC = () => {
     const layers = searchParams.get('layer');
     if (layers) urlFilters.layer = layers.split(',');
     
-    const scales = searchParams.get('scale');
-    if (scales) urlFilters.scale = scales.split(',');
-    
     const statuses = searchParams.get('status');
     if (statuses) urlFilters.status = statuses.split(',');
     
