@@ -146,79 +146,6 @@ export type Database = {
         }
         Relationships: []
       }
-      cascades: {
-        Row: {
-          created_at: string | null
-          from_loop_id: string
-          id: string
-          note: string | null
-          relation: string
-          to_loop_id: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          from_loop_id: string
-          id?: string
-          note?: string | null
-          relation: string
-          to_loop_id: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          from_loop_id?: string
-          id?: string
-          note?: string | null
-          relation?: string
-          to_loop_id?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cascades_from_loop_id_fkey"
-            columns: ["from_loop_id"]
-            isOneToOne: false
-            referencedRelation: "loops"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cascades_from_loop_id_fkey"
-            columns: ["from_loop_id"]
-            isOneToOne: false
-            referencedRelation: "mv_loop_metrics"
-            referencedColumns: ["loop_id"]
-          },
-          {
-            foreignKeyName: "cascades_from_loop_id_fkey"
-            columns: ["from_loop_id"]
-            isOneToOne: false
-            referencedRelation: "safe_loop_metrics"
-            referencedColumns: ["loop_id"]
-          },
-          {
-            foreignKeyName: "cascades_to_loop_id_fkey"
-            columns: ["to_loop_id"]
-            isOneToOne: false
-            referencedRelation: "loops"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cascades_to_loop_id_fkey"
-            columns: ["to_loop_id"]
-            isOneToOne: false
-            referencedRelation: "mv_loop_metrics"
-            referencedColumns: ["loop_id"]
-          },
-          {
-            foreignKeyName: "cascades_to_loop_id_fkey"
-            columns: ["to_loop_id"]
-            isOneToOne: false
-            referencedRelation: "safe_loop_metrics"
-            referencedColumns: ["loop_id"]
-          },
-        ]
-      }
       claim_checkpoints: {
         Row: {
           attachments: Json | null
@@ -938,7 +865,6 @@ export type Database = {
           label: string
           loop_id: string
           meta: Json | null
-          pos: Json | null
         }
         Insert: {
           created_at?: string
@@ -947,7 +873,6 @@ export type Database = {
           label: string
           loop_id: string
           meta?: Json | null
-          pos?: Json | null
         }
         Update: {
           created_at?: string
@@ -956,7 +881,6 @@ export type Database = {
           label?: string
           loop_id?: string
           meta?: Json | null
-          pos?: Json | null
         }
         Relationships: []
       }
@@ -1044,21 +968,18 @@ export type Database = {
           id: string
           loop_id: string
           node_id: string
-          role: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           loop_id: string
           node_id: string
-          role?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           loop_id?: string
           node_id?: string
-          role?: string | null
         }
         Relationships: []
       }
@@ -1109,14 +1030,11 @@ export type Database = {
           controller: Json | null
           created_at: string | null
           description: string | null
-          domain: string | null
           id: string
-          layer: string | null
           leverage_default: Database["public"]["Enums"]["leverage_type"] | null
           loop_code: string | null
           loop_type: Database["public"]["Enums"]["loop_type"] | null
           metadata: Json | null
-          motif: string | null
           name: string
           notes: string | null
           scale: Database["public"]["Enums"]["scale_type"] | null
@@ -1132,14 +1050,11 @@ export type Database = {
           controller?: Json | null
           created_at?: string | null
           description?: string | null
-          domain?: string | null
           id?: string
-          layer?: string | null
           leverage_default?: Database["public"]["Enums"]["leverage_type"] | null
           loop_code?: string | null
           loop_type?: Database["public"]["Enums"]["loop_type"] | null
           metadata?: Json | null
-          motif?: string | null
           name: string
           notes?: string | null
           scale?: Database["public"]["Enums"]["scale_type"] | null
@@ -1155,14 +1070,11 @@ export type Database = {
           controller?: Json | null
           created_at?: string | null
           description?: string | null
-          domain?: string | null
           id?: string
-          layer?: string | null
           leverage_default?: Database["public"]["Enums"]["leverage_type"] | null
           loop_code?: string | null
           loop_type?: Database["public"]["Enums"]["loop_type"] | null
           metadata?: Json | null
-          motif?: string | null
           name?: string
           notes?: string | null
           scale?: Database["public"]["Enums"]["scale_type"] | null
@@ -2779,18 +2691,6 @@ export type Database = {
         }
         Relationships: []
       }
-      v_loop_shared_nodes: {
-        Row: {
-          descriptor: string | null
-          domain: string | null
-          id: string | null
-          loop_id: string | null
-          role: string | null
-          snl_id: string | null
-          snl_label: string | null
-        }
-        Relationships: []
-      }
       vw_breach_current: {
         Row: {
           cohort: string | null
@@ -2920,7 +2820,7 @@ export type Database = {
         Returns: Json
       }
       get_loop_hydrate: {
-        Args: { loop_uuid: string } | { p_loop_code: string }
+        Args: { loop_uuid: string }
         Returns: Json
       }
       get_reflexive_context: {

@@ -33,11 +33,18 @@ const LoopRegistry: React.FC = () => {
     const layers = searchParams.get('layer');
     if (layers) urlFilters.layer = layers.split(',');
     
+    const scales = searchParams.get('scale');
+    if (scales) urlFilters.scale = scales.split(',');
+    
     const statuses = searchParams.get('status');
     if (statuses) urlFilters.status = statuses.split(',');
     
     const tags = searchParams.get('tags');
     if (tags) urlFilters.tags = tags.split(',');
+    
+    urlFilters.has_snl = searchParams.get('has_snl') === 'true';
+    urlFilters.has_de_band = searchParams.get('has_de_band') === 'true';
+    urlFilters.has_srt = searchParams.get('has_srt') === 'true';
     
     return urlFilters;
   }, [searchParams]);

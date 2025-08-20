@@ -241,6 +241,42 @@ export const FacetSidebar: React.FC<FacetSidebarProps> = ({
 
           <Separator />
 
+          {/* Scale */}
+          <FacetSection
+            title="Scale"
+            icon={<div className="w-4 h-4 rounded bg-secondary/20 flex items-center justify-center text-xs">S</div>}
+          >
+            <div className="space-y-2">
+              {[
+                { value: 'micro', label: 'Micro', description: 'Individual/operational level' },
+                { value: 'meso', label: 'Meso', description: 'Organizational/sectoral level' },
+                { value: 'macro', label: 'Macro', description: 'System/policy level' }
+              ].map(scale => (
+                <div key={scale.value} className="flex items-start gap-2">
+                  <Checkbox
+                    id={`scale-${scale.value}`}
+                    checked={filters.scale.includes(scale.value)}
+                    onCheckedChange={() => handleArrayFilter('scale', scale.value)}
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <label
+                      htmlFor={`scale-${scale.value}`}
+                      className="text-sm font-medium cursor-pointer capitalize"
+                    >
+                      {scale.label}
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      {scale.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FacetSection>
+
+          <Separator />
+
           {/* Status */}
           <FacetSection
             title="Status"
@@ -267,6 +303,48 @@ export const FacetSidebar: React.FC<FacetSidebarProps> = ({
             </div>
           </FacetSection>
 
+          <Separator />
+
+          {/* Feature Toggles */}
+          <FacetSection
+            title="Features"
+            icon={<Settings className="w-4 h-4" />}
+          >
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="has-snl"
+                  checked={filters.has_snl}
+                  onCheckedChange={() => handleBooleanFilter('has_snl')}
+                />
+                <label htmlFor="has-snl" className="text-sm font-medium cursor-pointer">
+                  Has Shared Nodes
+                </label>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="has-de-band"
+                  checked={filters.has_de_band}
+                  onCheckedChange={() => handleBooleanFilter('has_de_band')}
+                />
+                <label htmlFor="has-de-band" className="text-sm font-medium cursor-pointer">
+                  Has DE-Bands
+                </label>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="has-srt"
+                  checked={filters.has_srt}
+                  onCheckedChange={() => handleBooleanFilter('has_srt')}
+                />
+                <label htmlFor="has-srt" className="text-sm font-medium cursor-pointer">
+                  Has SRT Windows
+                </label>
+              </div>
+            </div>
+          </FacetSection>
         </CardContent>
       </Card>
     </motion.div>

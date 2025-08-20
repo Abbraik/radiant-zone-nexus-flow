@@ -34,6 +34,9 @@ const transformAtlasLoop = (atlasLoop: any, batchNumber: number): LoopData => {
       node_count: nodeCount,
       edge_count: edgeCount,
       indicator_count: indicatorCount,
+      has_snl: (atlasLoop.shared_nodes?.length || 0) > 0,
+      has_de_band: (atlasLoop.de_bands?.length || 0) > 0,
+      has_srt: !!atlasLoop.srt,
       // Store Atlas structure data for CLD engine
       atlas_data: {
         nodes: atlasLoop.nodes || [],
@@ -181,6 +184,13 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
       });
     }
     
+    // Scale filter
+    if (filters.scale?.length > 0) {
+      filtered = filtered.filter(loop => {
+        return filters.scale.includes(loop.scale);
+      });
+    }
+    
     // Status filter
     if (filters.status?.length > 0) {
       filtered = filtered.filter(loop => {
@@ -215,6 +225,17 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
         else if (loopCode.startsWith('MIC-')) layer = 'micro';
         return layer && filters.layer.includes(layer);
       });
+    }
+    
+    // Boolean filters - only apply if explicitly set to true
+    if (filters.has_snl === true) {
+      filtered = filtered.filter(loop => loop.metadata?.has_snl === true);
+    }
+    if (filters.has_de_band === true) {
+      filtered = filtered.filter(loop => loop.metadata?.has_de_band === true);
+    }
+    if (filters.has_srt === true) {
+      filtered = filtered.filter(loop => loop.metadata?.has_srt === true);
     }
   }
   
