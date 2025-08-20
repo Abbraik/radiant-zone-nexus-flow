@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ImportAtlasBatchButton } from './ImportAtlasBatchButton';
 import { ImportAtlasBatch2Button } from './ImportAtlasBatch2Button';
+import { ImportAtlasBatch3Button } from './ImportAtlasBatch3Button';
 import { 
   Plus, 
   Download, 
@@ -70,6 +71,8 @@ export const RegistryHeader: React.FC<RegistryHeaderProps> = ({
           <ImportAtlasBatchButton />
           
           <ImportAtlasBatch2Button />
+          
+          <ImportAtlasBatch3Button />
           
           <Button
             onClick={async () => {

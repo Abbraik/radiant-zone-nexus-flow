@@ -1,0 +1,504 @@
+{
+  "snl_catalog_additions": [
+    {"label":"LaborDemandSectoral","domain":"resource","descriptor":"Sector-specific labor demand"},
+    {"label":"SkillsProfile","domain":"resource","descriptor":"Skills profile for sector occupations"},
+    {"label":"MatchingRate","domain":"product","descriptor":"Rate of successful job matching"},
+    {"label":"SME.Cashflow","domain":"resource","descriptor":"SME cashflow position"},
+    {"label":"CreditAccess","domain":"institution","descriptor":"Access to credit/loan acceptance"},
+    {"label":"DefaultRisk","domain":"product","descriptor":"Default risk indicator"},
+    {"label":"Guarantees","domain":"institution","descriptor":"Public guarantee coverage"},
+    {"label":"RACI","domain":"institution","descriptor":"Role clarity (Responsible/Accountable/Consulted/Informed)"},
+    {"label":"Backlog","domain":"institution","descriptor":"Policy/implementation backlog"},
+    {"label":"SNA.Betweenness","domain":"institution","descriptor":"Network centrality of ministries/agencies"},
+    {"label":"CoordinationLoad","domain":"institution","descriptor":"Cross-agency coordination load"},
+    {"label":"ConflictIncidence","domain":"institution","descriptor":"Active inter-agency conflicts"},
+    {"label":"SharedBudget","domain":"institution","descriptor":"Pooled/joint budget authority"},
+    {"label":"JointKPI","domain":"institution","descriptor":"Joint cross-agency KPIs"},
+    {"label":"ContractPerformance","domain":"institution","descriptor":"Supplier/contract performance"},
+    {"label":"CostVariance","domain":"product","descriptor":"Cost variance vs. baseline"},
+    {"label":"ScheduleVariance","domain":"product","descriptor":"Schedule variance vs. baseline"},
+    {"label":"Disputes","domain":"product","descriptor":"Procurement disputes/claims"},
+    {"label":"Transfers","domain":"institution","descriptor":"Household transfers (cash/in-kind)"},
+    {"label":"BufferDays","domain":"product","descriptor":"Household buffer days of expenses"},
+    {"label":"HardshipRate","domain":"product","descriptor":"Share of households in hardship"},
+    {"label":"Access.Health","domain":"product","descriptor":"Access to care"},
+    {"label":"Adherence","domain":"product","descriptor":"Treatment adherence"},
+    {"label":"OOPcost","domain":"product","descriptor":"Out-of-pocket cost"},
+    {"label":"HealthOutcomes","domain":"product","descriptor":"Outcome index (e.g., controlled HbA1c)"},
+    {"label":"Attendance","domain":"product","descriptor":"School attendance"},
+    {"label":"LearningEffort","domain":"product","descriptor":"Study/engagement effort"},
+    {"label":"HouseholdSupport","domain":"product","descriptor":"Home support for learning"},
+    {"label":"Vacancies","domain":"product","descriptor":"Open job positions"},
+    {"label":"Applications","domain":"product","descriptor":"Job applications"},
+    {"label":"HiringRate","domain":"product","descriptor":"Hire rate"},
+    {"label":"Attrition","domain":"product","descriptor":"Employee attrition"}
+  ],
+  "loops": [
+    {
+      "loop": {
+        "name": "MES-L02 — Teacher Pipeline & Classroom Throughput",
+        "description": "Balances teacher stock via training intake and attrition; class-size and accreditation quality govern throughput and learning conditions.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Scholarships, practicum slots, and accreditation standards drive stable staffing.",
+        "metadata": { "motif": "B", "tags": ["meso","education","pipeline"], "domain": "education", "loop_code": "MES-L02" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Teacher Stock","kind":"indicator","meta":{"snl":"Edu.TeacherStock"}},
+        {"id":"N2","label":"Training Intake","kind":"indicator","meta":{"snl":"TrainingIntake"}},
+        {"id":"N3","label":"Attrition","kind":"indicator","meta":{"snl":"Attrition"}},
+        {"id":"N4","label":"Class Size","kind":"indicator","meta":{"snl":"ClassSize"}},
+        {"id":"N5","label":"Accreditation Quality","kind":"aux"},
+        {"id":"N6","label":"Practicum Slots","kind":"aux"},
+        {"id":"N7","label":"Scholarship/Career Ladder","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N2","to_node":"N1","polarity":1,"weight":0.7},
+        {"id":"E2","from_node":"N3","to_node":"N1","polarity":-1,"weight":0.8},
+        {"id":"E3","from_node":"N1","to_node":"N4","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N4","to_node":"N3","polarity":1,"weight":0.4,"note":"Large classes raise attrition"},
+        {"id":"E5","from_node":"N5","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N6","to_node":"N2","polarity":1,"weight":0.3},
+        {"id":"E7","from_node":"N7","to_node":"N2","polarity":1,"weight":0.3},
+        {"id":"E8","from_node":"N1","to_node":"N5","polarity":1,"weight":0.2,"note":"Stock enables mentoring → quality"},
+        {"id":"E9","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"Edu.TeacherStock","role":"system"},
+        {"label":"TrainingIntake","role":"lever"},
+        {"label":"Attrition","role":"signal"},
+        {"label":"ClassSize","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Teacher–Student Ratio","kind":"state","unit":"teachers/1000 students"},
+        {"id":"I2","name":"Attrition Rate","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Accreditation Score","kind":"state","unit":"index"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":40,"upper_bound":55,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0.6,"upper_bound":0.85,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2027-12-31","reflex_horizon":"P90D","cadence":"quarterly"}
+    },
+    {
+      "loop": {
+        "name": "MES-L03 — Skills–Jobs Matching (Sectoral)",
+        "description": "Improves sectoral matching by aligning skills profiles to demand; recognition frameworks and placement services reduce vacancy fill-time.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Sector pacts and recognition standards lift matching efficiency.",
+        "metadata": { "motif": "B", "tags": ["meso","labor","matching"], "domain": "labor", "loop_code": "MES-L03" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Labor Demand (Sector)","kind":"indicator","meta":{"snl":"LaborDemandSectoral"}},
+        {"id":"N2","label":"Skills Profile (Sector)","kind":"indicator","meta":{"snl":"SkillsProfile"}},
+        {"id":"N3","label":"Matching Rate","kind":"indicator","meta":{"snl":"MatchingRate"}},
+        {"id":"N4","label":"Vacancy Fill-Time","kind":"indicator"},
+        {"id":"N5","label":"Qualification Recognition","kind":"aux"},
+        {"id":"N6","label":"Placement/Intermediation","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N1","to_node":"N3","polarity":1,"weight":0.3,"note":"Demand pulls matching if supply exists"},
+        {"id":"E3","from_node":"N3","to_node":"N4","polarity":-1,"weight":0.7},
+        {"id":"E4","from_node":"N5","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N6","to_node":"N3","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N4","to_node":"N1","polarity":-1,"weight":0.2,"note":"Filled vacancies reduce demand"}
+      ],
+      "shared_nodes": [
+        {"label":"LaborDemandSectoral","role":"signal"},
+        {"label":"SkillsProfile","role":"system"},
+        {"label":"MatchingRate","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Matching Rate","kind":"rate","unit":"% placements"},
+        {"id":"I2","name":"Vacancy Fill-Time","kind":"state","unit":"days"},
+        {"id":"I3","name":"Recognition Coverage","kind":"rate","unit":"% occupations"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":35,"upper_bound":65,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":15,"upper_bound":45,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":40,"upper_bound":80,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MES-L04 — SME Liquidity & Credit Pipeline",
+        "description": "Guarantees and factoring rails improve credit access and cashflow, reducing default risk and unlocking growth.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Beware moral hazard; design performance-based guarantees.",
+        "metadata": { "motif": "B", "tags": ["meso","sme","credit"], "domain": "finance", "loop_code": "MES-L04" }
+      },
+      "nodes": [
+        {"id":"N1","label":"SME Cashflow","kind":"indicator","meta":{"snl":"SME.Cashflow"}},
+        {"id":"N2","label":"Credit Access","kind":"indicator","meta":{"snl":"CreditAccess"}},
+        {"id":"N3","label":"Default Risk","kind":"indicator","meta":{"snl":"DefaultRisk"}},
+        {"id":"N4","label":"Guarantee Coverage","kind":"indicator","meta":{"snl":"Guarantees"}},
+        {"id":"N5","label":"Factoring Rails / e-Invoicing","kind":"aux"},
+        {"id":"N6","label":"Growth / Investment","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N4","to_node":"N2","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N5","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N2","to_node":"N1","polarity":1,"weight":0.6},
+        {"id":"E4","from_node":"N1","to_node":"N3","polarity":-1,"weight":0.6},
+        {"id":"E5","from_node":"N1","to_node":"N6","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N6","to_node":"N1","polarity":1,"weight":0.3,"note":"Growth reinforces cashflow"},
+        {"id":"E7","from_node":"N3","to_node":"N4","polarity":-1,"weight":0.3,"note":"High risk limits guarantees"}
+      ],
+      "shared_nodes": [
+        {"label":"SME.Cashflow","role":"signal"},
+        {"label":"CreditAccess","role":"system"},
+        {"label":"DefaultRisk","role":"signal"},
+        {"label":"Guarantees","role":"lever"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Credit Acceptance Rate","kind":"rate","unit":"%"},
+        {"id":"I2","name":"DSO (Days Sales Outstanding)","kind":"state","unit":"days"},
+        {"id":"I3","name":"Default Rate","kind":"rate","unit":"%"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":45,"upper_bound":70,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":30,"upper_bound":60,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":6,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MES-L10 — Policy Implementation Latency",
+        "description": "Gate reviews and process re-engineering reduce decision latency and backlog; clearer RACI lowers rework.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "PMO statute + digital workflow shorten time-to-implement.",
+        "metadata": { "motif": "B", "tags": ["meso","governance","latency"], "domain": "governance", "loop_code": "MES-L10" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Decision Latency","kind":"indicator","meta":{"snl":"Institutions.DecisionLatency"}},
+        {"id":"N2","label":"Backlog","kind":"indicator","meta":{"snl":"Backlog"}},
+        {"id":"N3","label":"Rework Rate","kind":"indicator"},
+        {"id":"N4","label":"RACI Clarity","kind":"indicator","meta":{"snl":"RACI"}},
+        {"id":"N5","label":"Gate Review Quality","kind":"aux"},
+        {"id":"N6","label":"PMO Maturity","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N1","polarity":-1,"weight":0.6},
+        {"id":"E2","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E3","from_node":"N4","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N6","to_node":"N1","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N1","to_node":"N2","polarity":1,"weight":0.6},
+        {"id":"E6","from_node":"N2","to_node":"N1","polarity":1,"weight":0.4,"note":"Backlog breeds delays (reinforcing trap)"},
+        {"id":"E7","from_node":"N3","to_node":"N2","polarity":1,"weight":0.4}
+      ],
+      "shared_nodes": [
+        {"label":"Institutions.DecisionLatency","role":"signal"},
+        {"label":"Backlog","role":"signal"},
+        {"label":"RACI","role":"system"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Median Time-to-Implement","kind":"state","unit":"days"},
+        {"id":"I2","name":"Rework Share","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Backlog Size","kind":"state","unit":"items"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":60,"upper_bound":180,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":12,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":250,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P45D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MES-L11 — Interministerial Coordination & Spillover Mgmt",
+        "description": "Joint KPIs and shared budgets reduce conflicts in high-centrality missions; escalation councils resolve knots.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Applies when SNA betweenness and dependency load are high.",
+        "metadata": { "motif": "T", "tags": ["meso","coordination","spillovers"], "domain": "governance", "loop_code": "MES-L11" }
+      },
+      "nodes": [
+        {"id":"N1","label":"SNA Betweenness","kind":"indicator","meta":{"snl":"SNA.Betweenness"}},
+        {"id":"N2","label":"Coordination Load","kind":"indicator","meta":{"snl":"CoordinationLoad"}},
+        {"id":"N3","label":"Conflict Incidence","kind":"indicator","meta":{"snl":"ConflictIncidence"}},
+        {"id":"N4","label":"Joint KPIs","kind":"indicator","meta":{"snl":"JointKPI"}},
+        {"id":"N5","label":"Shared Budget Authority","kind":"indicator","meta":{"snl":"SharedBudget"}},
+        {"id":"N6","label":"Escalation Council","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E3","from_node":"N4","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N6","to_node":"N3","polarity":-1,"weight":0.4},
+        {"id":"E6","from_node":"N3","to_node":"N6","polarity":1,"weight":0.3,"note":"Conflicts trigger escalation"},
+        {"id":"E7","from_node":"N4","to_node":"N2","polarity":-1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"SNA.Betweenness","role":"signal"},
+        {"label":"CoordinationLoad","role":"signal"},
+        {"label":"ConflictIncidence","role":"beneficiary"},
+        {"label":"SharedBudget","role":"lever"},
+        {"label":"JointKPI","role":"lever"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Active Conflicts","kind":"state","unit":"count"},
+        {"id":"I2","name":"Time-to-Resolve","kind":"state","unit":"days"},
+        {"id":"I3","name":"Joint KPI Coverage","kind":"rate","unit":"% missions"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":5,"upper_bound":30,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":25,"upper_bound":70,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P45D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MES-L12 — Procurement & Delivery Fidelity",
+        "description": "Performance-based contracts and transparency reduce cost/schedule variance and disputes; better performance improves subsequent procurement.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Open books + PBC improve delivery fidelity.",
+        "metadata": { "motif": "B", "tags": ["meso","procurement","delivery"], "domain": "governance", "loop_code": "MES-L12" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Contract Performance","kind":"indicator","meta":{"snl":"ContractPerformance"}},
+        {"id":"N2","label":"Cost Variance","kind":"indicator","meta":{"snl":"CostVariance"}},
+        {"id":"N3","label":"Schedule Variance","kind":"indicator","meta":{"snl":"ScheduleVariance"}},
+        {"id":"N4","label":"Disputes","kind":"indicator","meta":{"snl":"Disputes"}},
+        {"id":"N5","label":"Performance-Based Contracting","kind":"aux"},
+        {"id":"N6","label":"Transparency / Open Books","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N1","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N6","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N1","to_node":"N2","polarity":-1,"weight":0.6},
+        {"id":"E4","from_node":"N1","to_node":"N3","polarity":-1,"weight":0.6},
+        {"id":"E5","from_node":"N2","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N3","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E7","from_node":"N1","to_node":"N5","polarity":1,"weight":0.2,"note":"Good performance enables more PBC"}
+      ],
+      "shared_nodes": [
+        {"label":"ContractPerformance","role":"beneficiary"},
+        {"label":"CostVariance","role":"signal"},
+        {"label":"ScheduleVariance","role":"signal"},
+        {"label":"Disputes","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"On-Time, On-Budget Share","kind":"rate","unit":"% projects"},
+        {"id":"I2","name":"Dispute Rate","kind":"rate","unit":"% contracts"},
+        {"id":"I3","name":"Avg. Cost Variance","kind":"state","unit":"%"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":65,"upper_bound":90,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":6,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":-5,"upper_bound":5,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L01 — Household Income–Consumption–Savings",
+        "description": "Income and prices determine savings and debt service; buffer days and transfers reduce hardship and stabilize consumption.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Reinforcing when income grows; balancing via buffers/debt.",
+        "metadata": { "motif": "B", "tags": ["micro","household","income"], "domain": "household", "loop_code": "MIC-L01" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Household Income","kind":"indicator","meta":{"snl":"HH.Income"}},
+        {"id":"N2","label":"Prices","kind":"indicator","meta":{"snl":"Prices"}},
+        {"id":"N3","label":"Savings","kind":"indicator","meta":{"snl":"HH.Savings"}},
+        {"id":"N4","label":"Debt Service","kind":"indicator","meta":{"snl":"DebtService"}},
+        {"id":"N5","label":"Buffer Days","kind":"indicator","meta":{"snl":"BufferDays"}},
+        {"id":"N6","label":"Transfers","kind":"indicator","meta":{"snl":"Transfers"}},
+        {"id":"N7","label":"Hardship Rate","kind":"indicator","meta":{"snl":"HardshipRate"}}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E3","from_node":"N3","to_node":"N5","polarity":1,"weight":0.6},
+        {"id":"E4","from_node":"N4","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N6","to_node":"N5","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N5","to_node":"N7","polarity":-1,"weight":0.6},
+        {"id":"E7","from_node":"N7","to_node":"N6","polarity":1,"weight":0.3,"note":"Hardship triggers transfers"},
+        {"id":"E8","from_node":"N1","to_node":"N4","polarity":-1,"weight":0.2,"note":"Higher income eases debt service burden"}
+      ],
+      "shared_nodes": [
+        {"label":"HH.Income","role":"signal"},
+        {"label":"Prices","role":"signal"},
+        {"label":"HH.Savings","role":"beneficiary"},
+        {"label":"DebtService","role":"signal"},
+        {"label":"BufferDays","role":"beneficiary"},
+        {"label":"Transfers","role":"lever"},
+        {"label":"HardshipRate","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Buffer Days","kind":"state","unit":"days"},
+        {"id":"I2","name":"Hardship Rate","kind":"rate","unit":"% HH"},
+        {"id":"I3","name":"Savings Rate","kind":"rate","unit":"% income"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":30,"upper_bound":90,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":12,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":8,"upper_bound":18,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L02 — Household Health Access & Adherence",
+        "description": "Reminders, mobile care and co-pay caps lift access and adherence, improving outcomes and reducing missed appointments.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Reactive playbooks for spikes in missed appointments.",
+        "metadata": { "motif": "B", "tags": ["micro","health","adherence"], "domain": "health", "loop_code": "MIC-L02" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Access to Care","kind":"indicator","meta":{"snl":"Access.Health"}},
+        {"id":"N2","label":"Adherence","kind":"indicator","meta":{"snl":"Adherence"}},
+        {"id":"N3","label":"OOP Cost","kind":"indicator","meta":{"snl":"OOPcost"}},
+        {"id":"N4","label":"Health Outcomes","kind":"indicator","meta":{"snl":"HealthOutcomes"}},
+        {"id":"N5","label":"Reminders & Nudges","kind":"aux"},
+        {"id":"N6","label":"Mobile Care","kind":"aux"},
+        {"id":"N7","label":"Co-pay Caps","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N6","to_node":"N1","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N7","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N1","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N2","to_node":"N4","polarity":1,"weight":0.6},
+        {"id":"E6","from_node":"N3","to_node":"N2","polarity":-1,"weight":0.4},
+        {"id":"E7","from_node":"N4","to_node":"N5","polarity":1,"weight":0.2,"note":"Good outcomes sustain reminders"}
+      ],
+      "shared_nodes": [
+        {"label":"Access.Health","role":"beneficiary"},
+        {"label":"Adherence","role":"beneficiary"},
+        {"label":"OOPcost","role":"signal"},
+        {"label":"HealthOutcomes","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Missed Appointment Rate","kind":"rate","unit":"%"},
+        {"id":"I2","name":"Adherence % Days Covered","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Outcome Index","kind":"state","unit":"index"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":8,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":65,"upper_bound":85,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0.6,"upper_bound":0.85,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L03 — School Attendance & Learning Effort",
+        "description": "Attendance nudges, tutoring and meals lift effort and attendance, improving learning outcomes; household support matters.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Perceptual cues (norms) can augment the loop.",
+        "metadata": { "motif": "B", "tags": ["micro","education","attendance"], "domain": "education", "loop_code": "MIC-L03" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Attendance","kind":"indicator","meta":{"snl":"Attendance"}},
+        {"id":"N2","label":"Learning Effort","kind":"indicator","meta":{"snl":"LearningEffort"}},
+        {"id":"N3","label":"Household Support","kind":"indicator","meta":{"snl":"HouseholdSupport"}},
+        {"id":"N4","label":"Tutoring","kind":"aux"},
+        {"id":"N5","label":"School Meals","kind":"aux"},
+        {"id":"N6","label":"Attendance Nudges","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N4","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E2","from_node":"N5","to_node":"N1","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N6","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E4","from_node":"N2","to_node":"N1","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N3","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N1","to_node":"N3","polarity":1,"weight":0.2,"note":"School engagement improves support"}
+      ],
+      "shared_nodes": [
+        {"label":"Attendance","role":"beneficiary"},
+        {"label":"LearningEffort","role":"beneficiary"},
+        {"label":"HouseholdSupport","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Attendance Rate","kind":"rate","unit":"%"},
+        {"id":"I2","name":"Learning Effort Index","kind":"state","unit":"index"},
+        {"id":"I3","name":"Chronic Absence","kind":"rate","unit":"% students"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":85,"upper_bound":96,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0.5,"upper_bound":0.8,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":10,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L04 — Firm Hiring & Attrition",
+        "description": "Matching incentives and nudges increase applications and hiring; onboarding and HR practices reduce attrition.",
+        "loop_type": "structural",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Complements sectoral loop; watch churn traps.",
+        "metadata": { "motif": "B", "tags": ["micro","labor","hiring"], "domain": "labor", "loop_code": "MIC-L04" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Vacancies","kind":"indicator","meta":{"snl":"Vacancies"}},
+        {"id":"N2","label":"Applications","kind":"indicator","meta":{"snl":"Applications"}},
+        {"id":"N3","label":"Hiring Rate","kind":"indicator","meta":{"snl":"HiringRate"}},
+        {"id":"N4","label":"Attrition","kind":"indicator","meta":{"snl":"Attrition"}},
+        {"id":"N5","label":"Matching Incentives","kind":"aux"},
+        {"id":"N6","label":"Job Matching Nudges","kind":"aux"},
+        {"id":"N7","label":"Onboarding/HR Practices","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E2","from_node":"N6","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E4","from_node":"N3","to_node":"N1","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N7","to_node":"N4","polarity":-1,"weight":0.5},
+        {"id":"E6","from_node":"N4","to_node":"N1","polarity":1,"weight":0.3,"note":"Churn re-opens vacancies"},
+        {"id":"E7","from_node":"N3","to_node":"N4","polarity":-1,"weight":0.2,"note":"Better matching lowers churn"}
+      ],
+      "shared_nodes": [
+        {"label":"Vacancies","role":"signal"},
+        {"label":"Applications","role":"signal"},
+        {"label":"HiringRate","role":"beneficiary"},
+        {"label":"Attrition","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Time-to-Fill","kind":"state","unit":"days"},
+        {"id":"I2","name":"Attrition Rate","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Offer Acceptance Rate","kind":"rate","unit":"%"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":15,"upper_bound":45,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":12,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":60,"upper_bound":90,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P45D","cadence":"monthly"}
+    }
+  ]
+}
