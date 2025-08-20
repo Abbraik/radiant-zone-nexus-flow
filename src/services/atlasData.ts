@@ -36,7 +36,16 @@ const transformAtlasLoop = (atlasLoop: any, batchNumber: number): LoopData => {
       indicator_count: indicatorCount,
       has_snl: (atlasLoop.shared_nodes?.length || 0) > 0,
       has_de_band: (atlasLoop.de_bands?.length || 0) > 0,
-      has_srt: !!atlasLoop.srt
+      has_srt: !!atlasLoop.srt,
+      // Store Atlas structure data for CLD engine
+      atlas_data: {
+        nodes: atlasLoop.nodes || [],
+        edges: atlasLoop.edges || [],
+        indicators: atlasLoop.indicators || [],
+        shared_nodes: atlasLoop.shared_nodes || [],
+        de_bands: atlasLoop.de_bands || [],
+        srt: atlasLoop.srt
+      }
     },
     controller: {},
     thresholds: {},
