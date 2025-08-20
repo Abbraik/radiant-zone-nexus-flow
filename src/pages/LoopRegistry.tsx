@@ -39,10 +39,6 @@ const LoopRegistry: React.FC = () => {
     const tags = searchParams.get('tags');
     if (tags) urlFilters.tags = tags.split(',');
     
-    urlFilters.has_snl = searchParams.get('has_snl') === 'true';
-    urlFilters.has_de_band = searchParams.get('has_de_band') === 'true';
-    urlFilters.has_srt = searchParams.get('has_srt') === 'true';
-    
     return urlFilters;
   }, [searchParams]);
 
