@@ -16,8 +16,35 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
   switch (capacity) {
     case 'responsive':
       return <ResponsiveBundleAdapter {...bundleProps} />;
-    case 'reflexive':
-      return <ReflexiveBundle {...bundleProps} />;
+    case 'reflexive': {
+      // Extract required props from task data
+      const loopCode = bundleProps.taskData?.loop_id || 'UNKNOWN';
+      const indicator = bundleProps.payload?.indicator || 'Primary';
+      const decision = bundleProps.payload?.decision || {
+        severity: 0.5,
+        loopCode,
+        indicator,
+        consent: { requireDeliberative: false },
+        guardrails: { caps: [] },
+        srt: { horizon: "P14D", cadence: "daily" }
+      };
+      const reading = bundleProps.payload?.reading;
+      const screen = bundleProps.payload?.screen || "controller-tuner";
+      
+      return (
+        <ReflexiveBundle 
+          loopCode={loopCode}
+          indicator={indicator}
+          decision={decision}
+          reading={reading}
+          screen={screen}
+          onHandoff={(to, reason) => {
+            console.log(`Handoff to ${to}: ${reason}`);
+            // Handle handoff logic here
+          }}
+        />
+      );
+    }
     case 'deliberative':
       return <DeliberativeBundle {...bundleProps} />;
     case 'anticipatory':

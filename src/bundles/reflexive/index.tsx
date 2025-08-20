@@ -76,7 +76,7 @@ export const ReflexiveBundle: React.FC<Props> = ({
   }
 
   // Handoff logic
-  const toResponsive = (reading?.severity ?? decision.severity) >= 0.5 && (reading?.slope ?? 0) > 0;
+  const toResponsive = decision.severity >= 0.5 && (reading?.slope ?? 0) > 0;
   const toDeliberative = (reading?.dispersion ?? 0) >= 0.5 || decision.consent.requireDeliberative;
   const toStructural = ((reading?.persistencePk ?? 0)/100) >= 0.5 || (reading?.integralError ?? 0) >= 0.5;
 
@@ -224,7 +224,7 @@ export const ReflexiveBundle: React.FC<Props> = ({
                 </Button>
                 {!toResponsive && (
                   <p className="text-xs text-muted-foreground">
-                    Enable when severity ≥ 0.5 and slope > 0
+                    Enable when severity {">="} 0.5 and slope {">"} 0
                   </p>
                 )}
 
@@ -238,7 +238,7 @@ export const ReflexiveBundle: React.FC<Props> = ({
                 </Button>
                 {!toDeliberative && (
                   <p className="text-xs text-muted-foreground">
-                    Enable when dispersion ≥ 0.5 or consent required
+                    Enable when dispersion {">="} 0.5 or consent required
                   </p>
                 )}
 
@@ -252,7 +252,7 @@ export const ReflexiveBundle: React.FC<Props> = ({
                 </Button>
                 {!toStructural && (
                   <p className="text-xs text-muted-foreground">
-                    Enable when persistence ≥ 0.5 or integral error ≥ 0.5
+                    Enable when persistence {">="} 0.5 or integral error {">="} 0.5
                   </p>
                 )}
               </div>

@@ -101,6 +101,42 @@ export type Database = {
         }
         Relationships: []
       }
+      band_weight_changes: {
+        Row: {
+          after: Json
+          anchor: string
+          before: Json
+          created_at: string | null
+          id: string
+          loop_code: string
+          rationale: string
+          tier: string
+          user_id: string
+        }
+        Insert: {
+          after: Json
+          anchor: string
+          before: Json
+          created_at?: string | null
+          id?: string
+          loop_code: string
+          rationale: string
+          tier: string
+          user_id: string
+        }
+        Update: {
+          after?: Json
+          anchor?: string
+          before?: Json
+          created_at?: string | null
+          id?: string
+          loop_code?: string
+          rationale?: string
+          tier?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       breach_events: {
         Row: {
           at: string
@@ -473,6 +509,48 @@ export type Database = {
           },
         ]
       }
+      controller_tunings: {
+        Row: {
+          after: Json
+          before: Json
+          created_at: string | null
+          effective_from: string | null
+          id: string
+          indicator: string
+          loop_code: string
+          oscillation_delta: number | null
+          rationale: string
+          rmse_delta: number | null
+          user_id: string
+        }
+        Insert: {
+          after: Json
+          before: Json
+          created_at?: string | null
+          effective_from?: string | null
+          id?: string
+          indicator: string
+          loop_code: string
+          oscillation_delta?: number | null
+          rationale: string
+          rmse_delta?: number | null
+          user_id: string
+        }
+        Update: {
+          after?: Json
+          before?: Json
+          created_at?: string | null
+          effective_from?: string | null
+          id?: string
+          indicator?: string
+          loop_code?: string
+          oscillation_delta?: number | null
+          rationale?: string
+          rmse_delta?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       de_bands: {
         Row: {
           asymmetry: number | null
@@ -637,6 +715,42 @@ export type Database = {
         }
         Relationships: []
       }
+      evaluations: {
+        Row: {
+          created_at: string | null
+          id: string
+          indicators: Json
+          loop_code: string
+          method: string
+          notes: string | null
+          review_at: string
+          start_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          indicators: Json
+          loop_code: string
+          method: string
+          notes?: string | null
+          review_at: string
+          start_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          indicators?: Json
+          loop_code?: string
+          method?: string
+          notes?: string | null
+          review_at?: string
+          start_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       execution_logs: {
         Row: {
           actor: string
@@ -663,6 +777,48 @@ export type Database = {
           id?: string
           kind?: string
           payload?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      experiments: {
+        Row: {
+          arms: Json
+          created_at: string | null
+          end_at: string | null
+          hypothesis: string
+          id: string
+          loop_code: string
+          metrics: Json
+          name: string
+          start_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          arms: Json
+          created_at?: string | null
+          end_at?: string | null
+          hypothesis: string
+          id?: string
+          loop_code: string
+          metrics: Json
+          name: string
+          start_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          arms?: Json
+          created_at?: string | null
+          end_at?: string | null
+          hypothesis?: string
+          id?: string
+          loop_code?: string
+          metrics?: Json
+          name?: string
+          start_at?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: []
