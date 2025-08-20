@@ -73,7 +73,7 @@ export const SRTCountdown: React.FC<SRTCountdownProps> = ({
       case 'critical':
         return 'destructive' as const;
       case 'warning':
-        return 'warning' as const;
+        return 'outline' as const;
       default:
         return 'secondary' as const;
     }
@@ -91,8 +91,8 @@ export const SRTCountdown: React.FC<SRTCountdownProps> = ({
       </div>
       
       <Badge 
-        variant={getBadgeVariant() === 'warning' ? 'destructive' : getBadgeVariant()} 
-        className={`text-xs font-mono ${urgency === 'critical' ? 'animate-pulse' : ''}`}
+        variant={getBadgeVariant()} 
+        className={`text-xs font-mono ${urgency === 'critical' ? 'animate-pulse' : ''} ${urgency === 'warning' ? 'border-warning text-warning' : ''}`}
       >
         {urgency === 'critical' && <AlertTriangle className="h-3 w-3 mr-1" />}
         {formatTimeString()}
