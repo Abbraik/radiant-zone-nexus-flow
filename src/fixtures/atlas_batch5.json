@@ -1,0 +1,586 @@
+{
+  "snl_catalog_additions": [
+    {"label":"Society.Trust","domain":"social","descriptor":"Public trust in institutions"},
+    {"label":"Institutions.DecisionLatency","domain":"institution","descriptor":"Latency from decision to action"},
+    {"label":"Institutions.CapacityIndex","domain":"institution","descriptor":"Operational capacity index"},
+    {"label":"Institutions.DataInteroperability","domain":"institution","descriptor":"Data standards & interoperability"},
+    {"label":"Services.Latency","domain":"institution","descriptor":"Service data/transaction latency"},
+    {"label":"Population.AgeCohorts","domain":"population","descriptor":"Age structure cohorts"},
+    {"label":"DependencyRatio","domain":"population","descriptor":"Dependents to working-age ratio"},
+    {"label":"Fertility","domain":"population","descriptor":"Total fertility rate"},
+    {"label":"Mortality","domain":"population","descriptor":"Mortality rate"},
+    {"label":"Migration","domain":"population","descriptor":"Net migration"},
+    {"label":"Economy.LaborDemand","domain":"economy","descriptor":"Aggregate labor demand"},
+    {"label":"Economy.LaborSupply","domain":"economy","descriptor":"Aggregate labor supply"},
+    {"label":"Wages","domain":"economy","descriptor":"Wage level/index"},
+    {"label":"SkillsStock","domain":"economy","descriptor":"Aggregate skills/human capital stock"},
+    {"label":"Prices","domain":"economy","descriptor":"Price level / CPI"},
+    {"label":"MoneySupply","domain":"economy","descriptor":"Broad money"},
+    {"label":"Output","domain":"economy","descriptor":"Real output / GDP"},
+    {"label":"Expectations","domain":"economy","descriptor":"Inflation/output expectations"},
+    {"label":"LandSupply","domain":"land","descriptor":"Serviced land supply"},
+    {"label":"Housing.Approvals","domain":"housing","descriptor":"Planning approvals throughput"},
+    {"label":"Housing.Starts","domain":"housing","descriptor":"Housing construction starts"},
+    {"label":"Housing.Completions","domain":"housing","descriptor":"Housing completions"},
+    {"label":"HouseholdFormation","domain":"housing","descriptor":"New household formation rate"},
+    {"label":"Services.Capacity.Health","domain":"health","descriptor":"Effective health service capacity"},
+    {"label":"QueueLength","domain":"service","descriptor":"Service queue length"},
+    {"label":"Coverage","domain":"service","descriptor":"Service coverage share"},
+    {"label":"Latency","domain":"service","descriptor":"Service latency"},
+    {"label":"StageConversion","domain":"delivery","descriptor":"Conversion rate between delivery stages"},
+    {"label":"Access.Digital","domain":"digital","descriptor":"Access to digital channels/devices"},
+    {"label":"Literacy.Digital","domain":"digital","descriptor":"Digital literacy/fluency"},
+    {"label":"Friction.Digital","domain":"digital","descriptor":"User friction in digital journeys"},
+    {"label":"Habit","domain":"behavior","descriptor":"Usage habit strength"},
+    {"label":"LocalTrust","domain":"social","descriptor":"Local/municipal trust"},
+    {"label":"CoProdCapacity","domain":"social","descriptor":"Community co-production capacity"}
+  ],
+  "loops": [
+    {
+      "loop": {
+        "name": "META-L01 — Score Weighting & Band Management",
+        "description": "Supervisory loop that reweights Tier-1 indices and adjusts DE-bands based on composite error and dispersion to stabilize convergence.",
+        "loop_type": "perceptual",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Tightens bands when dispersion persists; considers trust and decision latency as constraints.",
+        "metadata": { "motif": "B", "tags": ["meta","bands","weighting"], "domain": "governance", "loop_code": "META-L01" }
+      },
+      "nodes": [
+        {"id":"N1","label":"T1 Composite Error","kind":"indicator"},
+        {"id":"N2","label":"T2/T3 Dispersion Index","kind":"indicator"},
+        {"id":"N3","label":"Weight Vector (Tier-1)","kind":"aux"},
+        {"id":"N4","label":"Band Tightness","kind":"aux"},
+        {"id":"N5","label":"Trust (Legitimacy Constraint)","kind":"indicator","meta":{"snl":"Society.Trust"}},
+        {"id":"N6","label":"Decision Latency","kind":"indicator","meta":{"snl":"Institutions.DecisionLatency"}}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N4","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E3","from_node":"N4","to_node":"N1","polarity":-1,"weight":0.7,"note":"Tighter bands reduce error frequency"},
+        {"id":"E4","from_node":"N3","to_node":"N1","polarity":-1,"weight":0.5,"note":"Better weighting cuts error"},
+        {"id":"E5","from_node":"N4","to_node":"N6","polarity":1,"weight":0.3,"note":"Overtightening can add latency"},
+        {"id":"E6","from_node":"N5","to_node":"N4","polarity":-1,"weight":0.3,"note":"Low trust discourages abrupt tightening"},
+        {"id":"E7","from_node":"N1","to_node":"N2","polarity":1,"weight":0.2,"note":"Large errors widen dispersion"}
+      ],
+      "shared_nodes": [
+        {"label":"Society.Trust","role":"constraint"},
+        {"label":"Institutions.DecisionLatency","role":"constraint"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Band-Hit Frequency","kind":"rate","unit":"% periods"},
+        {"id":"I2","name":"Dispersion Index","kind":"state","unit":"index"},
+        {"id":"I3","name":"Composite Error","kind":"state","unit":"σ"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":15,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0.1,"upper_bound":0.35,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0.5,"upper_bound":1.2,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "META-L02 — Controller Arbitration & Retuning",
+        "description": "Selects or retunes controllers based on relative RMSE, oscillation, and actuation overrun; caps actuation when needed.",
+        "loop_type": "perceptual",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Switch among PID/MPC/Rule-based families; reduces variance and overrun.",
+        "metadata": { "motif": "B", "tags": ["meta","controllers","tuning"], "domain": "governance", "loop_code": "META-L02" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Controller Quality (Rel. RMSE)","kind":"indicator"},
+        {"id":"N2","label":"Oscillation Score","kind":"indicator"},
+        {"id":"N3","label":"Actuation Overrun","kind":"indicator"},
+        {"id":"N4","label":"Selected Controller Family","kind":"aux"},
+        {"id":"N5","label":"Gains / Parameters","kind":"aux"},
+        {"id":"N6","label":"Capacity Index","kind":"indicator","meta":{"snl":"Institutions.CapacityIndex"}}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N4","polarity":-1,"weight":0.5,"note":"Worse quality → change family"},
+        {"id":"E2","from_node":"N2","to_node":"N5","polarity":-1,"weight":0.5,"note":"Oscillation → dampen gains"},
+        {"id":"E3","from_node":"N3","to_node":"N5","polarity":-1,"weight":0.4,"note":"Overrun → cap actuation"},
+        {"id":"E4","from_node":"N4","to_node":"N1","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N5","to_node":"N1","polarity":-1,"weight":0.5},
+        {"id":"E6","from_node":"N6","to_node":"N4","polarity":1,"weight":0.3,"note":"Higher capacity enables advanced controller"},
+        {"id":"E7","from_node":"N2","to_node":"N3","polarity":1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"Institutions.CapacityIndex","role":"constraint"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Variance of Error","kind":"state","unit":"σ²"},
+        {"id":"I2","name":"Oscillation Score","kind":"state","unit":"index"},
+        {"id":"I3","name":"Actuation Overrun","kind":"rate","unit":"% periods"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0.2,"upper_bound":0.8,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":0.3,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":10,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "META-L03 — Escalation Governance (N→P→S Ladder)",
+        "description": "When breach persistence and integral error exceed thresholds, escalate from narrative to policy to structure; provision authority/budget.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Stops chronic drift by authorizing higher-order changes and issuing sprint ladders.",
+        "metadata": { "motif": "C", "tags": ["meta","escalation","ladder"], "domain": "governance", "loop_code": "META-L03" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Breach Persistence","kind":"indicator"},
+        {"id":"N2","label":"Integral Error","kind":"indicator"},
+        {"id":"N3","label":"Escalation Level (N→P→S)","kind":"aux"},
+        {"id":"N4","label":"Authority & Budget","kind":"indicator","meta":{"snl":"Institutions.Authority"}},
+        {"id":"N5","label":"Sprint Ladder Issued","kind":"aux"},
+        {"id":"N6","label":"Backlog Reduction","kind":"indicator","meta":{"snl":"Backlog"}}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E3","from_node":"N3","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E4","from_node":"N3","to_node":"N5","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N5","to_node":"N1","polarity":-1,"weight":0.5},
+        {"id":"E6","from_node":"N4","to_node":"N6","polarity":1,"weight":0.3},
+        {"id":"E7","from_node":"N6","to_node":"N1","polarity":-1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"Institutions.Authority","role":"actor"},
+        {"label":"Backlog","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Breach Persistence","kind":"state","unit":"% periods"},
+        {"id":"I2","name":"Integral Error","kind":"state","unit":"Σσ"},
+        {"id":"I3","name":"Escalation Actions","kind":"state","unit":"count/qtr"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0,"upper_bound":30,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":0.5,"upper_bound":2.0,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0,"upper_bound":4,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"bi-monthly"}
+    },
+    {
+      "loop": {
+        "name": "META-L04 — Data Integrity & Standards",
+        "description": "Standards, schema governance, and APIs reduce missingness, latency, and drift; stabilizes KPIs and speeds reflex cycles.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "QA conformance lowers KPI volatility; supports cross-domain coherence.",
+        "metadata": { "motif": "T", "tags": ["meta","data","standards"], "domain": "governance", "loop_code": "META-L04" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Data Missingness","kind":"indicator"},
+        {"id":"N2","label":"Data Latency","kind":"indicator","meta":{"snl":"Services.Latency"}},
+        {"id":"N3","label":"Schema Drift","kind":"indicator"},
+        {"id":"N4","label":"Reconciliation Error","kind":"indicator"},
+        {"id":"N5","label":"Standards/APIs","kind":"aux","meta":{"snl":"Institutions.DataInteroperability"}},
+        {"id":"N6","label":"KPI Volatility","kind":"indicator"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N1","polarity":-1,"weight":0.6},
+        {"id":"E2","from_node":"N5","to_node":"N2","polarity":-1,"weight":0.6},
+        {"id":"E3","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N5","to_node":"N4","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N1","to_node":"N6","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N2","to_node":"N6","polarity":1,"weight":0.4},
+        {"id":"E7","from_node":"N3","to_node":"N6","polarity":1,"weight":0.4}
+      ],
+      "shared_nodes": [
+        {"label":"Institutions.DataInteroperability","role":"lever"},
+        {"label":"Services.Latency","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"QA Conformance","kind":"rate","unit":"% checks passed"},
+        {"id":"I2","name":"Latency (days)","kind":"state","unit":"days"},
+        {"id":"I3","name":"KPI Volatility","kind":"state","unit":"σ"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":85,"upper_bound":98,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":1,"upper_bound":7,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I3","lower_bound":0.1,"upper_bound":0.4,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2025-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MAC-L01 — Demographic Regime & Support Ratio",
+        "description": "Family policy and migration steer fertility and age structure to stabilize the support ratio within bands.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "P",
+        "notes": "Long lags; use synthetic control on cohort shares.",
+        "metadata": { "motif": "B", "tags": ["macro","demography"], "domain": "population", "loop_code": "MAC-L01" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Fertility","kind":"indicator","meta":{"snl":"Fertility"}},
+        {"id":"N2","label":"Mortality","kind":"indicator","meta":{"snl":"Mortality"}},
+        {"id":"N3","label":"Migration","kind":"indicator","meta":{"snl":"Migration"}},
+        {"id":"N4","label":"Age Cohorts","kind":"indicator","meta":{"snl":"Population.AgeCohorts"}},
+        {"id":"N5","label":"Dependency Ratio","kind":"indicator","meta":{"snl":"DependencyRatio"}},
+        {"id":"N6","label":"Support Ratio","kind":"indicator"},
+        {"id":"N7","label":"Family Policy & Targeted Migration","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N2","to_node":"N4","polarity":-1,"weight":0.4},
+        {"id":"E3","from_node":"N3","to_node":"N4","polarity":1,"weight":0.3},
+        {"id":"E4","from_node":"N4","to_node":"N5","polarity":1,"weight":0.6},
+        {"id":"E5","from_node":"N5","to_node":"N6","polarity":-1,"weight":0.7},
+        {"id":"E6","from_node":"N7","to_node":"N1","polarity":1,"weight":0.3},
+        {"id":"E7","from_node":"N7","to_node":"N3","polarity":1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"Fertility","role":"signal"},
+        {"label":"Mortality","role":"signal"},
+        {"label":"Migration","role":"lever"},
+        {"label":"Population.AgeCohorts","role":"beneficiary"},
+        {"label":"DependencyRatio","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Support Ratio","kind":"state","unit":"workers/dep."},
+        {"id":"I2","name":"Dependency Ratio","kind":"state","unit":"%"},
+        {"id":"I3","name":"Fertility Rate","kind":"state","unit":"children/woman"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":1.8,"upper_bound":2.6,"asymmetry":0.0,"smoothing_alpha":0.2},
+        {"indicator_id":"I2","lower_bound":45,"upper_bound":65,"asymmetry":0.0,"smoothing_alpha":0.2},
+        {"indicator_id":"I3","lower_bound":1.7,"upper_bound":2.4,"asymmetry":0.0,"smoothing_alpha":0.2}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2030-12-31","reflex_horizon":"P365D","cadence":"annual"}
+    },
+    {
+      "loop": {
+        "name": "MAC-L02 — Labor Market Macro Balance (Jobs ↔ Skills)",
+        "description": "Balances aggregate labor demand and supply via wages, skills stock, and participation to maintain employment quality.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Credentialing and recognition frameworks as structural levers.",
+        "metadata": { "motif": "B", "tags": ["macro","labor","balance"], "domain": "labor", "loop_code": "MAC-L02" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Labor Demand (Macro)","kind":"indicator","meta":{"snl":"Economy.LaborDemand"}},
+        {"id":"N2","label":"Labor Supply (Macro)","kind":"indicator","meta":{"snl":"Economy.LaborSupply"}},
+        {"id":"N3","label":"Wages","kind":"indicator","meta":{"snl":"Wages"}},
+        {"id":"N4","label":"Skills Stock","kind":"indicator","meta":{"snl":"SkillsStock"}},
+        {"id":"N5","label":"Participation","kind":"indicator","meta":{"snl":"Participation"}},
+        {"id":"N6","label":"Recognition/Credentialing Regime","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N3","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N4","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N5","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E4","from_node":"N1","to_node":"N3","polarity":1,"weight":0.4},
+        {"id":"E5","from_node":"N6","to_node":"N4","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N1","to_node":"N2","polarity":1,"weight":0.2,"note":"Demand can pull supply via participation"},
+        {"id":"E7","from_node":"N2","to_node":"N3","polarity":-1,"weight":0.2}
+      ],
+      "shared_nodes": [
+        {"label":"Economy.LaborDemand","role":"signal"},
+        {"label":"Economy.LaborSupply","role":"signal"},
+        {"label":"Wages","role":"beneficiary"},
+        {"label":"SkillsStock","role":"system"},
+        {"label":"Participation","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Vacancy–Unemployment Gap","kind":"state","unit":"pp"},
+        {"id":"I2","name":"Participation Rate","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Wage Drift","kind":"state","unit":"%YoY"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":-1,"upper_bound":2,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":60,"upper_bound":75,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":2,"upper_bound":6,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2027-12-31","reflex_horizon":"P90D","cadence":"quarterly"}
+    },
+    {
+      "loop": {
+        "name": "MAC-L03 — Price–Quantity Stability (Inflation & Output)",
+        "description": "Coordinates fiscal–monetary levers and expectations to stabilize inflation and the output gap.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Indexation rules and coordination protocols reduce volatility.",
+        "metadata": { "motif": "B", "tags": ["macro","inflation","output"], "domain": "economy", "loop_code": "MAC-L03" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Money Supply","kind":"indicator","meta":{"snl":"MoneySupply"}},
+        {"id":"N2","label":"Output","kind":"indicator","meta":{"snl":"Output"}},
+        {"id":"N3","label":"Prices (Inflation)","kind":"indicator","meta":{"snl":"Prices"}},
+        {"id":"N4","label":"Expectations","kind":"indicator","meta":{"snl":"Expectations"}},
+        {"id":"N5","label":"Fiscal–Monetary Coordination","kind":"aux"},
+        {"id":"N6","label":"Indexation Rules","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N1","to_node":"N3","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N2","to_node":"N3","polarity":-1,"weight":0.2,"note":"Capacity growth dampens price pressure"},
+        {"id":"E4","from_node":"N4","to_node":"N3","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.4},
+        {"id":"E6","from_node":"N5","to_node":"N4","polarity":-1,"weight":0.3},
+        {"id":"E7","from_node":"N6","to_node":"N4","polarity":-1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"MoneySupply","role":"lever"},
+        {"label":"Output","role":"beneficiary"},
+        {"label":"Prices","role":"signal"},
+        {"label":"Expectations","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Inflation (YoY)","kind":"state","unit":"%"},
+        {"id":"I2","name":"Output Gap","kind":"state","unit":"% potential"},
+        {"id":"I3","name":"Expectation Dispersion","kind":"state","unit":"index"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":2,"upper_bound":5,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":-1.5,"upper_bound":1.5,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":0.1,"upper_bound":0.4,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P90D","cadence":"quarterly"}
+    },
+    {
+      "loop": {
+        "name": "MAC-L04 — Housing–Land Macro Elasticity",
+        "description": "Planning codes, approvals throughput, and serviced land supply shape price-to-income and household formation.",
+        "loop_type": "structural",
+        "scale": "macro",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Blend of balancing and cascade motifs; zoning reform RDDs recommended.",
+        "metadata": { "motif": "B", "tags": ["macro","housing","land"], "domain": "housing", "loop_code": "MAC-L04" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Land Supply","kind":"indicator","meta":{"snl":"LandSupply"}},
+        {"id":"N2","label":"Planning Approvals","kind":"indicator","meta":{"snl":"Housing.Approvals"}},
+        {"id":"N3","label":"Housing Prices","kind":"indicator","meta":{"snl":"Prices"}},
+        {"id":"N4","label":"Household Formation","kind":"indicator","meta":{"snl":"HouseholdFormation"}},
+        {"id":"N5","label":"Construction Throughput (Starts→Completions)","kind":"indicator","meta":{"snl":"Housing.Completions"}},
+        {"id":"N6","label":"Code/Fees & One-Stop","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N2","to_node":"N5","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N5","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N3","to_node":"N4","polarity":-1,"weight":0.4},
+        {"id":"E5","from_node":"N6","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N6","to_node":"N1","polarity":1,"weight":0.3},
+        {"id":"E7","from_node":"N4","to_node":"N2","polarity":1,"weight":0.2}
+      ],
+      "shared_nodes": [
+        {"label":"LandSupply","role":"system"},
+        {"label":"Housing.Approvals","role":"lever"},
+        {"label":"Housing.Completions","role":"beneficiary"},
+        {"label":"Prices","role":"signal"},
+        {"label":"HouseholdFormation","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Price-to-Income","kind":"state","unit":"ratio"},
+        {"id":"I2","name":"Approvals Throughput","kind":"state","unit":"permits/mo"},
+        {"id":"I3","name":"Formation Lag","kind":"state","unit":"months"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":3,"upper_bound":6,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":1000,"upper_bound":4000,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":6,"upper_bound":18,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2028-12-31","reflex_horizon":"P180D","cadence":"semiannual"}
+    },
+    {
+      "loop": {
+        "name": "MES-L01 — Health Service Capacity & Access",
+        "description": "Balances capacity, queues, coverage, and latency; staffing and purchasing models shift throughput and access.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Queueing + DiD evaluation; pairs with MIC-L02 for adherence.",
+        "metadata": { "motif": "B", "tags": ["meso","health","access"], "domain": "health", "loop_code": "MES-L01" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Capacity (Health)","kind":"indicator","meta":{"snl":"Services.Capacity.Health"}},
+        {"id":"N2","label":"Queue Length","kind":"indicator","meta":{"snl":"QueueLength"}},
+        {"id":"N3","label":"Coverage","kind":"indicator","meta":{"snl":"Coverage"}},
+        {"id":"N4","label":"Latency","kind":"indicator","meta":{"snl":"Latency"}},
+        {"id":"N5","label":"Staffing & Purchasing Model","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N5","to_node":"N1","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N1","to_node":"N2","polarity":-1,"weight":0.7},
+        {"id":"E3","from_node":"N1","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E4","from_node":"N2","to_node":"N4","polarity":1,"weight":0.6},
+        {"id":"E5","from_node":"N4","to_node":"N3","polarity":-1,"weight":0.4},
+        {"id":"E6","from_node":"N3","to_node":"N2","polarity":-1,"weight":0.3,"note":"Higher coverage reduces queues"},
+        {"id":"E7","from_node":"N2","to_node":"N5","polarity":1,"weight":0.3,"note":"Backlogs trigger staffing changes"}
+      ],
+      "shared_nodes": [
+        {"label":"Services.Capacity.Health","role":"system"},
+        {"label":"QueueLength","role":"signal"},
+        {"label":"Coverage","role":"beneficiary"},
+        {"label":"Latency","role":"signal"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Median Wait","kind":"state","unit":"days"},
+        {"id":"I2","name":"Coverage %","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Throughput per Clinician","kind":"state","unit":"cases/mo"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":7,"upper_bound":30,"asymmetry":0.0,"smoothing_alpha":0.4},
+        {"indicator_id":"I2","lower_bound":70,"upper_bound":95,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":60,"upper_bound":120,"asymmetry":0.0,"smoothing_alpha":0.4}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MES-L05 — Housing Delivery (Approvals→Starts→Completions)",
+        "description": "Improves stage conversion and reduces time-in-stage through one-stop approvals and digital cadaster; controls costs.",
+        "loop_type": "structural",
+        "scale": "meso",
+        "status": "draft",
+        "leverage_default": "S",
+        "notes": "Key bottleneck in cascades to affordability; use stage telemetry.",
+        "metadata": { "motif": "C", "tags": ["meso","housing","pipeline"], "domain": "housing", "loop_code": "MES-L05" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Approvals","kind":"indicator","meta":{"snl":"Housing.Approvals"}},
+        {"id":"N2","label":"Starts","kind":"indicator","meta":{"snl":"Housing.Starts"}},
+        {"id":"N3","label":"Completions","kind":"indicator","meta":{"snl":"Housing.Completions"}},
+        {"id":"N4","label":"Stage Conversion","kind":"indicator","meta":{"snl":"StageConversion"}},
+        {"id":"N5","label":"Time in Stage","kind":"indicator"},
+        {"id":"N6","label":"Costs","kind":"indicator"},
+        {"id":"N7","label":"One-Stop & Digital Cadaster","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N2","polarity":1,"weight":0.6},
+        {"id":"E2","from_node":"N2","to_node":"N3","polarity":1,"weight":0.6},
+        {"id":"E3","from_node":"N4","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E4","from_node":"N4","to_node":"N3","polarity":1,"weight":0.5},
+        {"id":"E5","from_node":"N5","to_node":"N4","polarity":-1,"weight":0.5},
+        {"id":"E6","from_node":"N7","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E7","from_node":"N6","to_node":"N2","polarity":-1,"weight":0.3}
+      ],
+      "shared_nodes": [
+        {"label":"Housing.Approvals","role":"lever"},
+        {"label":"Housing.Starts","role":"signal"},
+        {"label":"Housing.Completions","role":"beneficiary"},
+        {"label":"StageConversion","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Stage Conversion Rate","kind":"rate","unit":"%"},
+        {"id":"I2","name":"Avg. Time in Stage","kind":"state","unit":"days"},
+        {"id":"I3","name":"Unit Cost","kind":"state","unit":"$/m²"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":55,"upper_bound":85,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":60,"upper_bound":180,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":600,"upper_bound":1200,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2027-12-31","reflex_horizon":"P90D","cadence":"quarterly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L11 — Household Digital Adoption",
+        "description": "Access, literacy, and friction shape habit formation and adoption; assisted channels reduce drop-off.",
+        "loop_type": "perceptual",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "N",
+        "notes": "Use A/B and funnel analytics; ties to MES-L09 digital reliability.",
+        "metadata": { "motif": "R", "tags": ["micro","digital","adoption"], "domain": "digital", "loop_code": "MIC-L11" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Access (Devices/Connectivity)","kind":"indicator","meta":{"snl":"Access.Digital"}},
+        {"id":"N2","label":"Digital Literacy","kind":"indicator","meta":{"snl":"Literacy.Digital"}},
+        {"id":"N3","label":"Journey Friction","kind":"indicator","meta":{"snl":"Friction.Digital"}},
+        {"id":"N4","label":"Habit Strength","kind":"indicator","meta":{"snl":"Habit"}},
+        {"id":"N5","label":"Adoption","kind":"indicator","meta":{"snl":"Adoption"}},
+        {"id":"N6","label":"Assisted Channels / Onboarding","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N1","to_node":"N5","polarity":1,"weight":0.4},
+        {"id":"E2","from_node":"N2","to_node":"N5","polarity":1,"weight":0.4},
+        {"id":"E3","from_node":"N3","to_node":"N5","polarity":-1,"weight":0.5},
+        {"id":"E4","from_node":"N6","to_node":"N3","polarity":-1,"weight":0.5},
+        {"id":"E5","from_node":"N5","to_node":"N4","polarity":1,"weight":0.5},
+        {"id":"E6","from_node":"N4","to_node":"N5","polarity":1,"weight":0.3},
+        {"id":"E7","from_node":"N5","to_node":"N1","polarity":1,"weight":0.2,"note":"Adoption drives device uptake"}
+      ],
+      "shared_nodes": [
+        {"label":"Access.Digital","role":"constraint"},
+        {"label":"Literacy.Digital","role":"constraint"},
+        {"label":"Friction.Digital","role":"signal"},
+        {"label":"Habit","role":"beneficiary"},
+        {"label":"Adoption","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"DAU/MAU","kind":"state","unit":"ratio"},
+        {"id":"I2","name":"Funnel Drop-off","kind":"rate","unit":"%"},
+        {"id":"I3","name":"Assisted Share","kind":"rate","unit":"% sessions"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":0.25,"upper_bound":0.5,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0,"upper_bound":35,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":5,"upper_bound":25,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P30D","cadence":"monthly"}
+    },
+    {
+      "loop": {
+        "name": "MIC-L12 — Local Participation & Co-production",
+        "description": "Participatory budgeting and micro-grants raise participation and co-production capacity; positive feedback into local trust.",
+        "loop_type": "perceptual",
+        "scale": "micro",
+        "status": "draft",
+        "leverage_default": "N",
+        "notes": "Evaluate with DiD on local pilots; feeds MAC-L08 cohesion.",
+        "metadata": { "motif": "R", "tags": ["micro","participation","coproduction"], "domain": "society", "loop_code": "MIC-L12" }
+      },
+      "nodes": [
+        {"id":"N1","label":"Participation (Local)","kind":"indicator","meta":{"snl":"Society.Participation"}},
+        {"id":"N2","label":"Local Trust","kind":"indicator","meta":{"snl":"LocalTrust"}},
+        {"id":"N3","label":"Co-production Capacity","kind":"indicator","meta":{"snl":"CoProdCapacity"}},
+        {"id":"N4","label":"Participatory Budgeting","kind":"aux"},
+        {"id":"N5","label":"Micro-grants & Community Support","kind":"aux"}
+      ],
+      "edges": [
+        {"id":"E1","from_node":"N4","to_node":"N1","polarity":1,"weight":0.5},
+        {"id":"E2","from_node":"N5","to_node":"N3","polarity":1,"weight":0.5},
+        {"id":"E3","from_node":"N1","to_node":"N2","polarity":1,"weight":0.5},
+        {"id":"E4","from_node":"N3","to_node":"N2","polarity":1,"weight":0.4},
+        {"id":"E5","from_node":"N2","to_node":"N1","polarity":1,"weight":0.4},
+        {"id":"E6","from_node":"N1","to_node":"N3","polarity":1,"weight":0.3},
+        {"id":"E7","from_node":"N2","to_node":"N4","polarity":1,"weight":0.2,"note":"Trust unlocks deeper participation"}
+      ],
+      "shared_nodes": [
+        {"label":"Society.Participation","role":"beneficiary"},
+        {"label":"LocalTrust","role":"beneficiary"},
+        {"label":"CoProdCapacity","role":"beneficiary"}
+      ],
+      "indicators": [
+        {"id":"I1","name":"Participation Rate","kind":"rate","unit":"% adults"},
+        {"id":"I2","name":"Local Trust Index","kind":"state","unit":"index"},
+        {"id":"I3","name":"Co-prod Hours","kind":"state","unit":"hrs/1k pop"}
+      ],
+      "de_bands": [
+        {"indicator_id":"I1","lower_bound":10,"upper_bound":35,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I2","lower_bound":0.5,"upper_bound":0.8,"asymmetry":0.0,"smoothing_alpha":0.3},
+        {"indicator_id":"I3","lower_bound":20,"upper_bound":120,"asymmetry":0.0,"smoothing_alpha":0.3}
+      ],
+      "srt": {"window_start":"2025-01-01","window_end":"2026-12-31","reflex_horizon":"P60D","cadence":"monthly"}
+    }
+  ]
+}
