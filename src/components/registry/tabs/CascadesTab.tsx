@@ -22,7 +22,7 @@ interface CascadeHook {
 // Sample data mapping - in production this would come from the loop metadata
 const getCascadesForLoop = (loopId: string): CascadeHook[] => {
   const cascadeData: Record<string, CascadeHook[]> = {
-    // Batch 4 - META System Controls & Health Access
+    // Batch 5 - META System Controls & Macro-Meso-Micro Loops
     'atlas-META-L01': [
       { 
         type: 'upstream', 
@@ -85,6 +85,14 @@ const getCascadesForLoop = (loopId: string): CascadeHook[] => {
         strength: 'strong'
       },
       { 
+        type: 'upstream', 
+        loopId: 'atlas-ALL-MACRO-MESO-BREACHES', 
+        loopName: 'All Macro/Meso Breaches',
+        connection: 'persistent breaches → escalation',
+        description: 'Macro and meso loop breaches trigger escalation',
+        strength: 'strong'
+      },
+      { 
         type: 'downstream', 
         loopId: 'atlas-META-L06', 
         loopName: 'Structural Proposal Pipeline',
@@ -119,84 +127,124 @@ const getCascadesForLoop = (loopId: string): CascadeHook[] => {
         strength: 'strong'
       }
     ],
-    'atlas-META-L05': [
+    'atlas-MAC-L01': [
       { 
         type: 'upstream', 
-        loopId: 'atlas-META-L02', 
-        loopName: 'Controller Arbitration & Retuning',
-        connection: 'controller actions → guardrail monitoring',
-        description: 'Controller outputs monitored for compliance',
-        strength: 'strong'
-      }
-    ],
-    'atlas-META-L06': [
-      { 
-        type: 'upstream', 
-        loopId: 'atlas-META-L03', 
-        loopName: 'Escalation Governance',
-        connection: 'chronic failures → structural proposals',
-        description: 'Persistent system failures drive structural change proposals',
-        strength: 'medium'
-      },
-      { 
-        type: 'downstream', 
         loopId: 'atlas-MAC-L04', 
         loopName: 'Housing–Land Macro Elasticity',
-        connection: 'structural changes → land/housing policy',
-        description: 'Structural proposals affect housing and land systems',
+        connection: 'housing formation → demographic pressure',
+        description: 'Housing costs affect household formation rates',
+        strength: 'strong'
+      },
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MIC-L08', 
+        loopName: 'Service Level Agreements',
+        connection: 'service access → population retention',
+        description: 'Service quality affects migration decisions',
         strength: 'medium'
       },
       { 
         type: 'downstream', 
+        loopId: 'atlas-MAC-L02', 
+        loopName: 'Labor Market Macro Balance',
+        connection: 'demographic structure → labor supply',
+        description: 'Population structure affects workforce composition',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MES-L02', 
+        loopName: 'Teacher Pipeline',
+        connection: 'cohort size → education demand',
+        description: 'Population changes drive education service needs',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MAC-L02': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L06', 
+        loopName: 'External Demand & Competitiveness',
+        connection: 'trade patterns → sectoral employment',
+        description: 'External demand affects labor market structure',
+        strength: 'medium'
+      },
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L10', 
+        loopName: 'Human Capital Regime',
+        connection: 'skills stock → productivity',
+        description: 'Human capital development affects labor productivity',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MES-L03', 
+        loopName: 'Sectoral Jobs Match',
+        connection: 'labor demand → sectoral matching',
+        description: 'Macro labor patterns affect sectoral employment',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L04', 
+        loopName: 'Employment Transitions',
+        connection: 'vacancy gaps → job matching',
+        description: 'Macro imbalances affect individual job transitions',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MAC-L03': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L06', 
+        loopName: 'External Demand & Competitiveness',
+        connection: 'import prices → domestic inflation',
+        description: 'Trade terms affect domestic price level',
+        strength: 'strong'
+      },
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L07', 
+        loopName: 'Energy Supply Adequacy',
+        connection: 'energy costs → inflation',
+        description: 'Energy prices feed into general price level',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L01', 
+        loopName: 'Household Hardship',
+        connection: 'inflation → cost of living',
+        description: 'Price stability affects household purchasing power',
+        strength: 'strong'
+      }
+    ],
+    'atlas-MAC-L04': [
+      { 
+        type: 'upstream', 
         loopId: 'atlas-MES-L05', 
         loopName: 'Housing Delivery',
-        connection: 'regulatory changes → delivery processes',
-        description: 'Structural changes affect housing delivery mechanisms',
-        strength: 'medium'
-      }
-    ],
-    'atlas-META-L07': [
-      { 
-        type: 'upstream', 
-        loopId: 'atlas-MAC-L08', 
-        loopName: 'Social Cohesion & National Legitimacy',
-        connection: 'social cohesion → participation',
-        description: 'Social cohesion drives participatory engagement',
-        strength: 'strong'
-      },
-      { 
-        type: 'upstream', 
-        loopId: 'atlas-MES-L09', 
-        loopName: 'Digital Services Reliability',
-        connection: 'service quality → trust building',
-        description: 'Digital service performance affects public trust',
-        strength: 'medium'
-      },
-      { 
-        type: 'downstream', 
-        loopId: 'atlas-MIC-L10', 
-        loopName: 'Compliance & Rule Adherence',
-        connection: 'legitimacy → compliance behavior',
-        description: 'Perceived legitimacy drives rule compliance',
+        connection: 'stage conversion → supply',
+        description: 'Housing delivery efficiency affects market supply',
         strength: 'strong'
       },
       { 
         type: 'downstream', 
-        loopId: 'atlas-MIC-L12', 
-        loopName: 'Local Participation',
-        connection: 'participation → local engagement',
-        description: 'National participation drives local engagement',
-        strength: 'medium'
-      }
-    ],
-    'atlas-META-L08': [
+        loopId: 'atlas-MIC-L08', 
+        loopName: 'Service Level Agreements',
+        connection: 'housing costs → household formation',
+        description: 'Housing affordability affects household decisions',
+        strength: 'strong'
+      },
       { 
         type: 'downstream', 
-        loopId: 'atlas-MAC-L09', 
-        loopName: 'System Shock & Resilience Response',
-        connection: 'early warning → resilience activation',
-        description: 'Early warning triggers resilience mechanisms',
-        strength: 'strong'
+        loopId: 'atlas-MAC-L01', 
+        loopName: 'Demographic Regime & Support Ratio',
+        connection: 'formation delays → demographic patterns',
+        description: 'Housing constraints affect population dynamics',
+        strength: 'medium'
       }
     ],
     'atlas-MES-L01': [
@@ -217,25 +265,78 @@ const getCascadesForLoop = (loopId: string): CascadeHook[] => {
         strength: 'strong'
       }
     ],
-    'atlas-MIC-L10': [
+    'atlas-MES-L05': [
       { 
         type: 'upstream', 
-        loopId: 'atlas-META-L07', 
-        loopName: 'Legitimacy & Participation Coupler',
-        connection: 'legitimacy → compliance willingness',
-        description: 'Perceived legitimacy drives compliance behavior',
+        loopId: 'atlas-MAC-L04', 
+        loopName: 'Housing–Land Macro Elasticity',
+        connection: 'demand pressure → delivery requirements',
+        description: 'Housing demand drives delivery system pressure',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L08', 
+        loopName: 'Service Level Agreements',
+        connection: 'delivery efficiency → affordability',
+        description: 'Housing delivery affects household affordability',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MIC-L11': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L09', 
+        loopName: 'Digital Services Reliability',
+        connection: 'service quality → adoption barriers',
+        description: 'Digital service performance affects user adoption',
         strength: 'strong'
       },
       { 
         type: 'downstream', 
         loopId: 'atlas-MAC-L08', 
         loopName: 'Social Cohesion & National Legitimacy',
-        connection: 'compliance → social order',
-        description: 'Rule adherence reinforces social cohesion',
+        connection: 'digital inclusion → social cohesion',
+        description: 'Digital adoption affects social participation',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L06', 
+        loopName: 'Service Satisfaction',
+        connection: 'digital adoption → service satisfaction',
+        description: 'Digital adoption improves service experience',
         strength: 'medium'
       }
     ],
-
+    'atlas-MIC-L12': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L07', 
+        loopName: 'Legitimacy & Participation Coupler',
+        connection: 'transparency → local engagement',
+        description: 'National transparency drives local participation',
+        strength: 'strong'
+      },
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L09', 
+        loopName: 'Digital Services Reliability',
+        connection: 'digital platforms → participation tools',
+        description: 'Digital infrastructure enables local participation',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L08', 
+        loopName: 'Social Cohesion & National Legitimacy',
+        connection: 'local participation → national trust',
+        description: 'Local engagement strengthens national legitimacy',
+        strength: 'strong'
+      }
+    ],
+    
+    // Batch 4+ Other loops
     'atlas-MAC-L05': [
       { 
         type: 'upstream', 

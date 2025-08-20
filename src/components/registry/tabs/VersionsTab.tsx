@@ -26,7 +26,7 @@ interface VersionInfo {
 // Sample data mapping - in production this would come from the loop metadata
 const getVersionsForLoop = (loopId: string): VersionInfo[] => {
   const versionData: Record<string, VersionInfo[]> = {
-    // Batch 4 - META System Controls & Health Access
+    // Batch 5 - META System Controls & Macro-Meso-Micro Loops
     'atlas-META-L01': [
       {
         version: 'v1.0',
@@ -34,7 +34,8 @@ const getVersionsForLoop = (loopId: string): VersionInfo[] => {
         description: 'Supervisory band & weight tuner seeded.',
         changes: ['Initial band management system', 'Weight tuning algorithms', 'Trust-latency constraint monitoring'],
         author: 'Meta-Control Systems Team',
-        status: 'stable'
+        status: 'stable',
+        isCurrent: true
       }
     ],
     'atlas-META-L02': [
@@ -44,7 +45,8 @@ const getVersionsForLoop = (loopId: string): VersionInfo[] => {
         description: 'PID/MPC/Rule family switching enabled.',
         changes: ['Controller arbitration framework', 'Multi-algorithm switching', 'Retuning automation'],
         author: 'Control Systems Team',
-        status: 'stable'
+        status: 'stable',
+        isCurrent: true
       }
     ],
     'atlas-META-L03': [
@@ -54,7 +56,8 @@ const getVersionsForLoop = (loopId: string): VersionInfo[] => {
         description: 'Escalation ladder routing live.',
         changes: ['N→P→S escalation framework', 'Authority provisioning', 'Sprint ladder integration'],
         author: 'Governance Systems Team',
-        status: 'stable'
+        status: 'stable',
+        isCurrent: true
       }
     ],
     'atlas-META-L04': [
@@ -64,47 +67,52 @@ const getVersionsForLoop = (loopId: string): VersionInfo[] => {
         description: 'Standards registry & API contracts enforced.',
         changes: ['Data integrity standards', 'API contract enforcement', 'Schema versioning system'],
         author: 'Data Architecture Team',
-        status: 'stable'
+        status: 'stable',
+        isCurrent: true
       }
     ],
-    'atlas-META-L05': [
+    'atlas-MAC-L01': [
       {
         version: 'v1.0',
         date: '2025-08-20',
-        description: 'Guardrail monitor online.',
-        changes: ['Threshold monitoring', 'Violation detection', 'Automated cap enforcement'],
-        author: 'Safety Systems Team',
-        status: 'stable'
+        description: 'Long-horizon cohort tracking enabled.',
+        changes: ['Demographic regime monitoring', 'Support ratio tracking', 'Cohort projection models', 'Migration flow analysis'],
+        author: 'Demographic Analysis Team',
+        status: 'stable',
+        isCurrent: true
       }
     ],
-    'atlas-META-L06': [
+    'atlas-MAC-L02': [
       {
         version: 'v1.0',
         date: '2025-08-20',
-        description: 'Proposal flow & legal gating activated.',
-        changes: ['Structural proposal pipeline', 'Legal process integration', 'Adoption tracking'],
-        author: 'Policy Development Team',
-        status: 'stable'
+        description: 'Sector pact & recognition toggles wired.',
+        changes: ['Labor market balance monitoring', 'Skills matching framework', 'Wage drift detection', 'ISCO mapping system'],
+        author: 'Labor Market Analytics Team',
+        status: 'stable',
+        isCurrent: true
       }
     ],
-    'atlas-META-L07': [
+    'atlas-MAC-L03': [
       {
         version: 'v1.0',
         date: '2025-08-20',
-        description: 'Transparency pack & participatory sprint toggles wired.',
-        changes: ['Trust measurement system', 'Participation monitoring', 'Transparency mechanisms'],
-        author: 'Public Engagement Team',
-        status: 'stable'
+        description: 'Fiscal–monetary coordination & indexation rules parameterized.',
+        changes: ['Price stability monitoring', 'Output gap tracking', 'Expectations management', 'SVAR counterfactual system'],
+        author: 'Macroeconomic Policy Team',
+        status: 'stable',
+        isCurrent: true
       }
     ],
-    'atlas-META-L08': [
+    'atlas-MAC-L04': [
       {
         version: 'v1.0',
         date: '2025-08-20',
-        description: 'Watchpoint arming & pre-position bundles configured.',
-        changes: ['Early warning system', 'Risk orchestration', 'Watchpoint management'],
-        author: 'Risk Management Team',
-        status: 'stable'
+        description: 'One-stop approvals and digital cadaster integration points defined.',
+        changes: ['Housing-land elasticity monitoring', 'Approvals throughput tracking', 'Formation lag analysis', 'Digital cadaster integration'],
+        author: 'Housing & Land Policy Team',
+        status: 'stable',
+        isCurrent: true
       }
     ],
     'atlas-MES-L01': [
@@ -112,22 +120,47 @@ const getVersionsForLoop = (loopId: string): VersionInfo[] => {
         version: 'v1.0',
         date: '2025-08-20',
         description: 'Staffing & purchasing model levers active.',
-        changes: ['Health capacity modeling', 'Staffing optimization', 'Resource allocation algorithms'],
+        changes: ['Health capacity modeling', 'Wait time optimization', 'Coverage tracking', 'Staffing allocation algorithms'],
         author: 'Health Systems Team',
-        status: 'stable'
+        status: 'stable',
+        isCurrent: true
       }
     ],
-    'atlas-MIC-L10': [
+    'atlas-MES-L05': [
       {
         version: 'v1.0',
         date: '2025-08-20',
-        description: 'Transparency pack + fair enforcement cues integrated.',
-        changes: ['Compliance monitoring', 'Enforcement visibility system', 'Legitimacy tracking'],
-        author: 'Regulatory Systems Team',
-        status: 'stable'
+        description: 'Stage telemetry enabled; one-stop control toggles wired.',
+        changes: ['Housing delivery pipeline tracking', 'Stage conversion monitoring', 'Cost analysis system', 'One-stop approvals integration'],
+        author: 'Housing Delivery Team',
+        status: 'stable',
+        isCurrent: true
       }
     ],
-
+    'atlas-MIC-L11': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Assisted channels & onboarding kits enabled.',
+        changes: ['Digital adoption tracking', 'Funnel analysis system', 'Assisted service channels', 'Onboarding optimization'],
+        author: 'Digital Inclusion Team',
+        status: 'stable',
+        isCurrent: true
+      }
+    ],
+    'atlas-MIC-L12': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Micro-grants & community support flows active.',
+        changes: ['Local participation tracking', 'Trust measurement system', 'Co-production capacity monitoring', 'Community support infrastructure'],
+        author: 'Community Engagement Team',
+        status: 'stable',
+        isCurrent: true
+      }
+    ],
+    
+    // Other batches
     'atlas-MAC-L05': [
       {
         version: 'v1.0',

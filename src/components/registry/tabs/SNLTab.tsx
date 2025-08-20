@@ -30,7 +30,7 @@ interface SharedNode {
 // Sample data mapping - in production this would come from the loop metadata
 const getSharedNodesForLoop = (loopId: string): SharedNode[] => {
   const snlData: Record<string, SharedNode[]> = {
-    // Batch 4 - META System Controls & Health Access
+    // Batch 5 - META System Controls & Macro-Meso-Micro Loops
     'atlas-META-L01': [
       { name: 'Society.Trust', type: 'state', description: 'Public trust in institutions and systems', connections: 3, status: 'stable' },
       { name: 'Institutions.DecisionLatency', type: 'state', description: 'Time required for institutional decision-making processes', connections: 2, status: 'stable' }
@@ -47,22 +47,32 @@ const getSharedNodesForLoop = (loopId: string): SharedNode[] => {
       { name: 'Institutions.DataInteroperability', type: 'state', description: 'Ability of systems to exchange and use data effectively', connections: 6, status: 'improving' },
       { name: 'Services.Latency', type: 'state', description: 'Response time characteristics of system services', connections: 4, status: 'stable' }
     ],
-    'atlas-META-L05': [
-      { name: 'Institutions.Guardrails', type: 'state', description: 'Automated safeguards and operational limits', connections: 3, status: 'stable' }
+    'atlas-MAC-L01': [
+      { name: 'Fertility', type: 'stock', description: 'Population fertility rates and trends', connections: 4, status: 'monitored' },
+      { name: 'Mortality', type: 'stock', description: 'Population mortality patterns and life expectancy', connections: 3, status: 'stable' },
+      { name: 'Migration', type: 'flow', description: 'Population movement and migration flows', connections: 5, status: 'variable' },
+      { name: 'Population.AgeCohorts', type: 'stock', description: 'Age-structured population demographics', connections: 6, status: 'tracked' },
+      { name: 'DependencyRatio', type: 'indicator', description: 'Ratio of dependents to working-age population', connections: 4, status: 'increasing' }
     ],
-    'atlas-META-L06': [
-      { name: 'Institutions.LegalProcess', type: 'state', description: 'Legal framework and process efficiency', connections: 2, status: 'stable' },
-      { name: 'Institutions.Authority', type: 'state', description: 'Institutional authority and decision-making power', connections: 3, status: 'stable' }
+    'atlas-MAC-L02': [
+      { name: 'Economy.LaborDemand', type: 'stock', description: 'Aggregate demand for labor across sectors', connections: 5, status: 'variable' },
+      { name: 'Economy.LaborSupply', type: 'stock', description: 'Available workforce and participation', connections: 4, status: 'stable' },
+      { name: 'Wages', type: 'indicator', description: 'Wage levels and trends across sectors', connections: 6, status: 'increasing' },
+      { name: 'SkillsStock', type: 'stock', description: 'Accumulated skills and human capital', connections: 3, status: 'improving' },
+      { name: 'Participation', type: 'indicator', description: 'Labor force participation rates', connections: 4, status: 'stable' }
     ],
-    'atlas-META-L07': [
-      { name: 'Society.Trust', type: 'state', description: 'Public trust in institutions and systems', connections: 5, status: 'stable' },
-      { name: 'Society.Participation', type: 'state', description: 'Level of public engagement in governance processes', connections: 4, status: 'stable' },
-      { name: 'PerceivedLegitimacy', type: 'state', description: 'Public perception of institutional legitimacy', connections: 3, status: 'stable' }
+    'atlas-MAC-L03': [
+      { name: 'MoneySupply', type: 'stock', description: 'Money supply and monetary aggregates', connections: 4, status: 'controlled' },
+      { name: 'Output', type: 'indicator', description: 'Economic output and production levels', connections: 5, status: 'growing' },
+      { name: 'Prices', type: 'indicator', description: 'General price level and inflation', connections: 6, status: 'stable' },
+      { name: 'Expectations', type: 'state', description: 'Economic expectations and sentiment', connections: 3, status: 'anchored' }
     ],
-    'atlas-META-L08': [
-      { name: 'Environment.Risk', type: 'state', description: 'Environmental risk factors and threat levels', connections: 3, status: 'monitored' },
-      { name: 'SupplyChainRisk', type: 'state', description: 'Supply chain vulnerability and disruption risk', connections: 4, status: 'monitored' },
-      { name: 'GeopoliticsRisk', type: 'state', description: 'Geopolitical tensions and stability risks', connections: 2, status: 'monitored' }
+    'atlas-MAC-L04': [
+      { name: 'LandSupply', type: 'stock', description: 'Available land for development', connections: 4, status: 'constrained' },
+      { name: 'Housing.Approvals', type: 'flow', description: 'Housing development approvals pipeline', connections: 5, status: 'bottlenecked' },
+      { name: 'Housing.Completions', type: 'flow', description: 'Housing completions and delivery', connections: 4, status: 'lagging' },
+      { name: 'Prices', type: 'indicator', description: 'Housing prices and affordability', connections: 6, status: 'rising' },
+      { name: 'HouseholdFormation', type: 'indicator', description: 'New household formation rates', connections: 3, status: 'delayed' }
     ],
     'atlas-MES-L01': [
       { name: 'Services.Capacity.Health', type: 'stock', description: 'Healthcare system service delivery capacity', connections: 5, status: 'expanding' },
@@ -70,12 +80,26 @@ const getSharedNodesForLoop = (loopId: string): SharedNode[] => {
       { name: 'Coverage', type: 'state', description: 'Population coverage of healthcare services', connections: 4, status: 'improving' },
       { name: 'Latency', type: 'state', description: 'Healthcare service response and wait times', connections: 3, status: 'stable' }
     ],
-    'atlas-MIC-L10': [
-      { name: 'PerceivedLegitimacy', type: 'state', description: 'Public perception of institutional legitimacy', connections: 4, status: 'stable' },
-      { name: 'EnforcementVisibility', type: 'state', description: 'Public awareness of fair enforcement actions', connections: 2, status: 'improving' },
-      { name: 'Norms', type: 'state', description: 'Social norms and expectations around compliance', connections: 3, status: 'stable' }
+    'atlas-MES-L05': [
+      { name: 'Housing.Approvals', type: 'flow', description: 'Housing development approvals pipeline', connections: 4, status: 'improving' },
+      { name: 'Housing.Starts', type: 'flow', description: 'Housing construction starts', connections: 3, status: 'variable' },
+      { name: 'Housing.Completions', type: 'flow', description: 'Housing completions and delivery', connections: 5, status: 'recovering' },
+      { name: 'StageConversion', type: 'indicator', description: 'Conversion efficiency between housing stages', connections: 3, status: 'monitored' }
     ],
-
+    'atlas-MIC-L11': [
+      { name: 'Access.Digital', type: 'state', description: 'Digital access infrastructure and connectivity', connections: 4, status: 'expanding' },
+      { name: 'Literacy.Digital', type: 'state', description: 'Digital literacy and skills levels', connections: 3, status: 'improving' },
+      { name: 'Friction.Digital', type: 'state', description: 'Barriers to digital service use', connections: 5, status: 'decreasing' },
+      { name: 'Habit', type: 'state', description: 'Digital service usage habits and patterns', connections: 2, status: 'developing' },
+      { name: 'Adoption', type: 'indicator', description: 'Digital service adoption rates', connections: 4, status: 'increasing' }
+    ],
+    'atlas-MIC-L12': [
+      { name: 'Society.Participation', type: 'state', description: 'Level of civic and community participation', connections: 4, status: 'variable' },
+      { name: 'LocalTrust', type: 'state', description: 'Trust levels within local communities', connections: 3, status: 'stable' },
+      { name: 'CoProdCapacity', type: 'state', description: 'Community capacity for co-production', connections: 2, status: 'building' }
+    ],
+    
+    // Other batches
     'atlas-MAC-L05': [
       { 
         name: 'Firms.CapitalStock', 
