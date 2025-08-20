@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useFeatureFlags } from '@/components/layout/FeatureFlagProvider';
-import { useAuth } from '@/contexts/AuthContext';
 import { 
   Zap, 
   Brain, 
@@ -17,8 +16,6 @@ import {
   CheckCircle2,
   Clock,
   Settings,
-  LogIn,
-  UserPlus,
   Database,
   GitBranch
 } from 'lucide-react';
@@ -26,7 +23,6 @@ import {
 export const Index: React.FC = () => {
   const navigate = useNavigate();
   const { flags } = useFeatureFlags();
-  const { user } = useAuth();
 
   const demoTasks = [
     {
@@ -110,42 +106,25 @@ export const Index: React.FC = () => {
             loop registry featuring 32 backbone loops across meta, macro, meso, and micro layers.
           </p>
 
-          {!user ? (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90">
-                <Link to="/auth">
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Sign In
-                </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              onClick={() => navigate('/registry')}
+              className="text-lg px-8 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90"
+            >
+              Explore Registry
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
+              View Dashboard
+            </Button>
+            {flags.CAPACITY_WORKSPACE && (
+              <Button variant="outline" size="lg" onClick={() => navigate('/demo')}>
+                <Settings className="mr-2 w-4 h-4" />
+                Demo
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link to="/auth">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Create Account
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/registry')}
-                className="text-lg px-8 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90"
-              >
-                Explore Registry
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button variant="outline" size="lg" onClick={() => navigate('/dashboard')}>
-                View Dashboard
-              </Button>
-              {flags.CAPACITY_WORKSPACE && (
-                <Button variant="outline" size="lg" onClick={() => navigate('/demo')}>
-                  <Settings className="mr-2 w-4 h-4" />
-                  Demo
-                </Button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </motion.div>
 
         {/* Atlas Features */}
@@ -203,8 +182,8 @@ export const Index: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Capacity-Mode Task Cards - Only show if user is logged in */}
-        {user && flags.CAPACITY_WORKSPACE && demoTasks.length > 0 && (
+        {/* Capacity-Mode Task Cards */}
+        {flags.CAPACITY_WORKSPACE && demoTasks.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
