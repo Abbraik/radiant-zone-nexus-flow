@@ -1,126 +1,163 @@
-import React, { useState } from 'react';
-import type { CapacityBundleProps } from '@/types/capacity';
-import { CheckpointConsole } from './components/CheckpointConsole';
-import { GuardrailsPanel } from './components/GuardrailsPanel';
-import { QuickActionsBar } from './components/QuickActionsBar';
-import { HarmonizationDrawer } from './components/HarmonizationDrawer';
-import { MicroLoopAlertRail } from '@/components/monitor/MicroLoopAlertRail';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
+import React, { useMemo, useState } from "react";
+import type { DecisionResult, SignalReading } from "@/services/capacity-decision/types";
+import ActivationVectorWidget from "@/components/widgets/ActivationVectorWidget";
+import CapacityTaskComposer from "@/components/composers/CapacityTaskComposer";
+import { responsivePlaybooks } from "@/playbooks/responsive.default";
+import { expandResponsivePlaybook } from "@/playbooks/expand";
 
-export const ResponsiveBundle: React.FC<CapacityBundleProps> = ({
-  taskId,
-  taskData,
-  payload,
-  onPayloadUpdate,
-  onValidationChange,
-  readonly = false
-}) => {
-  const [showHarmonization, setShowHarmonization] = useState(false);
-  const [reorderMode, setReorderMode] = useState(false);
-  
-  // Mock data - should come from task/claim
-  const claimId = (taskData as any)?.claim_id || 'mock-claim-id';
-  const loopData = (taskData as any)?.loop || { id: 'mock-loop', name: 'Sample Loop', type: 'micro', scale: 'micro' };
-  
-  // Mock conflicts for demo
-  const conflicts = [
-    {
-      id: 'conflict-1',
-      loopName: 'Resource Optimization Loop',
-      actor: 'DevOps Team',
-      leverIntent: 'N→P' as const,
-      sharedNodes: ['Infrastructure', 'Database'],
-      status: 'active' as const,
-      priority: 'high' as const
-    }
-  ];
+// App-shell functions (wire these in your shell)
+declare function upsertIncident(payload: any): Promise<{id:string}>;
+declare function appendIncidentEvent(incidentId: string, event: any): Promise<void>;
+declare function createSprintWithTasks(payload: any): Promise<{id:string}>;
+declare function openClaimDrawer(tasks: Array<any>): void;
 
-  const handleMarkCheckpoint = () => {
-    onPayloadUpdate({
-      ...payload,
-      lastCheckpoint: new Date().toISOString(),
-      checkpointCount: (payload?.checkpointCount || 0) + 1
-    });
+export type ResponsiveBundleProps = {
+  loopCode: string;
+  indicator: string;
+  decision: DecisionResult;
+  reading?: SignalReading;
+  lastIncidentId?: string | null;
+  onHandoff?: (to: "reflexive"|"deliberative"|"structural", reason: string) => void;
+};
+
+export default function ResponsiveBundle(props: ResponsiveBundleProps) {
+  const { loopCode, indicator, decision, reading, lastIncidentId, onHandoff } = props;
+  const [busy, setBusy] = useState(false);
+  const [incidentId, setIncidentId] = useState<string | undefined>(lastIncidentId || undefined);
+
+  const severityPct = Math.round(decision.severity * 100);
+  const timeboxDays = decision.guardrails.timeboxDays ?? 14;
+
+  const applicablePBs = useMemo(() => {
+    return responsivePlaybooks.filter(pb => pb.loops.includes(loopCode));
+  }, [loopCode]);
+
+  const suggestedPB = applicablePBs[0];
+
+  const handoffEligible = {
+    reflexive: (reading?.oscillation ?? 0) >= 0.4,
+    deliberative: (decision.consent.requireDeliberative || (reading?.dispersion ?? 0) >= 0.5),
+    structural: ((reading?.persistencePk ?? 0)/100) >= 0.5 || (reading?.integralError ?? 0) >= 0.5,
   };
 
+  async function startContainmentSprint() {
+    setBusy(true);
+    try {
+      const inc = !incidentId ? await upsertIncident({
+        loop_code: loopCode,
+        indicator,
+        severity: decision.severity,
+        srt: decision.srt,
+        guardrails: decision.guardrails,
+        status: "active"
+      }) : { id: incidentId };
+
+      setIncidentId(inc.id);
+
+      const tasks = suggestedPB
+        ? expandResponsivePlaybook(decision, suggestedPB)
+        : [];
+
+      const sprint = await createSprintWithTasks({
+        capacity: "responsive",
+        leverage: "P",
+        due_at: new Date(Date.now() + timeboxDays*24*3600*1000).toISOString(),
+        guardrails: decision.guardrails,
+        srt: decision.srt,
+        tasks
+      });
+
+      await appendIncidentEvent(inc.id, {
+        kind: "action",
+        payload: { type: "start_containment_sprint", sprint_id: sprint.id, playbook: suggestedPB?.id }
+      });
+
+      openClaimDrawer(tasks);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function handoff(to: "reflexive"|"deliberative"|"structural") {
+    const reason =
+      to === "reflexive" ? "Oscillation/ringing after containment" :
+      to === "deliberative" ? "Legitimacy/trade-off surfaced" :
+      "Persistence / integral error indicates structural cause";
+
+    onHandoff?.(to, reason);
+    if (incidentId) {
+      appendIncidentEvent(incidentId, { kind: "handoff", payload: { to, reason } });
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
-      {/* Header - Simplified */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border-b bg-background/95 backdrop-blur-sm"
-      >
-        <div className="container mx-auto p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold">{loopData.name}</h1>
-              <Badge variant="outline">Responsive Mode</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge>Leverage: N→P</Badge>
-              <Badge variant="secondary">Active</Badge>
-            </div>
+    <div className="grid gap-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-sm text-muted-foreground">Responsive · Checkpoint</div>
+          <div className="text-xl font-semibold">{loopCode} · {indicator}</div>
+          <div className="text-xs text-gray-500">
+            Severity: <span className="font-semibold">{severityPct}%</span> · Time-box: {timeboxDays}d · Cadence: {decision.srt.cadence}
           </div>
         </div>
-      </motion.div>
+        <ActivationVectorWidget decision={decision} />
+      </div>
 
-      <div className="container mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Execution Track */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Active Claim Panel - Simplified */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Active Claim</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Claim execution in progress...</p>
-              </CardContent>
-            </Card>
-            
-            <CheckpointConsole 
-              claimId={claimId}
-              onCheckpointCreated={handleMarkCheckpoint}
-            />
-          </div>
-
-          {/* Right Column - Safety & Signals */}
-          <div className="space-y-6">
-            <MicroLoopAlertRail 
-              workspaceType="monitor"
-              onCreateTask={() => {}}
-              maxVisible={5}
-            />
-            
-            <GuardrailsPanel 
-              claimId={claimId}
-              isManager={true} // TODO: Get from user role
-            />
-          </div>
+      {/* Guardrails */}
+      <div className="rounded-2xl border p-3">
+        <div className="font-medium mb-1">Guardrails</div>
+        <div className="text-sm">
+          Caps: {decision.guardrails.caps?.join(", ") || "—"} · Time-box: {timeboxDays}d
+          {decision.consent.requireDeliberative && (
+            <div className="mt-1 text-amber-600 text-xs">Consent gate active — prepare transparency pack.</div>
+          )}
         </div>
       </div>
 
-      {/* Quick Actions Bar */}
-      <QuickActionsBar 
-        claimId={claimId}
-        readonly={readonly}
-        onAddSubstep={() => {}}
-        onReorderMode={() => setReorderMode(!reorderMode)}
-        onMarkCheckpoint={handleMarkCheckpoint}
-        onRequestEscalation={() => {}}
-        onSwitchMode={() => {}}
-      />
+      {/* Quick Actions */}
+      <div className="rounded-2xl border p-3">
+        <div className="font-medium mb-2">Quick Actions</div>
+        <div className="flex gap-2 flex-wrap">
+          <button className="px-3 py-1 rounded bg-blue-600 text-white text-sm" disabled={busy} onClick={startContainmentSprint}>
+            {busy ? "Starting…" : "Start Containment Sprint"}
+          </button>
+          {suggestedPB && (
+            <span className="text-xs text-gray-600">Suggested playbook: <b>{suggestedPB.name}</b></span>
+          )}
+        </div>
+      </div>
 
-      {/* Harmonization Drawer */}
-      <HarmonizationDrawer 
-        conflicts={conflicts}
-        isOpen={showHarmonization}
-        onOpenChange={setShowHarmonization}
-        isManager={true} // TODO: Get from user role
-      />
+      {/* Harmonization */}
+      <div className="rounded-2xl border p-3">
+        <div className="font-medium mb-1">Harmonization</div>
+        <div className="text-sm text-gray-600">
+          Hub saturation: {(reading?.hubSaturation ?? 0).toFixed(2)} · Dispersion: {(reading?.dispersion ?? 0).toFixed(2)}
+          <div className="text-xs">Use cross-loop throttle if hub near saturation.</div>
+        </div>
+      </div>
+
+      {/* Proposed Tasks */}
+      <div className="rounded-2xl border p-3">
+        <CapacityTaskComposer decision={decision} loopCode={loopCode} onCreate={(tasks)=>openClaimDrawer(tasks)} />
+      </div>
+
+      {/* Handoffs */}
+      <div className="rounded-2xl border p-3 flex gap-2 flex-wrap">
+        <div className="font-medium w-full">Handoffs</div>
+        <button className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          disabled={!handoffEligible.reflexive} onClick={()=>handoff("reflexive")}>
+          → Reflexive (tuner)
+        </button>
+        <button className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          disabled={!handoffEligible.deliberative} onClick={()=>handoff("deliberative")}>
+          → Deliberative (trade-offs)
+        </button>
+        <button className="px-3 py-1 rounded border text-sm disabled:opacity-50"
+          disabled={!handoffEligible.structural} onClick={()=>handoff("structural")}>
+          → Structural (mandate/pathway)
+        </button>
+      </div>
     </div>
   );
-};
+}

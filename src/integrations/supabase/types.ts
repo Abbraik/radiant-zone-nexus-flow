@@ -784,6 +784,86 @@ export type Database = {
         }
         Relationships: []
       }
+      incident_events: {
+        Row: {
+          at: string
+          created_at: string
+          id: string
+          incident_id: string | null
+          kind: string
+          payload: Json
+          user_id: string
+        }
+        Insert: {
+          at?: string
+          created_at?: string
+          id?: string
+          incident_id?: string | null
+          kind: string
+          payload: Json
+          user_id: string
+        }
+        Update: {
+          at?: string
+          created_at?: string
+          id?: string
+          incident_id?: string | null
+          kind?: string
+          payload?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_events_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incidents: {
+        Row: {
+          created_at: string
+          guardrails: Json | null
+          id: string
+          indicator: string
+          loop_code: string
+          severity: number
+          srt: Json
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          guardrails?: Json | null
+          id?: string
+          indicator: string
+          loop_code: string
+          severity: number
+          srt: Json
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          guardrails?: Json | null
+          id?: string
+          indicator?: string
+          loop_code?: string
+          severity?: number
+          srt?: Json
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       indicator_values: {
         Row: {
           created_at: string | null
