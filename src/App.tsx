@@ -91,8 +91,8 @@ const App = () => (
                     <Route path="/workspace" element={<Workspace />} />
                     <Route path="/demo" element={<Demo />} />
                     <Route path="/registry" element={<LoopRegistry />} />
-                    <Route path="/registry/:loopCode" element={<LoopDetail />} />
-                    <Route path="/registry/:loopCode/editor" element={<LoopEditor />} />
+                    <Route path="/registry/:id" element={<LoopDetail />} />
+                    <Route path="/registry/:id/edit" element={<LoopEditor />} />
                     <Route path="/dashboard/loops" element={<LoopDashboard />} />
                     <Route path="/dashboard" element={
                       <div className="pt-4">
