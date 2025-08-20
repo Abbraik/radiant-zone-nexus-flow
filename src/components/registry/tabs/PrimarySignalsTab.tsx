@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Zap, TrendingUp, Activity, Info, Bell } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Zap, TrendingUp, Activity, Info, Bell, Brain } from 'lucide-react';
 import { LoopData } from '@/types/loop-registry';
+import { CapacityPanel } from '@/components/capacity';
 
 interface PrimarySignalsTabProps {
   loop: LoopData;
@@ -249,9 +251,10 @@ const getStatusColor = (status?: string) => {
   }
 };
 
-const SignalCard: React.FC<{ signal: Signal }> = ({ signal }) => {
-  const { name, description, type, priority, status, lastTriggered } = signal;
+const SignalCard: React.FC<{ signal: Signal; onAnalyze?: (signal: Signal) => void }> = ({ signal, onAnalyze }) => {
+  const { name, signal: signalName, description, type, priority, status, lastTriggered } = signal;
   const isActive = status === 'triggered' || status === 'active';
+  const displayName = name || signalName || 'Unknown Signal';
 
   return (
     <Card className={`glass-secondary ${isActive ? 'border-yellow-500/20' : ''}`}>
@@ -261,7 +264,7 @@ const SignalCard: React.FC<{ signal: Signal }> = ({ signal }) => {
             <div className={getStatusColor(status)}>
               {getSignalIcon(type)}
             </div>
-            <h4 className="font-medium text-foreground text-sm">{name}</h4>
+            <h4 className="font-medium text-foreground text-sm">{displayName}</h4>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={getPriorityColor(priority)} className="text-xs">
@@ -284,11 +287,24 @@ const SignalCard: React.FC<{ signal: Signal }> = ({ signal }) => {
               {status || 'normal'}
             </span>
           </div>
-          {lastTriggered && (
-            <span className="text-muted-foreground">
-              Last: {lastTriggered}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {lastTriggered && (
+              <span className="text-muted-foreground">
+                Last: {lastTriggered}
+              </span>
+            )}
+            {(status === 'triggered' || status === 'active') && onAnalyze && (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => onAnalyze(signal)}
+                className="text-xs h-6 px-2"
+              >
+                <Brain className="w-3 h-3 mr-1" />
+                Analyze
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -296,9 +312,69 @@ const SignalCard: React.FC<{ signal: Signal }> = ({ signal }) => {
 };
 
 const PrimarySignalsTab: React.FC<PrimarySignalsTabProps> = ({ loop }) => {
+  const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
+  const [showCapacityAnalysis, setShowCapacityAnalysis] = useState(false);
+  
   const signals = getSignalsForLoop(loop.id);
   const activeSignals = signals.filter(s => s.status === 'triggered' || s.status === 'active');
   const triggeredSignals = signals.filter(s => s.status === 'triggered');
+  
+  const loopCode = loop.metadata?.loop_code || loop.loop_code || loop.id;
+
+  const handleAnalyzeSignal = (signal: Signal) => {
+    setSelectedSignal(signal);
+    setShowCapacityAnalysis(true);
+  };
+
+  const handleTasksCreated = (tasks: any[]) => {
+    console.log('Tasks created from signal analysis:', tasks);
+    setShowCapacityAnalysis(false);
+    // Navigate to workspace 5C
+    window.location.href = '/workspace-5c';
+  };
+
+  if (showCapacityAnalysis && selectedSignal) {
+    const signalName = selectedSignal.name || selectedSignal.signal || 'Unknown Signal';
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Capacity Analysis</h3>
+            <p className="text-sm text-muted-foreground">
+              {loopCode} • {signalName}
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowCapacityAnalysis(false)}
+          >
+            Back to Signals
+          </Button>
+        </div>
+        
+        <CapacityPanel
+          loopCode={loopCode}
+          indicator={signalName}
+          reading={{
+            value: selectedSignal.status === 'triggered' ? 85 : 72,
+            band: { lower: 60, upper: 80 },
+            slope: selectedSignal.status === 'triggered' ? 0.8 : 0.4,
+            persistencePk: selectedSignal.status === 'triggered' ? 0.9 : 0.5,
+            ewsProb: selectedSignal.severity === 'critical' ? 0.9 : 
+                    selectedSignal.severity === 'high' ? 0.7 : 0.4,
+            bufferAdequacy: selectedSignal.status === 'triggered' ? 0.2 : 0.6,
+            legitimacyGap: selectedSignal.type === 'composite' ? 0.3 : 0.1
+          }}
+          onTasksComposed={handleTasksCreated}
+        />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -346,11 +422,51 @@ const PrimarySignalsTab: React.FC<PrimarySignalsTabProps> = ({ loop }) => {
         </Alert>
       )}
 
+      {/* Capacity Brain Integration */}
+      {activeSignals.length > 0 && (
+        <Card className="glass-secondary border-teal-500/20">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Brain className="w-5 h-5 text-teal-400" />
+              Capacity Decision Brain
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Active signals can be analyzed through the capacity decision brain to automatically generate appropriate response tasks.
+            </p>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => window.location.href = `/signal-monitor?loop=${loopCode}`}
+                className="bg-teal-600 hover:bg-teal-700"
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                Open Signal Monitor
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  if (activeSignals.length > 0) {
+                    handleAnalyzeSignal(activeSignals[0]);
+                  }
+                }}
+              >
+                Analyze First Active Signal
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Signals Grid */}
       {signals.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {signals.map((signal, index) => (
-            <SignalCard key={index} signal={signal} />
+            <SignalCard 
+              key={index} 
+              signal={signal} 
+              onAnalyze={handleAnalyzeSignal}
+            />
           ))}
         </div>
       ) : (

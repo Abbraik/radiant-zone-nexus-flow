@@ -14,10 +14,14 @@ import {
   GitBranch,
   Calendar,
   User,
-  AlertTriangle
+  AlertTriangle,
+  Activity,
+  Brain
 } from 'lucide-react';
 import { LoopData, HydratedLoop } from '@/types/loop-registry';
 import { formatDistanceToNow } from 'date-fns';
+import { SignalMonitor } from '@/components/capacity';
+import { CapacityIntegrationWidget } from '@/components/workspace/CapacityIntegrationWidget';
 
 interface OverviewTabProps {
   loop: LoopData;
@@ -54,6 +58,8 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
   const indicatorCount = loop.metadata?.indicator_count || 0;
   const snlCount = 0; // TODO: Get from shared nodes
   
+  const loopCode = loop.metadata?.loop_code || loop.loop_code || loop.id;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -79,6 +85,10 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             <Button variant="outline" className="gap-2">
               <Zap className="w-4 h-4" />
               Hydrate in Workspace
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={() => window.location.href = `/signal-monitor?loop=${loopCode}`}>
+              <Brain className="w-4 h-4" />
+              Capacity Brain
             </Button>
           </div>
         </CardContent>
@@ -231,6 +241,51 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* Capacity Brain Integration */}
+      <Card className="glass-secondary">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Activity className="w-5 h-5" />
+            Capacity Decision Brain
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SignalMonitor 
+            signals={[
+              {
+                id: 'demo-1',
+                loopCode: loopCode,
+                indicator: 'Primary Performance',
+                value: 85,
+                band: { lower: 80, upper: 95 },
+                timestamp: new Date().toISOString(),
+                severity: 0.3,
+                trend: 'stable'
+              },
+              {
+                id: 'demo-2',
+                loopCode: loopCode,
+                indicator: 'System Health',
+                value: 72,
+                band: { lower: 75, upper: 90 },
+                timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+                severity: 0.2,
+                trend: 'down'
+              }
+            ]}
+            onTasksCreated={(tasks) => {
+              console.log('Tasks created for loop:', loopCode, tasks);
+              // Navigate to workspace 5C to show new tasks
+              window.location.href = '/workspace-5c';
+            }}
+            autoCreateTasks={false}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Capacity Integration Widget */}
+      <CapacityIntegrationWidget />
 
       {/* Mini Cascade Map Placeholder */}
       <Card className="glass-secondary">

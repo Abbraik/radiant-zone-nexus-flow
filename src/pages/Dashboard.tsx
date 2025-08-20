@@ -11,6 +11,7 @@ import { ProfileStats } from '../components/dashboard/ProfileStats';
 import { ActivityTimeline } from '../components/dashboard/ActivityTimeline';
 import { PerformanceCharts } from '../components/dashboard/PerformanceCharts';
 import { AchievementsBadges } from '../components/dashboard/AchievementsBadges';
+import { CapacityBrainWidget } from '../components/dashboard/CapacityBrainWidget';
 
 interface Achievement {
   id: string;
@@ -320,12 +321,15 @@ export const Dashboard: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
               >
                 <ProfileStats />
                 <ActivityTimeline />
+                <CapacityBrainWidget />
                 <UserStatsCard stats={mockUserStats} />
-                <LeaderboardCard entries={mockLeaderboard} />
+                <div className="lg:col-span-2 xl:col-span-1">
+                  <LeaderboardCard entries={mockLeaderboard} />
+                </div>
               </motion.div>
             </TabsContent>
 
@@ -334,12 +338,15 @@ export const Dashboard: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
               >
                 <PerformanceCharts />
                 <AchievementsBadges />
+                <CapacityBrainWidget />
                 <ActivityTimeline />
-                <UserStatsCard stats={mockUserStats} />
+                <div className="lg:col-span-2 xl:col-span-1">
+                  <UserStatsCard stats={mockUserStats} />
+                </div>
               </motion.div>
             </TabsContent>
 
