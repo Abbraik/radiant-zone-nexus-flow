@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { ImportAtlasBatchButton } from '@/components/registry/ImportAtlasBatchButton';
+import { ImportAtlasBatchButton } from './ImportAtlasBatchButton';
+import { ImportAtlasBatch2Button } from './ImportAtlasBatch2Button';
 import { 
   Plus, 
   Download, 
@@ -68,7 +69,9 @@ export const RegistryHeader: React.FC<RegistryHeaderProps> = ({
 
           <ImportAtlasBatchButton />
           
-          <Button 
+          <ImportAtlasBatch2Button />
+          
+          <Button
             onClick={async () => {
               try {
                 const { seedSampleLoops } = await import('@/utils/seedSampleLoops');
