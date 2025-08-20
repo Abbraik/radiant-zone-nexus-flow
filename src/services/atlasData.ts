@@ -16,7 +16,7 @@ const transformAtlasLoop = (atlasLoop: any, batchNumber: number): LoopData => {
   const indicatorCount = atlasLoop.indicators?.length || 0;
   
   return {
-    id: `atlas-${loop.metadata?.loop_code || `batch${batchNumber}-${Math.random()}`}`,
+    id: `atlas-${loop.metadata?.loop_code || `batch${batchNumber}-${Date.now()}-${Math.random()}`}`,
     name: loop.name,
     loop_type: loop.loop_type || 'reactive',
     scale: loop.scale || 'micro',
@@ -93,6 +93,8 @@ export const atlasStats = {
 
 // Search and filter atlas loops
 export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
+  console.log('searchAtlasLoops called with:', { query, filters, totalLoops: atlasLoops.length });
+  
   let filtered = [...atlasLoops];
   
   // Text search
@@ -105,49 +107,61 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
       loop.metadata?.loop_code?.toLowerCase().includes(searchLower) ||
       loop.metadata?.domain?.toLowerCase().includes(searchLower)
     );
+    console.log('After text search:', filtered.length);
   }
   
   // Apply filters
   if (filters) {
     // Loop type filter
     if (filters.loop_type?.length > 0) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => {
         return filters.loop_type.includes(loop.loop_type);
       });
+      console.log(`Loop type filter (${filters.loop_type.join(',')}): ${beforeCount} → ${filtered.length}`);
     }
     
     // Scale filter
     if (filters.scale?.length > 0) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => {
         return filters.scale.includes(loop.scale);
       });
+      console.log(`Scale filter (${filters.scale.join(',')}): ${beforeCount} → ${filtered.length}`);
     }
     
     // Status filter
     if (filters.status?.length > 0) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => {
         return filters.status.includes(loop.status);
       });
+      console.log(`Status filter (${filters.status.join(',')}): ${beforeCount} → ${filtered.length}`);
     }
     
     // Tags filter
     if (filters.tags?.length > 0) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => {
         const loopTags = loop.tags || [];
         return filters.tags.some((tag: string) => loopTags.includes(tag));
       });
+      console.log(`Tags filter (${filters.tags.join(',')}): ${beforeCount} → ${filtered.length}`);
     }
     
     // Motif filter - check metadata.motif
     if (filters.motif?.length > 0) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => {
         const motif = loop.metadata?.motif;
         return motif && filters.motif.includes(motif);
       });
+      console.log(`Motif filter (${filters.motif.join(',')}): ${beforeCount} → ${filtered.length}`);
     }
     
     // Layer filter - derive from loop code prefix
     if (filters.layer?.length > 0) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => {
         const loopCode = loop.metadata?.loop_code || '';
         let layer = '';
@@ -157,20 +171,28 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
         else if (loopCode.startsWith('MIC-')) layer = 'micro';
         return layer && filters.layer.includes(layer);
       });
+      console.log(`Layer filter (${filters.layer.join(',')}): ${beforeCount} → ${filtered.length}`);
     }
     
     // Boolean filters - only apply if explicitly set to true
     if (filters.has_snl === true) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => loop.metadata?.has_snl === true);
+      console.log(`SNL filter: ${beforeCount} → ${filtered.length}`);
     }
     if (filters.has_de_band === true) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => loop.metadata?.has_de_band === true);
+      console.log(`DE-Band filter: ${beforeCount} → ${filtered.length}`);
     }
     if (filters.has_srt === true) {
+      const beforeCount = filtered.length;
       filtered = filtered.filter(loop => loop.metadata?.has_srt === true);
+      console.log(`SRT filter: ${beforeCount} → ${filtered.length}`);
     }
   }
   
+  console.log('Final filtered count:', filtered.length);
   return filtered;
 };
 
