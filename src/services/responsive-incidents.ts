@@ -49,14 +49,15 @@ export async function createSprintWithTasks(payload: {
   // Create sprint
   const { data: sprint, error: sprintError } = await supabase
     .from('sprints')
-    .insert([{
-      user_id: user.data.user?.id,
+    .insert({
+      user_id: user.data.user?.id!,
+      name: `${payload.capacity} Sprint`,
       capacity: payload.capacity,
       leverage: payload.leverage,
       due_at: payload.due_at,
       guardrails: payload.guardrails,
       srt: payload.srt
-    }])
+    })
     .select()
     .single();
     
@@ -64,15 +65,16 @@ export async function createSprintWithTasks(payload: {
   
   // Create tasks
   if (payload.tasks.length > 0) {
+    const taskInserts = payload.tasks.map(task => ({
+      sprint_id: sprint.id,
+      user_id: user.data.user?.id!,
+      title: task.title,
+      description: task.description,
+      meta: task.meta
+    }));
+    
     const { error: tasksError } = await supabase
-      .from('sprint_tasks')
-      .insert(payload.tasks.map(task => ({
-        sprint_id: sprint.id,
-        user_id: user.data.user?.id,
-        title: task.title,
-        description: task.description,
-        meta: task.meta
-      })));
+      .rpc('insert_sprint_tasks', { task_data: taskInserts });
       
     if (tasksError) throw tasksError;
   }
