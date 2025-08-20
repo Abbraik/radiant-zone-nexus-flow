@@ -50,6 +50,7 @@ const STATUSES = [
   { value: 'draft', label: 'Draft', color: 'bg-gray-500/20 text-gray-300' },
   { value: 'review', label: 'Review', color: 'bg-yellow-500/20 text-yellow-300' },
   { value: 'published', label: 'Published', color: 'bg-green-500/20 text-green-300' },
+  { value: 'active', label: 'Active', color: 'bg-blue-500/20 text-blue-300' },
   { value: 'deprecated', label: 'Deprecated', color: 'bg-red-500/20 text-red-300' }
 ];
 

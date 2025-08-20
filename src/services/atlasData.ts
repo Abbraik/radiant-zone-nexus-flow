@@ -20,7 +20,7 @@ const transformAtlasLoop = (atlasLoop: any, batchNumber: number): LoopData => {
     name: loop.name,
     loop_type: loop.loop_type || 'reactive',
     scale: loop.scale || 'micro',
-    status: 'published', // Make all atlas loops publicly available
+    status: 'draft', // Make all atlas loops draft status
     leverage_default: loop.leverage_default || 'N',
     notes: `${loop.description || ''}\n\n${loop.notes || ''}`.trim(),
     metadata: {
@@ -96,7 +96,7 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
   let filtered = [...atlasLoops];
   
   // Text search
-  if (query) {
+  if (query && query.trim()) {
     const searchLower = query.toLowerCase();
     filtered = filtered.filter(loop => 
       loop.name.toLowerCase().includes(searchLower) ||
@@ -109,26 +109,41 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
   
   // Apply filters
   if (filters) {
+    // Loop type filter
     if (filters.loop_type?.length > 0) {
-      filtered = filtered.filter(loop => filters.loop_type.includes(loop.loop_type));
+      filtered = filtered.filter(loop => {
+        return filters.loop_type.includes(loop.loop_type);
+      });
     }
+    
+    // Scale filter
     if (filters.scale?.length > 0) {
-      filtered = filtered.filter(loop => filters.scale.includes(loop.scale));
+      filtered = filtered.filter(loop => {
+        return filters.scale.includes(loop.scale);
+      });
     }
+    
+    // Status filter
     if (filters.status?.length > 0) {
-      filtered = filtered.filter(loop => filters.status.includes(loop.status));
+      filtered = filtered.filter(loop => {
+        return filters.status.includes(loop.status);
+      });
     }
+    
+    // Tags filter
     if (filters.tags?.length > 0) {
-      filtered = filtered.filter(loop => 
-        filters.tags.some((tag: string) => loop.tags?.includes(tag))
-      );
+      filtered = filtered.filter(loop => {
+        const loopTags = loop.tags || [];
+        return filters.tags.some((tag: string) => loopTags.includes(tag));
+      });
     }
     
     // Motif filter - check metadata.motif
     if (filters.motif?.length > 0) {
-      filtered = filtered.filter(loop => 
-        loop.metadata?.motif && filters.motif.includes(loop.metadata.motif)
-      );
+      filtered = filtered.filter(loop => {
+        const motif = loop.metadata?.motif;
+        return motif && filters.motif.includes(motif);
+      });
     }
     
     // Layer filter - derive from loop code prefix
@@ -140,19 +155,19 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
         else if (loopCode.startsWith('MAC-')) layer = 'macro';
         else if (loopCode.startsWith('MES-')) layer = 'meso';
         else if (loopCode.startsWith('MIC-')) layer = 'micro';
-        return filters.layer.includes(layer);
+        return layer && filters.layer.includes(layer);
       });
     }
     
-    // Boolean filters
-    if (filters.has_snl) {
-      filtered = filtered.filter(loop => loop.metadata?.has_snl);
+    // Boolean filters - only apply if explicitly set to true
+    if (filters.has_snl === true) {
+      filtered = filtered.filter(loop => loop.metadata?.has_snl === true);
     }
-    if (filters.has_de_band) {
-      filtered = filtered.filter(loop => loop.metadata?.has_de_band);
+    if (filters.has_de_band === true) {
+      filtered = filtered.filter(loop => loop.metadata?.has_de_band === true);
     }
-    if (filters.has_srt) {
-      filtered = filtered.filter(loop => loop.metadata?.has_srt);
+    if (filters.has_srt === true) {
+      filtered = filtered.filter(loop => loop.metadata?.has_srt === true);
     }
   }
   
