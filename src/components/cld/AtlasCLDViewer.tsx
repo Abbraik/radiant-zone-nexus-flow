@@ -61,8 +61,8 @@ const AtlasCLDGraph: React.FC<{
     const atlasNodes = atlasData.nodes || [];
     const atlasEdges = atlasData.edges || [];
     
-    // Generate layout positions
-    const positions = CLDEngine.generateForceLayout(atlasNodes, atlasEdges, 600, 400);
+    // Generate circular layout positions
+    const positions = CLDEngine.generateCircularLayout(atlasNodes.length, 300, 200);
     
     const nodesWithPositions = atlasNodes.map((node: any, index: number) => ({
       ...node,
