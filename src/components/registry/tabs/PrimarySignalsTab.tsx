@@ -72,6 +72,58 @@ const getSignalsForLoop = (loopId: string): Signal[] => {
       { name: 'Spiky 5xx', description: 'Server error rate anomalies', type: 'trend', priority: 'high', status: 'normal' },
       { name: 'Funnel drop-off', description: 'User abandonment in service workflows', type: 'trend', priority: 'medium', status: 'normal' },
       { name: 'Session failure clusters', description: 'Groups of failed user sessions', type: 'event', priority: 'medium', status: 'normal' }
+    ],
+
+    // Batch 2 - Meso Systems & Micro Foundations
+    'atlas-MES-L02': [
+      { name: 'Teacher Attrition Spike', description: 'Attrition spikes by subject/region', type: 'threshold', priority: 'high', status: 'normal', lastTriggered: '2025-07-15' },
+      { name: 'Training Bottleneck', description: 'Training intake bottlenecks (practicum slots, scholarships)', type: 'event', priority: 'medium', status: 'normal', lastTriggered: '2025-06-20' },
+      { name: 'Class Size Drift', description: 'Class size drift above band', type: 'threshold', priority: 'medium', status: 'triggered', lastTriggered: '2025-08-10' }
+    ],
+    'atlas-MES-L03': [
+      { name: 'Skills Mismatch', description: 'Mismatch index rising (skills vs. demand)', type: 'trend', priority: 'high', status: 'normal', lastTriggered: '2025-07-22' },
+      { name: 'Extended Fill Time', description: 'Fill-time beyond 45 days', type: 'threshold', priority: 'medium', status: 'active', lastTriggered: '2025-08-18' },
+      { name: 'Recognition Gaps', description: 'Recognition gaps in growth occupations', type: 'composite', priority: 'medium', status: 'normal', lastTriggered: '2025-05-30' }
+    ],
+    'atlas-MES-L04': [
+      { name: 'Extended DSO', description: 'DSO > 60 days', type: 'threshold', priority: 'high', status: 'normal', lastTriggered: '2025-07-05' },
+      { name: 'Low Credit Acceptance', description: 'Credit acceptance < 45%', type: 'threshold', priority: 'high', status: 'normal', lastTriggered: '2025-06-15' },
+      { name: 'Default Rate Rise', description: 'Default rate rising above 6%', type: 'trend', priority: 'high', status: 'normal', lastTriggered: '2025-05-10' }
+    ],
+    'atlas-MES-L10': [
+      { name: 'Implementation Delay', description: 'Decision latency trending up', type: 'trend', priority: 'medium', status: 'normal', lastTriggered: '2025-07-28' },
+      { name: 'High Rework', description: 'Rework share > 12%', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-06-12' },
+      { name: 'Backlog Growth', description: 'Backlog growth for ≥ 2 cycles', type: 'trend', priority: 'high', status: 'normal', lastTriggered: '2025-05-25' }
+    ],
+    'atlas-MES-L11': [
+      { name: 'Conflict Escalation', description: 'Conflict tickets rising', type: 'trend', priority: 'high', status: 'active', lastTriggered: '2025-08-12' },
+      { name: 'Coordination Bottleneck', description: 'High SNA betweenness + unresolved dependencies', type: 'composite', priority: 'high', status: 'normal', lastTriggered: '2025-07-08' },
+      { name: 'Low Joint Coverage', description: 'Low joint KPI coverage', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-06-18' }
+    ],
+    'atlas-MES-L12': [
+      { name: 'Service Disruption', description: 'SAIDI/SAIFI-linked disruptions triggering claims', type: 'event', priority: 'high', status: 'normal', lastTriggered: '2025-07-20' },
+      { name: 'Cost Variance', description: 'Variance creeping beyond ±5%', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-06-25' },
+      { name: 'Dispute Spike', description: 'Spike in dispute rate > 6%', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-05-15' }
+    ],
+    'atlas-MIC-L01': [
+      { name: 'Price Shock', description: 'Price shocks (CPI sub-baskets)', type: 'event', priority: 'high', status: 'triggered', lastTriggered: '2025-08-15' },
+      { name: 'Debt Service Spike', description: 'Debt service spikes', type: 'threshold', priority: 'high', status: 'normal', lastTriggered: '2025-07-10' },
+      { name: 'Transfer Activation', description: 'Transfer system activation thresholds', type: 'threshold', priority: 'medium', status: 'active', lastTriggered: '2025-08-08' }
+    ],
+    'atlas-MIC-L02': [
+      { name: 'Adherence Gap', description: 'Adherence gaps by condition', type: 'composite', priority: 'medium', status: 'normal', lastTriggered: '2025-07-18' },
+      { name: 'Price Barrier', description: 'OOP price barriers', type: 'threshold', priority: 'high', status: 'normal', lastTriggered: '2025-06-28' },
+      { name: 'Access Outage', description: 'Clinic access outages', type: 'event', priority: 'high', status: 'normal', lastTriggered: '2025-05-22' }
+    ],
+    'atlas-MIC-L03': [
+      { name: 'Seasonal Absence', description: 'Absence spikes post-holiday/seasonal', type: 'event', priority: 'medium', status: 'normal', lastTriggered: '2025-07-25' },
+      { name: 'Tutoring Gap', description: 'Tutoring coverage gaps', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-06-30' },
+      { name: 'Support Deficit', description: 'Household support deficits', type: 'composite', priority: 'high', status: 'normal', lastTriggered: '2025-05-18' }
+    ],
+    'atlas-MIC-L04': [
+      { name: 'Churn Trap', description: 'Vacancy re-open cycles (churn traps)', type: 'event', priority: 'high', status: 'normal', lastTriggered: '2025-07-12' },
+      { name: 'Low Acceptance', description: 'Low acceptance rate', type: 'threshold', priority: 'medium', status: 'normal', lastTriggered: '2025-06-22' },
+      { name: 'Attrition Burst', description: 'Attrition bursts by role/tenure', type: 'event', priority: 'high', status: 'normal', lastTriggered: '2025-05-28' }
     ]
   };
 

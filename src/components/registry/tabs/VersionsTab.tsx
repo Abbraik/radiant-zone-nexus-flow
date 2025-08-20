@@ -183,7 +183,99 @@ const getVersionsForLoop = (loopId: string): VersionInfo[] => {
         notes: 'Digital service reliability and user experience monitoring',
         isCurrent: true
       }
-    ]
+    ],
+
+    // Batch 2 - Meso Systems & Micro Foundations
+    'atlas-MES-L02': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Seeded from NCF–PAGS; workload model live with automated roster reconciliation.',
+      changes: ['Initial teacher pipeline tracking', 'Workload model integration', 'Attrition segmentation by subject'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Enhanced practicum slot optimization',
+      author: 'Education Systems Team'
+    },
+    'atlas-MES-L03': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Sector pacts enabled with ISCO mapping and placement deduplication.',
+      changes: ['Sectoral matching framework', 'ISCO occupation mapping', 'A/B testing for intermediation'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Recognition pathway acceleration',
+      author: 'Labor Market Analytics Team'
+    },
+    'atlas-MES-L04': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Guarantee & factoring rails linked with real-time bank feed integration.',
+      changes: ['Credit guarantee integration', 'Factoring platform connectivity', 'Real-time DSO monitoring'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Alternative credit scoring',
+      author: 'SME Finance Team'
+    },
+    'atlas-MES-L10': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'PMO gate reviews active with automated critical path generation.',
+      changes: ['RACI matrix automation', 'Critical path optimization', 'Rework root-cause tracking'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Predictive bottleneck detection',
+      author: 'Policy Implementation Office'
+    },
+    'atlas-MES-L11': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Escalation council routing set with cross-agency dependency tracking.',
+      changes: ['SNA network analysis', 'Conflict resolution workflows', 'Joint KPI framework'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Automated conflict prediction',
+      author: 'Coordination Office'
+    },
+    'atlas-MES-L12': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'PBC templates & open-books wired with supplier risk heatmap.',
+      changes: ['Performance-based contracting', 'Open-book audit automation', 'Supplier risk monitoring'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Predictive contract analytics',
+      author: 'Procurement Excellence Team'
+    },
+    'atlas-MIC-L01': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Targeting rules synced with social registry and micro-simulation capability.',
+      changes: ['Social registry integration', 'CPI shock modeling', 'Transfer targeting optimization'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Real-time poverty measurement',
+      author: 'Social Protection Team'
+    },
+    'atlas-MIC-L02': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Mobile care & copay caps gated by triggers with reminder nudge system.',
+      changes: ['EHR-claims integration', 'Mobile care deployment', 'Adherence nudge system'],
+      status: 'stable',
+      nextVersion: 'v1.1 - AI-powered health coaching',
+      author: 'Digital Health Team'
+    },
+    'atlas-MIC-L03': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Attendance nudge packs parameterized with meal/tutoring program linkage.',
+      changes: ['Daily attendance tracking', 'Nudge system optimization', 'Support program integration'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Predictive absence modeling',
+      author: 'Education Support Team'
+    },
+    'atlas-MIC-L04': {
+      version: 'v1.0',
+      releaseDate: '2025-08-20',
+      description: 'Matching incentives & onboarding kits toggled with diversity guardrails.',
+      changes: ['ATS integration', 'Diversity monitoring', 'Attrition root-cause analysis'],
+      status: 'stable',
+      nextVersion: 'v1.1 - Skills-based matching optimization',
+      author: 'HR Analytics Team'
+    }
   };
 
   return versionData[loopId] || [];

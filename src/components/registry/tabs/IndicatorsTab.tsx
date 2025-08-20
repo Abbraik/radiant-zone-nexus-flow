@@ -78,6 +78,58 @@ const getIndicatorsForLoop = (loopId: string): Indicator[] => {
       { name: 'Error Rates', band: { min: 0, max: 8 }, alpha: 0.35, unit: '4xx/5xx per 1k', currentValue: 3.2, trend: 'down', status: 'normal' },
       { name: 'Adoption (DAU/MAU)', band: { min: 0.25, max: 0.5 }, alpha: 0.30, currentValue: 0.38, trend: 'up', status: 'normal' },
       { name: 'NPS (index)', band: { min: 30, max: 60 }, alpha: 0.30, currentValue: 45, trend: 'up', status: 'normal' }
+    ],
+
+    // Batch 2 - Meso Systems & Micro Foundations (MES-L02/03/04/10/11/12 + MIC-L01..L04)
+    'atlas-MES-L02': [
+      { name: 'Teacher–Student Ratio', band: { min: 40, max: 55 }, alpha: 0.3, unit: 'teachers/1000 students', currentValue: 48, trend: 'stable', status: 'normal' },
+      { name: 'Attrition Rate', band: { min: 0, max: 8 }, alpha: 0.4, unit: '%', currentValue: 6.2, trend: 'up', status: 'warning' },
+      { name: 'Accreditation Score', band: { min: 0.6, max: 0.85 }, alpha: 0.3, currentValue: 0.72, trend: 'up', status: 'normal' }
+    ],
+    'atlas-MES-L03': [
+      { name: 'Matching Rate', band: { min: 35, max: 65 }, alpha: 0.3, unit: '% placements', currentValue: 52, trend: 'up', status: 'normal' },
+      { name: 'Vacancy Fill-Time', band: { min: 15, max: 45 }, alpha: 0.3, unit: 'days', currentValue: 38, trend: 'stable', status: 'normal' },
+      { name: 'Recognition Coverage', band: { min: 40, max: 80 }, alpha: 0.3, unit: '% occupations', currentValue: 62, trend: 'up', status: 'normal' }
+    ],
+    'atlas-MES-L04': [
+      { name: 'Credit Acceptance Rate', band: { min: 45, max: 70 }, alpha: 0.4, unit: '%', currentValue: 58, trend: 'up', status: 'normal' },
+      { name: 'DSO (Days Sales Outstanding)', band: { min: 30, max: 60 }, alpha: 0.4, unit: 'days', currentValue: 52, trend: 'down', status: 'normal' },
+      { name: 'Default Rate', band: { min: 0, max: 6 }, alpha: 0.4, unit: '%', currentValue: 4.1, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MES-L10': [
+      { name: 'Median Time-to-Implement', band: { min: 60, max: 180 }, alpha: 0.4, unit: 'days', currentValue: 125, trend: 'down', status: 'normal' },
+      { name: 'Rework Share', band: { min: 0, max: 12 }, alpha: 0.4, unit: '%', currentValue: 8.5, trend: 'stable', status: 'normal' },
+      { name: 'Backlog Size', band: { min: 0, max: 250 }, alpha: 0.3, unit: 'items', currentValue: 180, trend: 'down', status: 'normal' }
+    ],
+    'atlas-MES-L11': [
+      { name: 'Active Conflicts', band: { min: 0, max: 8 }, alpha: 0.4, unit: 'count', currentValue: 5, trend: 'stable', status: 'normal' },
+      { name: 'Time-to-Resolve', band: { min: 5, max: 30 }, alpha: 0.4, unit: 'days', currentValue: 18, trend: 'down', status: 'normal' },
+      { name: 'Joint KPI Coverage', band: { min: 25, max: 70 }, alpha: 0.3, unit: '% missions', currentValue: 45, trend: 'up', status: 'normal' }
+    ],
+    'atlas-MES-L12': [
+      { name: 'On-Time, On-Budget Share', band: { min: 65, max: 90 }, alpha: 0.3, unit: '% projects', currentValue: 78, trend: 'up', status: 'normal' },
+      { name: 'Dispute Rate', band: { min: 0, max: 6 }, alpha: 0.3, unit: '% contracts', currentValue: 3.2, trend: 'stable', status: 'normal' },
+      { name: 'Avg. Cost Variance', band: { min: -5, max: 5 }, alpha: 0.3, unit: '%', currentValue: 2.1, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MIC-L01': [
+      { name: 'Buffer Days', band: { min: 30, max: 90 }, alpha: 0.4, unit: 'days', currentValue: 65, trend: 'down', status: 'normal' },
+      { name: 'Hardship Rate', band: { min: 0, max: 12 }, alpha: 0.4, unit: '% HH', currentValue: 8.5, trend: 'up', status: 'warning' },
+      { name: 'Savings Rate', band: { min: 8, max: 18 }, alpha: 0.3, unit: '% income', currentValue: 12.8, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MIC-L02': [
+      { name: 'Missed Appointment Rate', band: { min: 0, max: 8 }, alpha: 0.4, unit: '%', currentValue: 5.2, trend: 'stable', status: 'normal' },
+      { name: 'Adherence % Days Covered', band: { min: 65, max: 85 }, alpha: 0.4, unit: '%', currentValue: 74, trend: 'up', status: 'normal' },
+      { name: 'Outcome Index', band: { min: 0.6, max: 0.85 }, alpha: 0.3, currentValue: 0.71, trend: 'up', status: 'normal' }
+    ],
+    'atlas-MIC-L03': [
+      { name: 'Attendance Rate', band: { min: 85, max: 96 }, alpha: 0.3, unit: '%', currentValue: 91, trend: 'stable', status: 'normal' },
+      { name: 'Learning Effort Index', band: { min: 0.5, max: 0.8 }, alpha: 0.3, currentValue: 0.68, trend: 'up', status: 'normal' },
+      { name: 'Chronic Absence', band: { min: 0, max: 10 }, alpha: 0.3, unit: '% students', currentValue: 6.8, trend: 'down', status: 'normal' }
+    ],
+    'atlas-MIC-L04': [
+      { name: 'Time-to-Fill', band: { min: 15, max: 45 }, alpha: 0.3, unit: 'days', currentValue: 32, trend: 'down', status: 'normal' },
+      { name: 'Attrition Rate', band: { min: 0, max: 12 }, alpha: 0.3, unit: '%', currentValue: 9.2, trend: 'stable', status: 'normal' },
+      { name: 'Offer Acceptance Rate', band: { min: 60, max: 90 }, alpha: 0.3, unit: '%', currentValue: 76, trend: 'up', status: 'normal' }
     ]
   };
 

@@ -305,7 +305,82 @@ const getCascadesForLoop = (loopId: string): CascadeHook[] => {
         description: 'Platform standardization affects service reliability',
         strength: 'medium'
       }
-    ]
+    ],
+
+    // Batch 2 - Meso Systems & Micro Foundations  
+    'atlas-MES-L02': [
+      { type: 'upstream', loopId: 'atlas-MAC-L10', loopName: 'Human Capital Regime', connection: 'education policy → teacher supply', strength: 'strong' },
+      { type: 'upstream', loopId: 'atlas-MES-L10', loopName: 'Policy Implementation Latency', connection: 'policy delays → resource allocation', strength: 'medium' },
+      { type: 'downstream', loopId: 'atlas-MIC-L03', loopName: 'School Attendance & Learning Effort', connection: 'teacher availability → learning outcomes', strength: 'strong' }
+    ],
+    'atlas-MES-L03': [
+      { type: 'upstream', loopId: 'atlas-MAC-L06', loopName: 'External Demand & Competitiveness', connection: 'trade demand → sectoral employment', strength: 'strong' },
+      { type: 'downstream', loopId: 'atlas-MIC-L04', loopName: 'Firm Hiring & Attrition', connection: 'skills matching → hiring success', strength: 'strong' }
+    ],
+    'atlas-MES-L04': {
+      upstream: [
+        { id: 'atlas-MAC-L05', name: 'Capital Accumulation & Investment Cycle', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MIC-L05', name: 'Firm Working Capital & Delayed Payments', influence: 'strong', status: 'stable' }
+      ]
+    },
+    'atlas-MES-L10': {
+      upstream: [
+        { id: 'META-L03', name: 'Policy Design & Iteration', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MES-L11', name: 'Interministerial Coordination', influence: 'medium', status: 'stable' }
+      ]
+    },
+    'atlas-MES-L11': {
+      upstream: [
+        { id: 'META-L03', name: 'Policy Design & Iteration', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MES-L12', name: 'Procurement & Delivery Fidelity', influence: 'medium', status: 'stable' }
+      ]
+    },
+    'atlas-MES-L12': {
+      upstream: [
+        { id: 'atlas-MES-L11', name: 'Interministerial Coordination', influence: 'medium', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MAC-L03', name: 'Price–Quantity Stability', influence: 'weak', status: 'stable' }
+      ]
+    },
+    'atlas-MIC-L01': {
+      upstream: [
+        { id: 'atlas-MAC-L03', name: 'Price–Quantity Stability', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MIC-L07', name: 'Price Adjustment to Local Shortages', influence: 'medium', status: 'stable' }
+      ]
+    },
+    'atlas-MIC-L02': {
+      upstream: [
+        { id: 'atlas-MES-L01', name: 'Health Access & Service Delivery', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MAC-L10', name: 'Human Capital Regime', influence: 'medium', status: 'stable' }
+      ]
+    },
+    'atlas-MIC-L03': {
+      upstream: [
+        { id: 'atlas-MES-L02', name: 'Teacher Pipeline & Classroom Throughput', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MAC-L10', name: 'Human Capital Regime', influence: 'strong', status: 'stable' }
+      ]
+    },
+    'atlas-MIC-L04': {
+      upstream: [
+        { id: 'atlas-MES-L03', name: 'Skills–Jobs Matching', influence: 'strong', status: 'stable' }
+      ],
+      downstream: [
+        { id: 'atlas-MAC-L02', name: 'Labor Market Macro Balance', influence: 'medium', status: 'stable' }
+      ]
+    }
   };
 
   return cascadeData[loopId] || [];

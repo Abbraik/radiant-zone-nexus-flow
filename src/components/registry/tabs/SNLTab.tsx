@@ -11,11 +11,18 @@ interface SNLTabProps {
 }
 
 interface SharedNode {
-  name: string;
-  type: 'stock' | 'flow' | 'auxiliary' | 'indicator';
-  sharedWith: string[];
-  syncStatus: 'synced' | 'out-of-sync' | 'pending';
+  id?: string;
+  name?: string;
+  label?: string;
+  type?: 'stock' | 'flow' | 'auxiliary' | 'indicator';
+  domain?: string;
+  descriptor?: string;
+  sharedWith?: string[];
+  syncStatus?: 'synced' | 'out-of-sync' | 'pending';
+  status?: string;
   lastSync?: string;
+  lastUpdated?: string;
+  usage?: number;
   description?: string;
 }
 
@@ -288,6 +295,69 @@ const getSharedNodesForLoop = (loopId: string): SharedNode[] => {
         lastSync: '2 hours ago',
         description: 'User satisfaction with digital services'
       }
+    ],
+
+    // Batch 2 - Meso Systems & Micro Foundations
+    'atlas-MES-L02': [
+      { id: 'edu-teacher-stock', label: 'Edu.TeacherStock', domain: 'social', descriptor: 'Active teacher workforce by subject and region', status: 'active', lastUpdated: '2025-08-20', usage: 95 },
+      { id: 'training-intake', label: 'TrainingIntake', domain: 'social', descriptor: 'New teacher training pipeline capacity', status: 'active', lastUpdated: '2025-08-19', usage: 78 },
+      { id: 'attrition', label: 'Attrition', domain: 'social', descriptor: 'Teacher departure rates by tenure and subject', status: 'active', lastUpdated: '2025-08-20', usage: 89 },
+      { id: 'class-size', label: 'ClassSize', domain: 'social', descriptor: 'Student-teacher ratios by school and subject', status: 'active', lastUpdated: '2025-08-20', usage: 92 }
+    ],
+    'atlas-MES-L03': [
+      { id: 'labor-demand-sectoral', label: 'LaborDemandSectoral', domain: 'resource', descriptor: 'Job vacancies by sector and skill level', status: 'active', lastUpdated: '2025-08-20', usage: 88 },
+      { id: 'skills-profile', label: 'SkillsProfile', domain: 'social', descriptor: 'Worker skill distributions and certifications', status: 'active', lastUpdated: '2025-08-19', usage: 82 },
+      { id: 'matching-rate', label: 'MatchingRate', domain: 'resource', descriptor: 'Job-seeker placement success rates', status: 'active', lastUpdated: '2025-08-20', usage: 91 }
+    ],
+    'atlas-MES-L04': [
+      { id: 'sme-cashflow', label: 'SME.Cashflow', domain: 'resource', descriptor: 'Small business cash flow positions', status: 'active', lastUpdated: '2025-08-20', usage: 87 },
+      { id: 'credit-access', label: 'CreditAccess', domain: 'resource', descriptor: 'SME credit availability and terms', status: 'active', lastUpdated: '2025-08-19', usage: 85 },
+      { id: 'default-risk', label: 'DefaultRisk', domain: 'resource', descriptor: 'SME loan default probabilities', status: 'active', lastUpdated: '2025-08-20', usage: 79 },
+      { id: 'guarantees', label: 'Guarantees', domain: 'institution', descriptor: 'Government credit guarantee utilization', status: 'active', lastUpdated: '2025-08-18', usage: 73 }
+    ],
+    'atlas-MES-L10': [
+      { id: 'institutions-decision-latency', label: 'Institutions.DecisionLatency', domain: 'institution', descriptor: 'Policy decision implementation timelines', status: 'active', lastUpdated: '2025-08-20', usage: 94 },
+      { id: 'backlog', label: 'Backlog', domain: 'institution', descriptor: 'Pending policy items by priority', status: 'active', lastUpdated: '2025-08-20', usage: 88 },
+      { id: 'raci', label: 'RACI', domain: 'institution', descriptor: 'Responsibility assignment matrices', status: 'active', lastUpdated: '2025-08-19', usage: 76 }
+    ],
+    'atlas-MES-L11': [
+      { id: 'sna-betweenness', label: 'SNA.Betweenness', domain: 'institution', descriptor: 'Inter-agency coordination network centrality', status: 'active', lastUpdated: '2025-08-20', usage: 83 },
+      { id: 'coordination-load', label: 'CoordinationLoad', domain: 'institution', descriptor: 'Cross-ministry collaboration intensity', status: 'active', lastUpdated: '2025-08-20', usage: 91 },
+      { id: 'conflict-incidence', label: 'ConflictIncidence', domain: 'institution', descriptor: 'Inter-agency dispute frequency', status: 'active', lastUpdated: '2025-08-19', usage: 67 },
+      { id: 'shared-budget', label: 'SharedBudget', domain: 'resource', descriptor: 'Joint funding pool allocations', status: 'active', lastUpdated: '2025-08-18', usage: 71 },
+      { id: 'joint-kpi', label: 'JointKPI', domain: 'institution', descriptor: 'Cross-agency performance indicators', status: 'active', lastUpdated: '2025-08-20', usage: 58 }
+    ],
+    'atlas-MES-L12': [
+      { id: 'contract-performance', label: 'ContractPerformance', domain: 'institution', descriptor: 'Public procurement delivery outcomes', status: 'active', lastUpdated: '2025-08-20', usage: 92 },
+      { id: 'cost-variance', label: 'CostVariance', domain: 'resource', descriptor: 'Budget vs actual spending deviations', status: 'active', lastUpdated: '2025-08-20', usage: 89 },
+      { id: 'schedule-variance', label: 'ScheduleVariance', domain: 'institution', descriptor: 'Project timeline adherence rates', status: 'active', lastUpdated: '2025-08-19', usage: 85 },
+      { id: 'disputes', label: 'Disputes', domain: 'institution', descriptor: 'Contract dispute frequency and resolution', status: 'active', lastUpdated: '2025-08-17', usage: 64 }
+    ],
+    'atlas-MIC-L01': [
+      { id: 'hh-income', label: 'HH.Income', domain: 'resource', descriptor: 'Household income distributions and sources', status: 'active', lastUpdated: '2025-08-20', usage: 96 },
+      { id: 'prices', label: 'Prices', domain: 'resource', descriptor: 'Consumer price indices by category', status: 'active', lastUpdated: '2025-08-20', usage: 94 },
+      { id: 'hh-savings', label: 'HH.Savings', domain: 'resource', descriptor: 'Household savings rates and buffers', status: 'active', lastUpdated: '2025-08-19', usage: 87 },
+      { id: 'debt-service', label: 'DebtService', domain: 'resource', descriptor: 'Household debt service ratios', status: 'active', lastUpdated: '2025-08-20', usage: 82 },
+      { id: 'buffer-days', label: 'BufferDays', domain: 'resource', descriptor: 'Days of expenses covered by savings', status: 'active', lastUpdated: '2025-08-20', usage: 91 },
+      { id: 'transfers', label: 'Transfers', domain: 'institution', descriptor: 'Social transfer payments and targeting', status: 'active', lastUpdated: '2025-08-18', usage: 75 },
+      { id: 'hardship-rate', label: 'HardshipRate', domain: 'social', descriptor: 'Proportion of households in financial distress', status: 'active', lastUpdated: '2025-08-20', usage: 88 }
+    ],
+    'atlas-MIC-L02': [
+      { id: 'access-health', label: 'Access.Health', domain: 'social', descriptor: 'Healthcare service accessibility metrics', status: 'active', lastUpdated: '2025-08-20', usage: 93 },
+      { id: 'adherence', label: 'Adherence', domain: 'social', descriptor: 'Treatment adherence rates by condition', status: 'active', lastUpdated: '2025-08-19', usage: 86 },
+      { id: 'oop-cost', label: 'OOPcost', domain: 'resource', descriptor: 'Out-of-pocket healthcare expenses', status: 'active', lastUpdated: '2025-08-20', usage: 84 },
+      { id: 'health-outcomes', label: 'HealthOutcomes', domain: 'social', descriptor: 'Population health indicators and trends', status: 'active', lastUpdated: '2025-08-18', usage: 89 }
+    ],
+    'atlas-MIC-L03': [
+      { id: 'attendance', label: 'Attendance', domain: 'social', descriptor: 'Student attendance rates by school and grade', status: 'active', lastUpdated: '2025-08-20', usage: 97 },
+      { id: 'learning-effort', label: 'LearningEffort', domain: 'social', descriptor: 'Student engagement and effort metrics', status: 'active', lastUpdated: '2025-08-19', usage: 81 },
+      { id: 'household-support', label: 'HouseholdSupport', domain: 'social', descriptor: 'Family support for student learning', status: 'active', lastUpdated: '2025-08-20', usage: 74 }
+    ],
+    'atlas-MIC-L04': [
+      { id: 'vacancies', label: 'Vacancies', domain: 'resource', descriptor: 'Open job positions by firm and role', status: 'active', lastUpdated: '2025-08-20', usage: 90 },
+      { id: 'applications', label: 'Applications', domain: 'resource', descriptor: 'Job application volumes and quality', status: 'active', lastUpdated: '2025-08-20', usage: 88 },
+      { id: 'hiring-rate', label: 'HiringRate', domain: 'resource', descriptor: 'Successful hiring rates by sector', status: 'active', lastUpdated: '2025-08-19', usage: 85 },
+      { id: 'attrition', label: 'Attrition', domain: 'resource', descriptor: 'Employee departure rates and reasons', status: 'active', lastUpdated: '2025-08-20', usage: 87 }
     ]
   };
 

@@ -90,6 +90,78 @@ const getSRTForLoop = (loopId: string): SRTConfig | null => {
       description: 'Digital services performance monitoring',
       reviewFrequency: 'Every month',
       escalationThreshold: 'Uptime < 99% or error rate > 8/1k'
+    },
+
+    // Batch 2 - Meso Systems & Micro Foundations
+    'atlas-MES-L02': {
+      reflexHorizon: 'P90D',
+      cadence: 'quarterly',
+      description: 'Teacher pipeline monitoring with workload model integration',
+      reviewFrequency: 'Quarterly review with mid-term scan for attrition spikes',
+      escalationThreshold: 'Band breaches auto-notify HR policy desk'
+    },
+    'atlas-MES-L03': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'Sectoral skills-jobs matching with sector pact optimization',
+      reviewFrequency: 'Monthly cohort A/B for intermediation changes',
+      escalationThreshold: 'Fill-time > 45 days triggers targeted interventions'
+    },
+    'atlas-MES-L04': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'SME liquidity pipeline with guarantee & factoring integration',
+      reviewFrequency: 'Monthly guarantee utilization vs loss ratio monitoring',
+      escalationThreshold: 'Credit acceptance < 45% activates emergency facilities'
+    },
+    'atlas-MES-L10': {
+      reflexHorizon: 'P45D',
+      cadence: 'monthly',
+      description: 'Policy implementation with PMO gate reviews',
+      reviewFrequency: 'Monthly critical path auto-generation and RACI validation',
+      escalationThreshold: 'Rework > 12% triggers process improvement sprint'
+    },
+    'atlas-MES-L11': {
+      reflexHorizon: 'P45D',
+      cadence: 'monthly',
+      description: 'Inter-ministerial coordination with escalation council routing',
+      reviewFrequency: 'Monthly cross-agency dependency declaration and conflict SLA enforcement',
+      escalationThreshold: 'Active conflicts > 8 or resolution time > 30 days activates council'
+    },
+    'atlas-MES-L12': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'Procurement fidelity with PBC templates and open-book audits',
+      reviewFrequency: 'Monthly supplier risk heatmap refresh with quarterly open-book audits',
+      escalationThreshold: 'Dispute rate > 6% or cost variance > ±5% triggers contract review'
+    },
+    'atlas-MIC-L01': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Household financial resilience with social registry integration',
+      reviewFrequency: 'Monthly micro-sim sanity checks on CPI shocks with transfer targeting',
+      escalationThreshold: 'Hardship rate > 12% or buffer days < 30 activates emergency transfers'
+    },
+    'atlas-MIC-L02': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Health access and adherence with mobile care integration',
+      reviewFrequency: 'Monthly reminder nudge A/B instrumentation with equity monitoring',
+      escalationThreshold: 'Adherence < 65% or missed appointments > 8% triggers intervention'
+    },
+    'atlas-MIC-L03': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'School attendance with nudge packs and support integration',
+      reviewFrequency: 'Monthly attendance funnel analysis with meal/tutoring linkage verification',
+      escalationThreshold: 'Chronic absence > 10% or attendance < 85% activates family support'
+    },
+    'atlas-MIC-L04': {
+      reflexHorizon: 'P45D',
+      cadence: 'monthly',
+      description: 'Firm hiring optimization with matching incentives and onboarding',
+      reviewFrequency: 'Monthly ATS integration validation with diversity guardrail monitoring',
+      escalationThreshold: 'Time-to-fill > 45 days or attrition > 12% triggers process review'
     }
   };
 
