@@ -11,7 +11,7 @@ interface ChecksTabProps {
 }
 
 interface Check {
-  category: 'data' | 'configuration' | 'integration' | 'operational';
+  category: 'data' | 'configuration' | 'integration' | 'operational' | 'data-quality' | 'monitoring' | 'alerting' | 'testing' | 'performance' | 'governance' | 'automation' | 'quality' | 'validation';
   name: string;
   description: string;
   status: 'passing' | 'failing' | 'warning' | 'pending';
@@ -292,54 +292,54 @@ const getChecksForLoop = (loopId: string): Check[] => {
 
     // Batch 2 - Meso Systems & Micro Foundations
     'atlas-MES-L02': [
-      { name: 'Roster & Payroll Reconciliation', status: 'passing', value: '98.5%', threshold: '≥ 98%', description: 'Cross-validation of teacher roster with payroll systems', lastRun: '2025-08-20 09:00', frequency: 'weekly' },
-      { name: 'Attrition Segmentation', status: 'passing', value: 'Complete', threshold: 'By tenure and subject', description: 'Detailed breakdown of teacher departures', lastRun: '2025-08-19 16:00', frequency: 'monthly' },
-      { name: 'Band Breach Notification', status: 'passing', value: 'Active', threshold: 'Auto-notify HR policy desk', description: 'Automated alerts for teacher-student ratio violations', lastRun: '2025-08-18 14:30', frequency: 'real-time' }
+      { name: 'Roster & Payroll Reconciliation', category: 'data-quality', status: 'passing', value: '98.5%', threshold: '≥ 98%', description: 'Cross-validation of teacher roster with payroll systems', lastRun: '2025-08-20 09:00', frequency: 'weekly' },
+      { name: 'Attrition Segmentation', category: 'monitoring', status: 'passing', value: 'Complete', threshold: 'By tenure and subject', description: 'Detailed breakdown of teacher departures', lastRun: '2025-08-19 16:00', frequency: 'monthly' },
+      { name: 'Band Breach Notification', category: 'alerting', status: 'passing', value: 'Active', threshold: 'Auto-notify HR policy desk', description: 'Automated alerts for teacher-student ratio violations', lastRun: '2025-08-18 14:30', frequency: 'real-time' }
     ],
     'atlas-MES-L03': [
-      { name: 'ISCO Mapping Coverage', status: 'passing', value: '96.2%', threshold: '≥ 95%', description: 'Occupation classification system coverage', lastRun: '2025-08-20 10:15', frequency: 'monthly' },
-      { name: 'Placement Data Deduplication', status: 'passing', value: 'Active', threshold: 'Across platforms', description: 'Cross-platform job placement record deduplication', lastRun: '2025-08-20 08:45', frequency: 'daily' },
-      { name: 'Monthly Cohort A/B Testing', status: 'passing', value: 'Configured', threshold: 'For intermediation changes', description: 'Statistical testing of matching interventions', lastRun: '2025-08-01 12:00', frequency: 'monthly' }
+      { name: 'ISCO Mapping Coverage', category: 'data-quality', status: 'passing', value: '96.2%', threshold: '≥ 95%', description: 'Occupation classification system coverage', lastRun: '2025-08-20 10:15', frequency: 'monthly' },
+      { name: 'Placement Data Deduplication', category: 'data-quality', status: 'passing', value: 'Active', threshold: 'Across platforms', description: 'Cross-platform job placement record deduplication', lastRun: '2025-08-20 08:45', frequency: 'daily' },
+      { name: 'Monthly Cohort A/B Testing', category: 'testing', status: 'passing', value: 'Configured', threshold: 'For intermediation changes', description: 'Statistical testing of matching interventions', lastRun: '2025-08-01 12:00', frequency: 'monthly' }
     ],
     'atlas-MES-L04': [
-      { name: 'Bank Feed Latency', status: 'passing', value: '8.5 days', threshold: '< 10 days', description: 'Real-time banking data integration timeliness', lastRun: '2025-08-20 11:30', frequency: 'daily' },
-      { name: 'Guarantee Utilization Monitoring', status: 'passing', value: 'Active', threshold: 'vs loss ratio', description: 'Credit guarantee performance tracking', lastRun: '2025-08-20 09:15', frequency: 'weekly' },
-      { name: 'Factoring Uptake Tracking', status: 'passing', value: 'By sector', threshold: 'Sectoral breakdown', description: 'Invoice factoring adoption by business sector', lastRun: '2025-08-19 15:45', frequency: 'monthly' }
+      { name: 'Bank Feed Latency', category: 'performance', status: 'passing', value: '8.5 days', threshold: '< 10 days', description: 'Real-time banking data integration timeliness', lastRun: '2025-08-20 11:30', frequency: 'daily' },
+      { name: 'Guarantee Utilization Monitoring', category: 'monitoring', status: 'passing', value: 'Active', threshold: 'vs loss ratio', description: 'Credit guarantee performance tracking', lastRun: '2025-08-20 09:15', frequency: 'weekly' },
+      { name: 'Factoring Uptake Tracking', category: 'monitoring', status: 'passing', value: 'By sector', threshold: 'Sectoral breakdown', description: 'Invoice factoring adoption by business sector', lastRun: '2025-08-19 15:45', frequency: 'monthly' }
     ],
     'atlas-MES-L10': [
-      { name: 'RACI Completeness', status: 'passing', value: 'Complete', threshold: 'On new sprints', description: 'Responsibility matrix validation for new initiatives', lastRun: '2025-08-20 08:00', frequency: 'per sprint' },
-      { name: 'Critical Path Generation', status: 'passing', value: 'Automated', threshold: 'Auto-generated', description: 'Automatic project dependency mapping', lastRun: '2025-08-20 07:30', frequency: 'daily' },
-      { name: 'Rework Root-Cause Tagging', status: 'warning', value: '85%', threshold: 'At closure', description: 'Issue categorization completion rate', lastRun: '2025-08-19 17:00', frequency: 'weekly' }
+      { name: 'RACI Completeness', category: 'governance', status: 'passing', value: 'Complete', threshold: 'On new sprints', description: 'Responsibility matrix validation for new initiatives', lastRun: '2025-08-20 08:00', frequency: 'per sprint' },
+      { name: 'Critical Path Generation', category: 'automation', status: 'passing', value: 'Automated', threshold: 'Auto-generated', description: 'Automatic project dependency mapping', lastRun: '2025-08-20 07:30', frequency: 'daily' },
+      { name: 'Rework Root-Cause Tagging', category: 'quality', status: 'warning', value: '85%', threshold: 'At closure', description: 'Issue categorization completion rate', lastRun: '2025-08-19 17:00', frequency: 'weekly' }
     ],
     'atlas-MES-L11': [
-      { name: 'Cross-Agency Dependencies', status: 'passing', value: 'Declared', threshold: 'At sprint start', description: 'Inter-ministry dependency identification', lastRun: '2025-08-15 09:00', frequency: 'per sprint' },
-      { name: 'Joint KPI Coverage', status: 'warning', value: '58%', threshold: 'All cross-ministry missions', description: 'Shared performance indicator implementation', lastRun: '2025-08-20 10:00', frequency: 'monthly' },
-      { name: 'Conflict SLA Enforcement', status: 'passing', value: 'Active', threshold: 'Timer enforcement', description: 'Automated conflict resolution deadlines', lastRun: '2025-08-20 11:45', frequency: 'real-time' }
+      { name: 'Cross-Agency Dependencies', category: 'governance', status: 'passing', value: 'Declared', threshold: 'At sprint start', description: 'Inter-ministry dependency identification', lastRun: '2025-08-15 09:00', frequency: 'per sprint' },
+      { name: 'Joint KPI Coverage', category: 'governance', status: 'warning', value: '58%', threshold: 'All cross-ministry missions', description: 'Shared performance indicator implementation', lastRun: '2025-08-20 10:00', frequency: 'monthly' },
+      { name: 'Conflict SLA Enforcement', category: 'performance', status: 'passing', value: 'Active', threshold: 'Timer enforcement', description: 'Automated conflict resolution deadlines', lastRun: '2025-08-20 11:45', frequency: 'real-time' }
     ],
     'atlas-MES-L12': [
-      { name: 'Performance-Based Clauses', status: 'passing', value: 'Present', threshold: 'In contracts', description: 'Contract performance linkage verification', lastRun: '2025-08-20 14:00', frequency: 'per contract' },
-      { name: 'Open-Book Audits', status: 'passing', value: 'Quarterly', threshold: 'Scheduled', description: 'Transparent cost audit execution', lastRun: '2025-07-01 10:00', frequency: 'quarterly' },
-      { name: 'Supplier Risk Heatmap', status: 'passing', value: 'Refreshed', threshold: 'Monthly', description: 'Vendor risk assessment updates', lastRun: '2025-08-01 16:00', frequency: 'monthly' }
+      { name: 'Performance-Based Clauses', category: 'governance', status: 'passing', value: 'Present', threshold: 'In contracts', description: 'Contract performance linkage verification', lastRun: '2025-08-20 14:00', frequency: 'per contract' },
+      { name: 'Open-Book Audits', category: 'governance', status: 'passing', value: 'Quarterly', threshold: 'Scheduled', description: 'Transparent cost audit execution', lastRun: '2025-07-01 10:00', frequency: 'quarterly' },
+      { name: 'Supplier Risk Heatmap', category: 'monitoring', status: 'passing', value: 'Refreshed', threshold: 'Monthly', description: 'Vendor risk assessment updates', lastRun: '2025-08-01 16:00', frequency: 'monthly' }
     ],
     'atlas-MIC-L01': [
-      { name: 'Household Panel Refresh', status: 'passing', value: '75 days', threshold: '≤ 90 days', description: 'Survey data collection cycle compliance', lastRun: '2025-08-20 12:00', frequency: 'continuous' },
-      { name: 'Transfer Duplication Control', status: 'passing', value: 'Active', threshold: 'No duplicates', description: 'Social transfer payment deduplication', lastRun: '2025-08-20 06:00', frequency: 'daily' },
-      { name: 'CPI Shock Sanity Checks', status: 'passing', value: 'Validated', threshold: 'Micro-sim', description: 'Price shock impact model validation', lastRun: '2025-08-19 20:00', frequency: 'weekly' }
+      { name: 'Household Panel Refresh', category: 'data-quality', status: 'passing', value: '75 days', threshold: '≤ 90 days', description: 'Survey data collection cycle compliance', lastRun: '2025-08-20 12:00', frequency: 'continuous' },
+      { name: 'Transfer Duplication Control', category: 'governance', status: 'passing', value: 'Active', threshold: 'No duplicates', description: 'Social transfer payment deduplication', lastRun: '2025-08-20 06:00', frequency: 'daily' },
+      { name: 'CPI Shock Sanity Checks', category: 'validation', status: 'passing', value: 'Validated', threshold: 'Micro-sim', description: 'Price shock impact model validation', lastRun: '2025-08-19 20:00', frequency: 'weekly' }
     ],
     'atlas-MIC-L02': [
-      { name: 'EHR/Claims Join Rate', status: 'passing', value: '92.3%', threshold: '≥ 90%', description: 'Health record integration completeness', lastRun: '2025-08-20 13:15', frequency: 'daily' },
-      { name: 'Reminder Nudge A/B', status: 'passing', value: 'Instrumented', threshold: 'Active testing', description: 'Healthcare reminder system optimization', lastRun: '2025-08-18 11:00', frequency: 'monthly' },
-      { name: 'Equity Monitoring', status: 'passing', value: 'By region & income', threshold: 'Quintile slices', description: 'Health access equity tracking', lastRun: '2025-08-20 15:30', frequency: 'monthly' }
+      { name: 'EHR/Claims Join Rate', category: 'data-quality', status: 'passing', value: '92.3%', threshold: '≥ 90%', description: 'Health record integration completeness', lastRun: '2025-08-20 13:15', frequency: 'daily' },
+      { name: 'Reminder Nudge A/B', category: 'testing', status: 'passing', value: 'Instrumented', threshold: 'Active testing', description: 'Healthcare reminder system optimization', lastRun: '2025-08-18 11:00', frequency: 'monthly' },
+      { name: 'Equity Monitoring', category: 'monitoring', status: 'passing', value: 'By region & income', threshold: 'Quintile slices', description: 'Health access equity tracking', lastRun: '2025-08-20 15:30', frequency: 'monthly' }
     ],
     'atlas-MIC-L03': [
-      { name: 'Attendance Ingestion Fidelity', status: 'passing', value: '99.2%', threshold: '≥ 99%', description: 'Daily attendance data quality', lastRun: '2025-08-20 07:00', frequency: 'daily' },
-      { name: 'Support Program Linkage', status: 'passing', value: 'Verified', threshold: 'Meal/tutoring', description: 'Student support service integration', lastRun: '2025-08-19 14:00', frequency: 'weekly' },
-      { name: 'Alert Fatigue Controls', status: 'passing', value: 'Active', threshold: 'Push messaging', description: 'Notification frequency optimization', lastRun: '2025-08-20 16:00', frequency: 'continuous' }
+      { name: 'Attendance Ingestion Fidelity', category: 'data-quality', status: 'passing', value: '99.2%', threshold: '≥ 99%', description: 'Daily attendance data quality', lastRun: '2025-08-20 07:00', frequency: 'daily' },
+      { name: 'Support Program Linkage', category: 'validation', status: 'passing', value: 'Verified', threshold: 'Meal/tutoring', description: 'Student support service integration', lastRun: '2025-08-19 14:00', frequency: 'weekly' },
+      { name: 'Alert Fatigue Controls', category: 'performance', status: 'passing', value: 'Active', threshold: 'Push messaging', description: 'Notification frequency optimization', lastRun: '2025-08-20 16:00', frequency: 'continuous' }
     ],
     'atlas-MIC-L04': [
-      { name: 'ATS Integration', status: 'passing', value: 'Validated', threshold: 'System connectivity', description: 'Applicant tracking system integration', lastRun: '2025-08-20 08:30', frequency: 'daily' },
-      { name: 'Diversity Guardrails', status: 'passing', value: 'Active', threshold: 'In matching flows', description: 'Hiring equity monitoring system', lastRun: '2025-08-20 12:30', frequency: 'weekly' },
-      { name: 'Attrition Root-Cause Tagging', status: 'warning', value: '78%', threshold: 'Within 14 days', description: 'Employee departure reason classification', lastRun: '2025-08-19 18:00', frequency: 'per incident' }
+      { name: 'ATS Integration', category: 'validation', status: 'passing', value: 'Validated', threshold: 'System connectivity', description: 'Applicant tracking system integration', lastRun: '2025-08-20 08:30', frequency: 'daily' },
+      { name: 'Diversity Guardrails', category: 'governance', status: 'passing', value: 'Active', threshold: 'In matching flows', description: 'Hiring equity monitoring system', lastRun: '2025-08-20 12:30', frequency: 'weekly' },
+      { name: 'Attrition Root-Cause Tagging', category: 'quality', status: 'warning', value: '78%', threshold: 'Within 14 days', description: 'Employee departure reason classification', lastRun: '2025-08-19 18:00', frequency: 'per incident' }
     ]
   };
 
@@ -440,7 +440,16 @@ const ChecksTab: React.FC<ChecksTabProps> = ({ loop }) => {
     data: checks.filter(c => c.category === 'data'),
     configuration: checks.filter(c => c.category === 'configuration'),
     integration: checks.filter(c => c.category === 'integration'),
-    operational: checks.filter(c => c.category === 'operational')
+    operational: checks.filter(c => c.category === 'operational'),
+    'data-quality': checks.filter(c => c.category === 'data-quality'),
+    monitoring: checks.filter(c => c.category === 'monitoring'),
+    alerting: checks.filter(c => c.category === 'alerting'),
+    testing: checks.filter(c => c.category === 'testing'),
+    performance: checks.filter(c => c.category === 'performance'),
+    governance: checks.filter(c => c.category === 'governance'),
+    automation: checks.filter(c => c.category === 'automation'),
+    quality: checks.filter(c => c.category === 'quality'),
+    validation: checks.filter(c => c.category === 'validation')
   };
 
   return (

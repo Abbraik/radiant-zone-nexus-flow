@@ -317,70 +317,151 @@ const getCascadesForLoop = (loopId: string): CascadeHook[] => {
       { type: 'upstream', loopId: 'atlas-MAC-L06', loopName: 'External Demand & Competitiveness', connection: 'trade demand → sectoral employment', strength: 'strong' },
       { type: 'downstream', loopId: 'atlas-MIC-L04', loopName: 'Firm Hiring & Attrition', connection: 'skills matching → hiring success', strength: 'strong' }
     ],
-    'atlas-MES-L04': {
-      upstream: [
-        { id: 'atlas-MAC-L05', name: 'Capital Accumulation & Investment Cycle', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MIC-L05', name: 'Firm Working Capital & Delayed Payments', influence: 'strong', status: 'stable' }
-      ]
-    },
-    'atlas-MES-L10': {
-      upstream: [
-        { id: 'META-L03', name: 'Policy Design & Iteration', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MES-L11', name: 'Interministerial Coordination', influence: 'medium', status: 'stable' }
-      ]
-    },
-    'atlas-MES-L11': {
-      upstream: [
-        { id: 'META-L03', name: 'Policy Design & Iteration', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MES-L12', name: 'Procurement & Delivery Fidelity', influence: 'medium', status: 'stable' }
-      ]
-    },
-    'atlas-MES-L12': {
-      upstream: [
-        { id: 'atlas-MES-L11', name: 'Interministerial Coordination', influence: 'medium', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MAC-L03', name: 'Price–Quantity Stability', influence: 'weak', status: 'stable' }
-      ]
-    },
-    'atlas-MIC-L01': {
-      upstream: [
-        { id: 'atlas-MAC-L03', name: 'Price–Quantity Stability', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MIC-L07', name: 'Price Adjustment to Local Shortages', influence: 'medium', status: 'stable' }
-      ]
-    },
-    'atlas-MIC-L02': {
-      upstream: [
-        { id: 'atlas-MES-L01', name: 'Health Access & Service Delivery', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MAC-L10', name: 'Human Capital Regime', influence: 'medium', status: 'stable' }
-      ]
-    },
-    'atlas-MIC-L03': {
-      upstream: [
-        { id: 'atlas-MES-L02', name: 'Teacher Pipeline & Classroom Throughput', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MAC-L10', name: 'Human Capital Regime', influence: 'strong', status: 'stable' }
-      ]
-    },
-    'atlas-MIC-L04': {
-      upstream: [
-        { id: 'atlas-MES-L03', name: 'Skills–Jobs Matching', influence: 'strong', status: 'stable' }
-      ],
-      downstream: [
-        { id: 'atlas-MAC-L02', name: 'Labor Market Macro Balance', influence: 'medium', status: 'stable' }
-      ]
-    }
+    // Batch 2 loops - converted to CascadeHook[] format
+    'atlas-MES-L04': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L05', 
+        loopName: 'Capital Accumulation & Investment Cycle',
+        connection: 'investment climate → SME credit conditions',
+        description: 'Capital market conditions affect small business financing',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L05', 
+        loopName: 'Firm Working Capital & Delayed Payments',
+        connection: 'credit access → working capital stress',
+        description: 'SME credit conditions affect operational financing',
+        strength: 'strong'
+      }
+    ],
+    'atlas-MES-L10': [
+      { 
+        type: 'upstream', 
+        loopId: 'META-L03', 
+        loopName: 'Policy Design & Iteration',
+        connection: 'policy design → implementation latency',
+        description: 'Policy complexity affects implementation speed',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MES-L11', 
+        loopName: 'Interministerial Coordination',
+        connection: 'implementation delays → coordination needs',
+        description: 'Implementation latency requires coordination',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MES-L11': [
+      { 
+        type: 'upstream', 
+        loopId: 'META-L03', 
+        loopName: 'Policy Design & Iteration',
+        connection: 'policy coordination → spillover management',
+        description: 'Cross-cutting policies require coordination',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MES-L12', 
+        loopName: 'Procurement & Delivery Fidelity',
+        connection: 'coordination quality → delivery performance',
+        description: 'Coordination affects procurement outcomes',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MES-L12': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L11', 
+        loopName: 'Interministerial Coordination',
+        connection: 'coordination → procurement performance',
+        description: 'Coordination quality affects delivery',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L03', 
+        loopName: 'Price–Quantity Stability',
+        connection: 'procurement variance → price effects',
+        description: 'Delivery issues can affect price stability',
+        strength: 'weak'
+      }
+    ],
+    'atlas-MIC-L01': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L03', 
+        loopName: 'Price–Quantity Stability',
+        connection: 'inflation → household budgets',
+        description: 'Price changes affect household finances',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L07', 
+        loopName: 'Price Adjustment to Local Shortages',
+        connection: 'household demand → local prices',
+        description: 'Household consumption affects local markets',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MIC-L02': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L01', 
+        loopName: 'Health Access & Service Delivery',
+        connection: 'health access → health outcomes',
+        description: 'Service availability affects health adherence',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L10', 
+        loopName: 'Human Capital Regime',
+        connection: 'health outcomes → human capital',
+        description: 'Health status affects human capital formation',
+        strength: 'medium'
+      }
+    ],
+    'atlas-MIC-L03': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L02', 
+        loopName: 'Teacher Pipeline & Classroom Throughput',
+        connection: 'teacher availability → learning outcomes',
+        description: 'Teacher supply affects educational quality',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L10', 
+        loopName: 'Human Capital Regime',
+        connection: 'learning outcomes → human capital',
+        description: 'Educational attainment builds human capital',
+        strength: 'strong'
+      }
+    ],
+    'atlas-MIC-L04': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L03', 
+        loopName: 'Skills–Jobs Matching',
+        connection: 'skills matching → hiring success',
+        description: 'Skills alignment affects recruitment outcomes',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L02', 
+        loopName: 'Labor Market Macro Balance',
+        connection: 'hiring patterns → labor market balance',
+        description: 'Firm hiring affects overall labor dynamics',
+        strength: 'medium'
+      }
+    ]
   };
 
   return cascadeData[loopId] || [];
