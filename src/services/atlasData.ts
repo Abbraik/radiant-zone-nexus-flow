@@ -18,7 +18,7 @@ const transformAtlasLoop = (atlasLoop: any, batchNumber: number): LoopData => {
   return {
     id: `atlas-${loop.metadata?.loop_code || `batch${batchNumber}-${Math.random()}`}`,
     name: loop.name,
-    loop_type: loop.loop_type === 'anticipatory' ? 'structural' : (loop.loop_type || 'reactive'),
+    loop_type: loop.loop_type || 'reactive',
     scale: loop.scale || 'micro',
     status: 'published', // Make all atlas loops publicly available
     leverage_default: loop.leverage_default || 'N',
@@ -102,7 +102,8 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
       loop.name.toLowerCase().includes(searchLower) ||
       loop.notes?.toLowerCase().includes(searchLower) ||
       (loop.tags || []).some(tag => tag.toLowerCase().includes(searchLower)) ||
-      loop.metadata?.loop_code?.toLowerCase().includes(searchLower)
+      loop.metadata?.loop_code?.toLowerCase().includes(searchLower) ||
+      loop.metadata?.domain?.toLowerCase().includes(searchLower)
     );
   }
   
@@ -121,6 +122,26 @@ export const searchAtlasLoops = (query?: string, filters?: any): LoopData[] => {
       filtered = filtered.filter(loop => 
         filters.tags.some((tag: string) => loop.tags?.includes(tag))
       );
+    }
+    
+    // Motif filter - check metadata.motif
+    if (filters.motif?.length > 0) {
+      filtered = filtered.filter(loop => 
+        loop.metadata?.motif && filters.motif.includes(loop.metadata.motif)
+      );
+    }
+    
+    // Layer filter - derive from loop code prefix
+    if (filters.layer?.length > 0) {
+      filtered = filtered.filter(loop => {
+        const loopCode = loop.metadata?.loop_code || '';
+        let layer = '';
+        if (loopCode.startsWith('META-')) layer = 'meta';
+        else if (loopCode.startsWith('MAC-')) layer = 'macro';
+        else if (loopCode.startsWith('MES-')) layer = 'meso';
+        else if (loopCode.startsWith('MIC-')) layer = 'micro';
+        return filters.layer.includes(layer);
+      });
     }
     
     // Boolean filters
