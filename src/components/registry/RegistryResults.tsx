@@ -32,7 +32,8 @@ const getLoopTypeColor = (type: string) => {
   const colors = {
     reactive: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
     structural: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    perceptual: 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+    perceptual: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    anticipatory: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
   };
   return colors[type as keyof typeof colors] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
 };
@@ -41,9 +42,20 @@ const getScaleColor = (scale: string) => {
   const colors = {
     micro: 'bg-green-500/20 text-green-300 border-green-500/30',
     meso: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-    macro: 'bg-red-500/20 text-red-300 border-red-500/30'
+    macro: 'bg-red-500/20 text-red-300 border-red-500/30',
+    meta: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
   };
   return colors[scale as keyof typeof colors] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+};
+
+// Helper function to get the actual layer for display
+const getDisplayLayer = (loop: LoopData): string => {
+  const loopCode = loop.metadata?.loop_code || '';
+  if (loopCode.startsWith('META-')) return 'meta';
+  if (loopCode.startsWith('MAC-')) return 'macro';
+  if (loopCode.startsWith('MES-')) return 'meso';
+  if (loopCode.startsWith('MIC-')) return 'micro';
+  return loop.scale; // fallback to scale if no loop code
 };
 
 const getStatusColor = (status: string) => {
@@ -156,8 +168,8 @@ const LoopCard: React.FC<{
             <Badge className={getLoopTypeColor(loop.loop_type)}>
               {loop.loop_type}
             </Badge>
-            <Badge className={getScaleColor(loop.scale)}>
-              {loop.scale}
+            <Badge className={getScaleColor(getDisplayLayer(loop))}>
+              {getDisplayLayer(loop)}
             </Badge>
             <Badge className={getStatusColor(loop.status)}>
               {loop.status}
@@ -233,8 +245,8 @@ const LoopTableRow: React.FC<{
           <Badge className={getLoopTypeColor(loop.loop_type)}>
             {loop.loop_type}
           </Badge>
-          <Badge className={getScaleColor(loop.scale)}>
-            {loop.scale}
+          <Badge className={getScaleColor(getDisplayLayer(loop))}>
+            {getDisplayLayer(loop)}
           </Badge>
         </div>
       </TableCell>
