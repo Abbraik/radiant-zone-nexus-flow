@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
-import { useLoopRegistry } from '@/hooks/useLoopRegistry';
+import { useAtlasRegistry } from '@/hooks/useAtlasRegistry';
+import { atlasLoops } from '@/services/atlasData';
 import { RegistryHeader } from '@/components/registry/RegistryHeader';
 import { FacetSidebar } from '@/components/registry/FacetSidebar';
 import { RegistryResults } from '@/components/registry/RegistryResults';
@@ -50,50 +51,19 @@ const LoopRegistry: React.FC = () => {
 
   const debouncedQuery = useDebounce(query, 300);
   
-  // Data fetching
-  const { searchLoops, createLoop } = useLoopRegistry();
+  // Data fetching - using Atlas registry (no auth required)
+  const { searchLoops, createLoop, searchWithFilters, sortLoops, stats } = useAtlasRegistry();
   
-  // Filter and sort data
+  // Filter and sort data using Atlas service
   const filteredData = useMemo(() => {
     if (!searchLoops.data) return [];
     
-    let filtered = searchLoops.data.filter(loop => {
-      // Text search
-      if (debouncedQuery) {
-        const searchLower = debouncedQuery.toLowerCase();
-        const matches = 
-          loop.name.toLowerCase().includes(searchLower) ||
-          loop.notes?.toLowerCase().includes(searchLower) ||
-          (loop.tags || []).some(tag => tag.toLowerCase().includes(searchLower));
-        if (!matches) return false;
-      }
-      
-      // Facet filters
-      if (filters.loop_type.length > 0 && !filters.loop_type.includes(loop.loop_type)) return false;
-      if (filters.scale?.length > 0 && !filters.scale.includes(loop.scale)) return false;
-      if (filters.status.length > 0 && !filters.status.includes(loop.status)) return false;
-      
-      // Boolean filters
-      if (filters.has_snl && (loop.node_count || 0) === 0) return false;
-      
-      return true;
-    });
+    // Use Atlas search and filter service
+    const filtered = searchWithFilters(debouncedQuery, filters);
     
-    // Sort data
-    filtered.sort((a, b) => {
-      switch (sort) {
-        case 'name':
-          return a.name.localeCompare(b.name);
-        case 'nodes':
-          return (b.node_count || 0) - (a.node_count || 0);
-        case 'updated':
-        default:
-          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-      }
-    });
-    
-    return filtered;
-  }, [searchLoops.data, debouncedQuery, filters, sort]);
+    // Sort using Atlas sort service
+    return sortLoops(filtered, sort);
+  }, [searchLoops.data, debouncedQuery, filters, sort, searchWithFilters, sortLoops]);
 
   // Update URL params
   const updateParams = (updates: Record<string, string | null>) => {
@@ -137,12 +107,33 @@ const LoopRegistry: React.FC = () => {
   };
 
   const handleNewLoop = () => {
-    createLoop.mutate({});
+    // Atlas registry is read-only - show helpful message
+    console.log('Atlas registry is read-only');
   };
 
   const handleImport = () => {
-    // TODO: Implement import functionality
-    console.log('Import clicked');
+    // Export all atlas data as JSON
+    const exportData = {
+      metadata: {
+        exported_at: new Date().toISOString(),
+        total_loops: atlasLoops.length,
+        batches: [1, 2, 3, 4, 5],
+        description: 'NCF-PAGS Atlas - Complete Loop Registry Export'
+      },
+      loops: atlasLoops
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json'
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ncf-pags-atlas-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleExport = (loopId: string) => {
@@ -185,6 +176,7 @@ const LoopRegistry: React.FC = () => {
           viewMode={viewMode}
           setViewMode={setViewMode}
           isCreating={createLoop.isPending}
+          searchLoops={searchLoops}
         />
 
         <div className="flex gap-6 mt-6">
