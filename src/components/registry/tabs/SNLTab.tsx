@@ -440,7 +440,7 @@ const getSyncStatusBadge = (status: string) => {
 };
 
 const SharedNodeCard: React.FC<{ node: SharedNode }> = ({ node }) => {
-  const { name, type, sharedWith, syncStatus, lastSync, description } = node;
+  const { name, type, sharedWith = [], syncStatus = 'pending', lastSync, description } = node;
   const needsAttention = syncStatus === 'out-of-sync' || syncStatus === 'pending';
 
   return (
@@ -458,7 +458,7 @@ const SharedNodeCard: React.FC<{ node: SharedNode }> = ({ node }) => {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={getSyncStatusBadge(syncStatus)} className="text-xs capitalize">
-              {syncStatus.replace('-', ' ')}
+              {syncStatus?.replace('-', ' ') || 'Unknown'}
             </Badge>
             {needsAttention && <AlertCircle className="w-4 h-4 text-yellow-400" />}
           </div>
@@ -474,11 +474,13 @@ const SharedNodeCard: React.FC<{ node: SharedNode }> = ({ node }) => {
           <div>
             <label className="text-xs font-medium text-muted-foreground">Shared With</label>
             <div className="flex flex-wrap gap-1 mt-1">
-              {sharedWith.map((loopId, index) => (
+              {sharedWith.length > 0 ? sharedWith.map((loopId, index) => (
                 <Badge key={index} variant="outline" className="text-xs font-mono">
-                  {loopId.replace('atlas-', '')}
+                  {loopId?.replace('atlas-', '') || loopId || 'Unknown'}
                 </Badge>
-              ))}
+              )) : (
+                <span className="text-xs text-muted-foreground italic">No shared connections</span>
+              )}
             </div>
           </div>
 
