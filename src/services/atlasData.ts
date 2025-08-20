@@ -54,9 +54,9 @@ const transformAtlasLoop = (atlasLoop: any, batchNumber: number): LoopData => {
 // Combine all batches
 const getAllAtlasLoops = (): LoopData[] => {
   const allLoops: LoopData[] = [];
-  const seenLoopCodes = new Set<string>();
+  const loopsByCode = new Map<string, { loop: any, batch: number }>();
   
-  // Process each batch
+  // Process each batch - later batches override earlier ones for duplicates
   [
     { data: batch1, number: 1 },
     { data: batch2, number: 2 },
@@ -65,26 +65,65 @@ const getAllAtlasLoops = (): LoopData[] => {
     { data: batch5, number: 5 }
   ].forEach(({ data, number }) => {
     if (data?.loops) {
-      data.loops.forEach((atlasLoop: any, index: number) => {
+      data.loops.forEach((atlasLoop: any) => {
         const loopCode = atlasLoop.loop?.metadata?.loop_code;
         
-        // Skip duplicates based on loop_code
-        if (loopCode && seenLoopCodes.has(loopCode)) {
-          console.warn(`Duplicate loop code found: ${loopCode} in batch ${number}`);
-          return;
-        }
-        
         if (loopCode) {
-          seenLoopCodes.add(loopCode);
+          // If duplicate, prefer the higher batch number (later batch)
+          if (loopsByCode.has(loopCode)) {
+            const existing = loopsByCode.get(loopCode)!;
+            if (number > existing.batch) {
+              console.log(`Replacing ${loopCode} from batch ${existing.batch} with batch ${number}`);
+              loopsByCode.set(loopCode, { loop: atlasLoop, batch: number });
+            } else {
+              console.log(`Keeping ${loopCode} from batch ${existing.batch}, ignoring batch ${number}`);
+            }
+          } else {
+            loopsByCode.set(loopCode, { loop: atlasLoop, batch: number });
+          }
+        } else {
+          // No loop code, treat as unique
+          const uniqueKey = `batch${number}-${Math.random().toString(36).substr(2, 9)}`;
+          loopsByCode.set(uniqueKey, { loop: atlasLoop, batch: number });
         }
-        
-        const transformedLoop = transformAtlasLoop(atlasLoop, number);
-        allLoops.push(transformedLoop);
       });
     }
   });
   
+  // Transform all unique loops
+  for (const [loopCode, { loop: atlasLoop, batch }] of loopsByCode) {
+    const transformedLoop = transformAtlasLoop(atlasLoop, batch);
+    
+    // Debug layer assignment
+    let layer = '';
+    const code = transformedLoop.metadata?.loop_code || '';
+    if (code.startsWith('META-')) layer = 'meta';
+    else if (code.startsWith('MAC-')) layer = 'macro';
+    else if (code.startsWith('MES-')) layer = 'meso';
+    else if (code.startsWith('MIC-')) layer = 'micro';
+    
+    console.log(`Added loop: ${code} (${transformedLoop.name}) - Layer: ${layer}, Batch: ${batch}`);
+    allLoops.push(transformedLoop);
+  }
+  
   console.log(`Loaded ${allLoops.length} unique loops from atlas batches`);
+  
+  // Group by layer for debugging
+  const byLayer = allLoops.reduce((acc, loop) => {
+    const loopCode = loop.metadata?.loop_code || '';
+    let layer = 'unknown';
+    if (loopCode.startsWith('META-')) layer = 'meta';
+    else if (loopCode.startsWith('MAC-')) layer = 'macro';
+    else if (loopCode.startsWith('MES-')) layer = 'meso';
+    else if (loopCode.startsWith('MIC-')) layer = 'micro';
+    
+    if (!acc[layer]) acc[layer] = [];
+    acc[layer].push(loop.metadata?.loop_code || loop.name);
+    return acc;
+  }, {} as Record<string, string[]>);
+  
+  console.log('Loops by layer:', byLayer);
+  
   return allLoops;
 };
 
