@@ -83,7 +83,7 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
           metadata: loopData.loop.metadata,
           user_id: user.id,
         }, {
-          onConflict: 'name,user_id' // Assuming this combination is unique
+          onConflict: 'name,user_id'
         })
         .select()
         .single();
@@ -99,21 +99,14 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
       await supabase.from('loop_nodes').delete().eq('loop_id', loopId);
       await supabase.from('loop_edges').delete().eq('loop_id', loopId);
       await supabase.from('loop_shared_nodes').delete().eq('loop_id', loopId);
+      await supabase.from('srt_windows').delete().eq('loop_id', loopId);
 
-      // Delete indicators and DE bands for this loop
-      const { data: existingIndicators } = await supabase
+      // Clean up indicators by name pattern (simple approach)
+      await supabase
         .from('indicators')
-        .select('id')
+        .delete()
         .eq('user_id', user.id)
         .like('name', `%${loopData.loop.name.split(' ')[0]}%`);
-
-      if (existingIndicators?.length) {
-        const indicatorIds = existingIndicators.map(i => i.id);
-        await supabase.from('de_bands').delete().in('indicator_id', indicatorIds);
-        await supabase.from('indicators').delete().in('id', indicatorIds);
-      }
-
-      await supabase.from('srt_windows').delete().eq('loop_id', loopId);
 
       // Insert nodes
       if (loopData.nodes?.length) {
@@ -136,33 +129,43 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
         // Get node IDs for edge mapping
         const { data: insertedNodes } = await supabase
           .from('loop_nodes')
-          .select('*')
+          .select('id, label')
           .eq('loop_id', loopId);
 
-        const nodeMap = new Map();
-        insertedNodes?.forEach((node, idx) => {
-          nodeMap.set(loopData.nodes[idx].id, node.id);
-        });
+        const nodeMap = new Map<string, string>();
+        if (insertedNodes) {
+          // Match by label since we might not have perfect order
+          loopData.nodes.forEach(originalNode => {
+            const matchingNode = insertedNodes.find(n => n.label === originalNode.label);
+            if (matchingNode) {
+              nodeMap.set(originalNode.id, matchingNode.id);
+            }
+          });
+        }
 
         // Insert edges
         if (loopData.edges?.length) {
-          const edgesWithLoopId = loopData.edges.map(edge => ({
-            id: crypto.randomUUID(),
-            loop_id: loopId,
-            from_node: nodeMap.get(edge.from_node),
-            to_node: nodeMap.get(edge.to_node),
-            polarity: edge.polarity,
-            delay_ms: edge.delay_ms || 0,
-            weight: edge.weight || 1.0,
-            note: edge.note || null,
-          }));
+          const edgesWithLoopId = loopData.edges
+            .map(edge => ({
+              id: crypto.randomUUID(),
+              loop_id: loopId,
+              from_node: nodeMap.get(edge.from_node) || null,
+              to_node: nodeMap.get(edge.to_node) || null,
+              polarity: edge.polarity,
+              delay_ms: edge.delay_ms || 0,
+              weight: edge.weight || 1.0,
+              note: edge.note || null,
+            }))
+            .filter(edge => edge.from_node && edge.to_node);
 
-          const { error: edgesError } = await supabase
-            .from('loop_edges')
-            .insert(edgesWithLoopId);
+          if (edgesWithLoopId.length > 0) {
+            const { error: edgesError } = await supabase
+              .from('loop_edges')
+              .insert(edgesWithLoopId);
 
-          if (edgesError) {
-            console.error('Edges insert error:', edgesError);
+            if (edgesError) {
+              console.error('Edges insert error:', edgesError);
+            }
           }
         }
       }
@@ -170,7 +173,6 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
       // Insert shared node links
       if (loopData.shared_nodes?.length) {
         for (const snlRef of loopData.shared_nodes) {
-          // Get shared node ID
           const { data: sharedNode } = await supabase
             .from('shared_nodes')
             .select('id')
@@ -192,58 +194,45 @@ export async function importAtlasBatch1(): Promise<{ success: boolean; error?: s
         }
       }
 
-      // Insert indicators
+      // Insert indicators and DE bands
       if (loopData.indicators?.length) {
-        const indicatorsWithIds = loopData.indicators.map(indicator => ({
-          ...indicator,
-          dbId: crypto.randomUUID()
-        }));
+        for (let i = 0; i < loopData.indicators.length; i++) {
+          const indicator = loopData.indicators[i];
+          const indicatorId = crypto.randomUUID();
 
-        const indicatorsData = indicatorsWithIds.map(indicator => ({
-          id: indicator.dbId,
-          name: indicator.name,
-          type: indicator.kind,
-          unit: indicator.unit,
-          user_id: user.id,
-        }));
-
-        const { data: insertedIndicators, error: indicatorsError } = await supabase
-          .from('indicators')
-          .insert(indicatorsData)
-          .select();
-
-        if (indicatorsError) {
-          console.error('Indicators insert error:', indicatorsError);
-        }
-
-        // Insert DE bands
-        if (insertedIndicators && loopData.de_bands?.length) {
-          const bandsData = loopData.de_bands.map((band, idx) => {
-            const matchingIndicator = insertedIndicators.find(ind => 
-              ind.id === indicatorsWithIds[idx]?.dbId
-            );
-            
-            if (!matchingIndicator) return null;
-
-            return {
-              indicator_id: matchingIndicator.id,
-              loop_id: loopId,
-              indicator: matchingIndicator.name || 'primary',
-              lower_bound: band.lower_bound,
-              upper_bound: band.upper_bound,
-              asymmetry: band.asymmetry,
-              smoothing_alpha: band.smoothing_alpha,
+          const { error: indicatorError } = await supabase
+            .from('indicators')
+            .insert({
+              id: indicatorId,
+              name: indicator.name,
+              type: indicator.kind,
+              unit: indicator.unit,
               user_id: user.id,
-            };
-          }).filter(Boolean) as any[];
+            });
 
-          if (bandsData.length > 0) {
-            const { error: bandsError } = await supabase
+          if (indicatorError) {
+            console.error('Indicator insert error:', indicatorError);
+            continue;
+          }
+
+          // Insert corresponding DE band if exists
+          if (loopData.de_bands?.[i]) {
+            const band = loopData.de_bands[i];
+            const { error: bandError } = await supabase
               .from('de_bands')
-              .insert(bandsData);
+              .insert({
+                indicator_id: indicatorId,
+                loop_id: loopId,
+                indicator: indicator.name,
+                lower_bound: band.lower_bound,
+                upper_bound: band.upper_bound,
+                asymmetry: band.asymmetry,
+                smoothing_alpha: band.smoothing_alpha,
+                user_id: user.id,
+              });
 
-            if (bandsError) {
-              console.error('DE bands insert error:', bandsError);
+            if (bandError) {
+              console.error('DE band insert error:', bandError);
             }
           }
         }

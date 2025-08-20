@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { ImportAtlasBatchButton } from '@/components/registry/ImportAtlasBatchButton';
 import { 
   Plus, 
   Download, 
@@ -64,6 +65,8 @@ export const RegistryHeader: React.FC<RegistryHeaderProps> = ({
             <Download className="w-4 h-4" />
             Import JSON
           </Button>
+
+          <ImportAtlasBatchButton />
           
           <Button 
             onClick={async () => {
