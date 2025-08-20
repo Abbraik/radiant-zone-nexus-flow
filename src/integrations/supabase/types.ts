@@ -3055,6 +3055,10 @@ export type Database = {
         Args: { as_draft?: boolean; payload: Json }
         Returns: string
       }
+      insert_sprint_tasks: {
+        Args: { task_data: Json }
+        Returns: undefined
+      }
       link_entities: {
         Args: { source_param: Json; target_param: Json }
         Returns: string

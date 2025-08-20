@@ -74,7 +74,7 @@ export async function createSprintWithTasks(payload: {
     }));
     
     const { error: tasksError } = await supabase
-      .rpc('insert_sprint_tasks', { task_data: taskInserts });
+      .rpc('insert_sprint_tasks' as any, { task_data: taskInserts });
       
     if (tasksError) throw tasksError;
   }
