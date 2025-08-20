@@ -22,6 +22,7 @@ import LoopRegistry from "./pages/LoopRegistry";
 import LoopDetail from "./pages/LoopDetail";
 import LoopEditor from "./pages/LoopEditor";
 import LoopDashboard from "./pages/LoopDashboard";
+import LoopSignalMonitor from "./pages/LoopSignalMonitor";
 import NotFound from "./pages/NotFound";
 
 import AdminPage from "./pages/AdminPage";
@@ -93,6 +94,7 @@ const App = () => (
                     <Route path="/registry" element={<LoopRegistry />} />
                     <Route path="/registry/:id" element={<LoopDetail />} />
                     <Route path="/registry/:id/edit" element={<LoopEditor />} />
+                    <Route path="/signal-monitor" element={<LoopSignalMonitor />} />
                     <Route path="/dashboard/loops" element={<LoopDashboard />} />
                     <Route path="/dashboard" element={
                       <div className="pt-4">

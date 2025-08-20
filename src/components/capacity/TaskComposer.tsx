@@ -4,24 +4,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { createTask5C } from "@/5c/services";
 import type { DecisionResult, Capacity } from "@/services/capacity-decision";
+import type { EnhancedTask5C, Capacity5C, Leverage5C } from "@/5c/types";
 
 export interface TaskComposerProps {
   decision: DecisionResult;
+  loopCode?: string;
+  indicator?: string;
   // Optional transforms / org context
-  defaultOwnerId?: string;
-  onCompose?: (tasks: {
-    title: string;
-    description: string;
-    capacity: Capacity;
-    leverage: 'N'|'P'|'S';
-    dueAt?: string;
-    guardrails?: string[];
-    meta?: Record<string, any>;
-  }[]) => void; // caller persists to Supabase task table & opens claim drawer
+  defaultUserId?: string;
+  onTasksCreated?: (tasks: EnhancedTask5C[]) => void;
 }
 
-export function TaskComposer({ decision, defaultOwnerId, onCompose }: TaskComposerProps) {
+export function TaskComposer({ decision, loopCode, indicator, defaultUserId, onTasksCreated }: TaskComposerProps) {
+  const { toast } = useToast();
   const [actions, setActions] = useState(() =>
     decision.templateActions.map(a => ({
       capacity: a.capacity,
@@ -44,24 +42,55 @@ export function TaskComposer({ decision, defaultOwnerId, onCompose }: TaskCompos
     return dt.toISOString();
   })();
 
-  const handleCompose = () => {
-    const tasks = actions.flatMap(block =>
-      block.items.map((it, idx) => ({
-        title: `[${block.capacity.toUpperCase()}] ${it.text.split('.').shift()}`,
-        description: it.text,
-        capacity: block.capacity,
-        leverage: block.leverage,
-        dueAt: defaultDue,
-        guardrails: decision.guardrails?.caps ?? [],
-        meta: {
-          order: block.order,
-          legGap: decision.consent?.legGap,
-          transparency: decision.consent?.transparency,
-          srt: decision.srt,
-        }
-      }))
-    );
-    onCompose?.(tasks);
+  const handleCompose = async () => {
+    try {
+      // Convert template actions to 5C tasks
+      const tasks: Partial<EnhancedTask5C>[] = actions.flatMap(block =>
+        block.items.map((item, idx) => ({
+          capacity: block.capacity as Capacity5C,
+          loop_id: loopCode || 'unknown-loop',
+          type: 'reactive' as const,
+          scale: 'micro' as const,
+          leverage: block.leverage as Leverage5C,
+          title: `[${block.capacity.toUpperCase()}] ${item.text.split('.')[0]}`,
+          description: item.text,
+          status: 'open' as const,
+          payload: {
+            signal: indicator ? { indicator, timestamp: new Date().toISOString() } : {},
+            decision: {
+              scores: decision.scores,
+              rationale: decision.rationale,
+              srt: decision.srt,
+              guardrails: decision.guardrails,
+              consent: decision.consent
+            },
+            actionOrder: block.order,
+            actionIndex: idx
+          },
+          user_id: defaultUserId || 'current-user'
+        }))
+      );
+
+      // Create tasks in parallel
+      const createdTasks = await Promise.all(
+        tasks.map(task => createTask5C(task))
+      );
+
+      toast({
+        title: "Tasks Created",
+        description: `${createdTasks.length} capacity tasks created successfully`,
+        duration: 4000
+      });
+
+      onTasksCreated?.(createdTasks);
+    } catch (error) {
+      console.error('Failed to create tasks:', error);
+      toast({
+        title: "Task Creation Failed",
+        description: "Failed to create capacity tasks",
+        variant: "destructive"
+      });
+    }
   };
 
   const getLeverageColor = (leverage: 'N'|'P'|'S') => {
@@ -134,7 +163,7 @@ export function TaskComposer({ decision, defaultOwnerId, onCompose }: TaskCompos
         </div>
         <div className="flex-1" />
         <Button onClick={handleCompose} className="bg-primary hover:bg-primary/90">
-          Compose Tasks
+          Create Tasks
         </Button>
       </div>
     </Card>

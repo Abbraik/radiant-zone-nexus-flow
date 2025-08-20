@@ -133,6 +133,7 @@ const LoopDetail: React.FC = () => {
             onEdit={() => navigate(`/registry/${id}/editor`)}
             onExport={() => console.log('Export loop:', id)}
             onPublish={() => console.log('Publish loop:', id)}
+            onSignalMonitor={() => navigate(`/signal-monitor?loop=${loop.loop_code || id}`)}
           />
 
           <TabNav tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />

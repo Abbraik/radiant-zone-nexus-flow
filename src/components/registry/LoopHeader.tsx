@@ -14,7 +14,8 @@ import {
   Tag,
   GitBranch,
   Clock,
-  User
+  User,
+  Activity
 } from 'lucide-react';
 import { LoopData } from '@/types/loop-registry';
 import { formatDistanceToNow } from 'date-fns';
@@ -24,6 +25,7 @@ interface LoopHeaderProps {
   onEdit: () => void;
   onExport: () => void;
   onPublish: () => void;
+  onSignalMonitor?: () => void;
 }
 
 const getLoopTypeColor = (type: string) => {
@@ -57,7 +59,8 @@ export const LoopHeader: React.FC<LoopHeaderProps> = ({
   loop,
   onEdit,
   onExport,
-  onPublish
+  onPublish,
+  onSignalMonitor
 }) => {
   return (
     <motion.div
@@ -106,6 +109,13 @@ export const LoopHeader: React.FC<LoopHeaderProps> = ({
 
             {/* Actions */}
             <div className="flex items-center gap-2 ml-6">
+              {onSignalMonitor && (
+                <Button variant="outline" onClick={onSignalMonitor} className="gap-2">
+                  <Activity className="w-4 h-4" />
+                  Signal Monitor
+                </Button>
+              )}
+              
               <Button variant="outline" onClick={onEdit} className="gap-2">
                 <Edit className="w-4 h-4" />
                 Edit

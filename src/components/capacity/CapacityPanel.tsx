@@ -93,8 +93,10 @@ export function CapacityPanel({
         />
         <TaskComposer
           decision={decision}
-          onCompose={(tasks) => {
-            console.log('Composed tasks:', tasks);
+          loopCode={loopCode}
+          indicator={indicator}
+          onTasksCreated={(tasks) => {
+            console.log('Tasks created from capacity decision:', tasks);
             onTasksComposed?.(tasks);
           }}
         />
