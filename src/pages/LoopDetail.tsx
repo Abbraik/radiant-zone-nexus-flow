@@ -13,20 +13,17 @@ import { Button } from '@/components/ui/button';
 // Lazy load heavy tab components
 const OverviewTab = React.lazy(() => import('@/components/registry/tabs/OverviewTab'));
 const StructureTab = React.lazy(() => import('@/components/registry/tabs/StructureTab'));
-const IndicatorsTab = React.lazy(() => import('@/components/registry/tabs/IndicatorsTab'));
+const IndicatorsSignalsTab = React.lazy(() => import('@/components/registry/tabs/IndicatorsSignalsTab'));
 const SRTTab = React.lazy(() => import('@/components/registry/tabs/SRTTab'));
 const SNLTab = React.lazy(() => import('@/components/registry/tabs/SNLTab'));
 const CascadesTab = React.lazy(() => import('@/components/registry/tabs/CascadesTab'));
 const VersionsTab = React.lazy(() => import('@/components/registry/tabs/VersionsTab'));
 const ChecksTab = React.lazy(() => import('@/components/registry/tabs/ChecksTab'));
 
-const PrimarySignalsTab = React.lazy(() => import('@/components/registry/tabs/PrimarySignalsTab'));
-
 const TABS = [
   { id: 'overview', label: 'Overview', component: OverviewTab },
   { id: 'structure', label: 'Structure', component: StructureTab },
-  { id: 'indicators', label: 'Indicators & DE-Bands', component: IndicatorsTab },
-  { id: 'signals', label: 'Primary Signals', component: PrimarySignalsTab },
+  { id: 'indicators-signals', label: 'Indicators & Signals', component: IndicatorsSignalsTab },
   { id: 'srt', label: 'SRT & Cadence', component: SRTTab },
   { id: 'cascades', label: 'Cascade Hooks', component: CascadesTab },
   { id: 'snl', label: 'Shared Nodes (SNL)', component: SNLTab },

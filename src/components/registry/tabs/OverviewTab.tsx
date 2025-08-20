@@ -140,10 +140,9 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             )}
 
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Type & Scale</label>
+              <label className="text-sm font-medium text-muted-foreground">Type</label>
               <div className="flex gap-2 mt-1">
                 <Badge variant="secondary">{loop.loop_type}</Badge>
-                <Badge variant="outline">{loop.scale}</Badge>
               </div>
             </div>
 
