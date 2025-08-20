@@ -16,11 +16,96 @@ interface SRTConfig {
   description?: string;
   reviewFrequency?: string;
   escalationThreshold?: string;
+  nextReview?: string;
+  lastAdjustment?: string;
+  status?: string;
 }
 
 // Sample data mapping - in production this would come from the loop metadata
 const getSRTForLoop = (loopId: string): SRTConfig | null => {
   const srtData: Record<string, SRTConfig> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Supervisory band and weight tuner monitoring with monthly adjustment cycles',
+      nextReview: '2025-09-15',
+      lastAdjustment: '2025-08-15',
+      status: 'active'
+    },
+    'atlas-META-L02': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Controller arbitration and retuning with PID/MPC/Rule family switching',
+      nextReview: '2025-09-15',
+      lastAdjustment: '2025-08-10',
+      status: 'active'
+    },
+    'atlas-META-L03': {
+      reflexHorizon: 'P60D',
+      cadence: 'bi-monthly',
+      description: 'Escalation governance ladder with N→P→S routing for persistent breaches',
+      nextReview: '2025-09-30',
+      lastAdjustment: '2025-07-30',
+      status: 'active'
+    },
+    'atlas-META-L04': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Data integrity standards registry with API contract enforcement',
+      nextReview: '2025-09-15',
+      lastAdjustment: '2025-08-12',
+      status: 'active'
+    },
+    'atlas-META-L05': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Threshold guardrail auditor monitoring actuation caps and renewals',
+      nextReview: '2025-09-15',
+      lastAdjustment: '2025-08-08',
+      status: 'active'
+    },
+    'atlas-META-L06': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'Structural proposal pipeline with legal gating and adoption tracking',
+      nextReview: '2025-09-20',
+      lastAdjustment: '2025-08-05',
+      status: 'active'
+    },
+    'atlas-META-L07': {
+      reflexHorizon: 'P90D',
+      cadence: 'quarterly',
+      description: 'Legitimacy and participation coupler with transparency pack toggles',
+      nextReview: '2025-10-15',
+      lastAdjustment: '2025-07-15',
+      status: 'active'
+    },
+    'atlas-META-L08': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Early warning and risk orchestrator with watchpoint arming capabilities',
+      nextReview: '2025-09-15',
+      lastAdjustment: '2025-08-18',
+      status: 'active'
+    },
+    'atlas-MES-L01': {
+      reflexHorizon: 'P60D',
+      cadence: 'monthly',
+      description: 'Health service capacity and access with staffing and purchasing model levers',
+      nextReview: '2025-09-20',
+      lastAdjustment: '2025-08-14',
+      status: 'active'
+    },
+    'atlas-MIC-L10': {
+      reflexHorizon: 'P30D',
+      cadence: 'monthly',
+      description: 'Compliance and rule adherence with transparency pack and fair enforcement cues',
+      nextReview: '2025-09-15',
+      lastAdjustment: '2025-08-11',
+      status: 'active'
+    },
+
     'atlas-MAC-L05': {
       reflexHorizon: 'P90D',
       cadence: 'Quarterly review',

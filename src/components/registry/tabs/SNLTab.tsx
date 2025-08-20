@@ -14,7 +14,7 @@ interface SharedNode {
   id?: string;
   name?: string;
   label?: string;
-  type?: 'stock' | 'flow' | 'auxiliary' | 'indicator';
+  type?: 'stock' | 'flow' | 'auxiliary' | 'indicator' | 'state';
   domain?: string;
   descriptor?: string;
   sharedWith?: string[];
@@ -24,11 +24,58 @@ interface SharedNode {
   lastUpdated?: string;
   usage?: number;
   description?: string;
+  connections?: number;
 }
 
 // Sample data mapping - in production this would come from the loop metadata
 const getSharedNodesForLoop = (loopId: string): SharedNode[] => {
   const snlData: Record<string, SharedNode[]> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': [
+      { name: 'Society.Trust', type: 'state', description: 'Public trust in institutions and systems', connections: 3, status: 'stable' },
+      { name: 'Institutions.DecisionLatency', type: 'state', description: 'Time required for institutional decision-making processes', connections: 2, status: 'stable' }
+    ],
+    'atlas-META-L02': [
+      { name: 'Institutions.CapacityIndex', type: 'state', description: 'Aggregate measure of institutional operational capacity', connections: 4, status: 'stable' }
+    ],
+    'atlas-META-L03': [
+      { name: 'Institutions.Authority', type: 'state', description: 'Institutional authority and decision-making power', connections: 3, status: 'stable' },
+      { name: 'Budget', type: 'flow', description: 'Financial resources available for operations', connections: 5, status: 'stable' },
+      { name: 'Backlog', type: 'stock', description: 'Accumulated pending tasks and decisions', connections: 2, status: 'increasing' }
+    ],
+    'atlas-META-L04': [
+      { name: 'Institutions.DataInteroperability', type: 'state', description: 'Ability of systems to exchange and use data effectively', connections: 6, status: 'improving' },
+      { name: 'Services.Latency', type: 'state', description: 'Response time characteristics of system services', connections: 4, status: 'stable' }
+    ],
+    'atlas-META-L05': [
+      { name: 'Institutions.Guardrails', type: 'state', description: 'Automated safeguards and operational limits', connections: 3, status: 'stable' }
+    ],
+    'atlas-META-L06': [
+      { name: 'Institutions.LegalProcess', type: 'state', description: 'Legal framework and process efficiency', connections: 2, status: 'stable' },
+      { name: 'Institutions.Authority', type: 'state', description: 'Institutional authority and decision-making power', connections: 3, status: 'stable' }
+    ],
+    'atlas-META-L07': [
+      { name: 'Society.Trust', type: 'state', description: 'Public trust in institutions and systems', connections: 5, status: 'stable' },
+      { name: 'Society.Participation', type: 'state', description: 'Level of public engagement in governance processes', connections: 4, status: 'stable' },
+      { name: 'PerceivedLegitimacy', type: 'state', description: 'Public perception of institutional legitimacy', connections: 3, status: 'stable' }
+    ],
+    'atlas-META-L08': [
+      { name: 'Environment.Risk', type: 'state', description: 'Environmental risk factors and threat levels', connections: 3, status: 'monitored' },
+      { name: 'SupplyChainRisk', type: 'state', description: 'Supply chain vulnerability and disruption risk', connections: 4, status: 'monitored' },
+      { name: 'GeopoliticsRisk', type: 'state', description: 'Geopolitical tensions and stability risks', connections: 2, status: 'monitored' }
+    ],
+    'atlas-MES-L01': [
+      { name: 'Services.Capacity.Health', type: 'stock', description: 'Healthcare system service delivery capacity', connections: 5, status: 'expanding' },
+      { name: 'QueueLength', type: 'stock', description: 'Number of people waiting for healthcare services', connections: 3, status: 'decreasing' },
+      { name: 'Coverage', type: 'state', description: 'Population coverage of healthcare services', connections: 4, status: 'improving' },
+      { name: 'Latency', type: 'state', description: 'Healthcare service response and wait times', connections: 3, status: 'stable' }
+    ],
+    'atlas-MIC-L10': [
+      { name: 'PerceivedLegitimacy', type: 'state', description: 'Public perception of institutional legitimacy', connections: 4, status: 'stable' },
+      { name: 'EnforcementVisibility', type: 'state', description: 'Public awareness of fair enforcement actions', connections: 2, status: 'improving' },
+      { name: 'Norms', type: 'state', description: 'Social norms and expectations around compliance', connections: 3, status: 'stable' }
+    ],
+
     'atlas-MAC-L05': [
       { 
         name: 'Firms.CapitalStock', 

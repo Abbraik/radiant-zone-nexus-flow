@@ -26,6 +26,58 @@ interface Check {
 // Sample data mapping - in production this would come from the loop metadata
 const getChecksForLoop = (loopId: string): Check[] => {
   const checksData: Record<string, Check[]> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': [
+      { name: 'ITS Band-Hit Frequency Configuration', category: 'configuration', status: 'passing', value: 'Configured', threshold: 'Active', description: 'Integrated time series monitoring for band breach frequency', lastRun: '2025-08-20 09:00', frequency: 'daily' },
+      { name: 'Trust-Based Overtightening Guard', category: 'governance', status: 'passing', value: 'Active', threshold: 'When trust < 0.6', description: 'Prevents excessive tightening when public trust is low', lastRun: '2025-08-19 14:30', frequency: 'real-time' },
+      { name: 'Governance Note Auto-Publication', category: 'automation', status: 'passing', value: 'Automated', threshold: 'On band resets', description: 'Automatic publication of governance notes on band adjustments', lastRun: '2025-08-18 16:00', frequency: 'event-driven' }
+    ],
+    'atlas-META-L02': [
+      { name: 'Pre/Post-Variance Comparison Logging', category: 'monitoring', status: 'passing', value: 'Logged', threshold: 'On retune', description: 'Variance comparison logging for controller retuning events', lastRun: '2025-08-20 11:15', frequency: 'event-driven' },
+      { name: 'Actuation Cap Enforcement', category: 'governance', status: 'passing', value: 'Active', threshold: '2 cycle persistence', description: 'Caps controller actuation if overruns persist', lastRun: '2025-08-20 08:45', frequency: 'real-time' },
+      { name: 'Controller Change Audit Trail', category: 'governance', status: 'passing', value: 'Complete', threshold: 'All changes', description: 'Comprehensive audit trail of controller modifications', lastRun: '2025-08-20 12:00', frequency: 'continuous' }
+    ],
+    'atlas-META-L03': [
+      { name: 'Policy vs Structure Classification', category: 'governance', status: 'passing', value: 'Classified', threshold: 'Each action', description: 'Classification of escalation actions as policy or structural', lastRun: '2025-08-20 10:30', frequency: 'event-driven' },
+      { name: 'Authority/Budget Provisioning Recording', category: 'governance', status: 'passing', value: 'Recorded', threshold: 'All provisions', description: 'Complete recording of authority and budget allocations', lastRun: '2025-08-19 15:45', frequency: 'event-driven' },
+      { name: 'DiD Evaluation Scheduling', category: 'governance', status: 'passing', value: 'Scheduled', threshold: 'Escalated KPIs', description: 'Difference-in-differences evaluation for escalated KPIs', lastRun: '2025-08-15 09:00', frequency: 'per escalation' }
+    ],
+    'atlas-META-L04': [
+      { name: 'Schema Versioning & Migration Testing', category: 'testing', status: 'passing', value: 'Tested', threshold: 'In staging', description: 'Schema changes tested in staging environment', lastRun: '2025-08-19 20:00', frequency: 'per release' },
+      { name: 'Reconciliation Error Budget Tracking', category: 'monitoring', status: 'passing', value: 'Tracked', threshold: 'Within budget', description: 'Monitoring of data reconciliation error rates', lastRun: '2025-08-20 07:30', frequency: 'daily' },
+      { name: 'Volatility Drop Standard Adoption Confirmation', category: 'validation', status: 'passing', value: 'Confirmed', threshold: 'Post-adoption', description: 'Confirms volatility reduction after standard adoption', lastRun: '2025-08-18 13:15', frequency: 'post-deployment' }
+    ],
+    'atlas-META-L05': [
+      { name: 'Violation & Renewal Log Sampling', category: 'monitoring', status: 'passing', value: 'Sampled', threshold: 'Regular sampling', description: 'Statistical sampling of violation and renewal logs', lastRun: '2025-08-20 14:00', frequency: 'weekly' },
+      { name: 'Tightening Action Outcome Linkage', category: 'validation', status: 'passing', value: 'Linked', threshold: 'To outcomes', description: 'Links tightening actions to performance outcomes', lastRun: '2025-08-19 11:30', frequency: 'monthly' },
+      { name: 'Auto-Close Loop Oscillation Reduction', category: 'automation', status: 'passing', value: 'Active', threshold: 'Oscillation control', description: 'Automated loop closure to reduce system oscillations', lastRun: '2025-08-20 16:45', frequency: 'real-time' }
+    ],
+    'atlas-META-L06': [
+      { name: 'Throughput vs Backlog Trend Monitoring', category: 'monitoring', status: 'passing', value: 'Monitored', threshold: 'Trend analysis', description: 'Monitoring proposal throughput against backlog trends', lastRun: '2025-08-20 09:30', frequency: 'daily' },
+      { name: 'Pre/Post Trend-Break Significance Flagging', category: 'validation', status: 'passing', value: 'Flagged', threshold: 'Statistical significance', description: 'Statistical significance testing for trend breaks', lastRun: '2025-08-18 17:00', frequency: 'post-adoption' },
+      { name: 'Adoption Latency SLA by Proposal Class', category: 'performance', status: 'warning', value: '120 days avg', threshold: '< 180 days', description: 'Service level agreement monitoring for proposal adoption', lastRun: '2025-08-19 12:45', frequency: 'monthly' }
+    ],
+    'atlas-META-L07': [
+      { name: 'Event-Study Windows Definition', category: 'configuration', status: 'passing', value: 'Defined', threshold: 'Per campaign', description: 'Event study windows defined for each engagement campaign', lastRun: '2025-08-15 10:00', frequency: 'per campaign' },
+      { name: 'Equity Slices in Trust Reporting', category: 'monitoring', status: 'passing', value: 'Included', threshold: 'All reports', description: 'Equity analysis included in trust measurement reports', lastRun: '2025-08-20 08:00', frequency: 'monthly' },
+      { name: 'Public Release Log for Transparency Artifacts', category: 'governance', status: 'passing', value: 'Logged', threshold: 'All releases', description: 'Complete log of public transparency artifact releases', lastRun: '2025-08-19 16:30', frequency: 'event-driven' }
+    ],
+    'atlas-META-L08': [
+      { name: 'False-Positive/Negative Rate Monitoring', category: 'monitoring', status: 'passing', value: '8% / 3%', threshold: '< 10% / < 5%', description: 'Early warning system accuracy monitoring', lastRun: '2025-08-20 11:00', frequency: 'weekly' },
+      { name: 'Lead-Time Attribution Logging', category: 'monitoring', status: 'passing', value: 'Logged', threshold: 'Per event', description: 'Attribution of lead-time gains to specific warnings', lastRun: '2025-08-19 14:15', frequency: 'event-driven' },
+      { name: 'Loss-Averted Estimation Protocol', category: 'validation', status: 'passing', value: 'Documented', threshold: 'Protocol active', description: 'Documented protocol for estimating losses avoided', lastRun: '2025-08-17 09:45', frequency: 'quarterly' }
+    ],
+    'atlas-MES-L01': [
+      { name: 'Queueing Model Calibration', category: 'validation', status: 'passing', value: 'Calibrated', threshold: 'To observed arrivals', description: 'Healthcare queueing model calibrated to actual arrival patterns', lastRun: '2025-08-19 13:30', frequency: 'monthly' },
+      { name: 'Equity-Adjusted Wait Targets', category: 'governance', status: 'passing', value: 'Set', threshold: 'Equity adjusted', description: 'Wait time targets adjusted for equity considerations', lastRun: '2025-08-15 11:00', frequency: 'quarterly' },
+      { name: 'Backlog Triage Rules Audit', category: 'governance', status: 'passing', value: 'Auditable', threshold: 'Rules documented', description: 'Healthcare backlog triage rules are auditable', lastRun: '2025-08-18 15:20', frequency: 'monthly' }
+    ],
+    'atlas-MIC-L10': [
+      { name: 'Hot-Spot Diff-in-Diff Evaluation', category: 'testing', status: 'passing', value: 'Scheduled', threshold: 'Evaluation planned', description: 'Difference-in-differences evaluation for compliance hot-spots', lastRun: '2025-08-10 14:00', frequency: 'quarterly' },
+      { name: 'False Positive Enforcement Audit', category: 'governance', status: 'passing', value: 'Audited', threshold: 'Regular audit', description: 'Audit of false positive enforcement actions', lastRun: '2025-08-17 10:30', frequency: 'bi-monthly' },
+      { name: 'Norm-Cue Experiments A/B Testing', category: 'testing', status: 'passing', value: 'Testing', threshold: 'A/B active', description: 'A/B testing of social norm compliance cues', lastRun: '2025-08-19 16:00', frequency: 'ongoing' }
+    ],
+
     'atlas-MAC-L05': [
       { 
         category: 'configuration', 

@@ -26,6 +26,108 @@ interface VersionInfo {
 // Sample data mapping - in production this would come from the loop metadata
 const getVersionsForLoop = (loopId: string): VersionInfo[] => {
   const versionData: Record<string, VersionInfo[]> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Supervisory band & weight tuner seeded.',
+        changes: ['Initial band management system', 'Weight tuning algorithms', 'Trust-latency constraint monitoring'],
+        author: 'Meta-Control Systems Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L02': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'PID/MPC/Rule family switching enabled.',
+        changes: ['Controller arbitration framework', 'Multi-algorithm switching', 'Retuning automation'],
+        author: 'Control Systems Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L03': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Escalation ladder routing live.',
+        changes: ['N→P→S escalation framework', 'Authority provisioning', 'Sprint ladder integration'],
+        author: 'Governance Systems Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L04': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Standards registry & API contracts enforced.',
+        changes: ['Data integrity standards', 'API contract enforcement', 'Schema versioning system'],
+        author: 'Data Architecture Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L05': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Guardrail monitor online.',
+        changes: ['Threshold monitoring', 'Violation detection', 'Automated cap enforcement'],
+        author: 'Safety Systems Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L06': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Proposal flow & legal gating activated.',
+        changes: ['Structural proposal pipeline', 'Legal process integration', 'Adoption tracking'],
+        author: 'Policy Development Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L07': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Transparency pack & participatory sprint toggles wired.',
+        changes: ['Trust measurement system', 'Participation monitoring', 'Transparency mechanisms'],
+        author: 'Public Engagement Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-META-L08': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Watchpoint arming & pre-position bundles configured.',
+        changes: ['Early warning system', 'Risk orchestration', 'Watchpoint management'],
+        author: 'Risk Management Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-MES-L01': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Staffing & purchasing model levers active.',
+        changes: ['Health capacity modeling', 'Staffing optimization', 'Resource allocation algorithms'],
+        author: 'Health Systems Team',
+        status: 'stable'
+      }
+    ],
+    'atlas-MIC-L10': [
+      {
+        version: 'v1.0',
+        date: '2025-08-20',
+        description: 'Transparency pack + fair enforcement cues integrated.',
+        changes: ['Compliance monitoring', 'Enforcement visibility system', 'Legitimacy tracking'],
+        author: 'Regulatory Systems Team',
+        status: 'stable'
+      }
+    ],
+
     'atlas-MAC-L05': [
       {
         version: 'v1.0',

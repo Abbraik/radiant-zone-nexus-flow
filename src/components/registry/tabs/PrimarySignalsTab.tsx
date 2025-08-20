@@ -11,17 +11,72 @@ interface PrimarySignalsTabProps {
 }
 
 interface Signal {
-  name: string;
+  name?: string;
+  signal?: string;
   description: string;
   type: 'threshold' | 'trend' | 'event' | 'composite';
-  priority: 'high' | 'medium' | 'low';
-  status?: 'active' | 'normal' | 'triggered';
+  priority?: 'high' | 'medium' | 'low';
+  severity?: 'critical' | 'high' | 'medium' | 'low';
+  frequency?: string;
+  status?: 'active' | 'normal' | 'triggered' | 'monitoring' | 'resolved' | 'escalated';
   lastTriggered?: string;
 }
 
 // Sample data mapping - in production this would come from the loop metadata
 const getSignalsForLoop = (loopId: string): Signal[] => {
   const signalData: Record<string, Signal[]> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': [
+      { signal: 'Tier-1 composite error upshift', severity: 'high', frequency: 'occasional', description: 'Composite performance error increasing beyond acceptable bounds', lastTriggered: '2025-08-15', status: 'monitoring' },
+      { signal: 'Cross-tier dispersion persistence', severity: 'medium', frequency: 'rare', description: 'Performance variance across organizational tiers remaining elevated', lastTriggered: '2025-07-28', status: 'resolved' },
+      { signal: 'Trust/latency constraints binding', severity: 'high', frequency: 'rare', description: 'System trust and response latency creating operational constraints', lastTriggered: '2025-08-12', status: 'active' }
+    ],
+    'atlas-META-L02': [
+      { signal: 'Relative RMSE deterioration vs peers', severity: 'medium', frequency: 'occasional', description: 'System performance metrics declining relative to comparable systems', lastTriggered: '2025-08-18', status: 'monitoring' },
+      { signal: 'Sustained oscillations beyond band', severity: 'high', frequency: 'rare', description: 'System showing persistent oscillatory behavior outside normal parameters', lastTriggered: '2025-08-05', status: 'resolved' },
+      { signal: 'Actuation overruns vs caps', severity: 'high', frequency: 'occasional', description: 'Control actions exceeding predefined operational limits', lastTriggered: '2025-08-19', status: 'active' }
+    ],
+    'atlas-META-L03': [
+      { signal: 'Persistent Tier-1 breaches (k periods)', severity: 'critical', frequency: 'rare', description: 'Top-tier performance breaches continuing beyond threshold periods', lastTriggered: '2025-08-14', status: 'escalated' },
+      { signal: 'Integral error above threshold', severity: 'high', frequency: 'occasional', description: 'Cumulative system error exceeding acceptable bounds', lastTriggered: '2025-08-17', status: 'active' },
+      { signal: 'Hub-node saturation across missions', severity: 'high', frequency: 'rare', description: 'Critical system nodes approaching capacity limits', lastTriggered: '2025-08-10', status: 'monitoring' }
+    ],
+    'atlas-META-L04': [
+      { signal: 'Missingness spikes', severity: 'medium', frequency: 'occasional', description: 'Data completeness dropping below acceptable levels', lastTriggered: '2025-08-16', status: 'monitoring' },
+      { signal: 'Schema drift / reconciliation errors', severity: 'high', frequency: 'rare', description: 'Data structure changes causing integration failures', lastTriggered: '2025-08-08', status: 'resolved' },
+      { signal: 'Telemetry out of SLA', severity: 'medium', frequency: 'frequent', description: 'System monitoring data delivery outside service level agreements', lastTriggered: '2025-08-20', status: 'active' }
+    ],
+    'atlas-META-L05': [
+      { signal: 'Actuation beyond caps', severity: 'high', frequency: 'rare', description: 'System actions exceeding predefined safety limits', lastTriggered: '2025-08-11', status: 'resolved' },
+      { signal: 'Repeated renewals without interim eval', severity: 'medium', frequency: 'occasional', description: 'Operational parameters being renewed without proper evaluation', lastTriggered: '2025-08-13', status: 'monitoring' },
+      { signal: 'Oscillation above band', severity: 'medium', frequency: 'occasional', description: 'System behavior showing oscillations beyond normal ranges', lastTriggered: '2025-08-19', status: 'active' }
+    ],
+    'atlas-META-L06': [
+      { signal: 'Chronic Tier-1 shortfall', severity: 'high', frequency: 'rare', description: 'Persistent underperformance in top-tier metrics', lastTriggered: '2025-08-09', status: 'monitoring' },
+      { signal: 'Identified sectoral bottlenecks', severity: 'medium', frequency: 'occasional', description: 'Specific sectors showing consistent performance constraints', lastTriggered: '2025-08-15', status: 'active' },
+      { signal: 'Authority/budget readiness', severity: 'low', frequency: 'frequent', description: 'Organizational readiness for authorized budget utilization', lastTriggered: '2025-08-20', status: 'monitoring' }
+    ],
+    'atlas-META-L07': [
+      { signal: 'Trust delta vs delivery widening', severity: 'high', frequency: 'occasional', description: 'Gap between public trust and service delivery performance increasing', lastTriggered: '2025-08-12', status: 'active' },
+      { signal: 'Low participation elasticity to outreach', severity: 'medium', frequency: 'occasional', description: 'Public engagement not responding effectively to outreach efforts', lastTriggered: '2025-08-07', status: 'monitoring' },
+      { signal: 'Fairness/perception dips in surveys', severity: 'medium', frequency: 'rare', description: 'Public perception of fairness declining in survey data', lastTriggered: '2025-07-30', status: 'resolved' }
+    ],
+    'atlas-META-L08': [
+      { signal: 'Environmental/supply/geopolitical sentinel spikes', severity: 'critical', frequency: 'rare', description: 'Early warning indicators showing elevated risk across multiple domains', lastTriggered: '2025-08-16', status: 'escalated' },
+      { signal: 'Cascading corridor risks', severity: 'high', frequency: 'occasional', description: 'Risk propagation across interconnected system pathways', lastTriggered: '2025-08-18', status: 'active' },
+      { signal: 'Forecast variance widening', severity: 'medium', frequency: 'frequent', description: 'Prediction accuracy declining across forecast models', lastTriggered: '2025-08-20', status: 'monitoring' }
+    ],
+    'atlas-MES-L01': [
+      { signal: 'Queue lengths rising', severity: 'medium', frequency: 'frequent', description: 'Healthcare service wait times increasing beyond targets', lastTriggered: '2025-08-20', status: 'active' },
+      { signal: 'Latency breaches in specific services', severity: 'high', frequency: 'occasional', description: 'Specific healthcare services showing response time violations', lastTriggered: '2025-08-17', status: 'active' },
+      { signal: 'Quality index dips', severity: 'medium', frequency: 'rare', description: 'Healthcare service quality metrics declining', lastTriggered: '2025-08-03', status: 'resolved' }
+    ],
+    'atlas-MIC-L10': [
+      { signal: 'Violation clusters by geography/sector', severity: 'medium', frequency: 'occasional', description: 'Regulatory violations showing geographic or sectoral concentration patterns', lastTriggered: '2025-08-14', status: 'monitoring' },
+      { signal: 'Sentiment dips linked to perceived unfairness', severity: 'high', frequency: 'rare', description: 'Public sentiment declining due to perceptions of unfair treatment', lastTriggered: '2025-08-06', status: 'resolved' },
+      { signal: 'Low visibility of fair enforcement', severity: 'medium', frequency: 'frequent', description: 'Public awareness of fair enforcement actions insufficient', lastTriggered: '2025-08-19', status: 'active' }
+    ],
+
     'atlas-MAC-L05': [
       { name: 'Capex approval rate', description: 'Sudden changes in capital expenditure approval rates', type: 'trend', priority: 'high', status: 'normal' },
       { name: 'Utilization > 86% (overheating risk)', description: 'Capacity utilization exceeding safe operating threshold', type: 'threshold', priority: 'high', status: 'triggered', lastTriggered: '2 days ago' },

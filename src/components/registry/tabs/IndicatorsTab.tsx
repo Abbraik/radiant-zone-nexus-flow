@@ -24,6 +24,58 @@ interface Indicator {
 // Sample data mapping - in production this would come from the loop metadata
 const getIndicatorsForLoop = (loopId: string): Indicator[] => {
   const indicatorData: Record<string, Indicator[]> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': [
+      { name: 'Band-Hit Frequency', band: { min: 0, max: 15 }, alpha: 0.4, unit: '% periods', currentValue: 8.2, trend: 'stable', status: 'normal' },
+      { name: 'Dispersion Index (T2/T3)', band: { min: 0.1, max: 0.35 }, alpha: 0.4, unit: 'index', currentValue: 0.22, trend: 'down', status: 'normal' },
+      { name: 'Composite Error (Tier-1)', band: { min: 0.5, max: 1.2 }, alpha: 0.4, unit: 'σ', currentValue: 0.85, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-META-L02': [
+      { name: 'Variance of Error', band: { min: 0.2, max: 0.8 }, alpha: 0.3, unit: 'σ²', currentValue: 0.45, trend: 'stable', status: 'normal' },
+      { name: 'Oscillation Score', band: { min: 0, max: 0.3 }, alpha: 0.3, unit: 'index', currentValue: 0.15, trend: 'down', status: 'normal' },
+      { name: 'Actuation Overrun', band: { min: 0, max: 10 }, alpha: 0.3, unit: '% periods', currentValue: 3.2, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-META-L03': [
+      { name: 'Breach Persistence', band: { min: 0, max: 30 }, alpha: 0.4, unit: '% periods', currentValue: 12.5, trend: 'stable', status: 'normal' },
+      { name: 'Integral Error', band: { min: 0.5, max: 2.0 }, alpha: 0.4, unit: 'Σσ', currentValue: 1.35, trend: 'up', status: 'normal' },
+      { name: 'Escalation Actions', band: { min: 0, max: 4 }, alpha: 0.3, unit: 'count/qtr', currentValue: 2, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-META-L04': [
+      { name: 'QA Conformance', band: { min: 85, max: 98 }, alpha: 0.4, unit: '% checks passed', currentValue: 94.2, trend: 'stable', status: 'normal' },
+      { name: 'Latency', band: { min: 1, max: 7 }, alpha: 0.4, unit: 'days', currentValue: 3.8, trend: 'stable', status: 'normal' },
+      { name: 'KPI Volatility', band: { min: 0.1, max: 0.4 }, alpha: 0.3, unit: 'σ', currentValue: 0.25, trend: 'down', status: 'normal' }
+    ],
+    'atlas-META-L05': [
+      { name: 'Guardrail Violation Rate', band: { min: 0, max: 5 }, alpha: 0.4, unit: '% periods', currentValue: 2.1, trend: 'stable', status: 'normal' },
+      { name: 'Renewal w/o Evaluation', band: { min: 0, max: 20 }, alpha: 0.4, unit: '%', currentValue: 8.5, trend: 'down', status: 'normal' },
+      { name: 'Oscillation Score', band: { min: 0, max: 0.3 }, alpha: 0.3, unit: 'index', currentValue: 0.18, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-META-L06': [
+      { name: 'Adoption Latency', band: { min: 30, max: 180 }, alpha: 0.4, unit: 'days', currentValue: 105, trend: 'down', status: 'normal' },
+      { name: 'Backlog Size', band: { min: 0, max: 50 }, alpha: 0.3, unit: 'proposals', currentValue: 23, trend: 'stable', status: 'normal' },
+      { name: 'Post-Adoption Trend Break', band: { min: 0.5, max: 2.0 }, alpha: 0.3, unit: 'σ', currentValue: 1.2, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-META-L07': [
+      { name: 'Trust Index', band: { min: 0.55, max: 0.80 }, alpha: 0.4, unit: 'index', currentValue: 0.68, trend: 'up', status: 'normal' },
+      { name: 'Participation Rate', band: { min: 35, max: 65 }, alpha: 0.4, unit: '%', currentValue: 52, trend: 'stable', status: 'normal' },
+      { name: 'Service–Trust Congruence Gap', band: { min: 0.0, max: 0.3 }, alpha: 0.3, unit: 'index', currentValue: 0.18, trend: 'down', status: 'normal' }
+    ],
+    'atlas-META-L08': [
+      { name: 'Early Warning Score', band: { min: 0.3, max: 0.7 }, alpha: 0.3, unit: 'index', currentValue: 0.45, trend: 'stable', status: 'normal' },
+      { name: 'Lead-Time Gained', band: { min: 3, max: 21 }, alpha: 0.3, unit: 'days', currentValue: 14, trend: 'up', status: 'normal' },
+      { name: 'Watchpoints Armed', band: { min: 1, max: 8 }, alpha: 0.4, unit: 'count', currentValue: 4, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MES-L01': [
+      { name: 'Median Wait', band: { min: 7, max: 30 }, alpha: 0.4, unit: 'days', currentValue: 18, trend: 'down', status: 'normal' },
+      { name: 'Coverage %', band: { min: 70, max: 95 }, alpha: 0.3, unit: '%', currentValue: 82, trend: 'up', status: 'normal' },
+      { name: 'Throughput per Clinician', band: { min: 60, max: 120 }, alpha: 0.4, unit: 'cases/mo', currentValue: 95, trend: 'stable', status: 'normal' }
+    ],
+    'atlas-MIC-L10': [
+      { name: 'Violation Rate', band: { min: 0, max: 8 }, alpha: 0.4, unit: 'per 1k', currentValue: 4.2, trend: 'down', status: 'normal' },
+      { name: 'Legitimacy Index', band: { min: 0.55, max: 0.8 }, alpha: 0.4, unit: 'index', currentValue: 0.72, trend: 'stable', status: 'normal' },
+      { name: 'Enforcement Visibility', band: { min: 0.5, max: 0.8 }, alpha: 0.4, unit: 'index', currentValue: 0.65, trend: 'up', status: 'normal' }
+    ],
+    
     'atlas-MAC-L05': [
       { name: 'Capex Growth (%YoY)', band: { min: 0, max: 12 }, alpha: 0.35, unit: '%', currentValue: 8.2, trend: 'up', status: 'normal' },
       { name: 'Capacity Utilization', band: { min: 72, max: 86 }, alpha: 0.30, unit: '%', currentValue: 89, trend: 'up', status: 'warning' },

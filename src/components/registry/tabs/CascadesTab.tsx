@@ -22,6 +22,220 @@ interface CascadeHook {
 // Sample data mapping - in production this would come from the loop metadata
 const getCascadesForLoop = (loopId: string): CascadeHook[] => {
   const cascadeData: Record<string, CascadeHook[]> = {
+    // Batch 4 - META System Controls & Health Access
+    'atlas-META-L01': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L04', 
+        loopName: 'Data Integrity & Standards',
+        connection: 'data quality → scoring reliability',
+        description: 'Data integrity affects scoring system accuracy',
+        strength: 'strong'
+      },
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L07', 
+        loopName: 'Legitimacy & Participation Coupler',
+        connection: 'trust levels → band tolerance',
+        description: 'Social trust affects acceptable performance bands',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-META-L02', 
+        loopName: 'Controller Arbitration & Retuning',
+        connection: 'band adjustments → controller parameters',
+        description: 'Score weighting changes trigger controller updates',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-META-L03', 
+        loopName: 'Escalation Governance',
+        connection: 'persistent breaches → escalation triggers',
+        description: 'Band violations feed escalation processes',
+        strength: 'strong'
+      }
+    ],
+    'atlas-META-L02': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L01', 
+        loopName: 'Score Weighting & Band Management',
+        connection: 'band parameters → controller tuning',
+        description: 'Performance bands guide controller optimization',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-META-L05', 
+        loopName: 'Threshold Guardrail Auditor',
+        connection: 'actuation limits → guardrail monitoring',
+        description: 'Controller actions monitored by guardrail system',
+        strength: 'strong'
+      }
+    ],
+    'atlas-META-L03': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L01', 
+        loopName: 'Score Weighting & Band Management',
+        connection: 'band breaches → escalation triggers',
+        description: 'Performance violations initiate escalation processes',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-META-L06', 
+        loopName: 'Structural Proposal Pipeline',
+        connection: 'chronic issues → structural changes',
+        description: 'Persistent problems trigger structural interventions',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MES-L11', 
+        loopName: 'Interministerial Coordination',
+        connection: 'escalation → coordination requirements',
+        description: 'Escalated issues require cross-ministry coordination',
+        strength: 'medium'
+      }
+    ],
+    'atlas-META-L04': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L09', 
+        loopName: 'Digital Services Reliability',
+        connection: 'service performance → data quality',
+        description: 'Digital service reliability affects data integrity',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-META-L01', 
+        loopName: 'Score Weighting & Band Management',
+        connection: 'data standards → scoring reliability',
+        description: 'Data quality standards ensure reliable performance measurement',
+        strength: 'strong'
+      }
+    ],
+    'atlas-META-L05': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L02', 
+        loopName: 'Controller Arbitration & Retuning',
+        connection: 'controller actions → guardrail monitoring',
+        description: 'Controller outputs monitored for compliance',
+        strength: 'strong'
+      }
+    ],
+    'atlas-META-L06': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L03', 
+        loopName: 'Escalation Governance',
+        connection: 'chronic failures → structural proposals',
+        description: 'Persistent system failures drive structural change proposals',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L04', 
+        loopName: 'Housing–Land Macro Elasticity',
+        connection: 'structural changes → land/housing policy',
+        description: 'Structural proposals affect housing and land systems',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MES-L05', 
+        loopName: 'Housing Delivery',
+        connection: 'regulatory changes → delivery processes',
+        description: 'Structural changes affect housing delivery mechanisms',
+        strength: 'medium'
+      }
+    ],
+    'atlas-META-L07': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L08', 
+        loopName: 'Social Cohesion & National Legitimacy',
+        connection: 'social cohesion → participation',
+        description: 'Social cohesion drives participatory engagement',
+        strength: 'strong'
+      },
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MES-L09', 
+        loopName: 'Digital Services Reliability',
+        connection: 'service quality → trust building',
+        description: 'Digital service performance affects public trust',
+        strength: 'medium'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L10', 
+        loopName: 'Compliance & Rule Adherence',
+        connection: 'legitimacy → compliance behavior',
+        description: 'Perceived legitimacy drives rule compliance',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L12', 
+        loopName: 'Local Participation',
+        connection: 'participation → local engagement',
+        description: 'National participation drives local engagement',
+        strength: 'medium'
+      }
+    ],
+    'atlas-META-L08': [
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L09', 
+        loopName: 'System Shock & Resilience Response',
+        connection: 'early warning → resilience activation',
+        description: 'Early warning triggers resilience mechanisms',
+        strength: 'strong'
+      }
+    ],
+    'atlas-MES-L01': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-MAC-L10', 
+        loopName: 'Human Capital Regime',
+        connection: 'health workforce → service capacity',
+        description: 'Health worker training affects service delivery capacity',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MIC-L02', 
+        loopName: 'Household Health Access & Adherence',
+        connection: 'service availability → access patterns',
+        description: 'Health service capacity affects household access',
+        strength: 'strong'
+      }
+    ],
+    'atlas-MIC-L10': [
+      { 
+        type: 'upstream', 
+        loopId: 'atlas-META-L07', 
+        loopName: 'Legitimacy & Participation Coupler',
+        connection: 'legitimacy → compliance willingness',
+        description: 'Perceived legitimacy drives compliance behavior',
+        strength: 'strong'
+      },
+      { 
+        type: 'downstream', 
+        loopId: 'atlas-MAC-L08', 
+        loopName: 'Social Cohesion & National Legitimacy',
+        connection: 'compliance → social order',
+        description: 'Rule adherence reinforces social cohesion',
+        strength: 'medium'
+      }
+    ],
+
     'atlas-MAC-L05': [
       { 
         type: 'upstream', 
