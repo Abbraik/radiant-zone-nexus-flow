@@ -1,0 +1,71 @@
+### Create session
+POST https://eyyovobwgaqeizfxmkox.supabase.co/rest/v1/rpc/struct_create_session
+Authorization: Bearer {{USER_JWT}}
+apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5eW92b2J3Z2FxZWl6Znhta294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTExODUsImV4cCI6MjA3MTA2NzE4NX0.ieo7c11vEhdWxWKTf4C61PgOdFO7_NT2v9eCAqZMECs
+Content-Type: application/json
+
+{ "p_org": "{{ORG_ID}}", "p_loop": "MAC-L04", "p_mission": "Increase approvals throughput under ecological ceiling" }
+
+###
+
+### Set mandate check
+POST https://eyyovobwgaqeizfxmkox.supabase.co/rest/v1/rpc/struct_set_mandate_check
+Authorization: Bearer {{USER_JWT}}
+apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5eW92b2J3Z2FxZWl6Znhta294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTExODUsImV4cCI6MjA3MTA2NzE4NX0.ieo7c11vEhdWxWKTf4C61PgOdFO7_NT2v9eCAqZMECs
+Content-Type: application/json
+
+{ "p_org":"{{ORG_ID}}", "p_session":"{{SESSION_ID}}", "p_label":"Statutory authority", "p_status":"ok", "p_note":"Planning Code §12" }
+
+###
+
+### Run conformance
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/struct-conformance-runner
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{ "org_id":"{{ORG_ID}}", "session_id":"{{SESSION_ID}}" }
+
+###
+
+### Compile market
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/struct-compile-market
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{ "org_id":"{{ORG_ID}}", "session_id":"{{SESSION_ID}}" }
+
+###
+
+### Publish dossier
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/struct-publish-dossier
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id":"{{ORG_ID}}",
+  "session_id":"{{SESSION_ID}}",
+  "version":"1.0.0",
+  "title":"Structural Pack A",
+  "rationale":"Hub node saturation (land supply; NRW), repeated guardrail renewals.",
+  "lever_summary":"Planning code fast-lane, digital cadaster, NRW cap & MRV, joint KPIs",
+  "adoption_plan":"Wave rollout across Zones A–D with 90-day checkpoints",
+  "mesh_summary":"Coordination rights to Planning Agency; joint KPIs with Water Utility",
+  "process_summary":"Four gates with SLAs; PMO hard gate reviews",
+  "handoffs":["responsive","reflexive"]
+}
+
+###
+
+### Rollout plan (enqueue tasks)
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/struct-rollout
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id":"{{ORG_ID}}",
+  "session_id":"{{SESSION_ID}}",
+  "plan":[
+    { "title":"Standards adoption wave 1", "to":"responsive", "payload":{"standard":"Approvals Schema v1"}, "due_at": null },
+    { "title":"Reflexive post-adoption review @90d", "to":"reflexive", "payload":{"checkpoint":"T+90"}, "due_at": null }
+  ]
+}

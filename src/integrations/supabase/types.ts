@@ -5784,6 +5784,71 @@ export type Database = {
         Args: { claim_uuid: string }
         Returns: Json
       }
+      struct_create_session: {
+        Args: { p_loop: string; p_mission: string; p_org: string }
+        Returns: string
+      }
+      struct_handoff_task: {
+        Args: {
+          p_due: string
+          p_org: string
+          p_payload: Json
+          p_session: string
+          p_title: string
+          p_to: string
+        }
+        Returns: string
+      }
+      struct_publish_dossier: {
+        Args: {
+          p_adoption_plan: string
+          p_handoffs: string[]
+          p_lever_summary: string
+          p_mesh_summary: string
+          p_org: string
+          p_process_summary: string
+          p_rationale: string
+          p_session: string
+          p_title: string
+          p_version: string
+        }
+        Returns: string
+      }
+      struct_save_artifact: {
+        Args: { p_blob: Json; p_kind: string; p_org: string; p_session: string }
+        Returns: string
+      }
+      struct_set_conformance: {
+        Args: {
+          p_check: string
+          p_org: string
+          p_session: string
+          p_status: string
+        }
+        Returns: undefined
+      }
+      struct_set_mandate_check: {
+        Args: {
+          p_label: string
+          p_note: string
+          p_org: string
+          p_session: string
+          p_status: string
+        }
+        Returns: undefined
+      }
+      struct_upsert_deleg_edge: {
+        Args: {
+          p_from: string
+          p_id: string
+          p_note: string
+          p_org: string
+          p_permission: string
+          p_session: string
+          p_to: string
+        }
+        Returns: string
+      }
       suggest_capacity: {
         Args: { context_param?: Json; loop_id_param: string }
         Returns: Json
