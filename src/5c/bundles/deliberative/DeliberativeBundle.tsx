@@ -8,7 +8,7 @@ import type { DeliberativeUiProps, Criterion, ScoreCell, PortfolioPoint, Mandate
 import { subtle, fmtPct01, fmtNum, toneFromStatus } from "./ui.utils";
 import { Info, Scale, CheckCircle2, Shield, Users, ScrollText, ArrowRight } from "lucide-react";
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer
+  BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer, CartesianGrid
 } from "recharts";
 
 export default function DeliberativeBundle(props: DeliberativeUiProps) {
@@ -181,11 +181,12 @@ export default function DeliberativeBundle(props: DeliberativeUiProps) {
                     .filter(s=>s.optionId===o.id)
                     .map(s=>({ label: s.scenarioName, value: s.outcomeScore }));
                   return (
-                    <div key={o.id} className="rounded-xl border p-3 bg-background">
-                      <div className="text-sm font-medium mb-2">{o.name}</div>
+                    <div key={o.id} className="rounded-xl border p-3 bg-card">
+                      <div className="text-sm font-medium mb-2 text-card-foreground">{o.name}</div>
                       <div className="h-40">
                         <ResponsiveContainer>
                           <BarChart data={data}>
+                            <CartesianGrid stroke="hsl(var(--border))" />
                             <XAxis dataKey="label" tick={{ fill: "hsl(var(--muted-foreground))" }}/>
                             <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }}/>
                             <RTooltip />
