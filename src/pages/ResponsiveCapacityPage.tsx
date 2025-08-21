@@ -39,6 +39,8 @@ import { ProposedTasks } from './responsive/ProposedTasks';
 import { HandoffsCard } from './responsive/HandoffsCard';
 import { ActivationVector } from './responsive/ActivationVector';
 import { SRTCountdown } from './responsive/SRTCountdown';
+import { useLanguageMode } from './ResponsiveCapacityWrapper';
+import { mainHeaderCopy, kpiFooterCopy } from '@/bundles/responsive/copy.map';
 
 interface ResponsiveCapacityPageProps {
   decision?: any;
@@ -61,6 +63,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
 }) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { mode: langMode } = useLanguageMode();
   
   // Extract route params
   const loop = searchParams.get('loop') || 'UNKNOWN';
@@ -264,6 +267,10 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
     });
   }, [activeIncidentId, onAppendIncidentEvent, toast]);
 
+  // Get copy for current language mode
+  const headerCopy = mainHeaderCopy(langMode);
+  const footerCopy = kpiFooterCopy(langMode);
+
   return (
     <motion.div 
       className="min-h-screen bg-background p-8"
@@ -283,9 +290,9 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
           <div className="space-y-2">
             {/* Breadcrumb */}
             <div className="flex items-center text-sm text-muted-foreground">
-              <span>Workspace-5C</span>
+              <span>{headerCopy.workspace}</span>
               <ChevronRight className="h-4 w-4 mx-2" />
-              <span className="text-primary">Responsive</span>
+              <span className="text-primary">{headerCopy.capacity}</span>
             </div>
             
             {/* Title */}
@@ -297,15 +304,15 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <TrendingUp className="h-4 w-4" />
-                <span>Severity {severityPct}%</span>
+                <span>{headerCopy.severity} {severityPct}%</span>
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>Time-box {timeboxDays}d</span>
+                <span>{headerCopy.timebox} {timeboxDays}d</span>
               </div>
               <div className="flex items-center gap-1">
                 <Activity className="h-4 w-4" />
-                <span>Cadence {decision.srt.cadence}</span>
+                <span>{headerCopy.cadence} {decision.srt.cadence}</span>
               </div>
               <div className="flex items-center gap-1">
                 <span>Last update 2m ago</span>
@@ -313,7 +320,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
               {reading.guardrailViolation && (
                 <Badge variant="destructive" className="text-xs">
                   <AlertTriangle className="h-3 w-3 mr-1" />
-                  Guardrail Violation
+                  {headerCopy.guardrailViolation}
                 </Badge>
               )}
             </div>
@@ -325,7 +332,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
             {requiresDeliberative && (
               <Badge variant="outline" className="text-xs">
                 <Shield className="h-3 w-3 mr-1" />
-                Consent Gate
+                {headerCopy.consentGate}
               </Badge>
             )}
             <SRTCountdown 
@@ -471,19 +478,19 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
           {/* KPIs */}
           <div className="flex items-center gap-8 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">MTTD:</span>
+              <span className="text-muted-foreground">{footerCopy.mttd}:</span>
               <span className="font-medium">4.2m</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">MTTA:</span>
+              <span className="text-muted-foreground">{footerCopy.mtta}:</span>
               <span className="font-medium">1.8m</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">MTTR:</span>
+              <span className="text-muted-foreground">{footerCopy.mttr}:</span>
               <span className="font-medium">12.4m</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Containment effectiveness:</span>
+              <span className="text-muted-foreground">{footerCopy.containment}:</span>
               <span className="font-medium text-success">87%</span>
             </div>
           </div>
