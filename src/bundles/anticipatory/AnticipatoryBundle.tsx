@@ -43,6 +43,34 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
         </div>
       </header>
 
+      {/* Screen Navigation */}
+      <nav className="flex gap-2 flex-wrap">
+        {[
+          { id: "risk-watchboard", label: "Risk Watchboard" },
+          { id: "scenario-sim", label: "Scenario Simulator" },
+          { id: "pre-positioner", label: "Pre-Positioner" },
+          { id: "trigger-library", label: "Trigger Library" }
+        ].map(screenOption => {
+          const isActive = screen === screenOption.id;
+          const url = new URL(window.location.href);
+          url.searchParams.set('screen', screenOption.id);
+          
+          return (
+            <button
+              key={screenOption.id}
+              className={`px-3 py-1 rounded text-sm border transition-colors ${
+                isActive 
+                  ? "bg-accent text-accent-foreground border-accent" 
+                  : "bg-background hover:bg-muted border-border"
+              }`}
+              onClick={() => window.location.href = url.toString()}
+            >
+              {screenOption.label}
+            </button>
+          );
+        })}
+      </nav>
+
       {/* Error banner (UI-only) */}
       {errorText ? (
         <div role="status" className="rounded-2xl border bg-background p-3 text-destructive text-sm">
