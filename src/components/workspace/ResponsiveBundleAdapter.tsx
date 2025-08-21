@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ResponsiveCapacityPage } from '@/pages/ResponsiveCapacityPage';
+import { ResponsiveCapacityWrapper } from '@/pages/ResponsiveCapacityWrapper';
 import type { CapacityBundleProps } from '@/types/capacity';
 import { useResponsiveIntegration } from '@/hooks/useResponsiveIntegration';
 
@@ -92,7 +92,7 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
   }, [onValidationChange]);
 
   return (
-    <ResponsiveCapacityPage
+    <ResponsiveCapacityWrapper
       decision={decision}
       reading={reading}
       playbook={{
