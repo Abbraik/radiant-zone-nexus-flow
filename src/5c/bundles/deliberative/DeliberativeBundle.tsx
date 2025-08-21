@@ -25,6 +25,16 @@ export default function DeliberativeBundle(props: DeliberativeUiProps) {
     onToggleConstraint, onToggleGuardrail, onSetParticipationStatus, onExportDossier, onEvent
   } = props;
 
+  // State for active tab
+  const [activeTab, setActiveTab] = React.useState(screen);
+
+  // Handle tab changes
+  const handleTabChange = (value: string) => {
+    if (value === "intake" || value === "tradeoff" || value === "portfolio" || value === "mandate" || value === "dossier") {
+      setActiveTab(value);
+    }
+  };
+
   const emit = (name: string, payload?: any) => onEvent?.(name, payload);
 
   // derived: matrix
@@ -49,7 +59,7 @@ export default function DeliberativeBundle(props: DeliberativeUiProps) {
       </div>
 
       {/* Tabs */}
-      <Tabs value={screen} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="intake">Intake & Evidence</TabsTrigger>
           <TabsTrigger value="tradeoff">Trade-Off Board</TabsTrigger>
