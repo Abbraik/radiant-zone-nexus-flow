@@ -14,6 +14,474 @@ export type Database = {
   }
   public: {
     Tables: {
+      antic_activation_events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          indicator: string | null
+          kind: string
+          loop_code: string | null
+          org_id: string
+          payload: Json | null
+          source: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          indicator?: string | null
+          kind: string
+          loop_code?: string | null
+          org_id: string
+          payload?: Json | null
+          source: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          indicator?: string | null
+          kind?: string
+          loop_code?: string | null
+          org_id?: string
+          payload?: Json | null
+          source?: string
+        }
+        Relationships: []
+      }
+      antic_backtests: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          horizon: string
+          id: string
+          metrics: Json
+          org_id: string
+          points: Json
+          rule_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          horizon: string
+          id?: string
+          metrics: Json
+          org_id: string
+          points: Json
+          rule_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          horizon?: string
+          id?: string
+          metrics?: Json
+          org_id?: string
+          points?: Json
+          rule_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "antic_backtests_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "antic_trigger_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      antic_buffers: {
+        Row: {
+          created_at: string | null
+          current: number
+          history: Json | null
+          id: string
+          label: string
+          org_id: string
+          target: number
+        }
+        Insert: {
+          created_at?: string | null
+          current: number
+          history?: Json | null
+          id?: string
+          label: string
+          org_id: string
+          target: number
+        }
+        Update: {
+          created_at?: string | null
+          current?: number
+          history?: Json | null
+          id?: string
+          label?: string
+          org_id?: string
+          target?: number
+        }
+        Relationships: []
+      }
+      antic_ews_components: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string
+          loop_code: string
+          org_id: string
+          series: Json
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label: string
+          loop_code: string
+          org_id: string
+          series: Json
+          weight: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string
+          loop_code?: string
+          org_id?: string
+          series?: Json
+          weight?: number
+        }
+        Relationships: []
+      }
+      antic_geo_sentinels: {
+        Row: {
+          cell_id: string
+          created_at: string | null
+          id: string
+          label: string | null
+          org_id: string
+          value: number
+        }
+        Insert: {
+          cell_id: string
+          created_at?: string | null
+          id?: string
+          label?: string | null
+          org_id: string
+          value: number
+        }
+        Update: {
+          cell_id?: string
+          created_at?: string | null
+          id?: string
+          label?: string | null
+          org_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      antic_pre_position_orders: {
+        Row: {
+          cost_ceiling: number | null
+          created_at: string | null
+          created_by: string
+          id: string
+          items: Json
+          kind: string
+          org_id: string
+          readiness_score: number | null
+          shelf_life_days: number | null
+          sla: string | null
+          status: string
+          suppliers: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          cost_ceiling?: number | null
+          created_at?: string | null
+          created_by: string
+          id?: string
+          items: Json
+          kind: string
+          org_id: string
+          readiness_score?: number | null
+          shelf_life_days?: number | null
+          sla?: string | null
+          status?: string
+          suppliers?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          cost_ceiling?: number | null
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          items?: Json
+          kind?: string
+          org_id?: string
+          readiness_score?: number | null
+          shelf_life_days?: number | null
+          sla?: string | null
+          status?: string
+          suppliers?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      antic_scenario_results: {
+        Row: {
+          affected_loops: string[]
+          created_at: string | null
+          created_by: string | null
+          id: string
+          mitigation_delta: number
+          notes: string | null
+          org_id: string
+          scenario_id: string
+          with_mitigation_breach_prob: number
+          without_mitigation_breach_prob: number
+        }
+        Insert: {
+          affected_loops: string[]
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          mitigation_delta: number
+          notes?: string | null
+          org_id: string
+          scenario_id: string
+          with_mitigation_breach_prob: number
+          without_mitigation_breach_prob: number
+        }
+        Update: {
+          affected_loops?: string[]
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          mitigation_delta?: number
+          notes?: string | null
+          org_id?: string
+          scenario_id?: string
+          with_mitigation_breach_prob?: number
+          without_mitigation_breach_prob?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "antic_scenario_results_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "antic_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      antic_scenarios: {
+        Row: {
+          assumptions: Json
+          created_at: string | null
+          created_by: string
+          id: string
+          name: string
+          org_id: string
+          target_loops: string[]
+        }
+        Insert: {
+          assumptions: Json
+          created_at?: string | null
+          created_by: string
+          id: string
+          name: string
+          org_id: string
+          target_loops: string[]
+        }
+        Update: {
+          assumptions?: Json
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          name?: string
+          org_id?: string
+          target_loops?: string[]
+        }
+        Relationships: []
+      }
+      antic_trigger_firings: {
+        Row: {
+          activation_event_id: string | null
+          created_at: string | null
+          fired_at: string
+          id: string
+          matched_payload: Json
+          org_id: string
+          rule_id: string
+        }
+        Insert: {
+          activation_event_id?: string | null
+          created_at?: string | null
+          fired_at?: string
+          id?: string
+          matched_payload: Json
+          org_id: string
+          rule_id: string
+        }
+        Update: {
+          activation_event_id?: string | null
+          created_at?: string | null
+          fired_at?: string
+          id?: string
+          matched_payload?: Json
+          org_id?: string
+          rule_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "antic_trigger_firings_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "antic_trigger_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      antic_trigger_rules: {
+        Row: {
+          action_ref: string
+          authority: string
+          consent_note: string | null
+          created_at: string | null
+          created_by: string
+          expires_at: string
+          expr_ast: Json
+          expr_raw: string
+          id: string
+          name: string
+          org_id: string
+          updated_at: string | null
+          valid_from: string
+          window_hours: number
+        }
+        Insert: {
+          action_ref: string
+          authority: string
+          consent_note?: string | null
+          created_at?: string | null
+          created_by: string
+          expires_at: string
+          expr_ast: Json
+          expr_raw: string
+          id?: string
+          name: string
+          org_id: string
+          updated_at?: string | null
+          valid_from: string
+          window_hours: number
+        }
+        Update: {
+          action_ref?: string
+          authority?: string
+          consent_note?: string | null
+          created_at?: string | null
+          created_by?: string
+          expires_at?: string
+          expr_ast?: Json
+          expr_raw?: string
+          id?: string
+          name?: string
+          org_id?: string
+          updated_at?: string | null
+          valid_from?: string
+          window_hours?: number
+        }
+        Relationships: []
+      }
+      antic_watchpoints: {
+        Row: {
+          buffer_adequacy: number | null
+          confidence: number | null
+          created_at: string
+          created_by: string
+          ews_prob: number
+          id: string
+          lead_time_days: number | null
+          loop_codes: string[]
+          notes: string | null
+          org_id: string
+          review_at: string
+          risk_channel: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          buffer_adequacy?: number | null
+          confidence?: number | null
+          created_at?: string
+          created_by: string
+          ews_prob: number
+          id?: string
+          lead_time_days?: number | null
+          loop_codes: string[]
+          notes?: string | null
+          org_id: string
+          review_at: string
+          risk_channel: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          buffer_adequacy?: number | null
+          confidence?: number | null
+          created_at?: string
+          created_by?: string
+          ews_prob?: number
+          id?: string
+          lead_time_days?: number | null
+          loop_codes?: string[]
+          notes?: string | null
+          org_id?: string
+          review_at?: string
+          risk_channel?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_tasks_queue: {
+        Row: {
+          capacity: string
+          created_at: string | null
+          created_by: string | null
+          due_at: string | null
+          id: string
+          org_id: string
+          payload: Json
+          status: string
+          title: string
+        }
+        Insert: {
+          capacity: string
+          created_at?: string | null
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          org_id: string
+          payload: Json
+          status?: string
+          title: string
+        }
+        Update: {
+          capacity?: string
+          created_at?: string | null
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          org_id?: string
+          payload?: Json
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
       applied_arcs: {
         Row: {
           applied_at: string | null
@@ -1017,6 +1485,39 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      indicator_readings: {
+        Row: {
+          id: number
+          indicator: string
+          loop_code: string
+          lower: number | null
+          org_id: string
+          t: string
+          upper: number | null
+          value: number
+        }
+        Insert: {
+          id?: number
+          indicator: string
+          loop_code: string
+          lower?: number | null
+          org_id: string
+          t: string
+          upper?: number | null
+          value: number
+        }
+        Update: {
+          id?: number
+          indicator?: string
+          loop_code?: string
+          lower?: number | null
+          org_id?: string
+          t?: string
+          upper?: number | null
+          value?: number
         }
         Relationships: []
       }
@@ -3470,6 +3971,7 @@ export type Database = {
       loop_type_5c: "reactive" | "structural" | "perceptual"
       mandate_status: "allowed" | "restricted" | "forbidden"
       mandate_status_5c: "allowed" | "warning_required" | "blocked"
+      role_enum: "operator" | "controller" | "owner"
       scale_5c: "micro" | "meso" | "macro"
       scale_type: "micro" | "meso" | "macro"
       task_status: "open" | "claimed" | "active" | "done" | "blocked"
@@ -3623,6 +4125,7 @@ export const Constants = {
       loop_type_5c: ["reactive", "structural", "perceptual"],
       mandate_status: ["allowed", "restricted", "forbidden"],
       mandate_status_5c: ["allowed", "warning_required", "blocked"],
+      role_enum: ["operator", "controller", "owner"],
       scale_5c: ["micro", "meso", "macro"],
       scale_type: ["micro", "meso", "macro"],
       task_status: ["open", "claimed", "active", "done", "blocked"],
