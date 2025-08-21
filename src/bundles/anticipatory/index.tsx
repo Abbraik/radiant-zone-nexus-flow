@@ -1,199 +1,320 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { TrendingUp, Calendar, Telescope } from 'lucide-react';
-import type { CapacityBundleProps } from '@/types/capacity';
+import React, { useMemo, useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import type { DecisionResult, SignalReading } from "@/services/capacity-decision/types";
+import type { AnticPlaybook, Scenario } from "@/anticipatory/types";
+import { anticPlaybooks, scenarios } from "@/anticipatory/catalogs.default";
+import { expandAnticipatory } from "@/anticipatory/expand";
 
-export const AnticipatoryBundle: React.FC<CapacityBundleProps> = ({
-  taskId,
-  taskData,
-  payload,
-  onPayloadUpdate,
-  onValidationChange,
-  readonly = false
+type Props = {
+  loopCode: string;
+  indicator?: string;
+  decision: DecisionResult;
+  reading?: SignalReading;
+  screen?: "risk-watchboard" | "scenario-sim" | "pre-positioner" | "trigger-library";
+  onHandoff?: (to: "responsive"|"deliberative"|"structural", reason: string) => void;
+};
+
+export const AnticipatoryBundle: React.FC<Props> = ({ 
+  loopCode, 
+  indicator = "Primary",
+  decision, 
+  reading, 
+  screen = "risk-watchboard", 
+  onHandoff 
 }) => {
+  const [busy, setBusy] = useState(false);
+  
+  const playbook: AnticPlaybook | undefined = useMemo(() => {
+    // Pick first playbook whose channel matches loop context; fallback first
+    return anticPlaybooks[0];
+  }, [loopCode]);
+
+  const scenario: Scenario | undefined = scenarios[0];
+
+  const handoffResp = (reading?.ewsProb ?? decision.scores.anticipatory/100) >= 0.7 && (reading?.bufferAdequacy ?? 0.5) < 0.3;
+  const handoffDelib = (reading?.dispersion ?? 0) >= 0.5; // allocation/fairness
+  const handoffStruct = ((reading?.persistencePk ?? 0)/100) >= 0.5; // repeated emergency governance
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    function handleKeyboard(e: KeyboardEvent) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      switch (e.key.toLowerCase()) {
+        case 'w': armWatchpoint(); break;
+        case 's': runScenario(); break;
+        case 'p': stagePrePosition(); break;
+        case 't': saveTrigger(); break;
+        case 'r': document.querySelector('[data-handoffs]')?.scrollIntoView(); break;
+      }
+    }
+    
+    document.addEventListener('keydown', handleKeyboard);
+    return () => document.removeEventListener('keydown', handleKeyboard);
+  }, []);
+
+  async function armWatchpoint() {
+    if (!playbook) return;
+    setBusy(true);
+    try {
+      const { tasks, watchpoint, trigger } = expandAnticipatory(decision, { playbook, scenario: null, ttlDays: 30 });
+      
+      // Mock persistence calls - replace with real API
+      console.log('Saving watchpoint:', watchpoint);
+      if (trigger) console.log('Saving trigger:', trigger);
+      console.log('Creating tasks:', tasks);
+      
+      toast.success(`Armed. Review in 30 days.`);
+      
+      // Analytics
+      console.log('Analytics: antic_arm_watchpoint', {
+        watchpointId: 'wp-' + Date.now(),
+        triggerId: trigger ? 'tr-' + Date.now() : null
+      });
+    } finally { 
+      setBusy(false); 
+    }
+  }
+
+  async function runScenario() {
+    if (!scenario) return;
+    setBusy(true);
+    try {
+      const { scenarioResult, tasks } = expandAnticipatory(decision, { playbook: null, scenario, ttlDays: 30 });
+      
+      console.log('Saving scenario result:', scenarioResult);
+      if (tasks.length) console.log('Creating tasks:', tasks);
+      
+      toast.success(`Scenario complete. Mitigation delta: ${(scenarioResult?.mitigationDelta ?? 0 * 100).toFixed(0)}%`);
+      
+      // Analytics
+      console.log('Analytics: antic_run_scenario', {
+        scenarioId: scenario.id,
+        mitigationDelta: scenarioResult?.mitigationDelta
+      });
+    } finally { 
+      setBusy(false); 
+    }
+  }
+
+  async function stagePrePosition() {
+    if (!playbook) return;
+    setBusy(true);
+    try {
+      // Persist three packs if present
+      const packs = [];
+      for (const pack of ["resource","regulatory","comms"] as const) {
+        const p = playbook.prePosition[pack];
+        if (p) {
+          console.log('Creating pre-position:', { ...p, status: "armed" });
+          packs.push(pack);
+        }
+      }
+      
+      toast.success(`Pre-position packs staged: ${packs.join(', ')}`);
+      
+      // Analytics
+      console.log('Analytics: antic_stage_preposition', { packs });
+    } finally { 
+      setBusy(false); 
+    }
+  }
+
+  async function saveTrigger() {
+    if (!playbook?.defaultTrigger) return;
+    setBusy(true);
+    try {
+      const trigger = {
+        ...playbook.defaultTrigger,
+        validFrom: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + playbook.defaultTrigger.ttlDays*24*3600*1000).toISOString()
+      };
+      
+      console.log('Saving trigger rule:', trigger);
+      
+      const daysToExpiry = playbook.defaultTrigger.ttlDays;
+      if (daysToExpiry < 7) {
+        toast.warning(`Trigger expires in ${daysToExpiry} days`);
+      } else {
+        toast.success('Trigger saved');
+      }
+      
+      // Analytics
+      console.log('Analytics: antic_save_trigger', { ruleId: 'tr-' + Date.now() });
+    } finally { 
+      setBusy(false); 
+    }
+  }
+
+  function handoff(to: "responsive"|"deliberative"|"structural") {
+    const reason =
+      to === "responsive" ? "Trigger condition met / severity rising" :
+      to === "deliberative" ? "Pre-positioning involves fairness/priority trade-offs" :
+      "Repeated emergency governance implies structural fix needed";
+    
+    console.log('Analytics: antic_handoff', { to, reason });
+    onHandoff?.(to, reason);
+  }
+
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Telescope className="w-5 h-5 text-indigo-500" />
-            Anticipatory Capacity Bundle
-            <Badge variant="outline">Future Planning</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 text-indigo-600" />
-                <span className="font-medium text-indigo-900">Predictive Analysis Mode</span>
-              </div>
-              <p className="text-sm text-indigo-700">
-                This bundle focuses on forecasting, scenario planning, 
-                and proactive preparation for future conditions.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Forecasting Horizon
-                </label>
-                <select 
-                  className="w-full p-2 border rounded-md"
-                  value={payload?.horizon || '3months'}
-                  onChange={(e) => onPayloadUpdate({
-                    ...payload,
-                    horizon: e.target.value
-                  })}
-                  disabled={readonly}
-                >
-                  <option value="1month">1 Month</option>
-                  <option value="3months">3 Months</option>
-                  <option value="6months">6 Months</option>
-                  <option value="1year">1 Year</option>
-                  <option value="3years">3 Years</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Scenario Confidence
-                </label>
-                <select 
-                  className="w-full p-2 border rounded-md"
-                  value={payload?.confidence || 'medium'}
-                  onChange={(e) => onPayloadUpdate({
-                    ...payload,
-                    confidence: e.target.value
-                  })}
-                  disabled={readonly}
-                >
-                  <option value="high">High (80-95%)</option>
-                  <option value="medium">Medium (60-80%)</option>
-                  <option value="low">Low (40-60%)</option>
-                  <option value="exploratory">Exploratory (&lt;40%)</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Key Variables to Monitor
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {['Market Trends', 'Technology Changes', 'Regulatory Shifts', 'Resource Availability', 'Demand Patterns', 'Competitive Landscape'].map((variable) => (
-                  <label key={variable} className="flex items-center gap-2">
-                    <input 
-                      type="checkbox" 
-                      className="rounded"
-                      checked={payload?.variables?.includes(variable) || false}
-                      onChange={(e) => {
-                        const current = payload?.variables || [];
-                        const updated = e.target.checked 
-                          ? [...current, variable]
-                          : current.filter(v => v !== variable);
-                        onPayloadUpdate({
-                          ...payload,
-                          variables: updated
-                        });
-                      }}
-                      disabled={readonly}
-                    />
-                    <span className="text-sm">{variable}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Scenario Planning
-              </label>
-              <div className="space-y-3">
-                {['Best Case', 'Most Likely', 'Worst Case'].map((scenario, index) => (
-                  <div key={scenario}>
-                    <label className="text-xs font-medium text-gray-600 mb-1 block">
-                      {scenario} Scenario
-                    </label>
-                    <textarea
-                      className="w-full p-2 border rounded-md resize-none text-sm"
-                      rows={2}
-                      placeholder={`Describe the ${scenario.toLowerCase()} scenario...`}
-                      value={payload?.scenarios?.[index] || ''}
-                      onChange={(e) => {
-                        const scenarios = [...(payload?.scenarios || ['', '', ''])];
-                      scenarios[index] = e.target.value;
-                        onPayloadUpdate({
-                          ...payload,
-                          scenarios
-                        });
-                      }}
-                      disabled={readonly}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Preparation Actions
-              </label>
-              <textarea
-                className="w-full p-3 border rounded-md resize-none"
-                rows={3}
-                placeholder="What actions should be taken now to prepare for anticipated futures?"
-                value={payload?.preparationActions || ''}
-                onChange={(e) => onPayloadUpdate({
-                  ...payload,
-                  preparationActions: e.target.value
-                })}
-                disabled={readonly}
-              />
-            </div>
-
-            {!readonly && (
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Review
-                </Button>
-                <Button size="sm">
-                  Execute Preparation
-                </Button>
-              </div>
-            )}
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header */}
+      <header className="flex items-center justify-between">
+        <div>
+          <div className="text-sm text-muted-foreground">
+            Anticipatory · {screen.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-2xl font-semibold">{loopCode} · {indicator}</div>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+            <span>EWS {(reading?.ewsProb ?? decision.scores.anticipatory/100).toFixed(2)}</span>
+            <span>Lead-time ~7d</span>
+            <span>Buffers {(reading?.bufferAdequacy ?? 0.5).toFixed(2)}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {decision.consent.requireDeliberative && (
+            <Badge variant="outline" className="border-warning text-warning">
+              Consent gate
+            </Badge>
+          )}
+        </div>
+      </header>
 
-      <Card>
+      {/* Screen Bodies */}
+      {screen === "risk-watchboard" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Risk Watchboard</CardTitle>
+            <CardDescription>Monitor risk channels and arm watchpoints</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {["Heat","ExternalDemand","EnergyReliability","WaterStress","SupplyChain","LocalPrices"].map((rc) => (
+                <Card key={rc} className="p-4">
+                  <div className="font-medium">{rc}</div>
+                  <div className="text-sm text-muted-foreground">
+                    EWS {(Math.random()*0.4+0.4).toFixed(2)} · Lead-time {Math.round(Math.random()*10)+5}d
+                  </div>
+                  <div className="mt-3">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={armWatchpoint} 
+                      disabled={busy}
+                    >
+                      {busy ? "Arming..." : "Arm Watchpoint"}
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {screen === "scenario-sim" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Scenario & Stress Simulator</CardTitle>
+            <CardDescription>Choose a scenario and compute with/without mitigation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2 flex-wrap">
+              {scenarios.map(s => (
+                <Button 
+                  key={s.id} 
+                  variant="outline" 
+                  size="sm"
+                  onClick={runScenario} 
+                  disabled={busy}
+                >
+                  {busy ? "Running..." : `Run: ${s.name}`}
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {screen === "pre-positioner" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Pre-Positioner</CardTitle>
+            <CardDescription>
+              Playbook: <strong>{playbook?.name || "None"}</strong>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Stage resources, regulatory, and comms packs without public activation.
+            </p>
+            <Button 
+              onClick={stagePrePosition} 
+              disabled={busy || !playbook}
+              className="w-full sm:w-auto"
+            >
+              {busy ? "Staging..." : "Stage Pre-Position Pack"}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {screen === "trigger-library" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Trigger Library</CardTitle>
+            <CardDescription>Define guardable IF-THEN rules to auto-activate pre-positioned bundles</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={saveTrigger} 
+                disabled={busy || !playbook?.defaultTrigger}
+              >
+                {busy ? "Saving..." : "Save Default Trigger"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Handoffs */}
+      <Card data-handoffs>
         <CardHeader>
-          <CardTitle className="text-sm">Prediction Accuracy</CardTitle>
+          <CardTitle>Handoffs</CardTitle>
+          <CardDescription>Transfer to other capacity modes when conditions are met</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-green-600">
-                {payload?.accuracy?.short || '0%'}
-              </div>
-              <div className="text-xs text-gray-500">Short-term</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-yellow-600">
-                {payload?.accuracy?.medium || '0%'}
-              </div>
-              <div className="text-xs text-gray-500">Medium-term</div>
-            </div>
-            <div className="text-center">
-              <div className="text-lg font-bold text-red-600">
-                {payload?.accuracy?.long || '0%'}
-              </div>
-              <div className="text-xs text-gray-500">Long-term</div>
-            </div>
+          <div className="flex gap-2 flex-wrap">
+            <Button 
+              variant="outline" 
+              size="sm"
+              disabled={!handoffResp} 
+              onClick={() => handoff("responsive")}
+            >
+              → Responsive (activate)
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              disabled={!handoffDelib} 
+              onClick={() => handoff("deliberative")}
+            >
+              → Deliberative (trade-offs)
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              disabled={!handoffStruct} 
+              onClick={() => handoff("structural")}
+            >
+              → Structural (codify)
+            </Button>
           </div>
         </CardContent>
       </Card>

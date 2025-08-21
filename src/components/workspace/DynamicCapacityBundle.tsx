@@ -68,8 +68,48 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
     }
     case 'deliberative':
       return <DeliberativeBundle {...bundleProps} />;
-    case 'anticipatory':
-      return <AnticipatoryBundle {...bundleProps} />;
+    case 'anticipatory': {
+      // Use new anticipatory bundle with screens
+      const loopCode = bundleProps.taskData?.loop_id || 'UNKNOWN';
+      const indicator = bundleProps.payload?.indicator || 'Primary';
+      const screen = new URLSearchParams(window.location.search).get('screen') as 
+        "risk-watchboard" | "scenario-sim" | "pre-positioner" | "trigger-library" || "risk-watchboard";
+      const decision = bundleProps.payload?.decision || {
+        decisionId: 'mock-decision',
+        severity: 0.5,
+        loopCode,
+        indicator,
+        consent: { requireDeliberative: false, legitimacyGap: 0.2 },
+        guardrails: { caps: [] },
+        srt: { horizon: "P30D", cadence: "weekly" },
+        scores: { responsive: 40, reflexive: 50, deliberative: 60, anticipatory: 80, structural: 30 },
+        order: ['anticipatory', 'deliberative', 'reflexive', 'responsive', 'structural'],
+        primary: 'anticipatory' as const,
+        templateActions: []
+      };
+      const reading = bundleProps.payload?.reading || {
+        loopCode,
+        indicator,
+        ewsProb: 0.75,
+        bufferAdequacy: 0.4,
+        dispersion: 0.3,
+        persistencePk: 30
+      };
+      
+      return (
+        <AnticipatoryBundle
+          loopCode={loopCode}
+          indicator={indicator}
+          decision={decision}
+          reading={reading}
+          screen={screen}
+          onHandoff={(to, reason) => {
+            console.log(`Handoff to ${to}: ${reason}`);
+            // Handle handoff logic here
+          }}
+        />
+      );
+    }
     case 'structural':
       return <StructuralBundle {...bundleProps} />;
     default:

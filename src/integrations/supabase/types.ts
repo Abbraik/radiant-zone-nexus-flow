@@ -1840,6 +1840,48 @@ export type Database = {
         }
         Relationships: []
       }
+      pre_position_orders: {
+        Row: {
+          cancel_by: string | null
+          cost_ceiling: number | null
+          created_at: string | null
+          id: string
+          items: Json
+          kind: string
+          shelf_life_days: number | null
+          sla: string | null
+          status: string
+          suppliers: string[] | null
+          user_id: string
+        }
+        Insert: {
+          cancel_by?: string | null
+          cost_ceiling?: number | null
+          created_at?: string | null
+          id?: string
+          items: Json
+          kind: string
+          shelf_life_days?: number | null
+          sla?: string | null
+          status?: string
+          suppliers?: string[] | null
+          user_id: string
+        }
+        Update: {
+          cancel_by?: string | null
+          cost_ceiling?: number | null
+          created_at?: string | null
+          id?: string
+          items?: Json
+          kind?: string
+          shelf_life_days?: number | null
+          sla?: string | null
+          status?: string
+          suppliers?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -2112,6 +2154,42 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      scenario_results: {
+        Row: {
+          affected_loops: string[]
+          created_at: string | null
+          id: string
+          mitigation_delta: number
+          notes: string | null
+          scenario_id: string
+          user_id: string
+          with_mitigation_breach_prob: number
+          without_mitigation_breach_prob: number
+        }
+        Insert: {
+          affected_loops: string[]
+          created_at?: string | null
+          id?: string
+          mitigation_delta: number
+          notes?: string | null
+          scenario_id: string
+          user_id: string
+          with_mitigation_breach_prob: number
+          without_mitigation_breach_prob: number
+        }
+        Update: {
+          affected_loops?: string[]
+          created_at?: string | null
+          id?: string
+          mitigation_delta?: number
+          notes?: string | null
+          scenario_id?: string
+          user_id?: string
+          with_mitigation_breach_prob?: number
+          without_mitigation_breach_prob?: number
         }
         Relationships: []
       }
@@ -2890,6 +2968,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trigger_rules: {
+        Row: {
+          action_ref: string
+          authority: string
+          condition: string
+          consent_note: string | null
+          created_at: string | null
+          expires_at: string
+          id: string
+          name: string
+          threshold: number
+          user_id: string
+          valid_from: string
+          window_hours: number
+        }
+        Insert: {
+          action_ref: string
+          authority: string
+          condition: string
+          consent_note?: string | null
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          name: string
+          threshold: number
+          user_id: string
+          valid_from: string
+          window_hours: number
+        }
+        Update: {
+          action_ref?: string
+          authority?: string
+          condition?: string
+          consent_note?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          name?: string
+          threshold?: number
+          user_id?: string
+          valid_from?: string
+          window_hours?: number
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
