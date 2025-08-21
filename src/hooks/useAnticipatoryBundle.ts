@@ -4,75 +4,72 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
 
 // Types for Anticipatory bundle
-export interface Scenario {
+export interface AnticScenario {
   id: string;
-  task_id: string;
-  loop_id: string;
   name: string;
-  params: any;
-  pinned: boolean;
-  charts: any;
-  user_id: string;
+  assumptions: any;
+  target_loops: string[];
+  created_by: string;
+  org_id: string;
+  created_at: string;
+}
+
+export interface AnticScenarioResult {
+  id: string;
+  scenario_id: string;
+  without_mitigation_breach_prob: number;
+  with_mitigation_breach_prob: number;
+  mitigation_delta: number;
+  affected_loops: string[];
+  notes?: string;
+  created_by?: string;
+  org_id: string;
+  created_at: string;
+}
+
+export interface AnticWatchpoint {
+  id: string;
+  risk_channel: string;
+  loop_codes: string[];
+  ews_prob: number;
+  confidence?: number;
+  buffer_adequacy?: number;
+  lead_time_days?: number;
+  status: string;
+  notes?: string;
+  review_at: string;
+  created_by: string;
+  org_id: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface StressTest {
+export interface AnticTriggerRule {
   id: string;
-  loop_id: string;
-  scenario_id?: string;
   name: string;
-  severity: number;
-  expected_impact: any;
-  status: 'pending' | 'running' | 'completed' | 'failed';
-  result: any;
-  user_id: string;
+  expr_raw: string;
+  expr_ast: any;
+  window_hours: number;
+  authority: string;
+  action_ref: string;
+  valid_from: string;
+  expires_at: string;
+  consent_note?: string;
+  created_by: string;
+  org_id: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface Watchpoint {
+export interface AnticActivationEvent {
   id: string;
-  loop_id: string;
-  indicator: string;
-  direction: 'up' | 'down' | 'band';
-  threshold_value?: number;
-  threshold_band?: any;
-  owner: string;
-  playbook_id?: string;
-  armed: boolean;
-  last_eval?: string;
-  last_result: any;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Playbook {
-  id: string;
-  loop_id: string;
-  title: string;
-  lever_order: string[];
-  steps: any[];
-  guards: any;
-  success_criteria: any;
-  auto_action: boolean;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SignalEvent {
-  id: string;
-  watchpoint_id: string;
-  loop_id: string;
-  event_type: 'trip' | 'clear' | 'test';
-  indicator_value: number;
-  threshold_crossed?: number;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  auto_action_taken: boolean;
-  playbook_executed: any;
-  user_id: string;
+  loop_code?: string;
+  indicator?: string;
+  kind: string;
+  source: string;
+  payload?: any;
+  created_by?: string;
+  org_id: string;
   created_at: string;
 }
 
@@ -84,118 +81,107 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
   const [dryRunOpen, setDryRunOpen] = useState(false);
 
-  // Query to get scenarios for this task
+  // Query to get scenarios
   const {
     data: scenarios = [],
     isLoading: isLoadingScenarios
   } = useQuery({
-    queryKey: ['scenarios', taskId],
+    queryKey: ['antic_scenarios'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('scenarios')
+        .from('antic_scenarios')
         .select('*')
-        .eq('task_id', taskId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Scenario[];
-    },
-    enabled: !!taskId
+      return data as AnticScenario[];
+    }
   });
 
-  // Query to get stress tests for this loop
+  // Query to get scenario results
   const {
-    data: stressTests = [],
-    isLoading: isLoadingStressTests
+    data: scenarioResults = [],
+    isLoading: isLoadingScenarioResults
   } = useQuery({
-    queryKey: ['stress_tests', loopId],
+    queryKey: ['antic_scenario_results'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('stress_tests')
+        .from('antic_scenario_results')
         .select('*')
-        .eq('loop_id', loopId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as StressTest[];
-    },
-    enabled: !!loopId
+      return data as AnticScenarioResult[];
+    }
   });
 
-  // Query to get watchpoints for this loop
+  // Query to get watchpoints
   const {
     data: watchpoints = [],
     isLoading: isLoadingWatchpoints
   } = useQuery({
-    queryKey: ['watchpoints', loopId],
+    queryKey: ['antic_watchpoints'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('watchpoints')
+        .from('antic_watchpoints')
         .select('*')
-        .eq('loop_id', loopId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Watchpoint[];
-    },
-    enabled: !!loopId
+      return data as AnticWatchpoint[];
+    }
   });
 
-  // Query to get playbooks for this loop
+  // Query to get trigger rules
   const {
-    data: playbooks = [],
-    isLoading: isLoadingPlaybooks
+    data: triggerRules = [],
+    isLoading: isLoadingTriggerRules
   } = useQuery({
-    queryKey: ['playbooks', loopId],
+    queryKey: ['antic_trigger_rules'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('playbooks')
+        .from('antic_trigger_rules')
         .select('*')
-        .eq('loop_id', loopId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Playbook[];
-    },
-    enabled: !!loopId
+      return data as AnticTriggerRule[];
+    }
   });
 
-  // Query to get recent signal events for this loop
+  // Query to get recent activation events
   const {
-    data: signalEvents = [],
+    data: activationEvents = [],
     isLoading: isLoadingEvents
   } = useQuery({
-    queryKey: ['signal_events', loopId],
+    queryKey: ['antic_activation_events'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('signal_events')
+        .from('antic_activation_events')
         .select('*')
-        .eq('loop_id', loopId)
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
-      return data as SignalEvent[];
-    },
-    enabled: !!loopId
+      return data as AnticActivationEvent[];
+    }
   });
 
   // Mutation to create scenario
   const createScenario = useMutation({
-    mutationFn: async (scenarioData: Partial<Scenario>) => {
+    mutationFn: async (scenarioData: Partial<AnticScenario>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
-        .from('scenarios')
+        .from('antic_scenarios')
         .insert({
-          task_id: taskId,
-          loop_id: loopId,
+          id: scenarioData.id || crypto.randomUUID(),
           name: scenarioData.name || 'New Scenario',
-          params: scenarioData.params || {},
-          pinned: scenarioData.pinned || false,
-          charts: scenarioData.charts || {},
-          user_id: user.id
+          assumptions: scenarioData.assumptions || {},
+          target_loops: scenarioData.target_loops || [],
+          created_by: user.id,
+          org_id: user.id
         })
         .select()
         .single();
@@ -204,7 +190,7 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scenarios', taskId] });
+      queryClient.invalidateQueries({ queryKey: ['antic_scenarios'] });
       toast({
         title: "Scenario created",
         description: "New scenario has been created successfully."
@@ -215,95 +201,21 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
   // Mutation to run scenario
   const runScenario = useMutation({
     mutationFn: async ({ scenarioId, params }: { scenarioId: string; params: any }) => {
-      const { data, error } = await supabase.rpc('run_scenario', {
-        loop_uuid: loopId,
-        params: params
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data, variables) => {
-      // Update scenario with results
-      supabase
-        .from('scenarios')
-        .update({ charts: (data as any).charts })
-        .eq('id', variables.scenarioId)
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ['scenarios', taskId] });
-        });
-
-      toast({
-        title: "Scenario completed",
-        description: "Scenario simulation has finished successfully."
-      });
-    }
-  });
-
-  // Mutation to create stress test
-  const createStressTest = useMutation({
-    mutationFn: async ({ scenarioId, severity }: { scenarioId: string; severity: number }) => {
-      const { data, error } = await supabase.rpc('enqueue_stress_test', {
-        loop_uuid: loopId,
-        scenario_uuid: scenarioId,
-        test_severity: severity
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stress_tests', loopId] });
-      toast({
-        title: "Stress test queued",
-        description: "Stress test has been added to the queue."
-      });
-    }
-  });
-
-  // Mutation to create watchpoint
-  const createWatchpoint = useMutation({
-    mutationFn: async (watchpointData: Partial<Watchpoint>) => {
-      const { data, error } = await supabase.rpc('create_watchpoint', {
-        loop_uuid: loopId,
-        payload: {
-          indicator: watchpointData.indicator,
-          direction: watchpointData.direction,
-          threshold_value: watchpointData.threshold_value,
-          threshold_band: watchpointData.threshold_band,
-          owner: watchpointData.owner
-        }
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['watchpoints', loopId] });
-      toast({
-        title: "Watchpoint created",
-        description: "New watchpoint has been created successfully."
-      });
-    }
-  });
-
-  // Mutation to create playbook
-  const createPlaybook = useMutation({
-    mutationFn: async (playbookData: Partial<Playbook>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Create a scenario result
       const { data, error } = await supabase
-        .from('playbooks')
+        .from('antic_scenario_results')
         .insert({
-          loop_id: loopId,
-          title: playbookData.title || 'New Playbook',
-          lever_order: playbookData.lever_order || ['N', 'P', 'S'],
-          steps: playbookData.steps || [],
-          guards: playbookData.guards || {},
-          success_criteria: playbookData.success_criteria || {},
-          auto_action: playbookData.auto_action || false,
-          user_id: user.id
+          scenario_id: scenarioId,
+          without_mitigation_breach_prob: params.without_mitigation || 0.5,
+          with_mitigation_breach_prob: params.with_mitigation || 0.3,
+          mitigation_delta: params.without_mitigation - params.with_mitigation || 0.2,
+          affected_loops: params.affected_loops || [],
+          notes: params.notes || '',
+          created_by: user.id,
+          org_id: user.id
         })
         .select()
         .single();
@@ -312,10 +224,82 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['playbooks', loopId] });
+      queryClient.invalidateQueries({ queryKey: ['antic_scenario_results'] });
       toast({
-        title: "Playbook created",
-        description: "New playbook has been created successfully."
+        title: "Scenario completed",
+        description: "Scenario simulation has finished successfully."
+      });
+    }
+  });
+
+  // Mutation to create watchpoint
+  const createWatchpoint = useMutation({
+    mutationFn: async (watchpointData: Partial<AnticWatchpoint>) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('antic_watchpoints')
+        .insert({
+          risk_channel: watchpointData.risk_channel || 'system',
+          loop_codes: watchpointData.loop_codes || [],
+          ews_prob: watchpointData.ews_prob || 0.5,
+          confidence: watchpointData.confidence || 0.8,
+          buffer_adequacy: watchpointData.buffer_adequacy || 0.7,
+          lead_time_days: watchpointData.lead_time_days || 7,
+          status: watchpointData.status || 'armed',
+          notes: watchpointData.notes || '',
+          review_at: watchpointData.review_at || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          created_by: user.id,
+          org_id: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['antic_watchpoints'] });
+      toast({
+        title: "Watchpoint created",
+        description: "New watchpoint has been created successfully."
+      });
+    }
+  });
+
+  // Mutation to create trigger rule
+  const createTriggerRule = useMutation({
+    mutationFn: async (triggerData: Partial<AnticTriggerRule>) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('antic_trigger_rules')
+        .insert({
+          name: triggerData.name || 'New Trigger Rule',
+          expr_raw: triggerData.expr_raw || '',
+          expr_ast: triggerData.expr_ast || {},
+          window_hours: triggerData.window_hours || 24,
+          authority: triggerData.authority || 'system',
+          action_ref: triggerData.action_ref || '',
+          valid_from: triggerData.valid_from || new Date().toISOString(),
+          expires_at: triggerData.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          consent_note: triggerData.consent_note || '',
+          created_by: user.id,
+          org_id: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['antic_trigger_rules'] });
+      toast({
+        title: "Trigger rule created",
+        description: "New trigger rule has been created successfully."
       });
     }
   });
@@ -323,13 +307,13 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
   // Mutation to evaluate watchpoints
   const evaluateWatchpoints = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('evaluate_watchpoints');
+      const { data, error } = await supabase.functions.invoke('evaluate-watchpoints');
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['watchpoints', loopId] });
-      queryClient.invalidateQueries({ queryKey: ['signal_events', loopId] });
+      queryClient.invalidateQueries({ queryKey: ['antic_watchpoints'] });
+      queryClient.invalidateQueries({ queryKey: ['antic_activation_events'] });
       toast({
         title: "Watchpoints evaluated",
         description: "All watchpoints have been evaluated successfully."
@@ -337,12 +321,12 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
     }
   });
 
-  // Mutation to arm/disarm watchpoint
+  // Mutation to toggle watchpoint
   const toggleWatchpoint = useMutation({
-    mutationFn: async ({ watchpointId, armed }: { watchpointId: string; armed: boolean }) => {
+    mutationFn: async ({ watchpointId, status }: { watchpointId: string; status: string }) => {
       const { data, error } = await supabase
-        .from('watchpoints')
-        .update({ armed })
+        .from('antic_watchpoints')
+        .update({ status, updated_at: new Date().toISOString() })
         .eq('id', watchpointId)
         .select()
         .single();
@@ -351,7 +335,7 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['watchpoints', loopId] });
+      queryClient.invalidateQueries({ queryKey: ['antic_watchpoints'] });
       toast({
         title: "Watchpoint updated",
         description: "Watchpoint status has been updated."
@@ -359,45 +343,32 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
     }
   });
 
-  // Mutation to dry run trip
-  const dryRunTrip = useMutation({
-    mutationFn: async ({ watchpointId, scenarioSnapshot }: { watchpointId: string; scenarioSnapshot?: any }) => {
-      const { data, error } = await supabase.rpc('dry_run_trip', {
-        watchpoint_uuid: watchpointId,
-        scenario_snapshot: scenarioSnapshot || {}
-      });
 
-      if (error) throw error;
-      return data;
-    }
-  });
 
   return {
     // Data
     scenarios,
-    stressTests,
+    scenarioResults,
     watchpoints,
-    playbooks,
-    signalEvents,
+    triggerRules,
+    activationEvents,
     selectedScenario,
     dryRunOpen,
     
     // Loading states
     isLoadingScenarios,
-    isLoadingStressTests,
+    isLoadingScenarioResults,
     isLoadingWatchpoints,
-    isLoadingPlaybooks,
+    isLoadingTriggerRules,
     isLoadingEvents,
     
     // Mutations
     createScenario,
     runScenario,
-    createStressTest,
     createWatchpoint,
-    createPlaybook,
+    createTriggerRule,
     evaluateWatchpoints,
     toggleWatchpoint,
-    dryRunTrip,
     
     // Actions
     setSelectedScenario,
@@ -405,12 +376,10 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
     
     // Computed states
     isRunningScenario: runScenario.isPending,
-    isCreatingStressTest: createStressTest.isPending,
+    isCreatingWatchpoint: createWatchpoint.isPending,
     isEvaluating: evaluateWatchpoints.isPending,
-    isDryRunning: dryRunTrip.isPending,
     
     // Results
-    scenarioResult: runScenario.data,
-    dryRunResult: dryRunTrip.data
+    scenarioResult: runScenario.data
   };
 };
