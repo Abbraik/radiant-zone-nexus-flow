@@ -180,17 +180,48 @@ export default function DeliberativeBundle(props: DeliberativeUiProps) {
                   const data = (scenarioOutcomes||[])
                     .filter(s=>s.optionId===o.id)
                     .map(s=>({ label: s.scenarioName, value: s.outcomeScore }));
+                  
+                  // If no data, show placeholder
+                  if (data.length === 0) {
+                    return (
+                      <div key={o.id} className="rounded-xl border p-3 bg-card">
+                        <div className="text-sm font-medium mb-2 text-card-foreground">{o.name}</div>
+                        <div className="h-40 flex items-center justify-center text-muted-foreground text-sm">
+                          No scenario data available
+                        </div>
+                      </div>
+                    );
+                  }
+                  
                   return (
                     <div key={o.id} className="rounded-xl border p-3 bg-card">
                       <div className="text-sm font-medium mb-2 text-card-foreground">{o.name}</div>
                       <div className="h-40">
-                        <ResponsiveContainer>
-                          <BarChart data={data}>
-                            <CartesianGrid stroke="hsl(var(--border))" />
-                            <XAxis dataKey="label" tick={{ fill: "hsl(var(--muted-foreground))" }}/>
-                            <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }}/>
-                            <RTooltip />
-                            <Bar dataKey="value" fill="hsl(var(--chart-5))"/>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                            <XAxis 
+                              dataKey="label" 
+                              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                              axisLine={{ stroke: "hsl(var(--border))" }}
+                            />
+                            <YAxis 
+                              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                              axisLine={{ stroke: "hsl(var(--border))" }}
+                            />
+                            <RTooltip 
+                              contentStyle={{
+                                backgroundColor: "hsl(var(--popover))",
+                                border: "1px solid hsl(var(--border))",
+                                borderRadius: "var(--radius)",
+                                color: "hsl(var(--popover-foreground))"
+                              }}
+                            />
+                            <Bar 
+                              dataKey="value" 
+                              fill="hsl(var(--chart-5))"
+                              radius={[2, 2, 0, 0]}
+                            />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
