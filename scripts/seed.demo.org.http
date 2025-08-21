@@ -1,0 +1,109 @@
+### Variables
+@SUPABASE_URL = https://eyyovobwgaqeizfxmkox.supabase.co
+@OWNER_JWT = YOUR_OWNER_JWT_TOKEN_HERE
+@ORG_ID = YOUR_ORG_ID_HERE
+
+### Seed org (owner token required)
+POST {{SUPABASE_URL}}/functions/v1/admin-seed-org
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "with_mock": true
+}
+
+### Import a few JSON points
+POST {{SUPABASE_URL}}/functions/v1/admin-import-indicators
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "mode": "json",
+  "json": [
+    {
+      "loop_code": "MAC-L06", 
+      "indicator": "Export Orderbook", 
+      "t": "2025-04-01T00:00:00Z", 
+      "value": 0.63, 
+      "lower": 0.45, 
+      "upper": 0.75
+    },
+    {
+      "loop_code": "MAC-L06", 
+      "indicator": "Export Orderbook", 
+      "t": "2025-04-02T00:00:00Z", 
+      "value": 0.64
+    }
+  ]
+}
+
+### Import CSV data
+POST {{SUPABASE_URL}}/functions/v1/admin-import-indicators
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "mode": "csv",
+  "csv": "loop,indicator,t,value\nMAC-L06,Export Orderbook,2025-05-01T00:00:00Z,0.61\nMAC-L06,Export Orderbook,2025-05-02T00:00:00Z,0.59\n",
+  "csv_map": {
+    "loop_col": "loop",
+    "ind_col": "indicator",
+    "time_col": "t",
+    "value_col": "value"
+  }
+}
+
+### Generate a parametric mock episode
+POST {{SUPABASE_URL}}/functions/v1/admin-generate-mock
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "episodes": [
+    {
+      "loop_code": "MES-L01",
+      "indicator": "Heat Index",
+      "days": 60,
+      "base": 0.62,
+      "amp": 0.12,
+      "period": 8,
+      "breach_start": 30,
+      "breach_days": 7,
+      "breach_delta": 0.25
+    }
+  ]
+}
+
+### Generate multiple mock episodes
+POST {{SUPABASE_URL}}/functions/v1/admin-generate-mock
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "episodes": [
+    {
+      "loop_code": "MAC-L06",
+      "indicator": "Export Orderbook",
+      "days": 90,
+      "base": 0.55,
+      "amp": 0.08,
+      "period": 6,
+      "breach_start": 60,
+      "breach_days": 15,
+      "breach_delta": -0.25
+    },
+    {
+      "loop_code": "MAC-L06",
+      "indicator": "REER change",
+      "days": 90,
+      "base": 0.05,
+      "amp": 0.03,
+      "period": 12
+    }
+  ]
+}
