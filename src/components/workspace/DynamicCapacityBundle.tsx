@@ -75,18 +75,127 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
       
       // Mock data - in real app this would come from props/context
       const mockWatchboard = [
-        { riskChannel: "ExternalDemand" as const, ewsProb: 0.82, trend: "up" as const, leadTimeDays: 9, linkedLoops: ["MAC-L06","MES-L03"], bufferAdequacy: 0.32 },
-        { riskChannel: "Heat" as const, ewsProb: 0.66, trend: "flat" as const, leadTimeDays: 6, linkedLoops: ["MES-L01"], bufferAdequacy: 0.5 },
-        { riskChannel: "WaterStress" as const, ewsProb: 0.58, trend: "up" as const, leadTimeDays: 14, linkedLoops: ["MES-L08"], bufferAdequacy: 0.41 },
+        { 
+          riskChannel: "ExternalDemand" as const, 
+          ewsProb: 0.82, 
+          trend: "up" as const, 
+          leadTimeDays: 9, 
+          linkedLoops: ["MAC-L06","MES-L03"], 
+          bufferAdequacy: 0.32,
+          series: [
+            { t: "2024-01-01", v: 0.45 },
+            { t: "2024-01-02", v: 0.52 },
+            { t: "2024-01-03", v: 0.61 },
+            { t: "2024-01-04", v: 0.72 },
+            { t: "2024-01-05", v: 0.82 }
+          ]
+        },
+        { 
+          riskChannel: "Heat" as const, 
+          ewsProb: 0.66, 
+          trend: "flat" as const, 
+          leadTimeDays: 6, 
+          linkedLoops: ["MES-L01"], 
+          bufferAdequacy: 0.5,
+          series: [
+            { t: "2024-01-01", v: 0.73 },
+            { t: "2024-01-02", v: 0.68 },
+            { t: "2024-01-03", v: 0.65 },
+            { t: "2024-01-04", v: 0.67 },
+            { t: "2024-01-05", v: 0.66 }
+          ]
+        },
+        { 
+          riskChannel: "WaterStress" as const, 
+          ewsProb: 0.58, 
+          trend: "up" as const, 
+          leadTimeDays: 14, 
+          linkedLoops: ["MES-L08"], 
+          bufferAdequacy: 0.41,
+          series: [
+            { t: "2024-01-01", v: 0.35 },
+            { t: "2024-01-02", v: 0.42 },
+            { t: "2024-01-03", v: 0.48 },
+            { t: "2024-01-04", v: 0.53 },
+            { t: "2024-01-05", v: 0.58 }
+          ]
+        },
       ];
+
+      const mockEwsComposition = [
+        { 
+          label: "External Demand", 
+          weight: 0.35, 
+          series: [
+            { t: "2024-01-01", v: 0.45 },
+            { t: "2024-01-02", v: 0.52 },
+            { t: "2024-01-03", v: 0.61 },
+            { t: "2024-01-04", v: 0.72 },
+            { t: "2024-01-05", v: 0.82 }
+          ]
+        },
+        { 
+          label: "Heat Risk", 
+          weight: 0.28, 
+          series: [
+            { t: "2024-01-01", v: 0.73 },
+            { t: "2024-01-02", v: 0.68 },
+            { t: "2024-01-03", v: 0.65 },
+            { t: "2024-01-04", v: 0.67 },
+            { t: "2024-01-05", v: 0.66 }
+          ]
+        },
+        { 
+          label: "Water Stress", 
+          weight: 0.37, 
+          series: [
+            { t: "2024-01-01", v: 0.35 },
+            { t: "2024-01-02", v: 0.42 },
+            { t: "2024-01-03", v: 0.48 },
+            { t: "2024-01-04", v: 0.53 },
+            { t: "2024-01-05", v: 0.58 }
+          ]
+        }
+      ];
+
+      const mockBuffers = [
+        { label: "Cash Reserve", current: 0.42, target: 0.60 },
+        { label: "Inventory", current: 0.28, target: 0.45 },
+        { label: "Capacity", current: 0.73, target: 0.80 },
+        { label: "Supply Chain", current: 0.32, target: 0.50 }
+      ];
+
+      const mockGeoGrid = Array.from({ length: 32 }, (_, i) => ({
+        id: `cell-${i}`,
+        value: Math.random() * 0.8 + 0.1 // Random values between 0.1 and 0.9
+      }));
+
       const mockScenarios = [
         { id: "s1", name: "Heat +3°C", summary: "High temperature scenario" },
         { id: "s2", name: "Supply Shock", summary: "Major supplier disruption" },
       ];
+
       const mockPrePositionPacks = [
-        { id: "pack1", title: "Resource Pack", items: [{ label: "Emergency supplies", note: "72hr capacity" }], status: "draft" as const },
-        { id: "pack2", title: "Regulatory Pack", items: [{ label: "Emergency declarations" }], status: "armed" as const },
+        { 
+          id: "pack1", 
+          title: "Resource Pack", 
+          items: [{ label: "Emergency supplies", note: "72hr capacity" }], 
+          status: "draft" as const,
+          costCeiling: 250000,
+          readinessScore: 0.85,
+          shelfLifeDays: 45
+        },
+        { 
+          id: "pack2", 
+          title: "Regulatory Pack", 
+          items: [{ label: "Emergency declarations" }], 
+          status: "armed" as const,
+          costCeiling: 150000,
+          readinessScore: 0.92,
+          shelfLifeDays: 90
+        },
       ];
+
       const mockTriggerTemplates = [
         { id: "t1", name: "Heat Emergency", condition: "Temperature threshold exceeded", thresholdLabel: "Max temp ≥ 38°C for 3+ days" },
       ];
@@ -101,8 +210,9 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
           consentRequired={false}
           screen={params.get('screen') as any || 'risk-watchboard'}
           watchboard={mockWatchboard}
-          ewsComposition={[]}
-          buffers={[]}
+          ewsComposition={mockEwsComposition}
+          buffers={mockBuffers}
+          geoGrid={mockGeoGrid}
           scenarios={mockScenarios}
           prePositionPacks={mockPrePositionPacks}
           triggerTemplates={mockTriggerTemplates}
