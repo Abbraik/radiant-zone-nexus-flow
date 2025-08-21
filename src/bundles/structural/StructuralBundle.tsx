@@ -12,6 +12,13 @@ import StructuralDossier from "./panels/StructuralDossier";
 
 export default function StructuralBundle(props: StructuralUiProps){
   const { loopCode, mission, screen="mandate", errorText } = props;
+  const [currentScreen, setCurrentScreen] = React.useState(screen);
+
+  const handleTabChange = (value: string) => {
+    setCurrentScreen(value as any);
+    props.onEvent?.('struct_tab_change', { tab: value });
+  };
+
   return (
     <div className="grid gap-4">
       {/* Header */}
@@ -24,7 +31,7 @@ export default function StructuralBundle(props: StructuralUiProps){
         <Badge variant="outline" className="border-primary text-primary">S-Levers</Badge>
       </div>
 
-      <Tabs value={screen} className="w-full">
+      <Tabs value={currentScreen} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="mandate">Mandate Gate</TabsTrigger>
           <TabsTrigger value="mesh">Mesh Planner</TabsTrigger>
@@ -41,12 +48,12 @@ export default function StructuralBundle(props: StructuralUiProps){
         </div>
       )}
 
-      {screen==="mandate"   && <MandateGate {...props} />}
-      {screen==="mesh"      && <MeshPlanner {...props} />}
-      {screen==="process"   && <ProcessStudio {...props} />}
-      {screen==="standards" && <StandardsForge {...props} />}
-      {screen==="market"    && <MarketDesignLab {...props} />}
-      {screen==="dossier"   && <StructuralDossier {...props} />}
+      {currentScreen==="mandate"   && <MandateGate {...props} />}
+      {currentScreen==="mesh"      && <MeshPlanner {...props} />}
+      {currentScreen==="process"   && <ProcessStudio {...props} />}
+      {currentScreen==="standards" && <StandardsForge {...props} />}
+      {currentScreen==="market"    && <MarketDesignLab {...props} />}
+      {currentScreen==="dossier"   && <StructuralDossier {...props} />}
     </div>
   );
 }
