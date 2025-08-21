@@ -91,49 +91,49 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
         { id: "t1", name: "Heat Emergency", condition: "Temperature threshold exceeded", thresholdLabel: "Max temp ≥ 38°C for 3+ days" },
       ];
 
-      return (
-        <AnticipatoryBundle 
-          loopCode={task?.loop_id || bundleProps.taskData?.loop_id || "MAC-L01"}
-          indicator={bundleProps.payload?.indicator || "Primary"}
-          ewsProb={0.78}
-          leadTimeDays={9}
-          bufferAdequacy={0.32}
-          consentRequired={false}
-          screen={params.get('screen') as any || 'risk-watchboard'}
-          watchboard={mockWatchboard}
-          scenarios={mockScenarios}
-          prePositionPacks={mockPrePositionPacks}
-          triggerTemplates={mockTriggerTemplates}
-          handoff={{
-            enableResponsive: true,
-            enableDeliberative: false,
-            enableStructural: false,
-            onHandoff: (to) => {
-              console.log('Handoff requested:', { to });
-              toast.info(`Handoff to ${to} capacity`);
-            }
-          }}
-          onArmWatchpoint={(riskChannel) => {
-            console.log('Arm watchpoint:', riskChannel);
-            toast.success(`Armed watchpoint for ${riskChannel}`);
-          }}
-          onRunScenario={(scenarioId) => {
-            console.log('Run scenario:', scenarioId);
-            toast.success(`Running scenario ${scenarioId}`);
-          }}
-          onStagePrePosition={(packIds) => {
-            console.log('Stage pre-position:', packIds);
-            toast.success(`Staged pre-position packs: ${packIds.join(', ')}`);
-          }}
-          onSaveTrigger={(templateId) => {
-            console.log('Save trigger:', templateId);
-            toast.success(`Saved trigger ${templateId}`);
-          }}
-          onEvent={(name, payload) => {
-            console.log('Analytics event:', name, payload);
-          }}
-        />
-      );
+        return (
+          <AnticipatoryBundle 
+            loopCode={task?.loop_id || bundleProps.taskData?.loop_id || "MAC-L01"}
+            indicator={bundleProps.payload?.indicator || "Primary"}
+            ewsProb={0.78}
+            leadTimeDays={9}
+            bufferAdequacy={0.32}
+            consentRequired={false}
+            screen={params.get('screen') as any || 'risk-watchboard'}
+            watchboard={mockWatchboard}
+            scenarios={mockScenarios}
+            prePositionPacks={mockPrePositionPacks}
+            triggerTemplates={mockTriggerTemplates}
+            handoff={{
+              enableResponsive: true,
+              enableDeliberative: false,
+              enableStructural: false,
+              onHandoff: (to) => {
+                console.log('Handoff requested:', { to });
+                toast.info(`Handoff to ${to} capacity`);
+              }
+            }}
+            onArmWatchpoint={(riskChannel) => {
+              console.log('Arm watchpoint:', riskChannel);
+              toast.success(`Armed watchpoint for ${riskChannel}`);
+            }}
+            onRunScenario={(scenarioId) => {
+              console.log('Run scenario:', scenarioId);
+              toast.success(`Running scenario ${scenarioId}`);
+            }}
+            onStagePrePosition={(packIds) => {
+              console.log('Stage pre-position:', packIds);
+              toast.success(`Staged pre-position packs: ${packIds.join(', ')}`);
+            }}
+            onSaveTrigger={(templateId) => {
+              console.log('Save trigger:', templateId);
+              toast.success(`Saved trigger ${templateId}`);
+            }}
+            onEvent={(name, payload) => {
+              console.log('Analytics event:', name, payload);
+            }}
+          />
+        );
     }
     case 'structural':
       return <StructuralBundle {...bundleProps} />;
