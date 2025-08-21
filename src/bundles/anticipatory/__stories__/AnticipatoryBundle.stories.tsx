@@ -39,6 +39,7 @@ export const ScenarioSimulator = () => (
     leadTimeDays={9}
     bufferAdequacy={0.32}
     consentRequired={true}
+    watchboard={[]}
     ewsComposition={[]}
     buffers={[]}
     scenarios={[
@@ -62,6 +63,7 @@ export const PrePositioner = () => (
     leadTimeDays={9}
     bufferAdequacy={0.32}
     consentRequired={false}
+    watchboard={[]}
     ewsComposition={[]}
     buffers={[]}
     scenarios={[]}
@@ -112,6 +114,7 @@ export const TriggerLibrary = () => (
     leadTimeDays={9}
     bufferAdequacy={0.32}
     consentRequired={false}
+    watchboard={[]}
     ewsComposition={[]}
     buffers={[]}
     scenarios={[]}
