@@ -3615,6 +3615,947 @@ export type Database = {
         }
         Relationships: []
       }
+      struct_auctions: {
+        Row: {
+          id: string
+          lot_size: string | null
+          mechanism: string
+          name: string
+          org_id: string
+          reserve_price: number | null
+          session_id: string
+        }
+        Insert: {
+          id?: string
+          lot_size?: string | null
+          mechanism: string
+          name: string
+          org_id: string
+          reserve_price?: number | null
+          session_id: string
+        }
+        Update: {
+          id?: string
+          lot_size?: string | null
+          mechanism?: string
+          name?: string
+          org_id?: string
+          reserve_price?: number | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_auctions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_authority_sources: {
+        Row: {
+          id: string
+          label: string
+          link: string | null
+          note: string | null
+          org_id: string
+          session_id: string
+          status: string
+          type: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          link?: string | null
+          note?: string | null
+          org_id: string
+          session_id: string
+          status: string
+          type: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          link?: string | null
+          note?: string | null
+          org_id?: string
+          session_id?: string
+          status?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_authority_sources_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_budget_envelopes: {
+        Row: {
+          amount: number
+          currency: string
+          id: string
+          label: string
+          note: string | null
+          org_id: string
+          session_id: string
+          status: string
+          window_from: string | null
+          window_to: string | null
+        }
+        Insert: {
+          amount: number
+          currency?: string
+          id?: string
+          label: string
+          note?: string | null
+          org_id: string
+          session_id: string
+          status: string
+          window_from?: string | null
+          window_to?: string | null
+        }
+        Update: {
+          amount?: number
+          currency?: string
+          id?: string
+          label?: string
+          note?: string | null
+          org_id?: string
+          session_id?: string
+          status?: string
+          window_from?: string | null
+          window_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_budget_envelopes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_conformance_checks: {
+        Row: {
+          actor_id: string
+          id: string
+          last_run: string | null
+          note: string | null
+          org_id: string
+          session_id: string
+          standard_id: string
+          status: string
+        }
+        Insert: {
+          actor_id: string
+          id?: string
+          last_run?: string | null
+          note?: string | null
+          org_id: string
+          session_id: string
+          standard_id: string
+          status: string
+        }
+        Update: {
+          actor_id?: string
+          id?: string
+          last_run?: string | null
+          note?: string | null
+          org_id?: string
+          session_id?: string
+          standard_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_conformance_checks_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "struct_deleg_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_conformance_checks_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_conformance_checks_standard_id_fkey"
+            columns: ["standard_id"]
+            isOneToOne: false
+            referencedRelation: "struct_standards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_conformance_runs: {
+        Row: {
+          id: string
+          org_id: string
+          run_at: string
+          session_id: string
+          stats: Json | null
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          run_at?: string
+          session_id: string
+          stats?: Json | null
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          run_at?: string
+          session_id?: string
+          stats?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_conformance_runs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_deleg_edges: {
+        Row: {
+          from_node: string
+          id: string
+          note: string | null
+          org_id: string
+          permission: string
+          session_id: string
+          to_node: string
+        }
+        Insert: {
+          from_node: string
+          id?: string
+          note?: string | null
+          org_id: string
+          permission: string
+          session_id: string
+          to_node: string
+        }
+        Update: {
+          from_node?: string
+          id?: string
+          note?: string | null
+          org_id?: string
+          permission?: string
+          session_id?: string
+          to_node?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_deleg_edges_from_node_fkey"
+            columns: ["from_node"]
+            isOneToOne: false
+            referencedRelation: "struct_deleg_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_deleg_edges_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_deleg_edges_to_node_fkey"
+            columns: ["to_node"]
+            isOneToOne: false
+            referencedRelation: "struct_deleg_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_deleg_nodes: {
+        Row: {
+          id: string
+          kind: string
+          label: string
+          org_id: string
+          role: string | null
+          session_id: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          label: string
+          org_id: string
+          role?: string | null
+          session_id: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          label?: string
+          org_id?: string
+          role?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_deleg_nodes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_dossiers: {
+        Row: {
+          adoption_plan: string
+          attachments: Json | null
+          id: string
+          lever_summary: string
+          mandate_path: Json
+          market_snapshot: Json
+          mesh_summary: string
+          org_id: string
+          process_summary: string
+          published_at: string
+          published_by: string
+          rationale: string
+          session_id: string
+          standards_snapshot: Json
+          title: string
+          version: string
+        }
+        Insert: {
+          adoption_plan: string
+          attachments?: Json | null
+          id?: string
+          lever_summary: string
+          mandate_path: Json
+          market_snapshot: Json
+          mesh_summary: string
+          org_id: string
+          process_summary: string
+          published_at?: string
+          published_by: string
+          rationale: string
+          session_id: string
+          standards_snapshot: Json
+          title: string
+          version: string
+        }
+        Update: {
+          adoption_plan?: string
+          attachments?: Json | null
+          id?: string
+          lever_summary?: string
+          mandate_path?: Json
+          market_snapshot?: Json
+          mesh_summary?: string
+          org_id?: string
+          process_summary?: string
+          published_at?: string
+          published_by?: string
+          rationale?: string
+          session_id?: string
+          standards_snapshot?: Json
+          title?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_dossiers_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: number
+          kind: string
+          org_id: string
+          payload: Json | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: number
+          kind: string
+          org_id: string
+          payload?: Json | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: number
+          kind?: string
+          org_id?: string
+          payload?: Json | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_handoffs: {
+        Row: {
+          created_at: string
+          id: string
+          org_id: string
+          payload: Json | null
+          session_id: string
+          task_id: string | null
+          to_capacity: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          org_id: string
+          payload?: Json | null
+          session_id: string
+          task_id?: string | null
+          to_capacity: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          org_id?: string
+          payload?: Json | null
+          session_id?: string
+          task_id?: string | null
+          to_capacity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_handoffs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_mandate_checks: {
+        Row: {
+          id: string
+          label: string
+          note: string | null
+          org_id: string
+          session_id: string
+          status: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          note?: string | null
+          org_id: string
+          session_id: string
+          status: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          note?: string | null
+          org_id?: string
+          session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_mandate_checks_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_mesh_issues: {
+        Row: {
+          id: string
+          label: string
+          loop_refs: string[] | null
+          note: string | null
+          org_id: string
+          session_id: string
+          severity: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          loop_refs?: string[] | null
+          note?: string | null
+          org_id: string
+          session_id: string
+          severity: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          loop_refs?: string[] | null
+          note?: string | null
+          org_id?: string
+          session_id?: string
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_mesh_issues_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_mesh_metrics: {
+        Row: {
+          id: string
+          label: string
+          org_id: string
+          session_id: string
+          unit: string | null
+          value: number
+        }
+        Insert: {
+          id?: string
+          label: string
+          org_id: string
+          session_id: string
+          unit?: string | null
+          value: number
+        }
+        Update: {
+          id?: string
+          label?: string
+          org_id?: string
+          session_id?: string
+          unit?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_mesh_metrics_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_permits: {
+        Row: {
+          cap_rule: string | null
+          id: string
+          mrv_standard_id: string | null
+          name: string
+          org_id: string
+          price_rule: string | null
+          session_id: string
+        }
+        Insert: {
+          cap_rule?: string | null
+          id?: string
+          mrv_standard_id?: string | null
+          name: string
+          org_id: string
+          price_rule?: string | null
+          session_id: string
+        }
+        Update: {
+          cap_rule?: string | null
+          id?: string
+          mrv_standard_id?: string | null
+          name?: string
+          org_id?: string
+          price_rule?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_permits_mrv_standard_id_fkey"
+            columns: ["mrv_standard_id"]
+            isOneToOne: false
+            referencedRelation: "struct_standards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_permits_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_pricing_rules: {
+        Row: {
+          formula: string
+          id: string
+          label: string
+          org_id: string
+          session_id: string
+        }
+        Insert: {
+          formula: string
+          id?: string
+          label: string
+          org_id: string
+          session_id: string
+        }
+        Update: {
+          formula?: string
+          id?: string
+          label?: string
+          org_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_pricing_rules_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_process_latency_hist: {
+        Row: {
+          id: string
+          label: string
+          org_id: string
+          session_id: string
+          value: number
+        }
+        Insert: {
+          id?: string
+          label: string
+          org_id: string
+          session_id: string
+          value: number
+        }
+        Update: {
+          id?: string
+          label?: string
+          org_id?: string
+          session_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_process_latency_hist_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_process_raci: {
+        Row: {
+          actor_id: string
+          id: string
+          org_id: string
+          role: string
+          session_id: string
+          step_id: string
+        }
+        Insert: {
+          actor_id: string
+          id?: string
+          org_id: string
+          role: string
+          session_id: string
+          step_id: string
+        }
+        Update: {
+          actor_id?: string
+          id?: string
+          org_id?: string
+          role?: string
+          session_id?: string
+          step_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_process_raci_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "struct_deleg_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_process_raci_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_process_raci_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "struct_process_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_process_slas: {
+        Row: {
+          id: string
+          kpi: string
+          org_id: string
+          session_id: string
+          step_id: string
+          target: string
+        }
+        Insert: {
+          id?: string
+          kpi: string
+          org_id: string
+          session_id: string
+          step_id: string
+          target: string
+        }
+        Update: {
+          id?: string
+          kpi?: string
+          org_id?: string
+          session_id?: string
+          step_id?: string
+          target?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_process_slas_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_process_slas_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "struct_process_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_process_steps: {
+        Row: {
+          id: string
+          kind: string
+          label: string
+          latency_days_target: number | null
+          org_id: string
+          session_id: string
+          triage_rule: string | null
+          variance_target_pct: number | null
+        }
+        Insert: {
+          id?: string
+          kind: string
+          label: string
+          latency_days_target?: number | null
+          org_id: string
+          session_id: string
+          triage_rule?: string | null
+          variance_target_pct?: number | null
+        }
+        Update: {
+          id?: string
+          kind?: string
+          label?: string
+          latency_days_target?: number | null
+          org_id?: string
+          session_id?: string
+          triage_rule?: string | null
+          variance_target_pct?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_process_steps_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_process_variance_series: {
+        Row: {
+          id: string
+          org_id: string
+          session_id: string
+          t: string
+          v: number
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          session_id: string
+          t: string
+          v: number
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          session_id?: string
+          t?: string
+          v?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_process_variance_series_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_runtime_artifacts: {
+        Row: {
+          blob: Json
+          created_at: string
+          id: string
+          kind: string
+          org_id: string
+          session_id: string
+        }
+        Insert: {
+          blob: Json
+          created_at?: string
+          id?: string
+          kind: string
+          org_id: string
+          session_id: string
+        }
+        Update: {
+          blob?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          org_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_runtime_artifacts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_sessions: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          loop_code: string
+          mission: string | null
+          org_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          loop_code: string
+          mission?: string | null
+          org_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          loop_code?: string
+          mission?: string | null
+          org_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      struct_standards: {
+        Row: {
+          id: string
+          kind: string
+          name: string
+          org_id: string
+          owner_node_id: string | null
+          session_id: string
+          status: string
+          summary: string | null
+          version: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          name: string
+          org_id: string
+          owner_node_id?: string | null
+          session_id: string
+          status: string
+          summary?: string | null
+          version: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          name?: string
+          org_id?: string
+          owner_node_id?: string | null
+          session_id?: string
+          status?: string
+          summary?: string | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_standards_owner_node_id_fkey"
+            columns: ["owner_node_id"]
+            isOneToOne: false
+            referencedRelation: "struct_deleg_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_standards_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       substep_templates: {
         Row: {
           created_at: string
