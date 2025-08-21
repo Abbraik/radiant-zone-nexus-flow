@@ -9,3 +9,6 @@ max_rows = 1000
 
 [functions.heartbeat]
 verify_jwt = false
+
+[functions.admin-seed-delib]
+verify_jwt = true

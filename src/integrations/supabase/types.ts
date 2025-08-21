@@ -4381,6 +4381,10 @@ export type Database = {
         }
         Returns: Json
       }
+      assert_controller_or_owner: {
+        Args: { p_org: string }
+        Returns: undefined
+      }
       assert_owner: {
         Args: { p_org: string }
         Returns: undefined

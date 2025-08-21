@@ -1,0 +1,49 @@
+### Seed Deliberative: Housing vs Ecology (with frontier, publish, handoffs)
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/admin-seed-delib
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "theme": "housing_ecology",
+  "with_frontier": true,
+  "publish_dossier": true,
+  "handoffs": ["responsive", "structural", "reflexive"]
+}
+
+### Seed Deliberative: External Demand (frontier only, no publish)
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/admin-seed-delib
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "theme": "external_demand",
+  "with_frontier": true,
+  "publish_dossier": false
+}
+
+### Seed Housing Ecology - Minimal (no frontier, no dossier)
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/admin-seed-delib
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "theme": "housing_ecology",
+  "with_frontier": false,
+  "publish_dossier": false
+}
+
+### Seed External Demand - Full (with everything)
+POST https://eyyovobwgaqeizfxmkox.supabase.co/functions/v1/admin-seed-delib
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "theme": "external_demand",
+  "with_frontier": true,
+  "publish_dossier": true,
+  "handoffs": ["responsive", "structural"]
+}
