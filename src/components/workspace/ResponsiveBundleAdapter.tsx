@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import ResponsiveBundle from '@/bundles/responsive/index';
+import { ResponsiveCapacityPage } from '@/pages/ResponsiveCapacityPage';
 import type { CapacityBundleProps } from '@/types/capacity';
 import { useResponsiveIntegration } from '@/hooks/useResponsiveIntegration';
 
@@ -26,20 +26,18 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
   const decision = payload?.decision || {
     severity: 0.5,
     guardrails: { timeboxDays: 14, caps: [] },
-    srt: { cadence: 'hourly' as const, horizon: 'P14D' },
-    consent: { requireDeliberative: false, legitimacyGap: 0.1 },
+    srt: { cadence: '1 hour', horizon: 'P14D' },
+    consent: { requireDeliberative: false },
     order: ['responsive' as const],
     templateActions: [],
     decisionId: `decision-${Date.now()}`,
-    scores: { responsive: 1.0, reflexive: 0.3, deliberative: 0.2, anticipatory: 0.1, structural: 0.2 },
+    scores: { responsive: 1.0 },
     primary: 'responsive' as const,
     secondary: undefined,
     loopCode: loopCode,
     indicator: indicator
   };
   const reading = payload?.reading || {
-    loopCode: loopCode,
-    indicator: indicator,
     value: 42.3,
     lower: 35,
     upper: 45,
@@ -94,14 +92,23 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
   }, [onValidationChange]);
 
   return (
-    <ResponsiveBundle
-      loopCode={loopCode}
-      indicator={indicator}
+    <ResponsiveCapacityPage
       decision={decision}
       reading={reading}
-      lastIncidentId={lastIncidentId}
-      mission={taskData?.description}
-      onHandoff={handleHandoff}
+      playbook={{
+        id: 'health-surge-v2',
+        name: 'Health Capacity Surge',
+        rationale: 'Re-enter band faster with mobile units and triage v2',
+        tasks: [
+          { title: 'Deploy mobile triage units', description: 'Activate standby capacity', capacity: 'responsive' },
+          { title: 'Update care protocols', description: 'Switch to crisis triage v2', capacity: 'responsive' },
+          { title: 'Coordinate with regional hubs', description: 'Balance load across network', capacity: 'responsive' }
+        ]
+      }}
+      onUpsertIncident={handleUpsertIncident}
+      onAppendIncidentEvent={handleAppendIncidentEvent}
+      onCreateSprintWithTasks={handleCreateSprintWithTasks}
+      onOpenClaimDrawer={handleOpenClaimDrawer}
     />
   );
 };
