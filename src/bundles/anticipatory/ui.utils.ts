@@ -17,10 +17,13 @@ export const fmtNum = (n?: number) => n == null ? "—" : new Intl.NumberFormat(
 
 // CSS variables to match theme (define once in global CSS, values map to your token palette)
 export const ChartVars = {
-  series1: "var(--chart-1)",
-  series2: "var(--chart-2)",
-  series3: "var(--chart-3)",
-  series4: "var(--chart-4)",
-  band: "var(--muted)",
-  axis: "var(--muted-foreground)"
+  series1: "hsl(var(--chart-1))",
+  series2: "hsl(var(--chart-2))",
+  series3: "hsl(var(--chart-3))",
+  series4: "hsl(var(--chart-4))",
+  series5: "hsl(var(--chart-5))",
+  band: "hsl(var(--muted))",
+  grid: "hsl(var(--chart-grid))",
+  axis: "hsl(var(--chart-text))",
+  background: "hsl(var(--background))"
 };

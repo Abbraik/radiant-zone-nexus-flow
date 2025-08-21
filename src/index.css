@@ -139,6 +139,15 @@
     --sidebar-accent-foreground: 210 20% 80%;
     --sidebar-border: 220 15% 20%;
     --sidebar-ring: 215 85% 55%;
+
+    /* Chart Colors - Dark Theme Optimized */
+    --chart-1: 185 85% 55%;     /* Primary teal */
+    --chart-2: 215 90% 60%;     /* Accent blue */
+    --chart-3: 142 76% 45%;     /* Success green */
+    --chart-4: 38 92% 55%;      /* Warning orange */
+    --chart-5: 0 84% 60%;       /* Destructive red */
+    --chart-grid: 220 15% 25%;  /* Grid lines */
+    --chart-text: 210 20% 85%;  /* Chart text */
   
   /* Custom scrollbar styles */
   .custom-scrollbar::-webkit-scrollbar {

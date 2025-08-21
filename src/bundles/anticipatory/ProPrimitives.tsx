@@ -43,8 +43,17 @@ export function Sparkline({ data, stroke = ChartVars.series1 }: { data: Array<{t
         <LineChart data={data}>
           <XAxis dataKey="t" hide />
           <YAxis hide domain={["auto","auto"]}/>
-          <RTooltip formatter={(v: any)=>v.toFixed? v.toFixed(2): v}/>
-          <Line type="monotone" dataKey="v" stroke={stroke} strokeWidth={1.75} dot={false} />
+          <RTooltip 
+            formatter={(v: any)=>v.toFixed? v.toFixed(2): v}
+            contentStyle={{ 
+              backgroundColor: ChartVars.background, 
+              border: `1px solid ${ChartVars.grid}`,
+              borderRadius: '6px',
+              fontSize: '12px',
+              color: ChartVars.axis
+            }}
+          />
+          <Line type="monotone" dataKey="v" stroke={stroke} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -58,13 +67,20 @@ export function BandedSeries({ data, lower="p10", upper="p90", mean="mean" }:{
     <div className="h-40">
       <ResponsiveContainer>
         <AreaChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)"/>
-          <XAxis dataKey="t" tick={{ fill: ChartVars.axis }} />
-          <YAxis tick={{ fill: ChartVars.axis }} />
-          <RTooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={ChartVars.grid}/>
+          <XAxis dataKey="t" tick={{ fill: ChartVars.axis, fontSize: 12 }} />
+          <YAxis tick={{ fill: ChartVars.axis, fontSize: 12 }} />
+          <RTooltip 
+            contentStyle={{ 
+              backgroundColor: ChartVars.background, 
+              border: `1px solid ${ChartVars.grid}`,
+              borderRadius: '8px',
+              color: ChartVars.axis
+            }}
+          />
           <Area dataKey={upper} stroke="transparent" fill={ChartVars.band} fillOpacity={0.25} />
-          <Area dataKey={lower} stroke="transparent" fill="var(--background)" />
-          <Line type="monotone" dataKey={mean} stroke={ChartVars.series1} strokeWidth={1.75} dot={false} />
+          <Area dataKey={lower} stroke="transparent" fill={ChartVars.background} />
+          <Line type="monotone" dataKey={mean} stroke={ChartVars.series1} strokeWidth={2} dot={false} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -78,9 +94,18 @@ export function Waterfall({ items }:{ items: Array<{label: string; delta: number
     <div className="h-40">
       <ResponsiveContainer>
         <BarChart data={cum}>
-          <XAxis dataKey="label" tick={{ fill: ChartVars.axis }}/>
-          <YAxis tick={{ fill: ChartVars.axis }}/>
-          <RTooltip formatter={(v:any)=>v.toFixed? v.toFixed(2): v}/>
+          <CartesianGrid strokeDasharray="3 3" stroke={ChartVars.grid}/>
+          <XAxis dataKey="label" tick={{ fill: ChartVars.axis, fontSize: 12 }}/>
+          <YAxis tick={{ fill: ChartVars.axis, fontSize: 12 }}/>
+          <RTooltip 
+            formatter={(v:any)=>v.toFixed? v.toFixed(2): v}
+            contentStyle={{ 
+              backgroundColor: ChartVars.background, 
+              border: `1px solid ${ChartVars.grid}`,
+              borderRadius: '8px',
+              color: ChartVars.axis
+            }}
+          />
           <Bar dataKey="delta" fill={ChartVars.series2}/>
         </BarChart>
       </ResponsiveContainer>
@@ -93,10 +118,19 @@ export function Tornado({ items }:{ items: Array<{factor: string; impact: number
   return (
     <div className="h-40">
       <ResponsiveContainer>
-        <BarChart data={data} layout="vertical" margin={{ left: 60 }}>
-          <XAxis type="number" tick={{ fill: ChartVars.axis }}/>
-          <YAxis dataKey="factor" type="category" width={120} tick={{ fill: ChartVars.axis }}/>
-          <RTooltip formatter={(v:any)=>v.toFixed? v.toFixed(3): v}/>
+        <BarChart data={data} layout="vertical" margin={{ left: 80 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke={ChartVars.grid}/>
+          <XAxis type="number" tick={{ fill: ChartVars.axis, fontSize: 12 }}/>
+          <YAxis dataKey="factor" type="category" width={120} tick={{ fill: ChartVars.axis, fontSize: 12 }}/>
+          <RTooltip 
+            formatter={(v:any)=>v.toFixed? v.toFixed(3): v}
+            contentStyle={{ 
+              backgroundColor: ChartVars.background, 
+              border: `1px solid ${ChartVars.grid}`,
+              borderRadius: '8px',
+              color: ChartVars.axis
+            }}
+          />
           <Bar dataKey="impact" fill={ChartVars.series3}/>
         </BarChart>
       </ResponsiveContainer>
@@ -109,10 +143,16 @@ export function MiniHeatmap({ cells }:{ cells: Array<{id:string; value:number}> 
   return (
     <div className="grid grid-cols-8 gap-1">
       {cells.map(c=>(
-        <div key={c.id} className="aspect-square rounded" style={{
-          backgroundColor: "var(--accent)",
-          opacity: Math.max(0.15, Math.min(0.9, c.value))
-        }} aria-label={`Cell ${c.id}=${c.value.toFixed(2)}`} />
+        <div 
+          key={c.id} 
+          className="aspect-square rounded-sm transition-opacity hover:opacity-80" 
+          style={{
+            backgroundColor: `hsl(var(--primary))`,
+            opacity: Math.max(0.2, Math.min(0.9, c.value))
+          }} 
+          aria-label={`Cell ${c.id}=${c.value.toFixed(2)}`} 
+          title={`Value: ${c.value.toFixed(2)}`}
+        />
       ))}
     </div>
   );
