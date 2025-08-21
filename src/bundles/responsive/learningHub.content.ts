@@ -3,24 +3,24 @@ export const responsiveLearning = {
   sections: [
     {
       heading: "Purpose",
-      body: "Stabilize the system quickly and safely when signals move outside their safe range. Responsive applies short, time-boxed actions (safety limits, quick relief, comms packs) and monitors immediate impact."
+      body: "Stabilize the system quickly and safely when signals move outside their safe range. Responsive applies short, time-boxed actions (safety limits, relief, communication packs), tracks immediate impact, and prevents overshoot."
     },
     {
       heading: "Typical Workflows",
       list: [
-        "Sense → Detect outside-safe-range indicators (band breaches).",
-        "Decide → Select a pre-approved activation pack or quick action.",
-        "Apply → Time-box the action (e.g., 30–90 days), set a checkpoint.",
-        "Watch → Track response vs. target, keep within guardrails.",
-        "Hand off → If persistent, escalate to Deliberative or Structural."
+        "Sense → Detect outside-range indicators (band breaches).",
+        "Decide → Select a pre-approved quick action or activation pack.",
+        "Apply → Time-box the action (e.g., 30–90 days) and set a checkpoint.",
+        "Watch → Track response vs target; respect safety limits.",
+        "Handoff → If persistence or hub saturation is detected, escalate to Deliberative or Structural."
       ]
     },
     {
-      heading: "Key Components (What you see on this page)",
+      heading: "Key Components (What you see here)",
       bullets: [
-        ["Checkpoint Console", "Shows current alerts, active actions, and upcoming reviews."],
-        ["Guardrails Panel", "Caps/time-boxes that keep actions safe and reversible."],
-        ["Quick Actions Bar", "One-click, pre-approved interventions (comms, relief, routing)."],
+        ["Checkpoint Console", "Active incidents, actions, and upcoming reviews."],
+        ["Guardrails Panel", "Caps/time-boxes to keep actions safe and reversible."],
+        ["Quick Actions Bar", "One-click, pre-approved interventions."],
         ["Harmonization Drawer", "Resolve conflicts when multiple actions interact."]
       ]
     },
@@ -28,7 +28,7 @@ export const responsiveLearning = {
       heading: "Handoffs",
       list: [
         "→ Reflexive: schedule post-action learning review.",
-        "→ Deliberative: when short fixes are insufficient or distributional trade-offs are needed.",
+        "→ Deliberative: when short fixes are insufficient or trade-offs are needed.",
         "→ Structural: when rules/rights/processes cause recurring strain.",
         "→ Anticipatory: add watchpoints/trigger templates for early warnings."
       ]
@@ -36,10 +36,10 @@ export const responsiveLearning = {
     {
       heading: "Expected Outputs",
       list: [
-        "Activation record with time-box & guardrails.",
+        "Activation record with time-box and safety limits.",
         "Checkpoint schedule (review dates & owners).",
         "Impact quick-look (before/after).",
-        "Escalation note if persistence or hub-saturation is detected."
+        "Escalation note if persistence or hub saturation is detected."
       ]
     }
   ]

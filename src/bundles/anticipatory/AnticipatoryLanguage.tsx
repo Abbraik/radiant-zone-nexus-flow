@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { BookOpen, AlertTriangle, TrendingUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import type { LangMode } from './types.ui.lang';
-import { getAnticipatoryLearningContent } from './learningHub.content';
+import { anticipatoryLearning } from './learningHub.content';
 
 interface AnticipatoryHeaderLanguageProps {
   mode: LangMode;
@@ -17,7 +17,7 @@ interface AnticipatoryHeaderLanguageProps {
 
 export const AnticipatoryHeaderLanguage: React.FC<AnticipatoryHeaderLanguageProps> = ({ mode, onModeChange }) => {
   const [showLearningHub, setShowLearningHub] = useState(false);
-  const learningContent = getAnticipatoryLearningContent(mode);
+  const learningContent = anticipatoryLearning;
 
   return (
     <div className="flex items-center gap-3">
@@ -60,41 +60,36 @@ export const AnticipatoryHeaderLanguage: React.FC<AnticipatoryHeaderLanguageProp
           <ScrollArea className="h-[60vh] pr-4">
             <div className="space-y-6">
               {learningContent.sections.map((section, index) => (
-                <Card key={index}>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      {section.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose prose-sm max-w-none">
-                      {section.content.split('\n\n').map((paragraph, pIndex) => (
-                        <div key={pIndex} className="mb-4">
-                          {paragraph.split('\n').map((line, lIndex) => (
-                            <div key={lIndex}>
-                              {line.startsWith('**') && line.endsWith('**') ? (
-                                <h4 className="font-semibold text-sm mb-2 mt-4">
-                                  {line.replace(/\*\*/g, '')}
-                                </h4>
-                              ) : line.startsWith('• ') ? (
-                                <div className="ml-4 text-sm text-muted-foreground mb-1">
-                                  {line.replace('• ', '• ')}
-                                </div>
-                              ) : line.match(/^\d+\./) ? (
-                                <div className="ml-4 text-sm text-muted-foreground mb-1">
-                                  {line}
-                                </div>
-                              ) : (
-                                <p className="text-sm leading-relaxed">{line}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                 <Card key={index}>
+                   <CardHeader className="pb-3">
+                     <CardTitle className="text-lg flex items-center gap-2">
+                       <TrendingUp className="h-4 w-4" />
+                       {section.heading}
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     <div className="space-y-3">
+                       {"body" in section && section.body ? (
+                         <p className="text-sm text-muted-foreground">{section.body}</p>
+                       ) : null}
+                       {"list" in section && Array.isArray((section as any).list) ? (
+                         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                           {(section as any).list.map((li: string, i: number) => <li key={i}>{li}</li>)}
+                         </ul>
+                       ) : null}
+                       {"bullets" in section && Array.isArray((section as any).bullets) ? (
+                         <div className="space-y-2">
+                           {(section as any).bullets.map(([label, desc]: [string, string], i: number) => (
+                             <div key={i} className="text-sm">
+                               <span className="font-medium">{label}</span>
+                               <span className="text-muted-foreground ml-2">— {desc}</span>
+                             </div>
+                           ))}
+                         </div>
+                       ) : null}
+                     </div>
+                   </CardContent>
+                 </Card>
               ))}
             </div>
           </ScrollArea>

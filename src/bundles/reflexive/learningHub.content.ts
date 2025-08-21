@@ -1,123 +1,46 @@
-import type { LangMode } from "./types.ui.lang";
-
-export function getReflexiveLearningContent(mode: LangMode) {
-  if (mode === "general") {
-    return {
-      title: "Auto-Adjust Guide",
-      sections: [
-        {
-          title: "What is Auto-Adjust?",
-          content: `Auto-adjust systems automatically respond to changes without human intervention. Think of a thermostat that maintains room temperature or cruise control in a car.
-
-**Key Benefits:**
-• Instant response to changes
-• Consistent performance
-• Reduces manual workload
-• Works 24/7 without breaks
-
-**When to Use:**
-• Repetitive adjustments needed
-• Fast response required
-• Clear target values exist
-• Changes are predictable`
-        },
-        {
-          title: "How Auto-Adjust Works",
-          content: `**The Basic Cycle:**
-1. **Monitor** - Constantly check current conditions
-2. **Compare** - See how far off from target
-3. **Adjust** - Make corrections automatically
-4. **Repeat** - Keep monitoring and adjusting
-
-**Common Problems:**
-• **Goes too far** - System overcorrects
-• **Back-and-forth swings** - Can't settle down
-• **Too slow** - Takes too long to respond
-• **Too aggressive** - Changes too quickly`
-        },
-        {
-          title: "Getting the Settings Right",
-          content: `**Response Strength** - How hard the system pushes back
-• Too weak = slow response
-• Too strong = overshooting
-
-**Speed Settings** - How quickly adjustments happen
-• Too fast = unstable swings
-• Too slow = poor performance
-
-**Dead Zone** - Small range where no action is taken
-• Prevents constant tiny adjustments
-• Saves energy and wear
-
-**Tips for Success:**
-• Start with gentle settings
-• Test one change at a time
-• Monitor for swinging behavior
-• Allow time to stabilize`
-        }
+export const reflexiveLearning = {
+  title: "Reflexive Capacity — Learning Hub",
+  sections: [
+    {
+      heading: "Purpose",
+      body: "Turn outcomes into improvements. Reflexive reviews what happened, explains why, and retunes policies, controllers, and thresholds so the system learns over time."
+    },
+    {
+      heading: "Typical Workflows",
+      list: [
+        "Ingest → Collect post-intervention results and baselines.",
+        "Analyze → Compare expected vs actual (trend breaks, variance changes).",
+        "Explain → Diagnose causes (loop nodes, shared hubs, band settings).",
+        "Retune → Adjust controllers, thresholds, or bands; archive learning.",
+        "Loop back → Schedule next review; notify owners of changes."
       ]
-    };
-  }
-
-  return {
-    title: "Reflexive Capacity Technical Guide",
-    sections: [
-      {
-        title: "Control Theory Fundamentals",
-        content: `Reflexive capacity implements closed-loop control systems with feedback mechanisms for autonomous system regulation.
-
-**Core Components:**
-• **Plant** - System under control
-• **Sensor** - Measurement device
-• **Controller** - Decision logic (PID)
-• **Actuator** - Control element
-• **Setpoint** - Reference signal
-
-**Control Loop Characteristics:**
-• **Rise time** - Speed to reach target
-• **Settling time** - Time to stabilize
-• **Overshoot** - Peak beyond setpoint
-• **Steady-state error** - Final offset`
-      },
-      {
-        title: "PID Controller Design",
-        content: `**Proportional (P)** - Error-based response
-• Kp gain determines immediate response
-• Higher Kp = faster response, potential overshoot
-
-**Integral (I)** - Accumulated error correction
-• Ki eliminates steady-state error
-• Risk of integral windup
-
-**Derivative (D)** - Rate-based prediction
-• Kd provides damping, reduces overshoot
-• Sensitive to noise, needs filtering
-
-**Tuning Methods:**
-• Ziegler-Nichols
-• Cohen-Coon
-• Lambda tuning
-• Model-based approaches`
-      },
-      {
-        title: "Advanced Control Strategies",
-        content: `**Cascade Control** - Multiple loop hierarchy
-**Feedforward Control** - Disturbance compensation
-**Model Predictive Control** - Optimization-based
-**Adaptive Control** - Self-tuning parameters
-
-**System Identification:**
-• Step response analysis
-• Frequency domain methods
-• Black-box modeling
-• Parameter estimation
-
-**Performance Metrics:**
-• ISE, IAE, ITAE criteria
-• Robustness margins
-• Disturbance rejection
-• Noise sensitivity`
-      }
-    ]
-  };
-}
+    },
+    {
+      heading: "Key Components (What you see here)",
+      bullets: [
+        ["Learning Deck", "Before/after panels, key deltas, and takeaways."],
+        ["Controller Tuner", "Adjust gains, caps, or choice rules; preview impact."],
+        ["Experiment Registry", "A/B or pilot notes with outcomes and confidence."],
+        ["Methods Panel", "Quick access to time-series checks (trend break, DiD/ITS)."]
+      ]
+    },
+    {
+      heading: "Handoffs",
+      list: [
+        "→ Responsive: recommend keeping/ending quick actions based on results.",
+        "→ Deliberative: re-rank options if outcomes differ from expectations.",
+        "→ Structural: propose durable changes if patterns persist.",
+        "→ Anticipatory: add triggers/watchpoints for early detection next time."
+      ]
+    },
+    {
+      heading: "Expected Outputs",
+      list: [
+        "Learning summary (what worked, what didn't, why).",
+        "Retuning plan (controller settings, bands, or thresholds).",
+        "Updated indicator notes and review cadence.",
+        "Backlog items for other capacities (if needed)."
+      ]
+    }
+  ]
+};
