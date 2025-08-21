@@ -190,8 +190,6 @@ export default function ResponsiveBundle(props: ResponsiveBundleProps) {
             indicator={indicator}
             decision={decision}
             reading={reading}
-            lastIncidentId={lastIncidentId}
-            onHandoff={onHandoff}
             busy={busy}
             startContainmentSprint={startContainmentSprint}
             handoff={handoff}
