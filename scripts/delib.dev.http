@@ -1,0 +1,246 @@
+### Variables (replace with actual values)
+@SUPABASE_URL = https://eyyovobwgaqeizfxmkox.supabase.co
+@ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5eW92b2J3Z2FxZWl6Znhta294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTExODUsImV4cCI6MjA3MTA2NzE4NX0.ieo7c11vEhdWxWKTf4C61PgOdFO7_NT2v9eCAqZMECs
+@USER_JWT = YOUR_JWT_TOKEN_HERE
+@ORG_ID = YOUR_ORG_ID_HERE
+@SESSION_ID = YOUR_SESSION_ID_HERE
+@OPT1 = YOUR_OPTION_1_ID_HERE
+@OPT2 = YOUR_OPTION_2_ID_HERE
+@OPT3 = YOUR_OPTION_3_ID_HERE
+
+### Create session
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_create_session
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_loop": "MAC-L04",
+  "p_mission": "Improve affordability w/o breaching ecological ceiling",
+  "p_activation_vector": {"tri": {"trust": 0.52}}
+}
+
+### Add a criterion - Effectiveness
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_upsert_criterion
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_id": null,
+  "p_label": "Effectiveness",
+  "p_desc": "How well does this option achieve the intended outcome",
+  "p_weight": 0.35,
+  "p_direction": "maximize",
+  "p_scale": "0-1",
+  "p_order": 1
+}
+
+### Add a criterion - Cost
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_upsert_criterion
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_id": null,
+  "p_label": "Cost",
+  "p_desc": "Total cost including CAPEX and OPEX",
+  "p_weight": 0.25,
+  "p_direction": "minimize",
+  "p_scale": "dollars",
+  "p_order": 2
+}
+
+### Add a criterion - Equity
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_upsert_criterion
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_id": null,
+  "p_label": "Equity",
+  "p_desc": "How equitable is the distribution of benefits and burdens",
+  "p_weight": 0.40,
+  "p_direction": "maximize",
+  "p_scale": "0-1",
+  "p_order": 3
+}
+
+### Add an option - Housing Vouchers
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_upsert_option
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_id": null,
+  "p_name": "Housing Vouchers",
+  "p_synopsis": "Expand housing voucher program to help low-income families afford housing",
+  "p_tags": ["housing", "vouchers", "assistance"],
+  "p_costs": {"capex": 50000000, "opex": 200000000},
+  "p_latency": 90,
+  "p_authority": "ok",
+  "p_equity_note": "Directly targets low-income households"
+}
+
+### Add an option - Zoning Reform
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_upsert_option
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_id": null,
+  "p_name": "Zoning Reform",
+  "p_synopsis": "Reform zoning laws to allow more dense housing development",
+  "p_tags": ["zoning", "reform", "density"],
+  "p_costs": {"capex": 10000000, "opex": 5000000},
+  "p_latency": 365,
+  "p_authority": "review",
+  "p_equity_note": "May benefit developers more than residents initially"
+}
+
+### Set a score (Housing Vouchers on Effectiveness)
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_set_score
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_option": "{{OPT1}}",
+  "p_criterion": "CRITERION_ID_HERE",
+  "p_score": 0.8,
+  "p_evidence": ["Studies show 70-80% success rate", "Proven policy intervention"]
+}
+
+### Toggle a constraint
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_toggle_constraint
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_label": "Budget Cap $500M",
+  "p_active": true
+}
+
+### Set mandate check
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_set_mandate
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_label": "Legal Authority",
+  "p_status": "ok",
+  "p_note": "City council has authority under municipal code section 12.4"
+}
+
+### Set guardrail
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_set_guardrail
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_label": "Public Comment Period",
+  "p_kind": "timebox",
+  "p_value": "30 days",
+  "p_required": true,
+  "p_selected": true
+}
+
+### Set participation plan
+POST {{SUPABASE_URL}}/rest/v1/rpc/delib_set_participation
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+Content-Type: application/json
+
+{
+  "p_org": "{{ORG_ID}}",
+  "p_session": "{{SESSION_ID}}",
+  "p_label": "Community Forums",
+  "p_audience": "Residents, advocacy groups",
+  "p_date": "2025-02-15T19:00:00Z",
+  "p_status": "planned"
+}
+
+### Recompute totals (Edge Function)
+POST {{SUPABASE_URL}}/functions/v1/delib-recompute
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{ 
+  "org_id": "{{ORG_ID}}", 
+  "session_id": "{{SESSION_ID}}" 
+}
+
+### Build frontier (Edge Function)
+POST {{SUPABASE_URL}}/functions/v1/delib-frontier
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{ 
+  "org_id": "{{ORG_ID}}", 
+  "session_id": "{{SESSION_ID}}", 
+  "max_bundle": 3 
+}
+
+### Publish dossier + handoff (Edge Function)
+POST {{SUPABASE_URL}}/functions/v1/delib-publish-dossier
+Authorization: Bearer {{USER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "session_id": "{{SESSION_ID}}",
+  "version": "1.0.0",
+  "title": "Housing Affordability Decision Portfolio",
+  "summary": "Mixed portfolio balancing voucher expansion and zoning reform to address housing affordability while maintaining equity considerations.",
+  "selected_option_ids": ["{{OPT1}}", "{{OPT2}}"],
+  "rejected_option_ids": ["{{OPT3}}"],
+  "tradeoff_notes": "Budget constraints require phased implementation. Vouchers provide immediate relief while zoning changes take effect.",
+  "robustness_notes": "Portfolio performs well across demand scenarios. Worst-case regret ≤ 0.22 across housing demand and economic scenarios.",
+  "handoffs": ["responsive", "structural"]
+}
+
+### Query sessions
+GET {{SUPABASE_URL}}/rest/v1/delib_sessions?select=*
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+
+### Query MCDA totals view
+GET {{SUPABASE_URL}}/rest/v1/delib_mcda_totals?select=*&session_id=eq.{{SESSION_ID}}
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+
+### Query frontier points
+GET {{SUPABASE_URL}}/rest/v1/delib_frontier?select=*&session_id=eq.{{SESSION_ID}}
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}
+
+### Query latest dossier
+GET {{SUPABASE_URL}}/rest/v1/delib_latest_dossier?select=*&session_id=eq.{{SESSION_ID}}
+Authorization: Bearer {{USER_JWT}}
+apikey: {{ANON_KEY}}

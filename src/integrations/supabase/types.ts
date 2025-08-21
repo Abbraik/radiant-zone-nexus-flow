@@ -1150,6 +1150,632 @@ export type Database = {
           },
         ]
       }
+      delib_constraints: {
+        Row: {
+          active: boolean
+          id: string
+          label: string
+          org_id: string
+          session_id: string
+        }
+        Insert: {
+          active?: boolean
+          id?: string
+          label: string
+          org_id: string
+          session_id: string
+        }
+        Update: {
+          active?: boolean
+          id?: string
+          label?: string
+          org_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_constraints_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_criteria: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          direction: string
+          id: string
+          label: string
+          order_index: number
+          org_id: string
+          scale_hint: string | null
+          session_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          direction: string
+          id?: string
+          label: string
+          order_index?: number
+          org_id: string
+          scale_hint?: string | null
+          session_id: string
+          weight: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          direction?: string
+          id?: string
+          label?: string
+          order_index?: number
+          org_id?: string
+          scale_hint?: string | null
+          session_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_criteria_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_dossiers: {
+        Row: {
+          decision_summary: string
+          guardrails: Json | null
+          handoffs: string[]
+          id: string
+          mandate_path: Json | null
+          org_id: string
+          participation_plan: Json | null
+          published_at: string
+          published_by: string
+          rejected_option_ids: string[]
+          robustness_notes: string | null
+          selected_option_ids: string[]
+          session_id: string
+          title: string
+          tradeoff_notes: string | null
+          version: string
+        }
+        Insert: {
+          decision_summary: string
+          guardrails?: Json | null
+          handoffs: string[]
+          id?: string
+          mandate_path?: Json | null
+          org_id: string
+          participation_plan?: Json | null
+          published_at?: string
+          published_by: string
+          rejected_option_ids: string[]
+          robustness_notes?: string | null
+          selected_option_ids: string[]
+          session_id: string
+          title: string
+          tradeoff_notes?: string | null
+          version: string
+        }
+        Update: {
+          decision_summary?: string
+          guardrails?: Json | null
+          handoffs?: string[]
+          id?: string
+          mandate_path?: Json | null
+          org_id?: string
+          participation_plan?: Json | null
+          published_at?: string
+          published_by?: string
+          rejected_option_ids?: string[]
+          robustness_notes?: string | null
+          selected_option_ids?: string[]
+          session_id?: string
+          title?: string
+          tradeoff_notes?: string | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_dossiers_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: number
+          kind: string
+          org_id: string
+          payload: Json | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: number
+          kind: string
+          org_id: string
+          payload?: Json | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: number
+          kind?: string
+          org_id?: string
+          payload?: Json | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_frontier: {
+        Row: {
+          cost: number
+          created_at: string | null
+          equity: number
+          feasible: boolean
+          id: string
+          label: string | null
+          option_ids: string[]
+          org_id: string
+          regret_worst: number | null
+          risk: number
+          session_id: string
+        }
+        Insert: {
+          cost: number
+          created_at?: string | null
+          equity: number
+          feasible?: boolean
+          id?: string
+          label?: string | null
+          option_ids: string[]
+          org_id: string
+          regret_worst?: number | null
+          risk: number
+          session_id: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string | null
+          equity?: number
+          feasible?: boolean
+          id?: string
+          label?: string | null
+          option_ids?: string[]
+          org_id?: string
+          regret_worst?: number | null
+          risk?: number
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_frontier_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_guardrails: {
+        Row: {
+          id: string
+          kind: string
+          label: string
+          org_id: string
+          required: boolean
+          selected: boolean
+          session_id: string
+          value: string | null
+        }
+        Insert: {
+          id?: string
+          kind: string
+          label: string
+          org_id: string
+          required?: boolean
+          selected?: boolean
+          session_id: string
+          value?: string | null
+        }
+        Update: {
+          id?: string
+          kind?: string
+          label?: string
+          org_id?: string
+          required?: boolean
+          selected?: boolean
+          session_id?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_guardrails_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_handoffs: {
+        Row: {
+          created_at: string | null
+          id: string
+          org_id: string
+          payload: Json | null
+          session_id: string
+          task_id: string | null
+          to_capacity: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          org_id: string
+          payload?: Json | null
+          session_id: string
+          task_id?: string | null
+          to_capacity: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          org_id?: string
+          payload?: Json | null
+          session_id?: string
+          task_id?: string | null
+          to_capacity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_handoffs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_mandate_checks: {
+        Row: {
+          id: string
+          label: string
+          note: string | null
+          org_id: string
+          session_id: string
+          status: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          note?: string | null
+          org_id: string
+          session_id: string
+          status: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          note?: string | null
+          org_id?: string
+          session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_mandate_checks_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_options: {
+        Row: {
+          authority_flag: string | null
+          costs: Json | null
+          created_at: string | null
+          equity_note: string | null
+          id: string
+          latency_days: number | null
+          name: string
+          org_id: string
+          session_id: string
+          synopsis: string | null
+          tags: string[] | null
+        }
+        Insert: {
+          authority_flag?: string | null
+          costs?: Json | null
+          created_at?: string | null
+          equity_note?: string | null
+          id?: string
+          latency_days?: number | null
+          name: string
+          org_id: string
+          session_id: string
+          synopsis?: string | null
+          tags?: string[] | null
+        }
+        Update: {
+          authority_flag?: string | null
+          costs?: Json | null
+          created_at?: string | null
+          equity_note?: string | null
+          id?: string
+          latency_days?: number | null
+          name?: string
+          org_id?: string
+          session_id?: string
+          synopsis?: string | null
+          tags?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_options_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_participation: {
+        Row: {
+          audience: string | null
+          date: string | null
+          id: string
+          label: string
+          org_id: string
+          session_id: string
+          status: string
+        }
+        Insert: {
+          audience?: string | null
+          date?: string | null
+          id?: string
+          label: string
+          org_id: string
+          session_id: string
+          status?: string
+        }
+        Update: {
+          audience?: string | null
+          date?: string | null
+          id?: string
+          label?: string
+          org_id?: string
+          session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_participation_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_scenario_outcomes: {
+        Row: {
+          id: string
+          option_id: string
+          org_id: string
+          outcome_score: number
+          risk_delta: number | null
+          scenario_id: string
+          session_id: string
+        }
+        Insert: {
+          id?: string
+          option_id: string
+          org_id: string
+          outcome_score: number
+          risk_delta?: number | null
+          scenario_id: string
+          session_id: string
+        }
+        Update: {
+          id?: string
+          option_id?: string
+          org_id?: string
+          outcome_score?: number
+          risk_delta?: number | null
+          scenario_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_scenario_outcomes_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "delib_mcda_totals"
+            referencedColumns: ["option_id"]
+          },
+          {
+            foreignKeyName: "delib_scenario_outcomes_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "delib_options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delib_scenario_outcomes_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "delib_scenarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delib_scenario_outcomes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_scenarios: {
+        Row: {
+          antic_scenario_id: string | null
+          created_at: string | null
+          id: string
+          name: string
+          org_id: string
+          session_id: string
+          summary: string | null
+        }
+        Insert: {
+          antic_scenario_id?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          org_id: string
+          session_id: string
+          summary?: string | null
+        }
+        Update: {
+          antic_scenario_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+          session_id?: string
+          summary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_scenarios_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_scores: {
+        Row: {
+          criterion_id: string
+          evidence_refs: string[] | null
+          id: string
+          option_id: string
+          org_id: string
+          score: number
+          session_id: string
+        }
+        Insert: {
+          criterion_id: string
+          evidence_refs?: string[] | null
+          id?: string
+          option_id: string
+          org_id: string
+          score: number
+          session_id: string
+        }
+        Update: {
+          criterion_id?: string
+          evidence_refs?: string[] | null
+          id?: string
+          option_id?: string
+          org_id?: string
+          score?: number
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_scores_criterion_id_fkey"
+            columns: ["criterion_id"]
+            isOneToOne: false
+            referencedRelation: "delib_criteria"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delib_scores_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "delib_mcda_totals"
+            referencedColumns: ["option_id"]
+          },
+          {
+            foreignKeyName: "delib_scores_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "delib_options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delib_scores_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_sessions: {
+        Row: {
+          activation_vector: Json | null
+          created_at: string
+          created_by: string
+          id: string
+          loop_code: string
+          mission: string | null
+          org_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          activation_vector?: Json | null
+          created_at?: string
+          created_by: string
+          id?: string
+          loop_code: string
+          mission?: string | null
+          org_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          activation_vector?: Json | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          loop_code?: string
+          mission?: string | null
+          org_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       entity_links: {
         Row: {
           created_at: string
@@ -3589,6 +4215,41 @@ export type Database = {
       }
     }
     Views: {
+      delib_latest_dossier: {
+        Row: {
+          dossier_id: string | null
+          published_at: string | null
+          session_id: string | null
+          title: string | null
+          version: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_dossiers_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delib_mcda_totals: {
+        Row: {
+          option_id: string | null
+          org_id: string | null
+          session_id: string | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delib_options_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delib_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meta_alignment_vw: {
         Row: {
           domains_balance_score: number | null
@@ -3648,6 +4309,14 @@ export type Database = {
           role: string | null
           snl_id: string | null
           snl_label: string | null
+        }
+        Relationships: []
+      }
+      v_me: {
+        Row: {
+          org_id: string | null
+          role: string | null
+          user_id: string | null
         }
         Relationships: []
       }
@@ -3754,6 +4423,137 @@ export type Database = {
       create_watchpoint: {
         Args: { loop_uuid: string; payload: Json }
         Returns: Json
+      }
+      delib_create_session: {
+        Args: {
+          p_activation_vector: Json
+          p_loop: string
+          p_mission: string
+          p_org: string
+        }
+        Returns: string
+      }
+      delib_handoff: {
+        Args: {
+          p_due: string
+          p_org: string
+          p_payload: Json
+          p_session: string
+          p_title: string
+          p_to: string
+        }
+        Returns: string
+      }
+      delib_publish_dossier: {
+        Args: {
+          p_handoffs: string[]
+          p_org: string
+          p_rejected: string[]
+          p_robust: string
+          p_selected: string[]
+          p_session: string
+          p_summary: string
+          p_title: string
+          p_trade: string
+          p_version: string
+        }
+        Returns: string
+      }
+      delib_save_frontier_point: {
+        Args: {
+          p_cost: number
+          p_equity: number
+          p_feasible: boolean
+          p_label: string
+          p_option_ids: string[]
+          p_org: string
+          p_regret: number
+          p_risk: number
+          p_session: string
+        }
+        Returns: string
+      }
+      delib_set_guardrail: {
+        Args: {
+          p_kind: string
+          p_label: string
+          p_org: string
+          p_required: boolean
+          p_selected: boolean
+          p_session: string
+          p_value: string
+        }
+        Returns: undefined
+      }
+      delib_set_mandate: {
+        Args: {
+          p_label: string
+          p_note: string
+          p_org: string
+          p_session: string
+          p_status: string
+        }
+        Returns: undefined
+      }
+      delib_set_participation: {
+        Args: {
+          p_audience: string
+          p_date: string
+          p_label: string
+          p_org: string
+          p_session: string
+          p_status: string
+        }
+        Returns: undefined
+      }
+      delib_set_score: {
+        Args: {
+          p_criterion: string
+          p_evidence: string[]
+          p_option: string
+          p_org: string
+          p_score: number
+          p_session: string
+        }
+        Returns: undefined
+      }
+      delib_toggle_constraint: {
+        Args: {
+          p_active: boolean
+          p_label: string
+          p_org: string
+          p_session: string
+        }
+        Returns: undefined
+      }
+      delib_upsert_criterion: {
+        Args: {
+          p_desc: string
+          p_direction: string
+          p_id: string
+          p_label: string
+          p_order: number
+          p_org: string
+          p_scale: string
+          p_session: string
+          p_weight: number
+        }
+        Returns: string
+      }
+      delib_upsert_option: {
+        Args: {
+          p_authority: string
+          p_costs: Json
+          p_equity_note: string
+          p_id: string
+          p_latency: number
+          p_name: string
+          p_org: string
+          p_session: string
+          p_synopsis: string
+          p_tags: string[]
+        }
+        Returns: string
       }
       dry_run_trip: {
         Args: { scenario_snapshot?: Json; watchpoint_uuid: string }
