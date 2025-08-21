@@ -23,7 +23,13 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
     handoff, onEvent
   } = props;
 
+  const [activeScreen, setActiveScreen] = React.useState(screen);
   const emit = (n: string, p?: any) => onEvent?.(n, p);
+
+  // Update active screen when prop changes
+  React.useEffect(() => {
+    setActiveScreen(screen);
+  }, [screen]);
 
 
   return (
@@ -45,7 +51,7 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
       </div>
 
       {/* Tabs */}
-      <Tabs value={screen} className="w-full">
+      <Tabs value={activeScreen} onValueChange={(value) => setActiveScreen(value as any)} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="risk-watchboard">Risk Watchboard</TabsTrigger>
           <TabsTrigger value="scenario-sim">Scenario Simulator</TabsTrigger>
@@ -62,7 +68,7 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
       )}
 
       {/* === 1) RISK WATCHBOARD === */}
-      {screen === "risk-watchboard" && (
+      {activeScreen === "risk-watchboard" && (
         <>
           <div className="grid xl:grid-cols-3 gap-3">
             {/* EWS composition (stack + spark) */}
@@ -138,7 +144,7 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
       )}
 
       {/* === 2) SCENARIO SIM === */}
-      {screen === "scenario-sim" && (
+      {activeScreen === "scenario-sim" && (
         <>
           <ProCard title="Scenario Selector" subtitle="Choose a stress; compare outcomes">
             <div className="flex flex-wrap gap-2">
@@ -173,7 +179,7 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
       )}
 
       {/* === 3) PRE-POSITIONER === */}
-      {screen === "pre-positioner" && (
+      {activeScreen === "pre-positioner" && (
         <>
           <ProCard title="Packs" subtitle="Stage quietly: resources, regulatory, comms">
             <div className="grid md:grid-cols-2 gap-3">
@@ -233,7 +239,7 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
       )}
 
       {/* === 4) TRIGGER LIBRARY === */}
-      {screen === "trigger-library" && (
+      {activeScreen === "trigger-library" && (
         <>
           <ProCard title="Expression Builder" subtitle="Author IF–THEN rules (human readable)">
             <div className="grid md:grid-cols-2 gap-3">
