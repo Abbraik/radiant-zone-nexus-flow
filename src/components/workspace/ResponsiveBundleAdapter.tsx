@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ResponsiveCapacityPage } from '@/pages/ResponsiveCapacityPage';
+import ResponsiveBundle from '@/bundles/responsive/ResponsiveBundle';
 import type { CapacityBundleProps } from '@/types/capacity';
 import { useResponsiveIntegration } from '@/hooks/useResponsiveIntegration';
 
@@ -92,23 +92,13 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
   }, [onValidationChange]);
 
   return (
-    <ResponsiveCapacityPage
+    <ResponsiveBundle
+      loopCode={loopCode}
+      indicator={indicator}
       decision={decision}
       reading={reading}
-      playbook={{
-        id: 'health-surge-v2',
-        name: 'Health Capacity Surge',
-        rationale: 'Re-enter band faster with mobile units and triage v2',
-        tasks: [
-          { title: 'Deploy mobile triage units', description: 'Activate standby capacity', capacity: 'responsive' },
-          { title: 'Update care protocols', description: 'Switch to crisis triage v2', capacity: 'responsive' },
-          { title: 'Coordinate with regional hubs', description: 'Balance load across network', capacity: 'responsive' }
-        ]
-      }}
-      onUpsertIncident={handleUpsertIncident}
-      onAppendIncidentEvent={handleAppendIncidentEvent}
-      onCreateSprintWithTasks={handleCreateSprintWithTasks}
-      onOpenClaimDrawer={handleOpenClaimDrawer}
+      lastIncidentId={lastIncidentId}
+      onHandoff={handleHandoff}
     />
   );
 };
