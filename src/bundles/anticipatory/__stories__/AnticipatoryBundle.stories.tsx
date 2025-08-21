@@ -20,6 +20,8 @@ export const RiskWatchboard = () => (
       { riskChannel: "Heat", ewsProb: 0.66, trend: "flat", leadTimeDays: 6, linkedLoops: ["MES-L01"], bufferAdequacy: 0.5 },
       { riskChannel: "WaterStress", ewsProb: 0.58, trend: "up", leadTimeDays: 14, linkedLoops: ["MES-L08"], bufferAdequacy: 0.41 },
     ]}
+    ewsComposition={[]}
+    buffers={[]}
     scenarios={[]}
     prePositionPacks={[]}
     triggerTemplates={[]}
@@ -37,7 +39,8 @@ export const ScenarioSimulator = () => (
     leadTimeDays={9}
     bufferAdequacy={0.32}
     consentRequired={true}
-    watchboard={[]}
+    ewsComposition={[]}
+    buffers={[]}
     scenarios={[
       { id: "s1", name: "Heat + 3°C", summary: "High temperature scenario with supply chain impacts" },
       { id: "s2", name: "Supply Shock", summary: "Major supplier disruption scenario" },
@@ -59,7 +62,8 @@ export const PrePositioner = () => (
     leadTimeDays={9}
     bufferAdequacy={0.32}
     consentRequired={false}
-    watchboard={[]}
+    ewsComposition={[]}
+    buffers={[]}
     scenarios={[]}
     prePositionPacks={[
       { 
@@ -108,7 +112,8 @@ export const TriggerLibrary = () => (
     leadTimeDays={9}
     bufferAdequacy={0.32}
     consentRequired={false}
-    watchboard={[]}
+    ewsComposition={[]}
+    buffers={[]}
     scenarios={[]}
     prePositionPacks={[]}
     triggerTemplates={[
