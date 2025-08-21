@@ -3712,6 +3712,10 @@ export type Database = {
         }
         Returns: Json
       }
+      assert_owner: {
+        Args: { p_org: string }
+        Returns: undefined
+      }
       attach_playbook: {
         Args: { playbook_uuid: string; watchpoint_uuid: string }
         Returns: Json
@@ -3779,6 +3783,25 @@ export type Database = {
         Args: { claim_uuid: string }
         Returns: Json
       }
+      gen_indicator_series: {
+        Args: {
+          p_amp: number
+          p_base: number
+          p_breach_days?: number
+          p_breach_delta?: number
+          p_breach_start?: number
+          p_days: number
+          p_ind: string
+          p_loop: string
+          p_org: string
+          p_period: number
+        }
+        Returns: undefined
+      }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_loop_hydrate: {
         Args: { loop_uuid: string } | { p_loop_code: string }
         Returns: Json
@@ -3834,6 +3857,10 @@ export type Database = {
       import_loop: {
         Args: { as_draft?: boolean; payload: Json }
         Returns: string
+      }
+      ingest_indicator_json: {
+        Args: { p_org: string; p_payload: Json }
+        Returns: number
       }
       insert_sprint_tasks: {
         Args: { task_data: Json }
@@ -3919,8 +3946,16 @@ export type Database = {
           updated_at: string
         }[]
       }
+      seed_anticipatory_minimal: {
+        Args: { p_org: string }
+        Returns: undefined
+      }
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      seed_mock_indicators: {
+        Args: { p_org: string }
         Returns: undefined
       }
       start_claim: {
