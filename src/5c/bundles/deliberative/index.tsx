@@ -73,6 +73,18 @@ const DeliberativeBundleWrapper: React.FC<BundleProps5C> = ({ task }) => {
     { id: 'p3', label: 'City Council Hearing', audience: 'Public', status: 'planned' as const, date: '2024-03-01' }
   ];
 
+  const mockScenarioOutcomes = [
+    // Economic Downturn scenario outcomes
+    { scenarioId: 'sc1', scenarioName: 'Economic Downturn', optionId: 'opt1', outcomeScore: 0.75, riskDelta: -0.1 },
+    { scenarioId: 'sc1', scenarioName: 'Economic Downturn', optionId: 'opt2', outcomeScore: 0.45, riskDelta: 0.2 },
+    { scenarioId: 'sc1', scenarioName: 'Economic Downturn', optionId: 'opt3', outcomeScore: 0.85, riskDelta: -0.05 },
+    
+    // Population Surge scenario outcomes
+    { scenarioId: 'sc2', scenarioName: 'Population Surge', optionId: 'opt1', outcomeScore: 0.65, riskDelta: 0.1 },
+    { scenarioId: 'sc2', scenarioName: 'Population Surge', optionId: 'opt2', outcomeScore: 0.90, riskDelta: -0.15 },
+    { scenarioId: 'sc2', scenarioName: 'Population Surge', optionId: 'opt3', outcomeScore: 0.40, riskDelta: 0.25 }
+  ];
+
   const deliberativeProps: DeliberativeUiProps = {
     loopCode: task.loop_id,
     mission: task.description,
@@ -82,6 +94,7 @@ const DeliberativeBundleWrapper: React.FC<BundleProps5C> = ({ task }) => {
     scenarios: mockScenarios,
     criteria: mockCriteria,
     scores: mockScores,
+    scenarioOutcomes: mockScenarioOutcomes,
     frontier: mockFrontier,
     hardConstraints: [
       { id: 'hc1', label: 'Budget ≤ $3M total', active: true },
