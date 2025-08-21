@@ -1,0 +1,56 @@
+### Variables
+@SUPABASE_URL = https://eyyovobwgaqeizfxmkox.supabase.co
+@OWNER_JWT = YOUR_OWNER_JWT_TOKEN_HERE
+@ORG_ID = YOUR_ORG_ID_HERE
+
+### Seed playbooks + triggers (and backtests) — OWNER token required
+POST {{SUPABASE_URL}}/functions/v1/admin-seed-playbooks-triggers
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "also_backtests": true
+}
+
+### Only backtests (if you seeded earlier)
+POST {{SUPABASE_URL}}/functions/v1/admin-backtest-seeded
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "horizon": "P180D"
+}
+
+### Seed playbooks and triggers only (no backtests)
+POST {{SUPABASE_URL}}/functions/v1/admin-seed-playbooks-triggers
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "also_backtests": false
+}
+
+### Full chain seeding (run in sequence)
+# 1. Basic org setup with mock data
+POST {{SUPABASE_URL}}/functions/v1/admin-seed-org
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "with_mock": true
+}
+
+###
+# 2. Playbooks, triggers and backtests
+POST {{SUPABASE_URL}}/functions/v1/admin-seed-playbooks-triggers
+Authorization: Bearer {{OWNER_JWT}}
+Content-Type: application/json
+
+{
+  "org_id": "{{ORG_ID}}",
+  "also_backtests": true
+}

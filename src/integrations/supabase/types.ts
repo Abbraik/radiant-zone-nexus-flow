@@ -3950,11 +3950,19 @@ export type Database = {
         Args: { p_org: string }
         Returns: undefined
       }
+      seed_demo_backtests: {
+        Args: { p_horizon?: string; p_org: string }
+        Returns: undefined
+      }
       seed_demo_data_for_user: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
       seed_mock_indicators: {
+        Args: { p_org: string }
+        Returns: undefined
+      }
+      seed_playbooks_and_triggers: {
         Args: { p_org: string }
         Returns: undefined
       }
