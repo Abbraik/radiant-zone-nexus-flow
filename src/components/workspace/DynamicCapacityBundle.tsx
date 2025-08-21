@@ -1,10 +1,11 @@
 import React from 'react';
 import { ReflexiveBundle } from '@/bundles/reflexive';
-import { DeliberativeBundle } from '@/bundles/deliberative';
+import DeliberativeBundleWrapper from '@/5c/bundles/deliberative';
 import AnticipatoryBundle from '@/bundles/anticipatory/AnticipatoryBundle';
 import { StructuralBundle } from '@/bundles/structural';
 import { ResponsiveBundleAdapter } from './ResponsiveBundleAdapter';
 import type { Capacity, CapacityBundleProps } from '@/types/capacity';
+import type { EnhancedTask5C } from '@/5c/types';
 import { toast } from 'sonner';
 
 interface DynamicCapacityBundleProps extends CapacityBundleProps {
@@ -67,8 +68,25 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
         </React.Suspense>
       );
     }
-    case 'deliberative':
-      return <DeliberativeBundle {...bundleProps} />;
+    case 'deliberative': {
+      // Convert task data to 5C format expected by DeliberativeBundle
+      const task5c: EnhancedTask5C = { 
+        id: bundleProps.taskId,
+        capacity: 'deliberative',
+        loop_id: bundleProps.taskData?.loop_id || 'DELIB-001',
+        type: 'perceptual',
+        scale: 'macro',
+        leverage: 'S',
+        title: bundleProps.taskData?.title || 'Strategic Architecture Planning',
+        description: bundleProps.taskData?.description || 'Conduct comprehensive analysis and planning for next-generation system architecture',
+        status: 'active',
+        payload: bundleProps.payload || {},
+        user_id: 'user-123',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      return <DeliberativeBundleWrapper task={task5c} />;
+    }
     case 'anticipatory': {
       const task = bundleProps.taskData;
       const params = new URLSearchParams(window.location.search);
