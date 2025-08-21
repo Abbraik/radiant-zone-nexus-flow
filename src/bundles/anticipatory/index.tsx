@@ -159,27 +159,57 @@ export const AnticipatoryBundle: React.FC<Props> = ({
     onHandoff?.(to, reason);
   }
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log('AnticipatoryBundle rendering:', {
+      loopCode,
+      indicator,
+      screen,
+      decision: decision.primary,
+      reading: reading?.ewsProb
+    });
+  }, [loopCode, indicator, screen, decision, reading]);
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <header className="flex items-center justify-between">
-        <div>
-          <div className="text-sm text-muted-foreground">
-            Anticipatory · {screen.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
+    <div className="w-full min-h-screen bg-background p-6 space-y-6">
+      {/* Prominent Header with Visual Indicator */}
+      <header className="bg-card border rounded-lg p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="font-medium">Anticipatory Capacity Active</span>
+              <span>·</span>
+              <span>{screen.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}</span>
+            </div>
+            <div className="text-3xl font-bold text-foreground">{loopCode} · {indicator}</div>
+            <div className="flex items-center gap-6 text-sm mt-2">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">EWS:</span>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                  {(reading?.ewsProb ?? decision.scores.anticipatory/100).toFixed(2)}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">Lead-time:</span>
+                <Badge variant="outline">~7d</Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">Buffers:</span>
+                <Badge variant="outline">{(reading?.bufferAdequacy ?? 0.5).toFixed(2)}</Badge>
+              </div>
+            </div>
           </div>
-          <div className="text-2xl font-semibold">{loopCode} · {indicator}</div>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-            <span>EWS {(reading?.ewsProb ?? decision.scores.anticipatory/100).toFixed(2)}</span>
-            <span>Lead-time ~7d</span>
-            <span>Buffers {(reading?.bufferAdequacy ?? 0.5).toFixed(2)}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {decision.consent.requireDeliberative && (
-            <Badge variant="outline" className="border-warning text-warning">
-              Consent gate
+          <div className="flex items-center gap-2">
+            <Badge className="bg-blue-600 text-white">
+              Anticipatory Mode
             </Badge>
-          )}
+            {decision.consent.requireDeliberative && (
+              <Badge variant="outline" className="border-warning text-warning">
+                Consent Gate Required
+              </Badge>
+            )}
+          </div>
         </div>
       </header>
 
