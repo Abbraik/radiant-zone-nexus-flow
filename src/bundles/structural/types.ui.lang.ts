@@ -4,7 +4,9 @@ export type TermKey =
   | "STRUCTURAL_CAPACITY" | "GOVERNANCE" | "MANDATE" | "DELEGATION" | "AUTHORITY"
   | "MESH_PLANNING" | "COORDINATION" | "PROCESS_FLOW" | "STANDARDS" | "INTEROPERABILITY"
   | "MARKET_DESIGN" | "AUCTION" | "PRICING_RULE" | "PERMIT_CLASS" | "CONFORMANCE"
-  | "BUDGET_ENVELOPE" | "SLA" | "RACI" | "PROCESS_GATE" | "DOSSIER";
+  | "BUDGET_ENVELOPE" | "SLA" | "RACI" | "PROCESS_GATE" | "DOSSIER"
+  | "MANDATE_GATE" | "MESH_PLANNER" | "PROCESS_STUDIO" | "STANDARDS_FORGE"
+  | "MARKET_LAB" | "S_LEVERS" | "WORKSPACE_5C_STRUCTURAL";
 
 export type TermDict = Record<TermKey, {
   label_general: string;
@@ -39,5 +41,14 @@ export const structuralDict: TermDict = {
   SLA:                   { label_general: "Service promise",               label_expert: "Service level agreement" },
   RACI:                  { label_general: "Who does what",                 label_expert: "RACI matrix" },
   PROCESS_GATE:          { label_general: "Approval checkpoint",           label_expert: "Process gate" },
-  DOSSIER:               { label_general: "Complete record",               label_expert: "Structural dossier" }
+  DOSSIER:               { label_general: "Complete record",               label_expert: "Structural dossier" },
+  
+  // Additional UI terms
+  MANDATE_GATE:          { label_general: "Permission Gate",               label_expert: "Mandate Gate" },
+  MESH_PLANNER:          { label_general: "Network Planner",               label_expert: "Mesh Planner" },
+  PROCESS_STUDIO:        { label_general: "Process Designer",              label_expert: "Process Studio" },
+  STANDARDS_FORGE:       { label_general: "Standards Workshop",            label_expert: "Standards Forge" },
+  MARKET_LAB:            { label_general: "Market Designer",               label_expert: "Market Lab" },
+  S_LEVERS:              { label_general: "System Tools",                  label_expert: "S-Levers" },
+  WORKSPACE_5C_STRUCTURAL:{ label_general: "Workspace · System Design",    label_expert: "Workspace-5C · Structural" }
 };
