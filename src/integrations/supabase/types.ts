@@ -5241,6 +5241,75 @@ export type Database = {
         }
         Relationships: []
       }
+      struct_conformance_summary: {
+        Row: {
+          actor_id: string | null
+          last_run: string | null
+          note: string | null
+          org_id: string | null
+          session_id: string | null
+          standard_id: string | null
+          status: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          last_run?: string | null
+          note?: string | null
+          org_id?: string | null
+          session_id?: string | null
+          standard_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          last_run?: string | null
+          note?: string | null
+          org_id?: string | null
+          session_id?: string | null
+          standard_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_conformance_checks_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "struct_deleg_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_conformance_checks_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "struct_conformance_checks_standard_id_fkey"
+            columns: ["standard_id"]
+            isOneToOne: false
+            referencedRelation: "struct_standards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      struct_process_kpis: {
+        Row: {
+          latency_obs: number | null
+          org_id: string | null
+          session_id: string | null
+          variance_avg: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "struct_process_steps_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "struct_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_loop_shared_nodes: {
         Row: {
           descriptor: string | null
