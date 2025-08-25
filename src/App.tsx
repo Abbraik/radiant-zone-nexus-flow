@@ -48,7 +48,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Workspace5C />} />
               </Routes>
               <FeatureFlagGuard 
                 flag="newTaskDrivenUI"
@@ -79,9 +79,10 @@ const App = () => (
                     }
                   >
                     <Routes>
-                      <Route path="/workspace" element={<Workspace />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="*" element={<Workspace />} />
+                     {/* Old zone-based workspace - hidden */}
+                     {/* <Route path="/workspace" element={<Workspace />} /> */}
+                     <Route path="/dashboard" element={<Dashboard />} />
+                     <Route path="*" element={<Workspace5C />} />
                     </Routes>
                   </FeatureFlagGuard>
                 }
@@ -89,33 +90,35 @@ const App = () => (
                 {/* Ultimate Workspace Mode */}
                 <Shell>
                   <Routes>
-                    <Route path="/workspace" element={<Workspace />} />
-                    <Route path="/demo" element={<Demo />} />
-                    <Route path="/registry" element={<LoopRegistry />} />
-                    <Route path="/registry/:id" element={<LoopDetail />} />
-                    <Route path="/registry/:id/edit" element={<LoopEditor />} />
-                    <Route path="/signal-monitor" element={<LoopSignalMonitor />} />
-                    <Route path="/dashboard/loops" element={<LoopDashboard />} />
-                    <Route path="/dashboard" element={
-                      <div className="pt-4">
-                        <Dashboard />
-                      </div>
-                    } />
-                    {/* Admin Pages */}
-                    <Route path="/admin" element={<AdminPage />} />
-                    <Route path="/plugins" element={<AdminPage />} />
-                    <Route path="/offline" element={<AdminPage />} />
-                    <Route path="/security" element={<AdminPage />} />
-                    <Route path="/mission-control" element={<MissionControl />} />
-                    <Route path="/workspace-5c" element={<Workspace5C />} />
-                    {/* Legacy Zone Access */}
-                    <Route path="/think" element={<ThinkZone />} />
-                    <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
-                    <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
-                    <Route path="/act" element={<ActZone />} />
-                    <Route path="/monitor" element={<MonitorZone />} />
-                    <Route path="/innovate" element={<InnovateLearnZone />} />
-                     <Route path="*" element={<Index />} />
+                     {/* Old zone-based workspace - hidden for now */}
+                     {/* <Route path="/workspace" element={<Workspace />} /> */}
+                     <Route path="/demo" element={<Demo />} />
+                     <Route path="/registry" element={<LoopRegistry />} />
+                     <Route path="/registry/:id" element={<LoopDetail />} />
+                     <Route path="/registry/:id/edit" element={<LoopEditor />} />
+                     <Route path="/signal-monitor" element={<LoopSignalMonitor />} />
+                     <Route path="/dashboard/loops" element={<LoopDashboard />} />
+                     <Route path="/dashboard" element={
+                       <div className="pt-4">
+                         <Dashboard />
+                       </div>
+                     } />
+                     {/* Admin Pages */}
+                     <Route path="/admin" element={<AdminPage />} />
+                     <Route path="/plugins" element={<AdminPage />} />
+                     <Route path="/offline" element={<AdminPage />} />
+                     <Route path="/security" element={<AdminPage />} />
+                     <Route path="/mission-control" element={<MissionControl />} />
+                     {/* Redirect workspace-5c to home since it's now the main page */}
+                     <Route path="/workspace-5c" element={<Workspace5C />} />
+                     {/* Legacy Zone Access */}
+                     <Route path="/think" element={<ThinkZone />} />
+                     <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
+                     <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
+                     <Route path="/act" element={<ActZone />} />
+                     <Route path="/monitor" element={<MonitorZone />} />
+                     <Route path="/innovate" element={<InnovateLearnZone />} />
+                      <Route path="*" element={<Workspace5C />} />
                   </Routes>
                 </Shell>
               </FeatureFlagGuard>
