@@ -61,12 +61,11 @@ const workspaceNavigation: NavigationItem[] = [
     description: 'Real-time system overview'
   },
   { 
-    id: 'workspace-5c', 
-    label: '5C Workspace', 
-    icon: Package, 
-    path: '/workspace-5c', 
-    description: 'Capacity-based workspace',
-    badge: 'Beta'
+    id: 'registry', 
+    label: 'Registry', 
+    icon: BarChart3, 
+    path: '/registry', 
+    description: 'Loop registry and system catalog'
   },
   { 
     id: 'admin', 
