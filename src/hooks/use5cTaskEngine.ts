@@ -9,7 +9,6 @@ import { useToast } from './use-toast';
 import type { TaskV2, TaskStatus, TaskPriority } from '@/types/taskEngine';
 
 export const use5cTaskEngine = () => {
-  console.log('🔍 use5cTaskEngine: Hook called, starting...');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,26 +16,13 @@ export const use5cTaskEngine = () => {
   
   // Also get TaskEngine V2 capabilities
   const taskEngineV2 = useTaskEngine();
-  console.log('🔍 use5cTaskEngine: TaskEngine V2 loaded');
 
   // 5C Tasks queries
   const { data: c5Tasks = [], isLoading: isLoadingTasks, error: tasksError } = useQuery({
     queryKey: QUERY_KEYS_5C.tasks(),
-    queryFn: async () => {
-      console.log('🔍 use5cTaskEngine: Query function called, about to call getTasks5C...');
-      try {
-        const result = await getTasks5C();
-        console.log('🔍 use5cTaskEngine: getTasks5C returned:', result?.length || 0, 'tasks');
-        return result;
-      } catch (error) {
-        console.error('🔍 use5cTaskEngine: Error in getTasks5C:', error);
-        throw error;
-      }
-    },
+    queryFn: () => getTasks5C(),
     refetchInterval: 30000 // Refresh every 30s
   });
-
-  console.log('🔍 use5cTaskEngine: Query state - loading:', isLoadingTasks, 'error:', tasksError, 'data length:', c5Tasks?.length || 0);
 
 
   const { data: activeTask, isLoading: isLoadingTask, error: taskError } = useQuery({
@@ -109,18 +95,9 @@ export const use5cTaskEngine = () => {
 
   // Filtered tasks
   const filteredTasks = useMemo(() => {
-    console.log('🔍 use5cTaskEngine: Filtering', c5Tasks?.length || 0, 'tasks...');
-    console.log('🔍 use5cTaskEngine: Tasks received:', c5Tasks?.map(t => ({ id: t.id, title: t.title, status: t.status })));
-    
-    const openTasks = c5Tasks.filter(t => t.status === 'open');
-    console.log('🔍 use5cTaskEngine: Found', openTasks.length, 'open tasks:', openTasks.map(t => ({ id: t.id, title: t.title })));
-    
-    const availableTasksConverted = openTasks.map(convertToWorkspaceTask);
-    console.log('🔍 use5cTaskEngine: Converted available tasks:', availableTasksConverted.map(t => ({ id: t.id, title: t.title, status: t.status })));
-    
     const result = {
       myTasks: c5Tasks.filter(t => t.status === 'claimed').map(convertToWorkspaceTask),
-      availableTasks: availableTasksConverted,
+      availableTasks: c5Tasks.filter(t => t.status === 'open').map(convertToWorkspaceTask),
       activeTasks: c5Tasks.filter(t => t.status === 'active'),
       completedTasks: c5Tasks.filter(t => t.status === 'done'),
       byCapacity: {
@@ -131,14 +108,6 @@ export const use5cTaskEngine = () => {
         structural: c5Tasks.filter(t => t.capacity === 'structural')
       }
     };
-    
-    console.log('🔍 use5cTaskEngine: Final filteredTasks result:', {
-      availableTasksCount: result.availableTasks.length,
-      myTasksCount: result.myTasks.length,
-      activeTasksCount: result.activeTasks.length,
-      completedTasksCount: result.completedTasks.length
-    });
-    
     return result;
   }, [c5Tasks, convertToWorkspaceTask]);
 
