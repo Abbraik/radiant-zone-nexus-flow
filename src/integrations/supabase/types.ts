@@ -5230,6 +5230,30 @@ export type Database = {
         }
         Relationships: []
       }
+      task_assignments: {
+        Row: {
+          added_at: string
+          id: string
+          role: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          role: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          role?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       task_checklist_items: {
         Row: {
           created_at: string
@@ -5286,6 +5310,33 @@ export type Database = {
           details?: Json | null
           event_type?: string
           id?: string
+          task_id?: string
+        }
+        Relationships: []
+      }
+      task_events_v2: {
+        Row: {
+          created_at: string
+          created_by: string
+          detail: Json
+          event_id: string
+          event_type: string
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          detail?: Json
+          event_id?: string
+          event_type: string
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          detail?: Json
+          event_id?: string
+          event_type?: string
           task_id?: string
         }
         Relationships: []
@@ -5368,6 +5419,33 @@ export type Database = {
         }
         Relationships: []
       }
+      task_outputs: {
+        Row: {
+          content: Json
+          id: string
+          kind: string
+          published_at: string
+          published_by: string
+          task_id: string
+        }
+        Insert: {
+          content: Json
+          id?: string
+          kind: string
+          published_at?: string
+          published_by: string
+          task_id: string
+        }
+        Update: {
+          content?: Json
+          id?: string
+          kind?: string
+          published_at?: string
+          published_by?: string
+          task_id?: string
+        }
+        Relationships: []
+      }
       task_payloads: {
         Row: {
           created_at: string
@@ -5389,6 +5467,102 @@ export type Database = {
           payload?: Json
           task_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      task_reminders: {
+        Row: {
+          id: string
+          kind: string
+          meta: Json
+          scheduled_for: string
+          sent_at: string | null
+          task_id: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          meta?: Json
+          scheduled_for: string
+          sent_at?: string | null
+          task_id: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          meta?: Json
+          scheduled_for?: string
+          sent_at?: string | null
+          task_id?: string
+        }
+        Relationships: []
+      }
+      task_sla_policies: {
+        Row: {
+          created_at: string
+          escalation_after_hours: number | null
+          policy_id: string
+          reminder_schedule: Json
+          target_hours: number
+          template_key: string
+        }
+        Insert: {
+          created_at?: string
+          escalation_after_hours?: number | null
+          policy_id?: string
+          reminder_schedule?: Json
+          target_hours: number
+          template_key: string
+        }
+        Update: {
+          created_at?: string
+          escalation_after_hours?: number | null
+          policy_id?: string
+          reminder_schedule?: Json
+          target_hours?: number
+          template_key?: string
+        }
+        Relationships: []
+      }
+      task_templates: {
+        Row: {
+          active: boolean
+          capacity: string
+          created_at: string
+          default_checklist: Json
+          default_payload: Json
+          default_sla_hours: number
+          open_route: string
+          template_key: string
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          active?: boolean
+          capacity: string
+          created_at?: string
+          default_checklist?: Json
+          default_payload?: Json
+          default_sla_hours?: number
+          open_route: string
+          template_key: string
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          active?: boolean
+          capacity?: string
+          created_at?: string
+          default_checklist?: Json
+          default_payload?: Json
+          default_sla_hours?: number
+          open_route?: string
+          template_key?: string
+          title?: string
+          updated_at?: string
+          version?: number
         }
         Relationships: []
       }
@@ -5540,6 +5714,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      tasks_v2: {
+        Row: {
+          capacity: string
+          closed_at: string | null
+          created_at: string
+          created_by: string
+          due_at: string | null
+          loop_id: string
+          open_route: string
+          payload: Json
+          priority: number
+          review_at: string | null
+          status: string
+          task_id: string
+          template_key: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity: string
+          closed_at?: string | null
+          created_at?: string
+          created_by: string
+          due_at?: string | null
+          loop_id: string
+          open_route: string
+          payload?: Json
+          priority?: number
+          review_at?: string | null
+          status?: string
+          task_id?: string
+          template_key?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string
+          due_at?: string | null
+          loop_id?: string
+          open_route?: string
+          payload?: Json
+          priority?: number
+          review_at?: string | null
+          status?: string
+          task_id?: string
+          template_key?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_v2_template_key_fkey"
+            columns: ["template_key"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["template_key"]
+          },
+        ]
       }
       transparency_packs: {
         Row: {
