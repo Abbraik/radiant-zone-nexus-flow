@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
+import { useGoldenScenarioEnrichment } from '@/hooks/useGoldenScenarioEnrichment';
+import type { EnhancedTask5C } from '@/5c/types';
+import { getAnticipatoryScenarioData } from '@/utils/scenarioDataHelpers';
 
 // Types for Anticipatory bundle
 export interface AnticScenario {
@@ -73,9 +76,10 @@ export interface AnticActivationEvent {
   created_at: string;
 }
 
-export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
+export const useAnticipatoryBundle = (task: EnhancedTask5C | null) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const enrichedTask = useGoldenScenarioEnrichment(task);
 
   // State
   const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
@@ -345,15 +349,28 @@ export const useAnticipatoryBundle = (taskId: string, loopId: string) => {
 
 
 
+  // Get golden scenario data if available
+  const goldenScenarioData = getAnticipatoryScenarioData(enrichedTask);
+  
+  // Use golden scenario data when available, otherwise fall back to database queries
+  const enhancedScenarios = goldenScenarioData?.scenarios || scenarios;
+  const enhancedWatchpoints = goldenScenarioData?.watchboard || watchpoints;
+
   return {
-    // Data
-    scenarios,
+    // Data - enhanced with golden scenario data
+    scenarios: enhancedScenarios,
     scenarioResults,
-    watchpoints,
+    watchpoints: enhancedWatchpoints,
     triggerRules,
     activationEvents,
     selectedScenario,
     dryRunOpen,
+    
+    // Golden scenario specific data
+    isGoldenScenario: !!goldenScenarioData,
+    ewsProb: goldenScenarioData?.ewsProb,
+    leadTimeDays: goldenScenarioData?.leadTimeDays,
+    bufferAdequacy: goldenScenarioData?.bufferAdequacy,
     
     // Loading states
     isLoadingScenarios,

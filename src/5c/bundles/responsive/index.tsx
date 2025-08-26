@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle, Zap, Shield } from 'lucide-react';
 import type { BundleProps5C } from '@/5c/types';
 import { BUNDLE_CLASSES, getCapacityClasses } from '@/5c/utils/uiParity';
+import { useResponsiveData } from '@/hooks/useResponsiveData';
 
 const ResponsiveBundle: React.FC<BundleProps5C> = ({ task }) => {
   const capacityClasses = getCapacityClasses('responsive');
+  const { alerts, claims, guardrails } = useResponsiveData(task);
 
   return (
     <div className={BUNDLE_CLASSES.container}>
@@ -29,15 +31,22 @@ const ResponsiveBundle: React.FC<BundleProps5C> = ({ task }) => {
           </CardHeader>
           <CardContent className={BUNDLE_CLASSES.panelContent}>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded">
-                <div>
-                  <p className="font-medium text-red-800">System Breach Detected</p>
-                  <p className="text-sm text-red-600">Threshold exceeded by 15%</p>
+              {alerts.map((alert, index) => (
+                <div key={alert.id || index} className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded">
+                  <div>
+                    <p className="font-medium text-red-800">{alert.title}</p>
+                    <p className="text-sm text-red-600">{alert.description}</p>
+                  </div>
+                  <Button size="sm" variant="outline">
+                    Respond
+                  </Button>
                 </div>
-                <Button size="sm" variant="outline">
-                  Respond
-                </Button>
-              </div>
+              ))}
+              {alerts.length === 0 && (
+                <div className="text-center py-6 text-muted-foreground">
+                  <p>No active alerts</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -74,14 +83,14 @@ const ResponsiveBundle: React.FC<BundleProps5C> = ({ task }) => {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm">Concurrent Substeps</span>
-                <span className="text-sm font-medium">0/3</span>
+                <span className="text-sm font-medium">{guardrails.concurrentSubsteps}/{guardrails.maxSubsteps}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm">Time Remaining</span>
-                <span className="text-sm font-medium">480 min</span>
+                <span className="text-sm font-medium">{guardrails.timeRemaining} min</span>
               </div>
-              <div className="text-xs text-green-600 mt-2">
-                ✓ All guardrails within limits
+              <div className={`text-xs mt-2 ${guardrails.allWithinLimits ? 'text-green-600' : 'text-red-600'}`}>
+                {guardrails.allWithinLimits ? '✓ All guardrails within limits' : '⚠ Guardrails exceeded'}
               </div>
             </div>
           </CardContent>

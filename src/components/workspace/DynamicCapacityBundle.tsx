@@ -108,7 +108,7 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (bund
           indicator={bundleProps.payload?.indicator || 'Primary'}
           taskData={bundleProps.taskData}
         >
-          <DeliberativeBundleWrapper task={task5c} taskData={bundleProps.taskData} />
+          <DeliberativeBundleWrapper task={task5c} />
         </DeliberativeCapacityWrapper>
       );
     }

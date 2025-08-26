@@ -34,7 +34,7 @@ const AnticipatoryBundle: React.FC<BundleProps5C> = ({ task }) => {
     isLoadingWatchpoints,
     isRunningScenario,
     isEvaluating
-  } = useAnticipatoryBundle(task?.id || '', '');
+  } = useAnticipatoryBundle(task);
 
   return (
     <div className="space-y-6">
