@@ -26,6 +26,7 @@ import { ZoneAwareSystemStatus } from '@/components/workspace/ZoneAwareSystemSta
 import { Workspace5CSidebar } from '@/components/workspace/Workspace5CSidebar';
 import { TaskEngineWidgets } from '@/components/workspace/TaskEngineWidgets';
 import { TaskEngineToolbar } from '@/components/workspace/TaskEngineToolbar';
+import { GoldenScenariosPanel } from '@/components/home/GoldenScenariosPanel';
 import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 import { useToolsStore } from '@/stores/toolsStore';
 import { getTasks5C, getTask5CById } from '@/5c/services';
@@ -119,6 +120,11 @@ export const Workspace5C: React.FC = () => {
                     {availableTasks.length} capacity tasks available • {myTasks.length} claimed tasks
                   </div>
                 </div>
+              </div>
+
+              {/* Golden Scenarios Panel */}
+              <div className="mt-8">
+                <GoldenScenariosPanel />
               </div>
 
               {/* Zone Bundle Integration Test */}
