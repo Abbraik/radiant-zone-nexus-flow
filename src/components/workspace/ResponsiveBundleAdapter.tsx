@@ -96,9 +96,10 @@ export const ResponsiveBundleAdapter: React.FC<ResponsiveBundleAdapterProps> = (
     <ResponsiveCapacityWrapper
       decision={decision}
       reading={reading}
+      taskData={taskData}
       playbook={{
         id: 'health-surge-v2',
-        name: 'Health Capacity Surge',
+        name: 'Health Capacity Surge', 
         rationale: 'Re-enter band faster with mobile units and triage v2',
         tasks: [
           { title: 'Deploy mobile triage units', description: 'Activate standby capacity', capacity: 'responsive' },

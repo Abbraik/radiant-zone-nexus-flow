@@ -7,6 +7,7 @@ interface ResponsiveCapacityWrapperProps {
   decision?: any;
   reading?: any;
   playbook?: any;
+  taskData?: any;
   onUpsertIncident?: (payload: any) => Promise<any>;
   onAppendIncidentEvent?: (incidentId: string, event: any) => Promise<any>;
   onCreateSprintWithTasks?: (payload: any) => Promise<any>;

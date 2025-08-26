@@ -29,6 +29,9 @@ import {
   GitBranch
 } from 'lucide-react';
 
+// Scenario helpers
+import { getScenarioTitle, getScenarioPlaybookName, getScenarioRationale, getScenarioTasks } from '@/utils/scenarioHelpers';
+
 // Sub-components
 import { CheckpointConsole } from './responsive/CheckpointConsole';
 import { QuickActionsBar } from './responsive/QuickActionsBar';
@@ -46,6 +49,7 @@ interface ResponsiveCapacityPageProps {
   decision?: any;
   reading?: any;
   playbook?: any;
+  taskData?: any;
   onUpsertIncident?: (payload: any) => Promise<any>;
   onAppendIncidentEvent?: (incidentId: string, event: any) => Promise<any>;
   onCreateSprintWithTasks?: (payload: any) => Promise<any>;
@@ -56,6 +60,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
   decision: propDecision,
   reading: propReading,
   playbook: propPlaybook,
+  taskData,
   onUpsertIncident,
   onAppendIncidentEvent,
   onCreateSprintWithTasks,
@@ -65,9 +70,15 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
   const { toast } = useToast();
   const { mode: langMode } = useLanguageMode();
   
-  // Extract route params
-  const loop = searchParams.get('loop') || 'UNKNOWN';
+  // Extract route params and scenario data
+  const loop = searchParams.get('loop') || taskData?.loop_id || 'UNKNOWN';
   const indicator = searchParams.get('indicator') || 'primary';
+  
+  // Use enriched scenario data when available
+  const scenarioData = taskData?.payload;
+  const isGoldenScenario = scenarioData?.scenario_id;
+  
+  console.log('ResponsiveCapacityPage received taskData:', { taskData, scenarioData, isGoldenScenario });
   
   // Local state
   const [isStartingSprint, setIsStartingSprint] = useState(false);
@@ -75,16 +86,43 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
   const [timelineEvents, setTimelineEvents] = useState<any[]>([]);
   const [harmonizationOpen, setHarmonizationOpen] = useState(false);
   
-  // Mock data for demo (replace with actual props)
-  const decision = propDecision || {
+  // Use real scenario data or fallback to mock data
+  const decision = propDecision || (isGoldenScenario ? {
+    severity: scenarioData.context?.alert_level === 'high' ? 0.9 : 
+              scenarioData.context?.alert_level === 'medium' ? 0.65 : 0.4,
+    guardrails: { 
+      timeboxDays: scenarioData.scenario_id === 'fertility' ? 14 : 7, 
+      caps: ['max_concurrent_substeps: 5', 'max_coverage_pct: 40'] 
+    },
+    srt: { cadence: 'daily', horizon: 'P7D' },
+    consent: { requireDeliberative: true },
+    scores: { 
+      responsive: taskData?.tri?.r_value || 0.8, 
+      reflexive: taskData?.tri?.i_value || 0.3, 
+      deliberative: taskData?.tri?.t_value || 0.6 
+    }
+  } : {
     severity: 0.75,
     guardrails: { timeboxDays: 7, caps: ['max_concurrent_substeps: 5', 'max_coverage_pct: 40'] },
     srt: { cadence: 'daily', horizon: 'P7D' },
     consent: { requireDeliberative: true },
     scores: { responsive: 0.8, reflexive: 0.3, deliberative: 0.6 }
-  };
+  });
   
-  const reading = propReading || {
+  const reading = propReading || (isGoldenScenario ? {
+    value: scenarioData.indicators?.childcare_wait_days || 
+           scenarioData.indicators?.vacancy_fill_time_days || 
+           scenarioData.indicators?.service_outage_rate * 100 || 42.3,
+    lower: 35,
+    upper: 45,
+    slope: scenarioData.context?.trending === 'increasing' ? 0.12 : -0.08,
+    oscillation: 0.6,
+    dispersion: 0.4,
+    persistencePk: 0.3,
+    integralError: 0.2,
+    hubSaturation: scenarioData.indicators?.capacity_utilization || 0.7,
+    guardrailViolation: scenarioData.context?.alert_level === 'high' ? 'timebox_renewed_twice' : null
+  } : {
     value: 42.3,
     lower: 35,
     upper: 45,
@@ -95,9 +133,14 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
     integralError: 0.2,
     hubSaturation: 0.7,
     guardrailViolation: 'timebox_renewed_twice'
-  };
+  });
   
-  const playbook = propPlaybook || {
+  const playbook = propPlaybook || (isGoldenScenario ? {
+    id: `${scenarioData.scenario_id}-response-v1`,
+    name: getScenarioPlaybookName(scenarioData.scenario_id),
+    rationale: getScenarioRationale(scenarioData),  
+    tasks: getScenarioTasks(scenarioData)
+  } : {
     id: 'health-surge-v2',
     name: 'Health Capacity Surge',
     rationale: 'Re-enter band faster with mobile units and triage v2',
@@ -106,7 +149,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
       { title: 'Update care protocols', description: 'Switch to crisis triage v2', capacity: 'responsive' },
       { title: 'Coordinate with regional hubs', description: 'Balance load across network', capacity: 'responsive' }
     ]
-  };
+  });
 
   // Derived values
   const severityPct = Math.round(decision.severity * 100);
@@ -297,7 +340,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
             
             {/* Title */}
             <h1 className="text-3xl font-bold text-foreground">
-              {loop} · {indicator}
+              {isGoldenScenario ? getScenarioTitle(scenarioData.scenario_id) : `${loop} · ${indicator}`}
             </h1>
             
             {/* Meta Row */}
