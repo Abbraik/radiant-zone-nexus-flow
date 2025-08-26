@@ -8,6 +8,8 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/comp
 import { ProCard, KPIStat, Sparkline, BandedSeries, Waterfall, Tornado, MiniHeatmap } from "./ProPrimitives";
 import { subtle, fmtPct01, variantFromProb, variantFromBuffer, fmtNum } from "./ui.utils";
 import { Gauge, Clock, Activity, AlertTriangle, Flag } from "lucide-react";
+import { RuntimeDashboard } from "@/components/anticipatory/RuntimeDashboard";
+import { TriggerBuilder } from "@/components/anticipatory/TriggerBuilder";
 
 
 export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
@@ -52,11 +54,12 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
 
       {/* Tabs */}
       <Tabs value={activeScreen} onValueChange={(value) => setActiveScreen(value as any)} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="risk-watchboard">Risk Watchboard</TabsTrigger>
           <TabsTrigger value="scenario-sim">Scenario Simulator</TabsTrigger>
           <TabsTrigger value="pre-positioner">Pre-Positioner</TabsTrigger>
           <TabsTrigger value="trigger-library">Trigger Library</TabsTrigger>
+          <TabsTrigger value="runtime">Runtime Dashboard</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -240,43 +243,12 @@ export default function AnticipatoryBundle(props: AnticipatoryUiProps) {
 
       {/* === 4) TRIGGER LIBRARY === */}
       {activeScreen === "trigger-library" && (
-        <>
-          <ProCard title="Expression Builder" subtitle="Author IF–THEN rules (human readable)">
-            <div className="grid md:grid-cols-2 gap-3">
-              <textarea className="min-h-[96px] rounded-xl border bg-background p-3 text-sm" placeholder="e.g., REER_change ≥ 8% AND orderbook_7d ≤ −20%"/>
-              <div className="rounded-xl border p-3 text-xs">
-                <div className="font-medium mb-1">Tips</div>
-                <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                  <li>Use AND/OR, parentheses, ≥/≤ for thresholds</li>
-                  <li>Window: e.g., <code>avg(7d)</code>, <code>sum(72h)</code></li>
-                  <li>Authority/TTL handled on save</li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-3 flex gap-2">
-              <Button size="sm" variant="outline" onClick={()=>onBuildTrigger?.("DRAFT_EXPR")}>Validate</Button>
-              <Button size="sm" onClick={()=>onSaveTrigger?.("custom")}>Save Trigger</Button>
-            </div>
-          </ProCard>
+        <TriggerBuilder />
+      )}
 
-          <div className="grid xl:grid-cols-2 gap-3">
-            <ProCard title="Backtest" subtitle="Historical firings vs breaches">
-              {backtest?.length ? (
-                <div className="text-xs text-muted-foreground">Render your historical chart (line for score, markers for fires/breaches). Export via onExportChart("backtest").</div>
-              ) : <div className={subtle}>No backtest data yet.</div>}
-            </ProCard>
-
-            <ProCard title="Quality" subtitle="ROC · Precision/Recall · Activations">
-              <div className="grid grid-cols-3 gap-3">
-                <KPIStat label="AUC (ROC)" value="0.81"/>
-                <KPIStat label="Precision" value="0.76"/>
-                <KPIStat label="Recall" value="0.68"/>
-              </div>
-              <Separator className="my-3"/>
-              <div className="text-xs text-muted-foreground">Expected activations per 30d: 4–6 (configurable).</div>
-            </ProCard>
-          </div>
-        </>
+      {/* === 5) RUNTIME DASHBOARD === */}
+      {activeScreen === "runtime" && (
+        <RuntimeDashboard />
       )}
 
       {/* Handoffs */}

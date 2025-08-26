@@ -1,5 +1,4 @@
 import Dashboard from "./pages/Dashboard";
-import AnticipatoryRuntime from "./pages/AnticipatoryRuntime";
 
 export const navItems = [
   {
@@ -7,11 +6,5 @@ export const navItems = [
     to: "/dashboard",
     icon: "dashboard",
     page: <Dashboard />,
-  },
-  {
-    title: "Anticipatory Runtime",
-    to: "/workspace",
-    icon: "zap",
-    page: <AnticipatoryRuntime />,
   },
 ];

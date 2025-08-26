@@ -8,7 +8,7 @@ import { Shell } from "./components/layout/Shell";
 import { FeatureFlagGuard, FeatureFlagProvider } from "./components/layout/FeatureFlagProvider";
 import { WorkspaceShell } from "./components/layout/WorkspaceShell";
 
-import AnticipatoryRuntime from "./pages/AnticipatoryRuntime";
+
 import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import { ThinkZone } from "./pages/ThinkZone";
@@ -50,7 +50,7 @@ const App = () => (
             <BrowserRouter>
               <Shell>
                 <Routes>
-                   <Route path="/workspace" element={<AnticipatoryRuntime />} />
+                   
                    <Route path="/auth" element={<Auth />} />
                    <Route path="/demo" element={<Demo />} />
                    <Route path="/registry" element={<LoopRegistry />} />

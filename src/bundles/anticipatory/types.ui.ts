@@ -66,7 +66,7 @@ export type AnticipatoryUiProps = {
   consentRequired?: boolean;
 
   // Screen selection
-  screen?: "risk-watchboard" | "scenario-sim" | "pre-positioner" | "trigger-library";
+  screen?: "risk-watchboard" | "scenario-sim" | "pre-positioner" | "trigger-library" | "runtime";
 
   // Risk Watchboard
   watchboard: WatchboardCard[];
