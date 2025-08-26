@@ -9,6 +9,7 @@ import { useToast } from './use-toast';
 import type { TaskV2, TaskStatus, TaskPriority } from '@/types/taskEngine';
 
 export const use5cTaskEngine = () => {
+  console.log('🔍 use5cTaskEngine: Hook called, starting...');
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,18 +17,26 @@ export const use5cTaskEngine = () => {
   
   // Also get TaskEngine V2 capabilities
   const taskEngineV2 = useTaskEngine();
+  console.log('🔍 use5cTaskEngine: TaskEngine V2 loaded');
 
   // 5C Tasks queries
   const { data: c5Tasks = [], isLoading: isLoadingTasks, error: tasksError } = useQuery({
     queryKey: QUERY_KEYS_5C.tasks(),
     queryFn: async () => {
-      console.log('🔍 use5cTaskEngine: Calling getTasks5C...');
-      const result = await getTasks5C();
-      console.log('🔍 use5cTaskEngine: getTasks5C returned:', result?.length || 0, 'tasks');
-      return result;
+      console.log('🔍 use5cTaskEngine: Query function called, about to call getTasks5C...');
+      try {
+        const result = await getTasks5C();
+        console.log('🔍 use5cTaskEngine: getTasks5C returned:', result?.length || 0, 'tasks');
+        return result;
+      } catch (error) {
+        console.error('🔍 use5cTaskEngine: Error in getTasks5C:', error);
+        throw error;
+      }
     },
     refetchInterval: 30000 // Refresh every 30s
   });
+
+  console.log('🔍 use5cTaskEngine: Query state - loading:', isLoadingTasks, 'error:', tasksError, 'data length:', c5Tasks?.length || 0);
 
 
   const { data: activeTask, isLoading: isLoadingTask, error: taskError } = useQuery({
