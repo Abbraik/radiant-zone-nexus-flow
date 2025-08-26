@@ -3641,43 +3641,31 @@ export type Database = {
       }
       playbooks: {
         Row: {
-          auto_action: boolean | null
-          created_at: string
-          guards: Json | null
-          id: string
-          lever_order: string[] | null
-          loop_id: string
-          steps: Json
-          success_criteria: Json | null
+          active: boolean | null
+          capacity: string
+          content: Json
+          created_at: string | null
+          playbook_key: string
           title: string
-          updated_at: string
-          user_id: string
+          updated_at: string | null
         }
         Insert: {
-          auto_action?: boolean | null
-          created_at?: string
-          guards?: Json | null
-          id?: string
-          lever_order?: string[] | null
-          loop_id: string
-          steps?: Json
-          success_criteria?: Json | null
+          active?: boolean | null
+          capacity: string
+          content?: Json
+          created_at?: string | null
+          playbook_key: string
           title: string
-          updated_at?: string
-          user_id: string
+          updated_at?: string | null
         }
         Update: {
-          auto_action?: boolean | null
-          created_at?: string
-          guards?: Json | null
-          id?: string
-          lever_order?: string[] | null
-          loop_id?: string
-          steps?: Json
-          success_criteria?: Json | null
+          active?: boolean | null
+          capacity?: string
+          content?: Json
+          created_at?: string | null
+          playbook_key?: string
           title?: string
-          updated_at?: string
-          user_id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -3722,6 +3710,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      prepositions: {
+        Row: {
+          created_at: string | null
+          id: string
+          owner: string
+          playbook_key: string
+          scenario_id: string | null
+          status: string | null
+          trigger_id: string | null
+          updated_at: string | null
+          window_label: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          owner: string
+          playbook_key: string
+          scenario_id?: string | null
+          status?: string | null
+          trigger_id?: string | null
+          updated_at?: string | null
+          window_label: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          owner?: string
+          playbook_key?: string
+          scenario_id?: string | null
+          status?: string | null
+          trigger_id?: string | null
+          updated_at?: string | null
+          window_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prepositions_playbook_key_fkey"
+            columns: ["playbook_key"]
+            isOneToOne: false
+            referencedRelation: "playbooks"
+            referencedColumns: ["playbook_key"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -4059,6 +4091,36 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      risk_channels: {
+        Row: {
+          channel_key: string
+          created_at: string | null
+          default_window: string | null
+          description: string | null
+          enabled: boolean | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          channel_key: string
+          created_at?: string | null
+          default_window?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          channel_key?: string
+          created_at?: string | null
+          default_window?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -6230,6 +6292,44 @@ export type Database = {
           window_hours?: number
         }
         Relationships: []
+      }
+      trigger_templates: {
+        Row: {
+          channel_key: string
+          created_at: string | null
+          defaults: Json | null
+          dsl: string
+          template_key: string
+          title: string
+          version: number
+        }
+        Insert: {
+          channel_key: string
+          created_at?: string | null
+          defaults?: Json | null
+          dsl: string
+          template_key: string
+          title: string
+          version: number
+        }
+        Update: {
+          channel_key?: string
+          created_at?: string | null
+          defaults?: Json | null
+          dsl?: string
+          template_key?: string
+          title?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trigger_templates_channel_key_fkey"
+            columns: ["channel_key"]
+            isOneToOne: false
+            referencedRelation: "risk_channels"
+            referencedColumns: ["channel_key"]
+          },
+        ]
       }
       user_roles: {
         Row: {

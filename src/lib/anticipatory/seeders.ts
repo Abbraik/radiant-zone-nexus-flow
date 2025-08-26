@@ -2,13 +2,11 @@
 import { supabase } from '@/integrations/supabase/client';
 import { GOLDEN_PATH_DSL } from './dsl';
 
-// Seeder for risk channels (using existing tables for now)
+// Seeder for risk channels
 export async function seedRiskChannels(): Promise<void> {
   console.log('🌱 Seeding risk channels...');
   
-  // Use existing antic_watchpoints as risk channels
-  const userId = await getCurrentUserId();
-  const channels: any[] = [
+  const channels = [
     {
       channel_key: 'childcare_load',
       title: 'Childcare System Load',
@@ -60,9 +58,15 @@ export async function seedRiskChannels(): Promise<void> {
     }
   ];
   
-  // Skip for now - table creation pending
-  console.log('⏩ Skipping risk channels (table creation pending)');
-  console.log(`📝 Would seed ${channels.length} risk channels`);
+  const { error } = await supabase
+    .from('risk_channels')
+    .upsert(channels, { onConflict: 'channel_key' });
+  
+  if (error) {
+    console.error('Error seeding risk channels:', error);
+  } else {
+    console.log(`✅ Seeded ${channels.length} risk channels`);
+  }
 }
 
 // Seeder for playbooks
@@ -176,9 +180,15 @@ export async function seedPlaybooks(): Promise<void> {
     }
   ];
   
-  // Skip for now - table creation pending
-  console.log('⏩ Skipping playbooks (table creation pending)');
-  console.log(`📝 Would seed ${playbooks.length} playbooks`);
+  const { error } = await supabase
+    .from('playbooks')
+    .upsert(playbooks, { onConflict: 'playbook_key' });
+  
+  if (error) {
+    console.error('Error seeding playbooks:', error);
+  } else {
+    console.log(`✅ Seeded ${playbooks.length} playbooks`);
+  }
 }
 
 // Seeder for trigger templates
@@ -260,9 +270,15 @@ export async function seedTriggerTemplates(): Promise<void> {
     }
   ];
   
-  // Skip for now - table creation pending
-  console.log('⏩ Skipping trigger templates (table creation pending)');
-  console.log(`📝 Would seed ${templates.length} trigger templates`);
+  const { error } = await supabase
+    .from('trigger_templates')
+    .upsert(templates, { onConflict: 'template_key,version' });
+  
+  if (error) {
+    console.error('Error seeding trigger templates:', error);
+  } else {
+    console.log(`✅ Seeded ${templates.length} trigger templates`);
+  }
 }
 
 // Seeder for demo scenarios
