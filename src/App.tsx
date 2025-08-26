@@ -52,7 +52,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Shell>
-                <Routes>
+                 <Routes>
                    
                    <Route path="/auth" element={<Auth />} />
                    <Route path="/demo" element={<Demo />} />
@@ -84,8 +84,12 @@ const App = () => (
                       <Route path="/p/:slug" element={<PublicDossier />} />
                       {/* Share Views */}
                       <Route path="/share/:token" element={<ShareView />} />
-                     {/* Main workspace - always renders on home and unknown routes */}
+                     {/* 5C Workspace */}
+                     <Route path="/workspace" element={<Workspace5C />} />
+                     <Route path="/workspace-5c/*" element={<Workspace5C />} />
+                     {/* Home page */}
                     <Route path="/" element={<Home />} />
+                    {/* Fallback to 5C workspace for unknown routes */}
                     <Route path="*" element={<Workspace5C />} />
                 </Routes>
               </Shell>
