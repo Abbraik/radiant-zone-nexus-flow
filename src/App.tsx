@@ -36,6 +36,7 @@ import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 import GlobalPortals from '@/components/global/GlobalPortals';
 import { PublicDossier } from "./pages/PublicDossier";
 import SecurityOps from "./pages/SecurityOps";
+import { ShareView } from "./pages/ShareView";
 
 const queryClient = createQueryClient();
 
@@ -78,8 +79,10 @@ const App = () => (
                     <Route path="/monitor" element={<MonitorZone />} />
                     <Route path="/innovate" element={<InnovateLearnZone />} />
                      <Route path="/task-engine" element={<TaskEnginePage />} />
-                     {/* Public Dossier */}
-                     <Route path="/p/:slug" element={<PublicDossier />} />
+                      {/* Public Dossier */}
+                      <Route path="/p/:slug" element={<PublicDossier />} />
+                      {/* Share Views */}
+                      <Route path="/share/:token" element={<ShareView />} />
                      {/* Main workspace - always renders on home and unknown routes */}
                     <Route path="/" element={<Workspace5C />} />
                     <Route path="*" element={<Workspace5C />} />

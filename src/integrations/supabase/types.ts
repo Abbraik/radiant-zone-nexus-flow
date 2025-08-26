@@ -3124,6 +3124,39 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_hubs: {
+        Row: {
+          active: boolean | null
+          author: string
+          capacity: string
+          created_at: string | null
+          hub_id: string
+          mdx_content: string
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          active?: boolean | null
+          author: string
+          capacity: string
+          created_at?: string | null
+          hub_id?: string
+          mdx_content: string
+          updated_at?: string | null
+          version?: string
+        }
+        Update: {
+          active?: boolean | null
+          author?: string
+          capacity?: string
+          created_at?: string | null
+          hub_id?: string
+          mdx_content?: string
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       loop_edges: {
         Row: {
           created_at: string
@@ -4608,6 +4641,42 @@ export type Database = {
           snl_id?: string
           type?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      shares: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          entity_id: string
+          expires_at: string | null
+          kind: string
+          redaction_profile: string | null
+          revoked_at: string | null
+          share_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          entity_id: string
+          expires_at?: string | null
+          kind: string
+          redaction_profile?: string | null
+          revoked_at?: string | null
+          share_id?: string
+          token?: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          entity_id?: string
+          expires_at?: string | null
+          kind?: string
+          redaction_profile?: string | null
+          revoked_at?: string | null
+          share_id?: string
+          token?: string
         }
         Relationships: []
       }
@@ -6993,6 +7062,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          created_at: string | null
+          lang_mode: string | null
+          learning_hub_preferences: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          lang_mode?: string | null
+          learning_hub_preferences?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          lang_mode?: string | null
+          learning_hub_preferences?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       watchpoints: {
         Row: {
           armed: boolean | null
@@ -7122,6 +7215,39 @@ export type Database = {
           loop_name: string | null
           loop_status: string | null
           tri_slope: number | null
+        }
+        Relationships: []
+      }
+      public_shares: {
+        Row: {
+          created_at: string | null
+          entity_id: string | null
+          expires_at: string | null
+          is_valid: boolean | null
+          kind: string | null
+          redaction_profile: string | null
+          share_id: string | null
+          token: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id?: string | null
+          expires_at?: string | null
+          is_valid?: never
+          kind?: string | null
+          redaction_profile?: string | null
+          share_id?: string | null
+          token?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string | null
+          expires_at?: string | null
+          is_valid?: never
+          kind?: string | null
+          redaction_profile?: string | null
+          share_id?: string | null
+          token?: string | null
         }
         Relationships: []
       }
