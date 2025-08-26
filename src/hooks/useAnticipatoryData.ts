@@ -1,21 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useGoldenScenarioEnrichment } from './useGoldenScenarioEnrichment';
-import type { EnhancedTask5C } from '@/5c/types';
-import { getAnticipatoryScenarioData } from '@/utils/scenarioDataHelpers';
 
-export function useAnticipatoryData(loopId: string, task?: EnhancedTask5C) {
+export function useAnticipatoryData(loopId: string) {
   const queryClient = useQueryClient();
-  const enrichedTask = useGoldenScenarioEnrichment(task || null);
-  
-  // Generate scenario-based data if available
-  const getScenarioData = () => {
-    if (!enrichedTask) return null;
-    return getAnticipatoryScenarioData(enrichedTask);
-  };
-  
-  const scenarioData = getScenarioData();
 
   // Fetch watchpoints
   const { data: watchpoints = [], isLoading: isLoadingWatchpoints } = useQuery({
@@ -205,48 +193,16 @@ export function useAnticipatoryData(loopId: string, task?: EnhancedTask5C) {
     }
   });
 
-  // Use scenario data if available, otherwise fall back to database
-  const finalWatchpoints = scenarioData?.watchboard && scenarioData.watchboard.length > 0 ? scenarioData.watchboard.map((wb, i) => ({
-    id: `scenario-wp-${i}`,
-    risk_channel: wb.riskChannel,
-    ews_prob: wb.ewsProb,
-    confidence: 0.85,
-    buffer_adequacy: wb.bufferAdequacy,
-    lead_time_days: wb.leadTimeDays,
-    status: 'armed',
-    loop_codes: [loopId]
-  })) : watchpoints;
-
-  const finalScenarios = scenarioData?.scenarios ? scenarioData.scenarios.map((s, i) => ({
-    id: `scenario-${i}`,
-    name: s.name,
-    assumptions: { summary: s.summary },
-    target_loops: [loopId],
-    created_at: new Date().toISOString()
-  })) : scenarios;
-
   return {
-    watchpoints: finalWatchpoints,
-    scenarios: finalScenarios,
-    scenarioResults: scenarioResults.length > 0 ? scenarioResults : (scenarioData ? [{
-      id: 'result-1',
-      scenario_id: 'labour-matching',
-      mitigation_delta: 0.35,
-      with_mitigation_breach_prob: 0.25,
-      without_mitigation_breach_prob: 0.60,
-      created_at: new Date().toISOString()
-    }] : []),
+    watchpoints,
+    scenarios,
+    scenarioResults,
     triggerRules,
-    buffers: buffers.length > 0 ? buffers : (scenarioData?.watchboard && scenarioData.watchboard.length > 0 ? [{
-      id: 'buffer-1',
-      label: 'Response Capacity',
-      current: scenarioData.watchboard[0].bufferAdequacy || 0.7,
-      target: 0.8
-    }] : []),
+    buffers,
     prePositionOrders,
     isLoading: isLoadingWatchpoints || isLoadingScenarios,
     createWatchpoint,
-    createScenario, 
+    createScenario,
     runScenario,
     armWatchpoint
   };

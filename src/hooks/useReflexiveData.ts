@@ -1,21 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useGoldenScenarioEnrichment } from './useGoldenScenarioEnrichment';
-import type { EnhancedTask5C } from '@/5c/types';
-import { getReflexiveScenarioData } from '@/utils/scenarioDataHelpers';
 
-export function useReflexiveData(loopId: string, task?: EnhancedTask5C) {
+export function useReflexiveData(loopId: string) {
   const queryClient = useQueryClient();
-  const enrichedTask = useGoldenScenarioEnrichment(task || null);
-  
-  // Generate scenario-based data if available
-  const getScenarioData = () => {
-    if (!enrichedTask) return null;
-    return getReflexiveScenarioData(enrichedTask);
-  };
-  
-  const scenarioData = getScenarioData();
 
   // Fetch reflex memory (using controller_tunings as proxy)
   const { data: reflexMemory = [], isLoading: isLoadingMemory } = useQuery({
@@ -205,33 +193,11 @@ export function useReflexiveData(loopId: string, task?: EnhancedTask5C) {
     }
   });
 
-  // Use scenario data if available
   return {
-    reflexMemory: reflexMemory.length > 0 ? reflexMemory : (scenarioData ? [{
-      id: 'memory-1',
-      rationale: 'System learning from recent patterns',
-      after: scenarioData.decision,
-      created_at: new Date().toISOString()
-    }] : []),
-    controllerTunings: controllerTunings.length > 0 ? controllerTunings : (scenarioData ? [{
-      id: 'tuning-1',
-      indicator: 'primary',
-      before: { kp: 0.5, ki: 0.2, kd: 0.1 },
-      after: { kp: 0.6, ki: 0.25, kd: 0.12 },
-      rationale: 'Improved response to recent oscillations'
-    }] : []),
-    bandWeightChanges: bandWeightChanges.length > 0 ? bandWeightChanges : (scenarioData ? [{
-      id: 'weight-1',
-      before: { transparency: 0.4, responsiveness: 0.3, inclusiveness: 0.3 },
-      after: { transparency: 0.35, responsiveness: 0.35, inclusiveness: 0.3 },
-      rationale: 'Rebalancing based on performance data'
-    }] : []),
-    scorecardData: scorecardData || (scenarioData ? {
-      id: 'scorecard-1',
-      ci: scenarioData.decision?.severity || 0.65,
-      tri: enrichedTask?.tri || { t_value: 0.6, r_value: 0.7, i_value: 0.65 },
-      as_of: new Date().toISOString()
-    } : null),
+    reflexMemory,
+    controllerTunings,
+    bandWeightChanges,
+    scorecardData,
     deBands,
     isLoading: isLoadingMemory || isLoadingScorecard,
     createReflexMemory,

@@ -1,21 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useGoldenScenarioEnrichment } from './useGoldenScenarioEnrichment';
-import type { EnhancedTask5C } from '@/5c/types';
-import { getStructuralScenarioData } from '@/utils/scenarioDataHelpers';
 
-export function useStructuralData(loopId: string, task?: EnhancedTask5C) {
+export function useStructuralData(loopId: string) {
   const queryClient = useQueryClient();
-  const enrichedTask = useGoldenScenarioEnrichment(task || null);
-  
-  // Generate scenario-based data if available
-  const getScenarioData = () => {
-    if (!enrichedTask) return null;
-    return getStructuralScenarioData(enrichedTask);
-  };
-  
-  const scenarioData = getScenarioData();
 
   // Fetch loop data for architecture
   const { data: loopData, isLoading: isLoadingLoop } = useQuery({
@@ -168,27 +156,10 @@ export function useStructuralData(loopId: string, task?: EnhancedTask5C) {
   });
 
   return {
-    loopData: loopData || { loop_nodes: [], loop_edges: [] },
-    conformanceRuns: conformanceRuns.length > 0 ? conformanceRuns : (scenarioData ? [{
-      run_id: 'run-1',
-      status: 'passed',
-      summary: { checks: 5, passed: 4, failed: 1 }
-    }] : []),
-    adoptionEntities: adoptionEntities.length > 0 ? adoptionEntities : (scenarioData ? [{
-      entity_id: 'entity-1',
-      name: 'Primary Implementation Unit',
-      kind: 'department'
-    }, {
-      entity_id: 'entity-2', 
-      name: 'Secondary Support Unit',
-      kind: 'agency'
-    }] : []),
-    dossiers: dossiers.length > 0 ? dossiers : (scenarioData ? [{
-      id: 'dossier-1',
-      title: scenarioData.mission,
-      version: '1.0',
-      summary: 'Structural analysis complete'
-    }] : []),
+    loopData,
+    conformanceRuns,
+    adoptionEntities,
+    dossiers,
     standardsVersions,
     isLoading: isLoadingLoop,
     createDossier,

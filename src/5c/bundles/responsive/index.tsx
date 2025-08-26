@@ -20,7 +20,7 @@ const ResponsiveBundle: React.FC<BundleProps5C> = ({ task }) => {
     isLoading,
     createClaim,
     respondToBreach
-  } = useResponsiveData(loopId, task);
+  } = useResponsiveData(loopId);
 
   const handleStartClaim = () => {
     createClaim.mutate({
