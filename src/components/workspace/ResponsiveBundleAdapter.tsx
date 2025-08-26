@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { ResponsiveCapacityWrapper } from '@/pages/ResponsiveCapacityWrapper';
 import type { CapacityBundleProps } from '@/types/capacity';
 import { useResponsiveIntegration } from '@/hooks/useResponsiveIntegration';
+import { useInteractiveCapacityActions } from '@/hooks/useInteractiveCapacityActions';
 
 interface ResponsiveBundleAdapterProps extends CapacityBundleProps {}
 

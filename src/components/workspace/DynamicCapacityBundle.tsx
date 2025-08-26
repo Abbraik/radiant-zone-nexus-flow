@@ -11,6 +11,7 @@ import { StructuralCapacityWrapper } from '@/pages/StructuralCapacityWrapper';
 import type { Capacity, CapacityBundleProps } from '@/types/capacity';
 import type { EnhancedTask5C } from '@/5c/types';
 import { toast } from 'sonner';
+import { useInteractiveCapacityActions } from '@/hooks/useInteractiveCapacityActions';
 
 interface DynamicCapacityBundleProps extends CapacityBundleProps {
   capacity: Capacity;
