@@ -683,6 +683,13 @@ export type Database = {
             foreignKeyName: "cascades_from_loop_id_fkey"
             columns: ["from_loop_id"]
             isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "cascades_from_loop_id_fkey"
+            columns: ["from_loop_id"]
+            isOneToOne: false
             referencedRelation: "loops"
             referencedColumns: ["id"]
           },
@@ -698,6 +705,13 @@ export type Database = {
             columns: ["from_loop_id"]
             isOneToOne: false
             referencedRelation: "safe_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "cascades_to_loop_id_fkey"
+            columns: ["to_loop_id"]
+            isOneToOne: false
+            referencedRelation: "loop_action_readiness"
             referencedColumns: ["loop_id"]
           },
           {
@@ -2300,6 +2314,13 @@ export type Database = {
             foreignKeyName: "indicator_registry_loop_id_fkey"
             columns: ["loop_id"]
             isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "indicator_registry_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
             referencedRelation: "loops"
             referencedColumns: ["id"]
           },
@@ -2703,6 +2724,13 @@ export type Database = {
             foreignKeyName: "loop_signal_scores_loop_id_fkey"
             columns: ["loop_id"]
             isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "loop_signal_scores_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
             referencedRelation: "loops"
             referencedColumns: ["id"]
           },
@@ -3051,6 +3079,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "indicator_registry"
             referencedColumns: ["indicator_key"]
+          },
+          {
+            foreignKeyName: "normalized_observations_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
           },
           {
             foreignKeyName: "normalized_observations_loop_id_fkey"
@@ -3594,6 +3629,13 @@ export type Database = {
             foreignKeyName: "rel_tickets_loop_id_fkey"
             columns: ["loop_id"]
             isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "rel_tickets_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
             referencedRelation: "loops"
             referencedColumns: ["id"]
           },
@@ -3945,6 +3987,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "sprints_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
+          },
           {
             foreignKeyName: "sprints_loop_id_fkey"
             columns: ["loop_id"]
@@ -5664,6 +5713,20 @@ export type Database = {
           },
         ]
       }
+      loop_action_readiness: {
+        Row: {
+          auto_ok: boolean | null
+          bad_sources: number | null
+          checked_at: string | null
+          drift_indicators: number | null
+          loop_id: string | null
+          loop_name: string | null
+          reasons: string[] | null
+          stale_indicators: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       meta_alignment_vw: {
         Row: {
           domains_balance_score: number | null
@@ -5826,6 +5889,13 @@ export type Database = {
           updated_at: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "rel_tickets_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "loop_action_readiness"
+            referencedColumns: ["loop_id"]
+          },
           {
             foreignKeyName: "rel_tickets_loop_id_fkey"
             columns: ["loop_id"]
@@ -6281,6 +6351,10 @@ export type Database = {
       seed_playbooks_and_triggers: {
         Args: { p_org: string }
         Returns: undefined
+      }
+      seed_signals_golden_paths: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       start_claim: {
         Args: { claim_uuid: string }
