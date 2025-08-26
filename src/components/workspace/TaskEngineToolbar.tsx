@@ -11,9 +11,12 @@ import {
   Lock,
   Play,
   Pause,
-  CheckCircle
+  CheckCircle,
+  Shield,
+  Network
 } from 'lucide-react';
 import { TaskCreationModal } from '@/components/taskEngine/TaskCreationModal';
+import { HarmonizationDrawer } from '@/components/harmonization/HarmonizationDrawer';
 import { useTaskEngine } from '@/hooks/useTaskEngine';
 import type { EnhancedTask5C } from '@/5c/types';
 
@@ -27,6 +30,7 @@ export const TaskEngineToolbar: React.FC<TaskEngineToolbarProps> = ({
   onTaskAction 
 }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showHarmonizationDrawer, setShowHarmonizationDrawer] = useState(false);
   const { 
     acquireLock, 
     pauseTask, 
@@ -147,24 +151,56 @@ export const TaskEngineToolbar: React.FC<TaskEngineToolbarProps> = ({
         </>
       )}
 
-      {/* Analytics Button */}
-      <div className="ml-auto">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onTaskAction?.('analytics')}
-          className="gap-2 text-white/60 hover:text-white hover:bg-white/10"
-        >
-          <BarChart3 className="h-4 w-4" />
-          Analytics
-        </Button>
-      </div>
+          {/* Harmonization Button */}
+          {activeTask5C && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowHarmonizationDrawer(true)}
+              className="gap-2 text-orange-300 border-orange-400/30 hover:bg-orange-400/10"
+            >
+              <Network className="h-4 w-4" />
+              Harmonization
+            </Button>
+          )}
+
+          {/* Analytics Button */}
+          <div className="ml-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onTaskAction?.('analytics')}
+              className="gap-2 text-white/60 hover:text-white hover:bg-white/10"
+            >
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </Button>
+          </div>
 
       {/* Create Task Modal */}
       <TaskCreationModal 
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
       />
+
+      {/* Harmonization Drawer */}
+      {activeTask5C && (
+        <HarmonizationDrawer
+          isOpen={showHarmonizationDrawer}
+          onClose={() => setShowHarmonizationDrawer(false)}
+          taskId={activeTask5C.id}
+          context={{
+            task: {
+              taskId: activeTask5C.id,
+              hubAllocations: [],
+              timeWindow: {
+                start: activeTask5C.created_at,
+                end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+              }
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

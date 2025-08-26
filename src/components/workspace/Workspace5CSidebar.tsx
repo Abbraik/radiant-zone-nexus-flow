@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { AlertCircle, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import type { EnhancedTask5C } from '@/5c/types';
 import { TaskEngineWidgets } from './TaskEngineWidgets';
+import { GuardrailsPanel } from '@/components/guardrails/GuardrailsPanel';
 
 interface Workspace5CSidebarProps {
   myTasks: EnhancedTask5C[];
@@ -205,6 +206,18 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
             isCollapsed={false}
           />
         </div>
+
+        {/* Guardrails Panel */}
+        {activeTask && (
+          <div className="mt-4 px-2">
+            <GuardrailsPanel 
+              taskId={activeTask.id}
+              taskCreatedAt={activeTask.created_at}
+              capacity={activeTask.capacity}
+              templateKey={`capacity_${activeTask.capacity}`}
+            />
+          </div>
+        )}
       </div>
     </motion.div>
   );
