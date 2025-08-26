@@ -34,7 +34,7 @@ import TaskEnginePage from "./pages/TaskEngineDemo";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 import GlobalPortals from '@/components/global/GlobalPortals';
-import '@/styles/glass.css';
+import { PublicDossier } from "./pages/PublicDossier";
 
 const queryClient = createQueryClient();
 
@@ -76,8 +76,10 @@ const App = () => (
                     <Route path="/act" element={<ActZone />} />
                     <Route path="/monitor" element={<MonitorZone />} />
                     <Route path="/innovate" element={<InnovateLearnZone />} />
-                    <Route path="/task-engine" element={<TaskEnginePage />} />
-                    {/* Main workspace - always renders on home and unknown routes */}
+                     <Route path="/task-engine" element={<TaskEnginePage />} />
+                     {/* Public Dossier */}
+                     <Route path="/p/:slug" element={<PublicDossier />} />
+                     {/* Main workspace - always renders on home and unknown routes */}
                     <Route path="/" element={<Workspace5C />} />
                     <Route path="*" element={<Workspace5C />} />
                 </Routes>
