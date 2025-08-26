@@ -6,6 +6,7 @@ interface AnticipatoryCapacityWrapperProps {
   loopCode: string;
   indicator?: string;
   screen?: "risk-watchboard" | "scenario-sim" | "pre-positioner" | "trigger-library";
+  taskData?: any;
   onArmWatchpoint?: (riskChannel: any) => void;
   onRunScenario?: (scenarioId: string) => void;
   onStagePrePosition?: (packIds: string[]) => void;

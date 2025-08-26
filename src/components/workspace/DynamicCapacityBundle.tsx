@@ -17,8 +17,11 @@ interface DynamicCapacityBundleProps extends CapacityBundleProps {
   capacity: Capacity;
 }
 
-export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (props) => {
-  const { capacity, ...bundleProps } = props;
+export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (bundleProps) => {
+  const { capacity } = bundleProps;
+
+  // Simplified interactive actions - pass null for now to avoid type issues
+  const interactiveActions = useInteractiveCapacityActions(null);
 
   switch (capacity) {
     case 'responsive':
@@ -59,12 +62,13 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
       const ReflexiveCapacityPage = React.lazy(() => import('@/pages/reflexive/ReflexiveCapacityPage'));
       
       return (
-        <ReflexiveCapacityWrapper
-          loopCode={loopCode}
-          indicator={indicator}
-          controllerSettings={bundleProps.payload?.controllerSettings}
-          tuningHistory={bundleProps.payload?.tuningHistory}
-        >
+          <ReflexiveCapacityWrapper
+            loopCode={loopCode}
+            indicator={indicator}
+            controllerSettings={bundleProps.payload?.controllerSettings}
+            tuningHistory={bundleProps.payload?.tuningHistory}
+            taskData={bundleProps.taskData}
+          >
           <React.Suspense fallback={<div className="p-6">Loading Reflexive Capacity...</div>}>
             <ReflexiveCapacityPage
               loopCode={loopCode}
@@ -89,6 +93,7 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
         type: 'perceptual',
         scale: 'macro',
         leverage: 'S',
+        tri: { t_value: 0.7, r_value: 0.6, i_value: 0.8 },
         title: bundleProps.taskData?.title || 'Strategic Architecture Planning',
         description: bundleProps.taskData?.description || 'Conduct comprehensive analysis and planning for next-generation system architecture',
         status: 'active',
@@ -103,7 +108,7 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
           indicator={bundleProps.payload?.indicator || 'Primary'}
           taskData={bundleProps.taskData}
         >
-          <DeliberativeBundleWrapper task={task5c} />
+          <DeliberativeBundleWrapper task={task5c} taskData={bundleProps.taskData} />
         </DeliberativeCapacityWrapper>
       );
     }
@@ -243,18 +248,19 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
           loopCode={task?.loop_id || bundleProps.taskData?.loop_id || "MAC-L01"}
           indicator={bundleProps.payload?.indicator || "Primary"}
           screen={params.get('screen') as any || 'risk-watchboard'}
-          onArmWatchpoint={(riskChannel) => {
-            console.log('Arm watchpoint:', riskChannel);
-            toast.success(`Armed watchpoint for ${riskChannel}`);
-          }}
-          onRunScenario={(scenarioId) => {
-            console.log('Run scenario:', scenarioId);
-            toast.success(`Running scenario ${scenarioId}`);
-          }}
-          onStagePrePosition={(packIds) => {
-            console.log('Stage pre-position:', packIds);
-            toast.success(`Staged pre-position packs: ${packIds.join(', ')}`);
-          }}
+          taskData={bundleProps.taskData}
+            onArmWatchpoint={(riskChannel) => {
+              console.log('Arm watchpoint:', riskChannel);
+              toast.success(`Armed watchpoint for ${riskChannel}`);
+            }}
+            onRunScenario={(scenarioId) => {
+              console.log('Run scenario:', scenarioId);
+              toast.success(`Running scenario ${scenarioId}`);
+            }}
+            onStagePrePosition={(packIds) => {
+              console.log('Stage pre-position:', packIds);
+              toast.success(`Staged pre-position packs: ${packIds.join(', ')}`);
+            }}
           onSaveTrigger={(templateId) => {
             console.log('Save trigger:', templateId);
             toast.success(`Saved trigger ${templateId}`);
@@ -313,6 +319,7 @@ export const DynamicCapacityBundle: React.FC<DynamicCapacityBundleProps> = (prop
           loopCode={bundleProps.taskData?.loop_id || 'STRUCT-001'}
           indicator={bundleProps.payload?.indicator || 'Primary'}
           screen={bundleProps.payload?.screen}
+          taskData={bundleProps.taskData}
         >
           <StructuralBundle {...bundleProps} />
         </StructuralCapacityWrapper>

@@ -6,6 +6,7 @@ interface StructuralCapacityWrapperProps {
   loopCode: string;
   indicator: string;
   screen?: "mandate-gate" | "mesh-planner" | "process-studio" | "standards-forge" | "market-lab";
+  taskData?: any;
   onUpdateMandate?: (mandate: any) => Promise<any>;
   onSaveProcessMap?: (processMap: any) => Promise<any>;
   onPublishStandard?: (standard: any) => Promise<any>;

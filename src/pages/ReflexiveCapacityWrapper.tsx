@@ -7,6 +7,7 @@ interface ReflexiveCapacityWrapperProps {
   indicator: string;
   controllerSettings: any;
   tuningHistory: any;
+  taskData?: any;
   onControllerUpdate?: (settings: any) => Promise<any>;
   children: React.ReactNode;
 }

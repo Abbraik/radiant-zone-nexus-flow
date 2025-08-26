@@ -3,10 +3,16 @@ import React from 'react';
 import { BundleProps5C } from '@/5c/types';
 import DeliberativeBundle from './DeliberativeBundle';
 import type { DeliberativeUiProps } from './types.ui';
+import { getDeliberativeScenarioData, getScenarioSpecificData } from '@/utils/scenarioDataHelpers';
 
-const DeliberativeBundleWrapper: React.FC<BundleProps5C> = ({ task }) => {
-  // Mock data for the comprehensive deliberative interface
-  const mockOptions = [
+const DeliberativeBundleWrapper: React.FC<BundleProps5C & { taskData?: any }> = ({ task, taskData }) => {
+  // Check if this is a golden scenario with enriched data
+  const scenarioSpecificData = getDeliberativeScenarioData(taskData);
+  const isGoldenScenario = !!scenarioSpecificData;
+
+  console.log('DeliberativeBundleWrapper received:', { task, taskData, scenarioSpecificData, isGoldenScenario });
+  // Use scenario-specific data or fallback to mock data
+  const mockOptions = scenarioSpecificData?.options || [
     { id: 'opt1', name: 'Elasticity Reform', synopsis: 'Zoning flexibility and density bonuses', costs: { capex: 500000, opex: 125000 }, latencyDays: 180, authorityFlag: 'ok' as const },
     { id: 'opt2', name: 'Social Housing', synopsis: 'Public housing development program', costs: { capex: 2500000, opex: 400000 }, latencyDays: 365, authorityFlag: 'review' as const },
     { id: 'opt3', name: 'Rent Stabilization', synopsis: 'Tenant protection and rent control measures', costs: { opex: 50000 }, latencyDays: 90, authorityFlag: 'ok' as const }
@@ -22,7 +28,7 @@ const DeliberativeBundleWrapper: React.FC<BundleProps5C> = ({ task }) => {
     { id: 'sc2', name: 'Population Surge', summary: 'Rapid population growth scenario' }
   ];
 
-  const mockCriteria = [
+  const mockCriteria = scenarioSpecificData?.criteria || [
     { id: 'crit1', label: 'Effectiveness', weight: 0.30, direction: 'maximize' as const },
     { id: 'crit2', label: 'Cost Efficiency', weight: 0.25, direction: 'maximize' as const },
     { id: 'crit3', label: 'Time to Impact', weight: 0.20, direction: 'minimize' as const },
