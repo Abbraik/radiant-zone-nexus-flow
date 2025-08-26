@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertCircle, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import type { EnhancedTask5C } from '@/5c/types';
+import { TaskEngineWidgets } from './TaskEngineWidgets';
 
 interface Workspace5CSidebarProps {
   myTasks: EnhancedTask5C[];
@@ -196,6 +197,14 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
             <p className="text-gray-500 text-sm">No capacity tasks available</p>
           </div>
         )}
+
+        {/* TaskEngine V2 Widgets - Integrated within sidebar */}
+        <div className="mt-6 px-2">
+          <TaskEngineWidgets 
+            activeTask5C={activeTask}
+            isCollapsed={false}
+          />
+        </div>
       </div>
     </motion.div>
   );

@@ -93,24 +93,14 @@ export const Workspace5C: React.FC = () => {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex">
-          <div className="flex flex-col">
-            <Workspace5CSidebar
-              myTasks={myTasks.map(t => t as any)}
-              availableTasks={availableTasks.map(t => t as any)}
-              activeTask={null}
-              onTaskClaim={openClaimPopup}
-              isCollapsed={isSidebarCollapsed}
-              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            />
-            
-            {/* TaskEngine V2 Widgets */}
-            <div className="mt-6">
-              <TaskEngineWidgets 
-                activeTask5C={null}
-                isCollapsed={isSidebarCollapsed}
-              />
-            </div>
-          </div>
+          <Workspace5CSidebar
+            myTasks={myTasks.map(t => t as any)}
+            availableTasks={availableTasks.map(t => t as any)}
+            activeTask={null}
+            onTaskClaim={openClaimPopup}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          />
           
           <main className="flex-1 p-6 overflow-auto">
             <motion.div
@@ -216,24 +206,14 @@ export const Workspace5C: React.FC = () => {
       
       <div className="flex">
         {!isSidebarCollapsed && (
-          <div className="flex flex-col">
-            <Workspace5CSidebar
-              myTasks={myTasks.map(t => t as any)}
-              availableTasks={availableTasks.map(t => t as any)}
-              activeTask={activeTask}
-              onTaskClaim={openClaimPopup}
-              isCollapsed={isSidebarCollapsed}
-              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            />
-            
-            {/* TaskEngine V2 Widgets */}
-            <div className="mt-6">
-              <TaskEngineWidgets 
-                activeTask5C={activeTask}
-                isCollapsed={isSidebarCollapsed}
-              />
-            </div>
-          </div>
+          <Workspace5CSidebar
+            myTasks={myTasks.map(t => t as any)}
+            availableTasks={availableTasks.map(t => t as any)}
+            activeTask={activeTask}
+            onTaskClaim={openClaimPopup}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          />
         )}
         
         {/* Full-screen workspace when sidebar is collapsed */}
