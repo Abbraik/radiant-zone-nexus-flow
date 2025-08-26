@@ -88,6 +88,51 @@ export type Database = {
           },
         ]
       }
+      actuation_attempts: {
+        Row: {
+          actor: string
+          allowed: boolean
+          attempt_id: string
+          change_kind: string
+          coverage_estimate_pct: number | null
+          delta_estimate: number | null
+          evaluated_by: string
+          evaluated_ms: number
+          payload: Json
+          reason: string
+          task_id: string
+          ts: string
+        }
+        Insert: {
+          actor: string
+          allowed: boolean
+          attempt_id?: string
+          change_kind: string
+          coverage_estimate_pct?: number | null
+          delta_estimate?: number | null
+          evaluated_by: string
+          evaluated_ms?: number
+          payload?: Json
+          reason: string
+          task_id: string
+          ts?: string
+        }
+        Update: {
+          actor?: string
+          allowed?: boolean
+          attempt_id?: string
+          change_kind?: string
+          coverage_estimate_pct?: number | null
+          delta_estimate?: number | null
+          evaluated_by?: string
+          evaluated_ms?: number
+          payload?: Json
+          reason?: string
+          task_id?: string
+          ts?: string
+        }
+        Relationships: []
+      }
       antic_activation_events: {
         Row: {
           created_at: string | null
@@ -2146,6 +2191,84 @@ export type Database = {
         }
         Relationships: []
       }
+      guardrail_enforcements: {
+        Row: {
+          actor: string
+          details: Json
+          event_id: string
+          result: string
+          rule: string
+          task_id: string
+          ts: string
+        }
+        Insert: {
+          actor: string
+          details?: Json
+          event_id?: string
+          result: string
+          rule: string
+          task_id: string
+          ts?: string
+        }
+        Update: {
+          actor?: string
+          details?: Json
+          event_id?: string
+          result?: string
+          rule?: string
+          task_id?: string
+          ts?: string
+        }
+        Relationships: []
+      }
+      guardrail_policies: {
+        Row: {
+          capacity: string
+          concurrent_substeps_limit: number | null
+          coverage_limit_pct: number | null
+          created_at: string
+          daily_delta_limit: number | null
+          evaluation_required_after_renewals: number
+          loop_id: string | null
+          name: string
+          policy_id: string
+          renewal_limit: number
+          template_key: string
+          timebox_hours: number
+          updated_at: string
+        }
+        Insert: {
+          capacity: string
+          concurrent_substeps_limit?: number | null
+          coverage_limit_pct?: number | null
+          created_at?: string
+          daily_delta_limit?: number | null
+          evaluation_required_after_renewals?: number
+          loop_id?: string | null
+          name: string
+          policy_id?: string
+          renewal_limit?: number
+          template_key: string
+          timebox_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string
+          concurrent_substeps_limit?: number | null
+          coverage_limit_pct?: number | null
+          created_at?: string
+          daily_delta_limit?: number | null
+          evaluation_required_after_renewals?: number
+          loop_id?: string | null
+          name?: string
+          policy_id?: string
+          renewal_limit?: number
+          template_key?: string
+          timebox_hours?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       guardrails: {
         Row: {
           created_at: string
@@ -2194,6 +2317,45 @@ export type Database = {
         }
         Relationships: []
       }
+      harmonization_conflicts: {
+        Row: {
+          conflict_id: string
+          detected_at: string
+          reason: string
+          recommendation: string
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          risk_score: number
+          snl_id: string
+          tasks: string[]
+        }
+        Insert: {
+          conflict_id?: string
+          detected_at?: string
+          reason: string
+          recommendation: string
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_score: number
+          snl_id: string
+          tasks: string[]
+        }
+        Update: {
+          conflict_id?: string
+          detected_at?: string
+          reason?: string
+          recommendation?: string
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          risk_score?: number
+          snl_id?: string
+          tasks?: string[]
+        }
+        Relationships: []
+      }
       harmonization_decisions: {
         Row: {
           actor: string
@@ -2227,6 +2389,42 @@ export type Database = {
           rationale?: string
           resolution_actions?: Json | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      hub_allocations: {
+        Row: {
+          alloc_id: string
+          alloc_pct: number
+          created_at: string
+          notes: string | null
+          region: string | null
+          snl_id: string
+          task_id: string
+          time_window: unknown
+          updated_at: string
+        }
+        Insert: {
+          alloc_id?: string
+          alloc_pct: number
+          created_at?: string
+          notes?: string | null
+          region?: string | null
+          snl_id: string
+          task_id: string
+          time_window: unknown
+          updated_at?: string
+        }
+        Update: {
+          alloc_id?: string
+          alloc_pct?: number
+          created_at?: string
+          notes?: string | null
+          region?: string | null
+          snl_id?: string
+          task_id?: string
+          time_window?: unknown
+          updated_at?: string
         }
         Relationships: []
       }
@@ -3330,6 +3528,42 @@ export type Database = {
           time_to_impact?: unknown | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      override_events: {
+        Row: {
+          actor: string
+          after: Json
+          approved_by: string | null
+          before: Json
+          override_id: string
+          rationale: string
+          scope: string
+          task_id: string
+          ts: string
+        }
+        Insert: {
+          actor: string
+          after?: Json
+          approved_by?: string | null
+          before?: Json
+          override_id?: string
+          rationale: string
+          scope: string
+          task_id: string
+          ts?: string
+        }
+        Update: {
+          actor?: string
+          after?: Json
+          approved_by?: string | null
+          before?: Json
+          override_id?: string
+          rationale?: string
+          scope?: string
+          task_id?: string
+          ts?: string
         }
         Relationships: []
       }
@@ -5365,6 +5599,41 @@ export type Database = {
         }
         Relationships: []
       }
+      task_guardrails: {
+        Row: {
+          config: Json
+          effective_from: string
+          effective_until: string | null
+          id: string
+          policy_id: string | null
+          task_id: string
+        }
+        Insert: {
+          config?: Json
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          policy_id?: string | null
+          task_id: string
+        }
+        Update: {
+          config?: Json
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          policy_id?: string | null
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_guardrails_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "guardrail_policies"
+            referencedColumns: ["policy_id"]
+          },
+        ]
+      }
       task_links: {
         Row: {
           context: Json | null
@@ -5493,6 +5762,30 @@ export type Database = {
           meta?: Json
           scheduled_for?: string
           sent_at?: string | null
+          task_id?: string
+        }
+        Relationships: []
+      }
+      task_renewals: {
+        Row: {
+          id: string
+          renewal_no: number
+          renewed_at: string
+          requires_evaluation: boolean
+          task_id: string
+        }
+        Insert: {
+          id?: string
+          renewal_no: number
+          renewed_at?: string
+          requires_evaluation?: boolean
+          task_id: string
+        }
+        Update: {
+          id?: string
+          renewal_no?: number
+          renewed_at?: string
+          requires_evaluation?: boolean
           task_id?: string
         }
         Relationships: []
@@ -6180,6 +6473,18 @@ export type Database = {
           },
         ]
       }
+      v_hub_load: {
+        Row: {
+          allocated_tasks: string[] | null
+          current_hub_load: number | null
+          projected_load: number | null
+          region: string | null
+          snl_id: string | null
+          time_window: unknown | null
+          total_allocation_pct: number | null
+        }
+        Relationships: []
+      }
       v_loop_shared_nodes: {
         Row: {
           id: string | null
@@ -6206,6 +6511,21 @@ export type Database = {
           org_id: string | null
           role: string | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      v_timebox_breaches: {
+        Row: {
+          config: Json | null
+          current_renewals: number | null
+          effective_from: string | null
+          evaluation_required_after_renewals: number | null
+          expires_at: string | null
+          is_expired: boolean | null
+          needs_evaluation: boolean | null
+          renewal_limit: number | null
+          task_id: string | null
+          timebox_hours: number | null
         }
         Relationships: []
       }
