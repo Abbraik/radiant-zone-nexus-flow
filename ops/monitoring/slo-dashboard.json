@@ -1,0 +1,250 @@
+{
+  "dashboard": {
+    "id": "pags-slo-dashboard",
+    "title": "PAGS Production SLO Dashboard",
+    "tags": ["pags", "slo", "production"],
+    "timezone": "UTC",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "SLO Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~\"2..|3..\"}[5m]) / rate(http_requests_total[5m]) * 100",
+            "legendFormat": "Availability %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 99,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 99},
+                {"color": "yellow", "value": 99.5},
+                {"color": "green", "value": 99.9}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Core Endpoint Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{endpoint=\"/brain/activate\"}[5m]))",
+            "legendFormat": "Brain Activate P95"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{endpoint=\"/tasks/createByFingerprint\"}[5m]))",
+            "legendFormat": "Task Create P95"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{endpoint=\"/signals/loop/*/summary\"}[5m]))",
+            "legendFormat": "Signals Summary P95"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{endpoint=\"/compass/loop/*/summary\"}[5m]))",
+            "legendFormat": "Compass Summary P95"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Duration (ms)",
+            "max": 500
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 150,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Golden Path Performance",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "avg_over_time(task_time_to_decision_seconds{loop=~\"FER-L01|LAB-L01|SOC-L01\"}[1h])",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "columns": [
+                {"text": "Loop", "value": "loop"},
+                {"text": "MTTD (s)", "value": "Value"},
+                {"text": "MTTA (s)", "value": "task_time_to_assignment_seconds"}
+              ]
+            }
+          }
+        ],
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Materialized View Freshness",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "time() - mv_last_refresh_timestamp{view=\"mv_indicator_latest\"}",
+            "legendFormat": "Indicator Latest"
+          },
+          {
+            "expr": "time() - mv_last_refresh_timestamp{view=\"mv_loop_signals_summary\"}",
+            "legendFormat": "Loop Signals"
+          },
+          {
+            "expr": "time() - mv_last_refresh_timestamp{view=\"mv_tasks_inbox\"}",
+            "legendFormat": "Tasks Inbox"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Age (seconds)",
+            "max": 600
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 300,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14}
+      },
+      {
+        "id": 5,
+        "title": "Queue Depths",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "trigger_queue_depth",
+            "legendFormat": "Trigger Queue"
+          },
+          {
+            "expr": "task_creation_queue_depth",
+            "legendFormat": "Task Creation Queue"
+          },
+          {
+            "expr": "conformance_queue_depth",
+            "legendFormat": "Conformance Queue"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Queue Depth"
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 100,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14}
+      },
+      {
+        "id": 6,
+        "title": "NCF Compass Metrics",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg(compass_coherence_index)",
+            "legendFormat": "Avg Coherence Index"
+          },
+          {
+            "expr": "rate(consent_gate_blocks_total[5m])",
+            "legendFormat": "Consent Gate Blocks/min"
+          },
+          {
+            "expr": "rate(coherence_check_blocks_total[5m])",
+            "legendFormat": "Coherence Check Blocks/min"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22}
+      },
+      {
+        "id": 7,
+        "title": "Data Quality",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(dq_bad_sources{golden_path=\"true\"})",
+            "legendFormat": "Bad Sources (Golden Path)"
+          },
+          {
+            "expr": "avg(conformance_pass_rate) * 100",
+            "legendFormat": "Conformance Pass Rate %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 2}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22}
+      },
+      {
+        "id": 8,
+        "title": "Error Budget Burn Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m]) * 100",
+            "legendFormat": "Error Rate %"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Error Rate %",
+            "max": 1
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 0.5,
+            "colorMode": "critical",
+            "op": "gt"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 30}
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "prometheus",
+          "expr": "increase(deployment_events_total[1m])",
+          "iconColor": "green",
+          "textFormat": "Deployment"
+        }
+      ]
+    }
+  }
+}
