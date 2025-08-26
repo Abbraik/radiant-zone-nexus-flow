@@ -34,9 +34,9 @@ import TaskEnginePage from "./pages/TaskEngineDemo";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 import GlobalPortals from '@/components/global/GlobalPortals';
-import { PublicDossier } from "./pages/PublicDossier";
-import SecurityOps from "./pages/SecurityOps";
-import { ShareView } from "./pages/ShareView";
+import { PublicDossier } from './pages/PublicDossier';
+import { ShareView } from './pages/ShareView';
+import { Home } from './pages/Home';
 
 const queryClient = createQueryClient();
 
@@ -69,7 +69,7 @@ const App = () => (
                    <Route path="/admin" element={<AdminPage />} />
                    <Route path="/plugins" element={<AdminPage />} />
                    <Route path="/offline" element={<AdminPage />} />
-                   <Route path="/security" element={<SecurityOps />} />
+                   <Route path="/security" element={<AdminPage />} />
                    <Route path="/mission-control" element={<MissionControl />} />
                    {/* Legacy Zone Access */}
                    <Route path="/think" element={<ThinkZone />} />
@@ -84,7 +84,7 @@ const App = () => (
                       {/* Share Views */}
                       <Route path="/share/:token" element={<ShareView />} />
                      {/* Main workspace - always renders on home and unknown routes */}
-                    <Route path="/" element={<Workspace5C />} />
+                    <Route path="/" element={<Home />} />
                     <Route path="*" element={<Workspace5C />} />
                 </Routes>
               </Shell>

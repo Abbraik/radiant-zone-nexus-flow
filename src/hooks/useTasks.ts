@@ -1,16 +1,25 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { mockTasks, TaskType } from '../config/taskRegistry';
+import { useTaskEngine } from './useTaskEngine';
+import { isFeatureEnabled } from '@/lib/featureFlags';
 import { useToast } from './use-toast';
 
-export interface Task extends TaskType {
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
   status: 'available' | 'claimed' | 'in_progress' | 'completed';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  capacity?: 'responsive' | 'reflexive' | 'deliberative' | 'anticipatory' | 'structural';
   owner_id?: string;
   loop_id?: string;
   due_at?: Date;
   created_at: Date;
   updated_at: Date;
+  zone?: string;
+  type?: string;
+  components?: string[];
 }
 
 // Enhanced mock data with population and development context
@@ -19,6 +28,7 @@ const mockTasksWithStatus: Task[] = [
     id: '1',
     title: 'Configure Population Development Meta-Loop',
     description: 'Set up the foundational meta-loop that orchestrates all population and development dynamics',
+    priority: 'high',
     zone: 'think',
     type: 'loop_design',
     components: ['TensionSelector', 'SRTRangeSlider'],
@@ -32,6 +42,7 @@ const mockTasksWithStatus: Task[] = [
     id: '2',
     title: 'Analyze Fertility Rate Dynamics',
     description: 'Review natural population growth patterns and fertility rate determinants',
+    priority: 'medium',
     zone: 'think',
     type: 'define_tension',
     components: ['TensionSelector', 'SRTRangeSlider'],
@@ -45,6 +56,7 @@ const mockTasksWithStatus: Task[] = [
     id: '3',
     title: 'Optimize Resource Market Interventions',
     description: 'Design intervention bundle for population-resource market balance',
+    priority: 'high',
     zone: 'act',
     type: 'sprint_planning',
     components: ['InterventionPicker', 'BundlePreview', 'SmartRolesPanel'],
@@ -58,6 +70,7 @@ const mockTasksWithStatus: Task[] = [
     id: '4',
     title: 'Monitor Economic Stability Metrics',
     description: 'Track economic stability indicators and population growth correlation',
+    priority: 'critical',
     zone: 'monitor',
     type: 'breach_response',
     components: ['LoopTable', 'TRIDetailDrawer'],
@@ -71,6 +84,7 @@ const mockTasksWithStatus: Task[] = [
     id: '5',
     title: 'Simulate Migration Pattern Scenarios',
     description: 'Test various migration and economic opportunity scenarios for system resilience',
+    priority: 'low',
     zone: 'innovate-learn',
     type: 'experiment_design',
     components: ['SimulationParams', 'SimulationPreview'],
@@ -84,6 +98,7 @@ const mockTasksWithStatus: Task[] = [
     id: '6',
     title: 'Capture Environmental Quality Insights',
     description: 'Document learnings from environmental quality and economic balance testing',
+    priority: 'medium',
     zone: 'innovate-learn',
     type: 'capture_insight',
     components: ['InsightFeed', 'ExperimentStudio'],
@@ -97,6 +112,7 @@ const mockTasksWithStatus: Task[] = [
     id: '7',
     title: 'View Population Development 3D Cascade',
     description: 'Interactive 3D visualization of population and development goal dependencies',
+    priority: 'low',
     zone: 'think',
     type: 'view_cascade_3d',
     components: ['Cascade3DViewer'],
@@ -110,6 +126,7 @@ const mockTasksWithStatus: Task[] = [
     id: '8',
     title: 'Monitor Social Structure Digital Twin',
     description: 'Real-time digital twin analysis of social structure evolution and outcomes',
+    priority: 'high',
     zone: 'monitor',
     type: 'monitor_digital_twin',
     components: ['DigitalTwinPreview', 'TrendSparklines'],
@@ -128,15 +145,38 @@ export const useTasks = () => {
   const [claimingTask, setClaimingTask] = useState<Task | null>(null);
   const [showClaimPopup, setShowClaimPopup] = useState(false);
   
+  // Use real Task Engine V2 if enabled
+  const { tasks: engineTasks, tasksLoading: engineLoading } = useTaskEngine();
+  const useRealTasks = isFeatureEnabled('useTaskEngineV2') && !isFeatureEnabled('useMockHome');
+
   const { data: allTasks = [], isLoading } = useQuery({
-    queryKey: ['tasks'],
+    queryKey: ['tasks', useRealTasks],
     queryFn: async (): Promise<Task[]> => {
-      // In real implementation, this would be a Supabase query
-      await new Promise(resolve => setTimeout(resolve, 500)); // simulate API delay
-      console.log('useTasks: Loading tasks...', mockTasksWithStatus);
-      console.log('useTasks: Task titles:', mockTasksWithStatus.map(t => t.title));
+      if (useRealTasks) {
+        // Convert Task Engine V2 tasks to legacy format
+        return engineTasks.map(task => ({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          status: task.status as Task['status'],
+          priority: task.priority,
+          capacity: task.context?.capacity as Task['capacity'],
+          owner_id: task.created_by,
+          loop_id: task.context?.loop_id,
+          due_at: task.due_date ? new Date(task.due_date) : undefined,
+          created_at: new Date(task.created_at),
+          updated_at: new Date(task.updated_at),
+          zone: task.context?.capacity || 'think',
+          type: 'capacity_task',
+          components: []
+        }));
+      }
+      
+      // Fallback to mock data
+      await new Promise(resolve => setTimeout(resolve, 500));
       return mockTasksWithStatus;
-    }
+    },
+    enabled: !useRealTasks || !engineLoading
   });
 
   const myTasks = allTasks.filter(task => 

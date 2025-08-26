@@ -7,6 +7,10 @@ export const PRODUCTION_FLAGS = {
   useAnticipatoryRuntime: true,
   useNCFCompassOverlays: true,
   
+  // Task Engine V2
+  useTaskEngineV2: true,
+  useMockHome: false,
+  
   // Publishing gates
   conformanceChecksEnabled: true,
   publicDossierEnabled: true,
