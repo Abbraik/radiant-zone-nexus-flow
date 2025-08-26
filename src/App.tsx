@@ -35,6 +35,7 @@ import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 import GlobalPortals from '@/components/global/GlobalPortals';
 import { PublicDossier } from "./pages/PublicDossier";
+import SecurityOps from "./pages/SecurityOps";
 
 const queryClient = createQueryClient();
 
@@ -67,7 +68,7 @@ const App = () => (
                    <Route path="/admin" element={<AdminPage />} />
                    <Route path="/plugins" element={<AdminPage />} />
                    <Route path="/offline" element={<AdminPage />} />
-                   <Route path="/security" element={<AdminPage />} />
+                   <Route path="/security" element={<SecurityOps />} />
                    <Route path="/mission-control" element={<MissionControl />} />
                    {/* Legacy Zone Access */}
                    <Route path="/think" element={<ThinkZone />} />
