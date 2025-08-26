@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 
 import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
+import SecurityOps from "./pages/SecurityOps";
 import { Workspace5C } from "./pages/Workspace5C";
 import { Demo } from "./pages/Demo";
 import TaskEnginePage from "./pages/TaskEngineDemo";
@@ -69,7 +70,7 @@ const App = () => (
                    <Route path="/admin" element={<AdminPage />} />
                    <Route path="/plugins" element={<AdminPage />} />
                    <Route path="/offline" element={<AdminPage />} />
-                   <Route path="/security" element={<AdminPage />} />
+                   <Route path="/security" element={<SecurityOps />} />
                    <Route path="/mission-control" element={<MissionControl />} />
                    {/* Legacy Zone Access */}
                    <Route path="/think" element={<ThinkZone />} />
