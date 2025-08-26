@@ -689,6 +689,48 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          org_id: string
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          org_id?: string
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          org_id?: string
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       band_crossings: {
         Row: {
           at: string
@@ -3910,6 +3952,33 @@ export type Database = {
         }
         Relationships: []
       }
+      pii_policies: {
+        Row: {
+          column_name: string
+          created_at: string | null
+          id: string
+          pii_class: string
+          redaction_strategy: string
+          table_name: string
+        }
+        Insert: {
+          column_name: string
+          created_at?: string | null
+          id?: string
+          pii_class: string
+          redaction_strategy: string
+          table_name: string
+        }
+        Update: {
+          column_name?: string
+          created_at?: string | null
+          id?: string
+          pii_class?: string
+          redaction_strategy?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       pilots: {
         Row: {
           created_at: string | null
@@ -4072,6 +4141,7 @@ export type Database = {
           created_at: string | null
           display_name: string | null
           id: string
+          org_id: string | null
           updated_at: string | null
           user_id: string
         }
@@ -4081,6 +4151,7 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           id?: string
+          org_id?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -4090,6 +4161,7 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           id?: string
+          org_id?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -7538,6 +7610,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_current_user_org: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -7592,10 +7668,9 @@ export type Database = {
         Returns: Json
       }
       has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
+        Args:
+          | { _role: Database["public"]["Enums"]["app_role"]; _user_id: string }
+          | { _role: string; _user_id: string }
         Returns: boolean
       }
       import_loop: {
