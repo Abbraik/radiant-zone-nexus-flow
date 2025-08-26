@@ -26,29 +26,101 @@ import { ZoneAwareSystemStatus } from '@/components/workspace/ZoneAwareSystemSta
 import { Workspace5CSidebar } from '@/components/workspace/Workspace5CSidebar';
 import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 import { useToolsStore } from '@/stores/toolsStore';
-import { useTaskEngine } from '@/hooks/useTaskEngine';
-// TaskEngine components will be integrated gradually
+import { getTasks5C, getTask5CById } from '@/5c/services';
+import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import type { CapacityBundleProps } from '@/types/capacity';
+
+// Hook to mimic the workspace task management for 5C tasks
+const use5cTasks = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const taskId = searchParams.get('task5c');
+  
+  const { data: allTasks = [], isLoading: isLoadingTasks } = useQuery({
+    queryKey: QUERY_KEYS_5C.tasks(),
+    queryFn: () => getTasks5C()
+  });
+
+  const { data: activeTask, isLoading: isLoadingTask } = useQuery({
+    queryKey: QUERY_KEYS_5C.task(taskId!),
+    queryFn: () => getTask5CById(taskId!),
+    enabled: !!taskId
+  });
+
+  // Add logging for debugging
+  React.useEffect(() => {
+    console.log('5C Tasks loaded:', allTasks?.length || 0, allTasks);
+  }, [allTasks]);
+
+  React.useEffect(() => {
+    console.log('5C Active task:', activeTask);
+  }, [activeTask]);
+
+  // Convert 5C tasks to workspace task format
+  const convertToWorkspaceTask = (task5c: EnhancedTask5C): any => ({
+    ...task5c,
+    zone: task5c.capacity,
+    components: [],
+    task_type: `capacity-${task5c.capacity}`,
+    priority: 'normal',
+    due_date: task5c.updated_at,
+    created_at: new Date(task5c.created_at),
+    updated_at: new Date(task5c.updated_at),
+    tri: task5c.tri ? {
+      T: task5c.tri.t_value,
+      R: task5c.tri.r_value,
+      I: task5c.tri.i_value
+    } : undefined,
+    status: task5c.status === 'open' ? 'available' as const : 
+            task5c.status === 'active' ? 'in_progress' as const :
+            task5c.status === 'done' ? 'completed' as const :
+            'claimed' as const
+  });
+
+  // Handle task claiming with URL navigation
+  const handleTaskClaim = (task: any) => {
+    console.log('5C Task claiming:', task);
+    setSearchParams({ task5c: task.id });
+  };
+
+  // Mock the workspace task management interface
+  const mockTaskFunctions = {
+    completeTask: (taskId: string) => {
+      console.log('5C Task completed:', taskId);
+      setSearchParams({});
+    },
+    isCompletingTask: false,
+    openClaimPopup: handleTaskClaim,
+    confirmClaimTask: () => console.log('5C Task claim confirmed'),
+    cancelClaimTask: () => console.log('5C Task claim cancelled'),
+    claimingTask: null,
+    showClaimPopup: false,
+    isClaimingTask: false
+  };
+
+  return {
+    myTasks: allTasks.filter(t => t.status === 'claimed').map(convertToWorkspaceTask),
+    activeTask,
+    availableTasks: allTasks.filter(t => t.status === 'open').map(convertToWorkspaceTask),
+    isLoading: isLoadingTasks || isLoadingTask,
+    ...mockTaskFunctions
+  };
+};
 
 export const Workspace5C: React.FC = () => {
   const { 
-    tasks,
-    selectedTask,
-    setSelectedTask,
-    activeTasks,
-    myTasks,
-    overdueTasks,
-    tasksLoading,
-    createTask,
-    updateTaskStatus,
-    completeTask,
-    assignTask,
-    acquireLock,
-    isCreating,
-    isUpdating,
-    isAssigning,
-    isAcquiringLock
-  } = useTaskEngine();
+    myTasks, 
+    activeTask, 
+    availableTasks, 
+    completeTask, 
+    isCompletingTask,
+    openClaimPopup,
+    confirmClaimTask,
+    cancelClaimTask,
+    claimingTask,
+    showClaimPopup,
+    isClaimingTask,
+    isLoading
+  } = use5cTasks();
   
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
@@ -58,33 +130,6 @@ export const Workspace5C: React.FC = () => {
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isTaskCreationOpen, setIsTaskCreationOpen] = useState(false);
-  
-  // Get the currently active task (first active task or selected task)
-  const activeTask = selectedTask || activeTasks[0] || null;
-  
-  // Convert TaskV2 to Task format for compatibility
-  const convertToLegacyTask = (taskV2: any): any => ({
-    ...taskV2,
-    zone: taskV2.context?.zone || 'think',
-    type: taskV2.context?.type || 'default',
-    components: taskV2.context?.components || []
-  });
-  
-  // Convert to 5C format for sidebar compatibility
-  const convertTo5CTask = (taskV2: any): any => ({
-    ...taskV2,
-    capacity: taskV2.context?.capacity || 'responsive',
-    loop_id: taskV2.context?.loop_id || 'loop-1',
-    type: taskV2.context?.task_type || 'default',
-    scale: taskV2.context?.scale || 'medium',
-    tri: { t_value: 0.5, r_value: 0.5, i_value: 0.5 },
-    metadata: {}
-  });
-  
-  const legacy5CTasks = myTasks.map(convertTo5CTask);
-  const availableLegacy5CTasks = tasks.filter(t => t.status === 'draft' || t.status === 'active').map(convertTo5CTask);
-  const activeLegacy5CTask = activeTask ? convertTo5CTask(activeTask) : null;
   
   const openMetaLoopConsole = () => {
     useToolsStore.getState().open('admin', 'meta');
@@ -96,20 +141,9 @@ export const Workspace5C: React.FC = () => {
       setIsSidebarCollapsed(true);
     }
   }, [activeTask]);
-  
-  // Handle task claiming
-  const handleTaskClaim = (task: any) => {
-    // Handle both string ID and task object
-    const taskId = typeof task === 'string' ? task : task.id;
-    const foundTask = tasks.find(t => t.id === taskId);
-    if (foundTask) {
-      setSelectedTask(foundTask);
-      updateTaskStatus(taskId, 'active');
-    }
-  };
 
   // Show loading state
-  if (tasksLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex items-center justify-center h-screen">
@@ -127,10 +161,10 @@ export const Workspace5C: React.FC = () => {
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex">
           <Workspace5CSidebar
-            myTasks={legacy5CTasks}
-            availableTasks={availableLegacy5CTasks}
+            myTasks={myTasks.map(t => t as any)}
+            availableTasks={availableTasks.map(t => t as any)}
             activeTask={null}
-            onTaskClaim={(task) => handleTaskClaim(task)}
+            onTaskClaim={openClaimPopup}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
@@ -149,14 +183,8 @@ export const Workspace5C: React.FC = () => {
                     Claim a capacity-based task from the sidebar to get started with your 5C workspace
                   </p>
                   <div className="text-sm text-gray-400">
-                    {availableLegacy5CTasks.length} tasks available • {legacy5CTasks.length} assigned tasks
+                    {availableTasks.length} capacity tasks available • {myTasks.length} claimed tasks
                   </div>
-                  <Button
-                    onClick={() => setIsTaskCreationOpen(true)}
-                    className="mt-4 bg-teal-500 hover:bg-teal-600 text-white"
-                  >
-                    Create New Task
-                  </Button>
                 </div>
               </div>
 
@@ -178,23 +206,62 @@ export const Workspace5C: React.FC = () => {
               <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
             </DialogHeader>
             <GoalTreeWidget 
-              onTaskClaim={(task) => handleTaskClaim(task)}
+              onTaskClaim={openClaimPopup}
               onOKRSelect={(okr) => setSelectedOKR(okr)}
             />
           </DialogContent>
         </Dialog>
 
+        {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
+        {flags.useEnhancedTaskPopup ? (
+          <EnhancedTaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        ) : (
+          <TaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        )}
       </div>
     );
   }
 
+  // Convert 5C task to workspace task format for components
+  const workspaceTask: any = {
+    ...activeTask,
+    type: `capacity-${activeTask.capacity}`,
+    zone: activeTask.capacity,
+    components: [],
+    task_type: `capacity-${activeTask.capacity}`,
+    priority: 'normal',
+    due_date: activeTask.updated_at,
+    created_at: new Date(activeTask.created_at),
+    updated_at: new Date(activeTask.updated_at),
+    tri: activeTask.tri ? {
+      T: activeTask.tri.t_value,
+      R: activeTask.tri.r_value,
+      I: activeTask.tri.i_value
+    } : undefined,
+    status: activeTask.status === 'open' ? 'available' as const : 
+            activeTask.status === 'active' ? 'in_progress' as const :
+            activeTask.status === 'done' ? 'completed' as const :
+            'claimed' as const
+  };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
       <WorkspaceProHeader
-        activeTask={activeTask ? convertToLegacyTask(activeTask) : null}
-        myTasks={myTasks.map(convertToLegacyTask)}
+        activeTask={workspaceTask}
+        myTasks={myTasks}
         onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
         onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
         onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
@@ -207,10 +274,10 @@ export const Workspace5C: React.FC = () => {
       <div className="flex">
         {!isSidebarCollapsed && (
           <Workspace5CSidebar
-            myTasks={legacy5CTasks}
-            availableTasks={availableLegacy5CTasks}
-            activeTask={activeLegacy5CTask}
-            onTaskClaim={handleTaskClaim}
+            myTasks={myTasks.map(t => t as any)}
+            availableTasks={availableTasks.map(t => t as any)}
+            activeTask={activeTask}
+            onTaskClaim={openClaimPopup}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
@@ -241,71 +308,75 @@ export const Workspace5C: React.FC = () => {
                 </svg>
               </motion.button>
             )}
-            {/* Task Engine V2 Interface */}
+            {/* Enhanced Task Card */}
+            <div className="mb-6">
+              <FeatureFlagGuard flag="useTeamsButton">
+                <EnhancedTaskCard
+                  task={workspaceTask}
+                  onComplete={completeTask}
+                  isCompleting={isCompletingTask}
+                  showTeamsButton={true}
+                />
+              </FeatureFlagGuard>
+            </div>
+
+            {/* 5C Capacity Bundle - Full screen when sidebar collapsed */}
             <div className="space-y-6">
-              {activeTask ? (
-                <div className="p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10">
-                  <h3 className="text-lg font-semibold text-white mb-4">Active Task</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="text-white font-medium">{activeTask.title}</h4>
-                      <p className="text-gray-300 text-sm mt-1">{activeTask.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        activeTask.priority === 'critical' ? 'bg-red-500/20 text-red-300' :
-                        activeTask.priority === 'high' ? 'bg-orange-500/20 text-orange-300' :
-                        activeTask.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-300' :
-                        'bg-green-500/20 text-green-300'
-                      }`}>
-                        {activeTask.priority}
-                      </span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        activeTask.status === 'active' ? 'bg-blue-500/20 text-blue-300' :
-                        activeTask.status === 'completed' ? 'bg-green-500/20 text-green-300' :
-                        'bg-gray-500/20 text-gray-300'
-                      }`}>
-                        {activeTask.status}
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => completeTask(activeTask.id)}
-                        disabled={isUpdating}
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        {isUpdating ? 'Completing...' : 'Complete Task'}
-                      </Button>
-                      <Button
-                        onClick={() => updateTaskStatus(activeTask.id, 'paused')}
-                        disabled={isUpdating}
-                        variant="outline"
-                      >
-                        Pause
-                      </Button>
-                      <Button
-                        onClick={() => assignTask(activeTask.id, 'current-user')}
-                        disabled={isAssigning}
-                        variant="outline"
-                      >
-                        {isAssigning ? 'Assigning...' : 'Assign to Me'}
-                      </Button>
-                    </div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className={`p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10 transition-all duration-300 ${
+                  isSidebarCollapsed ? 'min-h-[calc(100vh-200px)]' : ''
+                }`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-400 to-blue-400"></div>
+                    <h3 className="text-lg font-semibold text-white">
+                      {activeTask.capacity.toUpperCase()} Capacity Bundle
+                    </h3>
+                    {isSidebarCollapsed && (
+                      <span className="text-sm text-gray-400 ml-2">• Full Screen Mode</span>
+                    )}
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="p-6 bg-glass/50 backdrop-blur-20 rounded-2xl border border-white/10">
-                    <p className="text-gray-400 mb-4">No active task selected</p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="capitalize">
+                      {activeTask.capacity}
+                    </Badge>
                     <Button
-                      onClick={() => setIsTaskCreationOpen(true)}
-                      className="bg-teal-500 hover:bg-teal-600 text-white"
+                      variant="outline"
+                      size="sm"
+                      onClick={openMetaLoopConsole}
+                      className="gap-2"
                     >
-                      Create New Task
+                      <Settings className="w-4 h-4" />
+                      Meta-Loop Console
                     </Button>
+                    {!isSidebarCollapsed && (
+                      <button
+                        onClick={() => setIsSidebarCollapsed(true)}
+                        className="p-1 text-gray-400 hover:text-white transition-colors"
+                        title="Expand to full screen"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M8 3H5C3.89543 3 3 3.89543 3 5V8M21 8V5C21 3.89543 20.1046 3 19 3H16M16 21H19C20.1046 21 21 20.1046 21 19V16M8 21H5C3.89543 21 3 20.1046 3 19V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 </div>
-              )}
+                
+                <DynamicCapacityBundle
+                  capacity={activeTask.capacity as Capacity5C}
+                  taskId={activeTask.id}
+                  taskData={workspaceTask}
+                  payload={{}}
+                  onPayloadUpdate={(payload) => console.log('5C bundle payload updated:', payload)}
+                  onValidationChange={(isValid, errors) => console.log('5C bundle validation:', isValid, errors)}
+                  readonly={false}
+                />
+              </motion.div>
             </div>
           </motion.div>
         </main>
@@ -315,7 +386,7 @@ export const Workspace5C: React.FC = () => {
       <CopilotDrawer
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
-        activeTask={activeTask}
+        activeTask={workspaceTask}
       />
       
       <TeamsDrawer
@@ -332,7 +403,7 @@ export const Workspace5C: React.FC = () => {
             <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
           </DialogHeader>
           <GoalTreeWidget 
-          onTaskClaim={(task) => handleTaskClaim(task)}
+            onTaskClaim={openClaimPopup}
             onOKRSelect={(okr) => setSelectedOKR(okr)}
           />
         </DialogContent>
@@ -352,73 +423,23 @@ export const Workspace5C: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-      {/* Task Creation Modal - Simplified */}
-      {isTaskCreationOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="w-full max-w-md mx-4 p-6 bg-gray-900/95 backdrop-blur-20 rounded-2xl border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">Create New Task</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-300">Title</label>
-                <input
-                  type="text"
-                  className="w-full mt-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Enter task title"
-                  id="task-title"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-300">Description</label>
-                <textarea
-                  className="w-full mt-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Enter task description"
-                  rows={3}
-                  id="task-description"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-300">Priority</label>
-                <select
-                  className="w-full mt-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  id="task-priority"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
-                </select>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => {
-                    const title = (document.getElementById('task-title') as HTMLInputElement)?.value;
-                    const description = (document.getElementById('task-description') as HTMLTextAreaElement)?.value;
-                    const priority = (document.getElementById('task-priority') as HTMLSelectElement)?.value;
-                    
-                    if (title) {
-                      createTask({
-                        title,
-                        description,
-                        priority: priority as any
-                      });
-                      setIsTaskCreationOpen(false);
-                    }
-                  }}
-                  disabled={isCreating}
-                  className="flex-1 bg-teal-500 hover:bg-teal-600"
-                >
-                  {isCreating ? 'Creating...' : 'Create'}
-                </Button>
-                <Button
-                  onClick={() => setIsTaskCreationOpen(false)}
-                  variant="outline"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Task Claim Popup - Enhanced or Basic */}
+      {flags.useEnhancedTaskPopup ? (
+        <EnhancedTaskClaimPopup
+          isOpen={showClaimPopup}
+          task={claimingTask}
+          onConfirm={confirmClaimTask}
+          onCancel={cancelClaimTask}
+          isLoading={isClaimingTask}
+        />
+      ) : (
+        <TaskClaimPopup
+          isOpen={showClaimPopup}
+          task={claimingTask}
+          onConfirm={confirmClaimTask}
+          onCancel={cancelClaimTask}
+          isLoading={isClaimingTask}
+        />
       )}
       
       {/* Zone Tools Portals - Admin zone for Meta Loop Console */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertRail } from '@/components/alerts/AlertRail';
-import { useTaskEngine } from '../../hooks/useTaskEngine';
+import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
@@ -28,53 +28,25 @@ import type { Zone, TaskType } from '../../types/zone-bundles';
 
 export const Workspace: React.FC = () => {
   const { 
-    tasks,
-    selectedTask,
-    setSelectedTask,
-    activeTasks,
-    myTasks,
-    overdueTasks,
-    createTask,
-    updateTaskStatus,
-    completeTask,
-    assignTask,
-    acquireLock,
-    isCreating,
-    isUpdating
-  } = useTaskEngine();
+    myTasks, 
+    activeTask, 
+    availableTasks, 
+    completeTask, 
+    isCompletingTask,
+    openClaimPopup,
+    confirmClaimTask,
+    cancelClaimTask,
+    claimingTask,
+    showClaimPopup,
+    isClaimingTask
+  } = useTasks();
   
-  // Get the currently active task (first active task or selected task)
-  const activeTask = selectedTask || activeTasks[0] || null;
-  const availableTasks = tasks.filter(t => t.status === 'draft' || t.status === 'active');
-  
-  // Handle task claiming
-  const handleTaskClaim = (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      setSelectedTask(task);
-      updateTaskStatus(taskId, 'active');
-    }
-  };
-  
-  // Mock old interface for compatibility
-  const showClaimPopup = false;
-  const claimingTask = null;
-  const isClaimingTask = false;
-  const isCompletingTask = isUpdating;
-  
-  // Convert TaskV2 to legacy Task format for compatibility
-  const convertToLegacyTask = (taskV2: any): any => ({
-    ...taskV2,
-    zone: taskV2.context?.zone || 'think',
-    type: taskV2.context?.type || 'default',
-    components: taskV2.context?.components || []
+  // Debug state values on every render
+  console.log('Workspace render - Popup state:', { 
+    showClaimPopup, 
+    claimingTask: claimingTask?.id, 
+    isClaimingTask 
   });
-  
-  // Convert tasks to legacy format
-  const legacyTasks = tasks.map(convertToLegacyTask);
-  const legacyMyTasks = myTasks.map(convertToLegacyTask);
-  const legacyAvailableTasks = availableTasks.map(convertToLegacyTask);
-  const legacyActiveTask = activeTask ? convertToLegacyTask(activeTask) : null;
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState(false);
@@ -109,7 +81,7 @@ export const Workspace: React.FC = () => {
   //   );
   // }
 
-  if (!legacyActiveTask) {
+  if (!activeTask) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex">
@@ -117,17 +89,17 @@ export const Workspace: React.FC = () => {
             flag="useCascadeBar" 
             fallback={
               <WorkspaceProSidebar 
-              myTasks={legacyMyTasks}
-              availableTasks={legacyAvailableTasks}
+                myTasks={myTasks} 
+                availableTasks={availableTasks}
                 activeTask={null}
               />
             }
           >
             <CascadeSidebar
-              myTasks={legacyMyTasks}
-              availableTasks={legacyAvailableTasks}
+              myTasks={myTasks}
+              availableTasks={availableTasks}
               activeTask={null}
-              onTaskClaim={handleTaskClaim}
+              onTaskClaim={openClaimPopup}
               isCollapsed={isSidebarCollapsed}
               onToggleCollapse={() => {
                 console.log('Toggle collapse called, current state:', isSidebarCollapsed);
@@ -150,7 +122,7 @@ export const Workspace: React.FC = () => {
                     Claim a task from the sidebar to get started with your workspace
                   </p>
                   <div className="text-sm text-gray-400">
-                    {legacyAvailableTasks.length} tasks available
+                    {availableTasks.length} tasks available
                   </div>
                 </div>
               </div>
@@ -173,35 +145,53 @@ export const Workspace: React.FC = () => {
               <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
             </DialogHeader>
             <GoalTreeWidget 
-            onTaskClaim={handleTaskClaim}
+              onTaskClaim={openClaimPopup}
               onOKRSelect={(okr) => setSelectedOKR(okr)}
             />
           </DialogContent>
         </Dialog>
 
+        {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
+        {flags.useEnhancedTaskPopup ? (
+          <EnhancedTaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        ) : (
+          <TaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        )}
       </div>
     );
   }
 
   // Get the current components from registry (this ensures we use the latest config)
-  const currentComponents = taskRegistry[legacyActiveTask.type] || legacyActiveTask.components || [];
+  const currentComponents = taskRegistry[activeTask.type] || activeTask.components || [];
   const components = currentComponents;
   
   console.log('Workspace activeTask:', { 
-    id: legacyActiveTask.id, 
-    type: legacyActiveTask.type, 
-    zone: legacyActiveTask.zone, 
-    originalComponents: legacyActiveTask.components,
+    id: activeTask.id, 
+    type: activeTask.type, 
+    zone: activeTask.zone, 
+    originalComponents: activeTask.components,
     currentComponents: components,
-    registryMapping: taskRegistry[legacyActiveTask.type]
+    registryMapping: taskRegistry[activeTask.type]
   });
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
       <WorkspaceProHeader
-        activeTask={legacyActiveTask}
-        myTasks={legacyMyTasks}
+        activeTask={activeTask}
+        myTasks={myTasks}
         onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
         onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
         onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
@@ -216,17 +206,17 @@ export const Workspace: React.FC = () => {
           flag="useCascadeBar" 
           fallback={
             <WorkspaceProSidebar 
-            myTasks={legacyMyTasks} 
-            availableTasks={legacyAvailableTasks}
-            activeTask={legacyActiveTask}
+              myTasks={myTasks} 
+              availableTasks={availableTasks}
+              activeTask={activeTask}
             />
           }
         >
           <CascadeSidebar
-            myTasks={legacyMyTasks}
-            availableTasks={legacyAvailableTasks}
-            activeTask={legacyActiveTask}
-            onTaskClaim={handleTaskClaim}
+            myTasks={myTasks}
+            availableTasks={availableTasks}
+            activeTask={activeTask}
+            onTaskClaim={openClaimPopup}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => {
               console.log('Toggle collapse called, current state:', isSidebarCollapsed);
@@ -245,9 +235,9 @@ export const Workspace: React.FC = () => {
             <div className="mb-6">
               <FeatureFlagGuard flag="useTeamsButton">
                 <EnhancedTaskCard
-                  task={legacyActiveTask}
-            onComplete={(taskId) => completeTask(taskId)}
-                  isCompleting={isUpdating}
+                  task={activeTask}
+                  onComplete={completeTask}
+                  isCompleting={isCompletingTask}
                   showTeamsButton={true}
                 />
               </FeatureFlagGuard>
@@ -256,7 +246,7 @@ export const Workspace: React.FC = () => {
             {/* Zone Bundle or Dynamic Widgets */}
             <div className="space-y-6">
               <FeatureFlagGuard flag="useZoneBundles">
-                {legacyActiveTask.zone ? (
+                {activeTask.zone ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -267,19 +257,19 @@ export const Workspace: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-400 to-blue-400"></div>
                         <h3 className="text-lg font-semibold text-white">
-                          {legacyActiveTask.zone.toUpperCase()} Zone Bundle
+                          {activeTask.zone.toUpperCase()} Zone Bundle
                         </h3>
                       </div>
                       <Badge variant="outline" className="capitalize">
-                        {legacyActiveTask.type}
+                        {activeTask.type}
                       </Badge>
                     </div>
                     
                     <DynamicZoneBundleLoader
-                      zone={legacyActiveTask.zone as Zone}
-                      taskType={legacyActiveTask.type as TaskType}
-                      taskId={legacyActiveTask.id}
-                      taskData={legacyActiveTask}
+                      zone={activeTask.zone as Zone}
+                      taskType={activeTask.type as TaskType}
+                      taskId={activeTask.id}
+                      taskData={activeTask}
                       payload={{}}
                       onPayloadUpdate={(payload) => console.log('Zone bundle payload updated:', payload)}
                       onValidationChange={(isValid, errors) => console.log('Zone bundle validation:', isValid, errors)}
@@ -292,7 +282,7 @@ export const Workspace: React.FC = () => {
                       <DynamicWidget
                         key={componentName}
                         widgetName={componentName}
-                        task={legacyActiveTask}
+                        task={activeTask}
                       />
                     ))}
                   </AnimatePresence>
@@ -307,7 +297,7 @@ export const Workspace: React.FC = () => {
                       <DynamicWidget
                         key={componentName}
                         widgetName={componentName}
-                        task={legacyActiveTask}
+                        task={activeTask}
                       />
                     ))}
                   </AnimatePresence>
@@ -336,14 +326,14 @@ export const Workspace: React.FC = () => {
       <CopilotDrawer
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
-        activeTask={legacyActiveTask}
+        activeTask={activeTask}
       />
       
       <TeamsDrawer
         isOpen={isTeamsOpen}
         onClose={() => setIsTeamsOpen(false)}
-        taskId={legacyActiveTask?.id}
-        taskTitle={legacyActiveTask?.title}
+        taskId={activeTask?.id}
+        taskTitle={activeTask?.title}
       />
 
       {/* Goals Tree Dialog */}
@@ -353,7 +343,7 @@ export const Workspace: React.FC = () => {
             <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
           </DialogHeader>
           <GoalTreeWidget 
-            onTaskClaim={handleTaskClaim}
+            onTaskClaim={openClaimPopup}
             onOKRSelect={(okr) => setSelectedOKR(okr)}
           />
         </DialogContent>
@@ -370,9 +360,27 @@ export const Workspace: React.FC = () => {
         isOpen={isPairWorkOpen}
         onClose={() => setIsPairWorkOpen(false)}
         partnerId={pairWorkPartner || undefined}
-        taskTitle={legacyActiveTask?.title}
+        taskTitle={activeTask?.title}
       />
 
+        {/* Task Claim Popup - Enhanced or Basic */}
+        {flags.useEnhancedTaskPopup ? (
+          <EnhancedTaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        ) : (
+          <TaskClaimPopup
+            isOpen={showClaimPopup}
+            task={claimingTask}
+            onConfirm={confirmClaimTask}
+            onCancel={cancelClaimTask}
+            isLoading={isClaimingTask}
+          />
+        )}
         {/* Alert Rail */}
         <AlertRail />
       </div>
