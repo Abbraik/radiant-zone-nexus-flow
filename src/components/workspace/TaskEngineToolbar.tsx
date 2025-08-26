@@ -142,9 +142,9 @@ export const TaskEngineToolbar: React.FC<TaskEngineToolbarProps> = ({
               {activeTask5C.capacity}
             </Badge>
             
-            {activeTask5C.tri && (
+            {activeTask5C.tri && activeTask5C.tri.t_value !== undefined && (
               <Badge variant="outline" className="text-xs text-teal-300 border-teal-400/30">
-                TRI: {activeTask5C.tri.t_value.toFixed(1)}|{activeTask5C.tri.r_value.toFixed(1)}|{activeTask5C.tri.i_value.toFixed(1)}
+                TRI: {(activeTask5C.tri.t_value || 0).toFixed(1)}|{(activeTask5C.tri.r_value || 0).toFixed(1)}|{(activeTask5C.tri.i_value || 0).toFixed(1)}
               </Badge>
             )}
           </div>

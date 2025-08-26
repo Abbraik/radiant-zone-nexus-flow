@@ -150,21 +150,21 @@ export const TaskEngineWidgets: React.FC<TaskEngineWidgetsProps> = ({
                   </Badge>
                 </div>
 
-                {activeTask5C.tri && (
+                {activeTask5C.tri && activeTask5C.tri.t_value !== undefined && (
                   <div className="space-y-2">
                     <span className="text-sm text-white/80">TRI Values</span>
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="bg-white/5 rounded p-2">
                         <div className="text-white/60">T</div>
-                        <div className="font-mono text-white">{activeTask5C.tri.t_value.toFixed(2)}</div>
+                        <div className="font-mono text-white">{(activeTask5C.tri.t_value || 0).toFixed(2)}</div>
                       </div>
                       <div className="bg-white/5 rounded p-2">
                         <div className="text-white/60">R</div>
-                        <div className="font-mono text-white">{activeTask5C.tri.r_value.toFixed(2)}</div>
+                        <div className="font-mono text-white">{(activeTask5C.tri.r_value || 0).toFixed(2)}</div>
                       </div>
                       <div className="bg-white/5 rounded p-2">
                         <div className="text-white/60">I</div>
-                        <div className="font-mono text-white">{activeTask5C.tri.i_value.toFixed(2)}</div>
+                        <div className="font-mono text-white">{(activeTask5C.tri.i_value || 0).toFixed(2)}</div>
                       </div>
                     </div>
                   </div>
