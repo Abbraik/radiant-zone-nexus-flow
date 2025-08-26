@@ -15,8 +15,9 @@ import type {
 
 // Task operations
 export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> => {
+  // Fetch from main tasks table to get golden scenario task
   const { data, error } = await supabase
-    .from('tasks_5c')
+    .from('tasks')
     .select('*')
     .eq('id', id)
     .single();
@@ -24,77 +25,150 @@ export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> 
   if (error) throw error;
   
   return data ? {
-    ...data,
-    status: data.status as any,
-    tri: data.tri as any || undefined,
-    payload: data.payload as any || {}
+    id: data.id,
+    capacity: data.capacity as Capacity5C,
+    loop_id: data.loop_id || `loop-${data.capacity}-001`,
+    type: data.capacity === 'responsive' ? 'reactive' : 
+          data.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    scale: 'meso' as const,
+    leverage: 'P' as Leverage5C,
+    title: data.title,
+    description: data.description,
+    status: data.status === 'available' ? 'open' : 
+            data.status === 'claimed' ? 'claimed' :
+            data.status === 'in_progress' ? 'active' : 'done',
+    payload: data.payload as any || {},
+    tri: undefined, // Will be set if available
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    user_id: data.user_id
   } : null;
 };
 
 export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
-  let query = supabase.from('tasks_5c').select('*');
+  // Fetch from main tasks table to get golden scenario tasks
+  let query = supabase.from('tasks').select('*');
   
   if (filters?.capacity) {
     query = query.eq('capacity', filters.capacity);
   }
   if (filters?.status) {
     query = query.eq('status', filters.status);
+  } else {
+    // Default to available tasks for the workspace
+    query = query.eq('status', 'available');
   }
   
   const { data, error } = await query.order('created_at', { ascending: false });
   
   if (error) throw error;
   
+  // Transform main tasks to 5C format
   return (data || []).map(item => ({
-    ...item,
-    status: item.status as EnhancedTask5C['status'],
-    tri: item.tri as any || undefined,
-    payload: item.payload as any || {}
+    id: item.id,
+    capacity: item.capacity as Capacity5C,
+    loop_id: item.loop_id || `loop-${item.capacity}-001`,
+    type: item.capacity === 'responsive' ? 'reactive' : 
+          item.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    scale: 'meso' as const,
+    leverage: 'P' as Leverage5C,
+    title: item.title,
+    description: item.description,
+    status: item.status === 'available' ? 'open' : 
+            item.status === 'claimed' ? 'claimed' :
+            item.status === 'in_progress' ? 'active' : 'done',
+    payload: item.payload as any || {},
+    tri: undefined, // Will be set if available
+    created_at: item.created_at,
+    updated_at: item.updated_at,
+    user_id: item.user_id
   }));
 };
 
 export const createTask5C = async (task: Partial<EnhancedTask5C>): Promise<EnhancedTask5C> => {
+  // Create in main tasks table to match golden scenario structure
+  const taskData = {
+    capacity: task.capacity,
+    loop_id: task.loop_id || `loop-${task.capacity}-001`,
+    title: task.title,
+    description: task.description,
+    status: 'available', // New tasks start as available
+    payload: task.payload || {},
+    user_id: '00000000-0000-0000-0000-000000000000' // Default user for demo
+  };
+
   const { data, error } = await supabase
-    .from('tasks_5c')
-    .insert({
-      capacity: task.capacity,
-      loop_id: task.loop_id,
-      type: task.type || 'reactive',
-      scale: task.scale || 'micro',
-      leverage: task.leverage || 'N',
-      title: task.title,
-      description: task.description,
-      payload: task.payload || {},
-      user_id: 'current-user' // Will be handled by RLS
-    })
+    .from('tasks')
+    .insert(taskData)
     .select()
     .single();
   
   if (error) throw error;
   
+  // Transform to 5C format
   return {
-    ...data,
-    status: data.status as EnhancedTask5C['status'],
-    tri: data.tri as any || undefined,
-    payload: data.payload as any || {}
+    id: data.id,
+    capacity: data.capacity as Capacity5C,
+    loop_id: data.loop_id,
+    type: data.capacity === 'responsive' ? 'reactive' : 
+          data.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    scale: 'meso' as const,
+    leverage: 'P' as Leverage5C,
+    title: data.title,
+    description: data.description,
+    status: 'open',
+    payload: data.payload as any || {},
+    tri: undefined,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    user_id: data.user_id
   };
 };
 
 export const updateTask5C = async (id: string, updates: Partial<EnhancedTask5C>): Promise<EnhancedTask5C> => {
+  // Update in main tasks table
+  const taskUpdates: any = {};
+  
+  if (updates.status) {
+    // Map 5C status back to main task status
+    taskUpdates.status = updates.status === 'open' ? 'available' :
+                        updates.status === 'claimed' ? 'claimed' :
+                        updates.status === 'active' ? 'in_progress' :
+                        updates.status === 'done' ? 'completed' : updates.status;
+  }
+  
+  if (updates.title) taskUpdates.title = updates.title;
+  if (updates.description) taskUpdates.description = updates.description;
+  if (updates.payload) taskUpdates.payload = updates.payload;
+  
   const { data, error } = await supabase
-    .from('tasks_5c')
-    .update(updates)
+    .from('tasks')
+    .update(taskUpdates)
     .eq('id', id)
     .select()
     .single();
   
   if (error) throw error;
   
+  // Transform back to 5C format
   return {
-    ...data,
-    status: data.status as EnhancedTask5C['status'],
-    tri: data.tri as any || undefined,
-    payload: data.payload as any || {}
+    id: data.id,
+    capacity: data.capacity as Capacity5C,
+    loop_id: data.loop_id || `loop-${data.capacity}-001`,
+    type: data.capacity === 'responsive' ? 'reactive' : 
+          data.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    scale: 'meso' as const,
+    leverage: 'P' as Leverage5C,
+    title: data.title,
+    description: data.description,
+    status: data.status === 'available' ? 'open' : 
+            data.status === 'claimed' ? 'claimed' :
+            data.status === 'in_progress' ? 'active' : 'done',
+    payload: data.payload as any || {},
+    tri: undefined,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    user_id: data.user_id
   };
 };
 
