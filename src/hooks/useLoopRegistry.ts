@@ -176,7 +176,7 @@ export const useLoopHydration = (loopId?: string) => {
       if (!loopId) return null;
       
       const { data, error } = await supabase.rpc('get_loop_hydrate', {
-        loop_uuid: loopId
+        p_loop_uuid: loopId
       });
       
       if (error) {
