@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertRail } from '@/components/alerts/AlertRail';
-import { useTasks } from '../../hooks/useTasks';
+import { useTaskEngine } from '../../hooks/useTaskEngine';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
 import { WorkspaceProHeader } from './WorkspaceProHeader';
@@ -28,18 +28,44 @@ import type { Zone, TaskType } from '../../types/zone-bundles';
 
 export const Workspace: React.FC = () => {
   const { 
-    myTasks, 
-    activeTask, 
-    availableTasks, 
-    completeTask, 
-    isCompletingTask,
-    openClaimPopup,
-    confirmClaimTask,
-    cancelClaimTask,
-    claimingTask,
-    showClaimPopup,
-    isClaimingTask
-  } = useTasks();
+    tasks,
+    selectedTask,
+    setSelectedTask,
+    activeTasks,
+    myTasks,
+    overdueTasks,
+    createTask,
+    updateTaskStatus,
+    completeTask,
+    assignTask,
+    acquireLock,
+    isCreating,
+    isUpdating
+  } = useTaskEngine();
+  
+  // Get the currently active task (first active task or selected task)
+  const activeTask = selectedTask || activeTasks[0] || null;
+  const availableTasks = tasks.filter(t => t.status === 'draft' || t.status === 'active');
+  
+  // Handle task claiming
+  const handleTaskClaim = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setSelectedTask(task);
+      updateTaskStatus(taskId, 'active');
+    }
+  };
+  
+  // Mock old interface for compatibility
+  const mockTaskFunctions = {
+    openClaimPopup: handleTaskClaim,
+    confirmClaimTask: () => {},
+    cancelClaimTask: () => {},
+    claimingTask: null,
+    showClaimPopup: false,
+    isClaimingTask: false,
+    isCompletingTask: isUpdating
+  };
   
   // Debug state values on every render
   console.log('Workspace render - Popup state:', { 
@@ -99,7 +125,7 @@ export const Workspace: React.FC = () => {
               myTasks={myTasks}
               availableTasks={availableTasks}
               activeTask={null}
-              onTaskClaim={openClaimPopup}
+              onTaskClaim={handleTaskClaim}
               isCollapsed={isSidebarCollapsed}
               onToggleCollapse={() => {
                 console.log('Toggle collapse called, current state:', isSidebarCollapsed);
@@ -145,30 +171,12 @@ export const Workspace: React.FC = () => {
               <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
             </DialogHeader>
             <GoalTreeWidget 
-              onTaskClaim={openClaimPopup}
+            onTaskClaim={handleTaskClaim}
               onOKRSelect={(okr) => setSelectedOKR(okr)}
             />
           </DialogContent>
         </Dialog>
 
-        {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
-        {flags.useEnhancedTaskPopup ? (
-          <EnhancedTaskClaimPopup
-            isOpen={showClaimPopup}
-            task={claimingTask}
-            onConfirm={confirmClaimTask}
-            onCancel={cancelClaimTask}
-            isLoading={isClaimingTask}
-          />
-        ) : (
-          <TaskClaimPopup
-            isOpen={showClaimPopup}
-            task={claimingTask}
-            onConfirm={confirmClaimTask}
-            onCancel={cancelClaimTask}
-            isLoading={isClaimingTask}
-          />
-        )}
       </div>
     );
   }
@@ -216,7 +224,7 @@ export const Workspace: React.FC = () => {
             myTasks={myTasks}
             availableTasks={availableTasks}
             activeTask={activeTask}
-            onTaskClaim={openClaimPopup}
+            onTaskClaim={handleTaskClaim}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => {
               console.log('Toggle collapse called, current state:', isSidebarCollapsed);
@@ -236,8 +244,8 @@ export const Workspace: React.FC = () => {
               <FeatureFlagGuard flag="useTeamsButton">
                 <EnhancedTaskCard
                   task={activeTask}
-                  onComplete={completeTask}
-                  isCompleting={isCompletingTask}
+            onComplete={(taskId) => completeTask(taskId)}
+                  isCompleting={isUpdating}
                   showTeamsButton={true}
                 />
               </FeatureFlagGuard>
@@ -343,7 +351,7 @@ export const Workspace: React.FC = () => {
             <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
           </DialogHeader>
           <GoalTreeWidget 
-            onTaskClaim={openClaimPopup}
+            onTaskClaim={handleTaskClaim}
             onOKRSelect={(okr) => setSelectedOKR(okr)}
           />
         </DialogContent>
@@ -363,24 +371,6 @@ export const Workspace: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-        {/* Task Claim Popup - Enhanced or Basic */}
-        {flags.useEnhancedTaskPopup ? (
-          <EnhancedTaskClaimPopup
-            isOpen={showClaimPopup}
-            task={claimingTask}
-            onConfirm={confirmClaimTask}
-            onCancel={cancelClaimTask}
-            isLoading={isClaimingTask}
-          />
-        ) : (
-          <TaskClaimPopup
-            isOpen={showClaimPopup}
-            task={claimingTask}
-            onConfirm={confirmClaimTask}
-            onCancel={cancelClaimTask}
-            isLoading={isClaimingTask}
-          />
-        )}
         {/* Alert Rail */}
         <AlertRail />
       </div>

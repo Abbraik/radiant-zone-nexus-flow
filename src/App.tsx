@@ -75,7 +75,7 @@ const App = () => (
                     <Route path="/monitor" element={<MonitorZone />} />
                     <Route path="/innovate" element={<InnovateLearnZone />} />
                     <Route path="/task-engine" element={<TaskEnginePage />} />
-                    {/* Main workspace - always renders on home and unknown routes */}
+                    {/* Main workspace - Task Engine V2 as primary system */}
                     <Route path="/" element={<Workspace5C />} />
                     <Route path="*" element={<Workspace5C />} />
                 </Routes>
