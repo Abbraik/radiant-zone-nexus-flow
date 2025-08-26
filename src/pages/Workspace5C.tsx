@@ -27,9 +27,7 @@ import { Workspace5CSidebar } from '@/components/workspace/Workspace5CSidebar';
 import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 import { useToolsStore } from '@/stores/toolsStore';
 import { useTaskEngine } from '@/hooks/useTaskEngine';
-import { TaskAssignmentPanel } from '@/components/taskEngine/TaskAssignmentPanel';
-import { TaskTimeline } from '@/components/taskEngine/TaskTimeline';
-import { TaskCreationModal } from '@/components/taskEngine/TaskCreationModal';
+// TaskEngine components will be integrated gradually
 import type { CapacityBundleProps } from '@/types/capacity';
 
 export const Workspace5C: React.FC = () => {
@@ -65,6 +63,29 @@ export const Workspace5C: React.FC = () => {
   // Get the currently active task (first active task or selected task)
   const activeTask = selectedTask || activeTasks[0] || null;
   
+  // Convert TaskV2 to Task format for compatibility
+  const convertToLegacyTask = (taskV2: any): any => ({
+    ...taskV2,
+    zone: taskV2.context?.zone || 'think',
+    type: taskV2.context?.type || 'default',
+    components: taskV2.context?.components || []
+  });
+  
+  // Convert to 5C format for sidebar compatibility
+  const convertTo5CTask = (taskV2: any): any => ({
+    ...taskV2,
+    capacity: taskV2.context?.capacity || 'responsive',
+    loop_id: taskV2.context?.loop_id || 'loop-1',
+    type: taskV2.context?.task_type || 'default',
+    scale: taskV2.context?.scale || 'medium',
+    tri: { t_value: 0.5, r_value: 0.5, i_value: 0.5 },
+    metadata: {}
+  });
+  
+  const legacy5CTasks = myTasks.map(convertTo5CTask);
+  const availableLegacy5CTasks = tasks.filter(t => t.status === 'draft' || t.status === 'active').map(convertTo5CTask);
+  const activeLegacy5CTask = activeTask ? convertTo5CTask(activeTask) : null;
+  
   const openMetaLoopConsole = () => {
     useToolsStore.getState().open('admin', 'meta');
   };
@@ -77,10 +98,12 @@ export const Workspace5C: React.FC = () => {
   }, [activeTask]);
   
   // Handle task claiming
-  const handleTaskClaim = (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      setSelectedTask(task);
+  const handleTaskClaim = (task: any) => {
+    // Handle both string ID and task object
+    const taskId = typeof task === 'string' ? task : task.id;
+    const foundTask = tasks.find(t => t.id === taskId);
+    if (foundTask) {
+      setSelectedTask(foundTask);
       updateTaskStatus(taskId, 'active');
     }
   };
@@ -104,10 +127,10 @@ export const Workspace5C: React.FC = () => {
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex">
           <Workspace5CSidebar
-            myTasks={myTasks}
-            availableTasks={tasks.filter(t => t.status === 'draft' || t.status === 'active')}
+            myTasks={legacy5CTasks}
+            availableTasks={availableLegacy5CTasks}
             activeTask={null}
-            onTaskClaim={handleTaskClaim}
+            onTaskClaim={(task) => handleTaskClaim(task)}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
@@ -126,7 +149,7 @@ export const Workspace5C: React.FC = () => {
                     Claim a capacity-based task from the sidebar to get started with your 5C workspace
                   </p>
                   <div className="text-sm text-gray-400">
-                    {tasks.filter(t => t.status === 'draft' || t.status === 'active').length} tasks available • {myTasks.length} assigned tasks
+                    {availableLegacy5CTasks.length} tasks available • {legacy5CTasks.length} assigned tasks
                   </div>
                   <Button
                     onClick={() => setIsTaskCreationOpen(true)}
@@ -155,19 +178,12 @@ export const Workspace5C: React.FC = () => {
               <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
             </DialogHeader>
             <GoalTreeWidget 
-              onTaskClaim={openClaimPopup}
+              onTaskClaim={(task) => handleTaskClaim(task)}
               onOKRSelect={(okr) => setSelectedOKR(okr)}
             />
           </DialogContent>
         </Dialog>
 
-        {/* Task Creation Modal */}
-        <TaskCreationModal
-          isOpen={isTaskCreationOpen}
-          onClose={() => setIsTaskCreationOpen(false)}
-          onCreate={createTask}
-          isCreating={isCreating}
-        />
       </div>
     );
   }
@@ -177,8 +193,8 @@ export const Workspace5C: React.FC = () => {
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
       <WorkspaceProHeader
-        activeTask={activeTask}
-        myTasks={myTasks}
+        activeTask={activeTask ? convertToLegacyTask(activeTask) : null}
+        myTasks={myTasks.map(convertToLegacyTask)}
         onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
         onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
         onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
@@ -191,9 +207,9 @@ export const Workspace5C: React.FC = () => {
       <div className="flex">
         {!isSidebarCollapsed && (
           <Workspace5CSidebar
-            myTasks={myTasks}
-            availableTasks={tasks.filter(t => t.status === 'draft' || t.status === 'active')}
-            activeTask={activeTask}
+            myTasks={legacy5CTasks}
+            availableTasks={availableLegacy5CTasks}
+            activeTask={activeLegacy5CTask}
             onTaskClaim={handleTaskClaim}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -225,81 +241,71 @@ export const Workspace5C: React.FC = () => {
                 </svg>
               </motion.button>
             )}
-            {/* Task Engine V2 Components */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-              <div className="lg:col-span-2">
+            {/* Task Engine V2 Interface */}
+            <div className="space-y-6">
+              {activeTask ? (
                 <div className="p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10">
                   <h3 className="text-lg font-semibold text-white mb-4">Active Task</h3>
-                  {activeTask ? (
-                    <div className="space-y-4">
-                      <div>
-                        <h4 className="text-white font-medium">{activeTask.title}</h4>
-                        <p className="text-gray-300 text-sm mt-1">{activeTask.description}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          activeTask.priority === 'critical' ? 'bg-red-500/20 text-red-300' :
-                          activeTask.priority === 'high' ? 'bg-orange-500/20 text-orange-300' :
-                          activeTask.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-300' :
-                          'bg-green-500/20 text-green-300'
-                        }`}>
-                          {activeTask.priority}
-                        </span>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          activeTask.status === 'active' ? 'bg-blue-500/20 text-blue-300' :
-                          activeTask.status === 'completed' ? 'bg-green-500/20 text-green-300' :
-                          'bg-gray-500/20 text-gray-300'
-                        }`}>
-                          {activeTask.status}
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => completeTask(activeTask.id)}
-                          disabled={isUpdating}
-                          className="bg-green-500 hover:bg-green-600 text-white"
-                        >
-                          {isUpdating ? 'Completing...' : 'Complete Task'}
-                        </Button>
-                        <Button
-                          onClick={() => updateTaskStatus(activeTask.id, 'paused')}
-                          disabled={isUpdating}
-                          variant="outline"
-                        >
-                          Pause
-                        </Button>
-                      </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-white font-medium">{activeTask.title}</h4>
+                      <p className="text-gray-300 text-sm mt-1">{activeTask.description}</p>
                     </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-400 mb-4">No active task selected</p>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        activeTask.priority === 'critical' ? 'bg-red-500/20 text-red-300' :
+                        activeTask.priority === 'high' ? 'bg-orange-500/20 text-orange-300' :
+                        activeTask.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-300' :
+                        'bg-green-500/20 text-green-300'
+                      }`}>
+                        {activeTask.priority}
+                      </span>
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        activeTask.status === 'active' ? 'bg-blue-500/20 text-blue-300' :
+                        activeTask.status === 'completed' ? 'bg-green-500/20 text-green-300' :
+                        'bg-gray-500/20 text-gray-300'
+                      }`}>
+                        {activeTask.status}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
                       <Button
-                        onClick={() => setIsTaskCreationOpen(true)}
-                        className="bg-teal-500 hover:bg-teal-600 text-white"
+                        onClick={() => completeTask(activeTask.id)}
+                        disabled={isUpdating}
+                        className="bg-green-500 hover:bg-green-600 text-white"
                       >
-                        Create New Task
+                        {isUpdating ? 'Completing...' : 'Complete Task'}
+                      </Button>
+                      <Button
+                        onClick={() => updateTaskStatus(activeTask.id, 'paused')}
+                        disabled={isUpdating}
+                        variant="outline"
+                      >
+                        Pause
+                      </Button>
+                      <Button
+                        onClick={() => assignTask(activeTask.id, 'current-user')}
+                        disabled={isAssigning}
+                        variant="outline"
+                      >
+                        {isAssigning ? 'Assigning...' : 'Assign to Me'}
                       </Button>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-              
-              <div>
-                <TaskAssignmentPanel
-                  tasks={tasks}
-                  onAssign={assignTask}
-                  isAssigning={isAssigning}
-                />
-              </div>
-            </div>
-
-            {/* Task Timeline */}
-            <div className="space-y-6">
-              <TaskTimeline 
-                tasks={tasks}
-                onTaskSelect={setSelectedTask}
-                selectedTask={selectedTask}
-              />
+              ) : (
+                <div className="text-center py-12">
+                  <div className="p-6 bg-glass/50 backdrop-blur-20 rounded-2xl border border-white/10">
+                    <p className="text-gray-400 mb-4">No active task selected</p>
+                    <Button
+                      onClick={() => setIsTaskCreationOpen(true)}
+                      className="bg-teal-500 hover:bg-teal-600 text-white"
+                    >
+                      Create New Task
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         </main>
@@ -326,7 +332,7 @@ export const Workspace5C: React.FC = () => {
             <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
           </DialogHeader>
           <GoalTreeWidget 
-            onTaskClaim={handleTaskClaim}
+          onTaskClaim={(task) => handleTaskClaim(task)}
             onOKRSelect={(okr) => setSelectedOKR(okr)}
           />
         </DialogContent>
@@ -346,13 +352,74 @@ export const Workspace5C: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-      {/* Task Creation Modal */}
-      <TaskCreationModal
-        isOpen={isTaskCreationOpen}
-        onClose={() => setIsTaskCreationOpen(false)}
-        onCreate={createTask}
-        isCreating={isCreating}
-      />
+      {/* Task Creation Modal - Simplified */}
+      {isTaskCreationOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="w-full max-w-md mx-4 p-6 bg-gray-900/95 backdrop-blur-20 rounded-2xl border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">Create New Task</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-300">Title</label>
+                <input
+                  type="text"
+                  className="w-full mt-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Enter task title"
+                  id="task-title"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-300">Description</label>
+                <textarea
+                  className="w-full mt-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="Enter task description"
+                  rows={3}
+                  id="task-description"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-300">Priority</label>
+                <select
+                  className="w-full mt-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  id="task-priority"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    const title = (document.getElementById('task-title') as HTMLInputElement)?.value;
+                    const description = (document.getElementById('task-description') as HTMLTextAreaElement)?.value;
+                    const priority = (document.getElementById('task-priority') as HTMLSelectElement)?.value;
+                    
+                    if (title) {
+                      createTask({
+                        title,
+                        description,
+                        priority: priority as any
+                      });
+                      setIsTaskCreationOpen(false);
+                    }
+                  }}
+                  disabled={isCreating}
+                  className="flex-1 bg-teal-500 hover:bg-teal-600"
+                >
+                  {isCreating ? 'Creating...' : 'Create'}
+                </Button>
+                <Button
+                  onClick={() => setIsTaskCreationOpen(false)}
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Zone Tools Portals - Admin zone for Meta Loop Console */}
       <ZoneToolsPortals zone="admin" />

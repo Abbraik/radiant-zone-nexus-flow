@@ -57,22 +57,24 @@ export const Workspace: React.FC = () => {
   };
   
   // Mock old interface for compatibility
-  const mockTaskFunctions = {
-    openClaimPopup: handleTaskClaim,
-    confirmClaimTask: () => {},
-    cancelClaimTask: () => {},
-    claimingTask: null,
-    showClaimPopup: false,
-    isClaimingTask: false,
-    isCompletingTask: isUpdating
-  };
+  const showClaimPopup = false;
+  const claimingTask = null;
+  const isClaimingTask = false;
+  const isCompletingTask = isUpdating;
   
-  // Debug state values on every render
-  console.log('Workspace render - Popup state:', { 
-    showClaimPopup, 
-    claimingTask: claimingTask?.id, 
-    isClaimingTask 
+  // Convert TaskV2 to legacy Task format for compatibility
+  const convertToLegacyTask = (taskV2: any): any => ({
+    ...taskV2,
+    zone: taskV2.context?.zone || 'think',
+    type: taskV2.context?.type || 'default',
+    components: taskV2.context?.components || []
   });
+  
+  // Convert tasks to legacy format
+  const legacyTasks = tasks.map(convertToLegacyTask);
+  const legacyMyTasks = myTasks.map(convertToLegacyTask);
+  const legacyAvailableTasks = availableTasks.map(convertToLegacyTask);
+  const legacyActiveTask = activeTask ? convertToLegacyTask(activeTask) : null;
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState(false);
@@ -107,7 +109,7 @@ export const Workspace: React.FC = () => {
   //   );
   // }
 
-  if (!activeTask) {
+  if (!legacyActiveTask) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="flex">
@@ -115,15 +117,15 @@ export const Workspace: React.FC = () => {
             flag="useCascadeBar" 
             fallback={
               <WorkspaceProSidebar 
-                myTasks={myTasks} 
-                availableTasks={availableTasks}
+              myTasks={legacyMyTasks}
+              availableTasks={legacyAvailableTasks}
                 activeTask={null}
               />
             }
           >
             <CascadeSidebar
-              myTasks={myTasks}
-              availableTasks={availableTasks}
+              myTasks={legacyMyTasks}
+              availableTasks={legacyAvailableTasks}
               activeTask={null}
               onTaskClaim={handleTaskClaim}
               isCollapsed={isSidebarCollapsed}
@@ -148,7 +150,7 @@ export const Workspace: React.FC = () => {
                     Claim a task from the sidebar to get started with your workspace
                   </p>
                   <div className="text-sm text-gray-400">
-                    {availableTasks.length} tasks available
+                    {legacyAvailableTasks.length} tasks available
                   </div>
                 </div>
               </div>
@@ -182,24 +184,24 @@ export const Workspace: React.FC = () => {
   }
 
   // Get the current components from registry (this ensures we use the latest config)
-  const currentComponents = taskRegistry[activeTask.type] || activeTask.components || [];
+  const currentComponents = taskRegistry[legacyActiveTask.type] || legacyActiveTask.components || [];
   const components = currentComponents;
   
   console.log('Workspace activeTask:', { 
-    id: activeTask.id, 
-    type: activeTask.type, 
-    zone: activeTask.zone, 
-    originalComponents: activeTask.components,
+    id: legacyActiveTask.id, 
+    type: legacyActiveTask.type, 
+    zone: legacyActiveTask.zone, 
+    originalComponents: legacyActiveTask.components,
     currentComponents: components,
-    registryMapping: taskRegistry[activeTask.type]
+    registryMapping: taskRegistry[legacyActiveTask.type]
   });
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
       <WorkspaceProHeader
-        activeTask={activeTask}
-        myTasks={myTasks}
+        activeTask={legacyActiveTask}
+        myTasks={legacyMyTasks}
         onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
         onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
         onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
@@ -214,16 +216,16 @@ export const Workspace: React.FC = () => {
           flag="useCascadeBar" 
           fallback={
             <WorkspaceProSidebar 
-              myTasks={myTasks} 
-              availableTasks={availableTasks}
-              activeTask={activeTask}
+            myTasks={legacyMyTasks} 
+            availableTasks={legacyAvailableTasks}
+            activeTask={legacyActiveTask}
             />
           }
         >
           <CascadeSidebar
-            myTasks={myTasks}
-            availableTasks={availableTasks}
-            activeTask={activeTask}
+            myTasks={legacyMyTasks}
+            availableTasks={legacyAvailableTasks}
+            activeTask={legacyActiveTask}
             onTaskClaim={handleTaskClaim}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => {
@@ -243,7 +245,7 @@ export const Workspace: React.FC = () => {
             <div className="mb-6">
               <FeatureFlagGuard flag="useTeamsButton">
                 <EnhancedTaskCard
-                  task={activeTask}
+                  task={legacyActiveTask}
             onComplete={(taskId) => completeTask(taskId)}
                   isCompleting={isUpdating}
                   showTeamsButton={true}
@@ -254,7 +256,7 @@ export const Workspace: React.FC = () => {
             {/* Zone Bundle or Dynamic Widgets */}
             <div className="space-y-6">
               <FeatureFlagGuard flag="useZoneBundles">
-                {activeTask.zone ? (
+                {legacyActiveTask.zone ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -265,19 +267,19 @@ export const Workspace: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-400 to-blue-400"></div>
                         <h3 className="text-lg font-semibold text-white">
-                          {activeTask.zone.toUpperCase()} Zone Bundle
+                          {legacyActiveTask.zone.toUpperCase()} Zone Bundle
                         </h3>
                       </div>
                       <Badge variant="outline" className="capitalize">
-                        {activeTask.type}
+                        {legacyActiveTask.type}
                       </Badge>
                     </div>
                     
                     <DynamicZoneBundleLoader
-                      zone={activeTask.zone as Zone}
-                      taskType={activeTask.type as TaskType}
-                      taskId={activeTask.id}
-                      taskData={activeTask}
+                      zone={legacyActiveTask.zone as Zone}
+                      taskType={legacyActiveTask.type as TaskType}
+                      taskId={legacyActiveTask.id}
+                      taskData={legacyActiveTask}
                       payload={{}}
                       onPayloadUpdate={(payload) => console.log('Zone bundle payload updated:', payload)}
                       onValidationChange={(isValid, errors) => console.log('Zone bundle validation:', isValid, errors)}
@@ -290,7 +292,7 @@ export const Workspace: React.FC = () => {
                       <DynamicWidget
                         key={componentName}
                         widgetName={componentName}
-                        task={activeTask}
+                        task={legacyActiveTask}
                       />
                     ))}
                   </AnimatePresence>
@@ -305,7 +307,7 @@ export const Workspace: React.FC = () => {
                       <DynamicWidget
                         key={componentName}
                         widgetName={componentName}
-                        task={activeTask}
+                        task={legacyActiveTask}
                       />
                     ))}
                   </AnimatePresence>
@@ -334,14 +336,14 @@ export const Workspace: React.FC = () => {
       <CopilotDrawer
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
-        activeTask={activeTask}
+        activeTask={legacyActiveTask}
       />
       
       <TeamsDrawer
         isOpen={isTeamsOpen}
         onClose={() => setIsTeamsOpen(false)}
-        taskId={activeTask?.id}
-        taskTitle={activeTask?.title}
+        taskId={legacyActiveTask?.id}
+        taskTitle={legacyActiveTask?.title}
       />
 
       {/* Goals Tree Dialog */}
@@ -368,7 +370,7 @@ export const Workspace: React.FC = () => {
         isOpen={isPairWorkOpen}
         onClose={() => setIsPairWorkOpen(false)}
         partnerId={pairWorkPartner || undefined}
-        taskTitle={activeTask?.title}
+        taskTitle={legacyActiveTask?.title}
       />
 
         {/* Alert Rail */}
