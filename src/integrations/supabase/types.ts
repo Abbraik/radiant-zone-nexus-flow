@@ -5873,6 +5873,10 @@ export type Database = {
         }
         Returns: Json
       }
+      apply_smoothing: {
+        Args: { p_alpha?: number; p_indicator_key: string; p_value: number }
+        Returns: number
+      }
       assert_controller_or_owner: {
         Args: { p_org: string }
         Returns: undefined
@@ -5885,8 +5889,16 @@ export type Database = {
         Args: { playbook_uuid: string; watchpoint_uuid: string }
         Returns: Json
       }
+      compute_band_status: {
+        Args: { p_lower_bound: number; p_upper_bound: number; p_value: number }
+        Returns: Json
+      }
       compute_coverage: {
         Args: { loop_uuid: string; option_ids: string[] }
+        Returns: Json
+      }
+      compute_loop_signal_scores: {
+        Args: { p_as_of?: string; p_loop_id: string; p_time_window?: string }
         Returns: Json
       }
       create_loop: {
@@ -6098,6 +6110,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_loop_action_readiness: {
+        Args: { p_loop_id: string }
+        Returns: Json
+      }
       get_loop_hydrate: {
         Args: { p_loop_code: string } | { p_loop_uuid: string }
         Returns: Json
@@ -6186,6 +6202,10 @@ export type Database = {
       }
       pause_claim: {
         Args: { claim_uuid: string; rationale_text: string }
+        Returns: Json
+      }
+      process_raw_observation: {
+        Args: { p_obs_id: string }
         Returns: Json
       }
       publish_loop: {
