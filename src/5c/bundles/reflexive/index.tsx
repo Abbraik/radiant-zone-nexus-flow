@@ -1,123 +1,60 @@
 // Reflexive Bundle - Memory & Optimization Capacity
 import React from 'react';
 import { BundleProps5C } from '@/5c/types';
-import { useReflexiveData } from '@/hooks/useReflexiveData';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Brain, Settings, BarChart3, Clock } from 'lucide-react';
 
 const ReflexiveBundle: React.FC<BundleProps5C> = ({ task }) => {
-  const loopId = task.loop_id;
-  const {
-    reflexMemory,
-    controllerTunings,
-    bandWeightChanges,
-    scorecardData,
-    deBands,
-    isLoading,
-    createReflexMemory,
-    updateDeBands,
-    updateScorecard
-  } = useReflexiveData(loopId);
-
-  if (isLoading) {
-    return <div className="flex items-center justify-center py-12">Loading reflexive data...</div>;
-  }
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Memory Panel */}
-        <Card className="p-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              Reflex Memory ({reflexMemory.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {reflexMemory.slice(0, 3).map((entry) => (
-                <div key={entry.id} className="p-3 border rounded">
-                  <div className="font-medium">{entry.rationale}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {new Date(entry.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-              ))}
-              <Button size="sm" onClick={() => createReflexMemory.mutate({
-                indicator: 'primary',
-                description: 'New memory entry',
-                before: {},
-                after: {}
-              })}>
-                Add Memory
-              </Button>
+        <div className="card p-6">
+          <h3 className="text-lg font-semibold mb-4">Reflex Memory</h3>
+          <div className="space-y-3">
+            <div className="text-sm text-muted-foreground">
+              Recent adjustments and optimizations for loop {task.loop_id}
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-32 bg-muted/20 rounded-md flex items-center justify-center">
+              <span className="text-muted-foreground">Memory timeline</span>
+            </div>
+          </div>
+        </div>
 
-        {/* DE Bands Panel */}
-        <Card className="p-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              DE Bands ({deBands.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {deBands.slice(0, 2).map((band) => (
-                <div key={band.id} className="p-3 border rounded">
-                  <div className="font-medium">{band.indicator}</div>
-                  <div className="text-sm">
-                    Bounds: {band.lower_bound?.toFixed(2) || 'N/A'} - {band.upper_bound?.toFixed(2) || 'N/A'}
-                  </div>
-                </div>
-              ))}
-              <Button size="sm" onClick={() => updateDeBands.mutate({
-                indicator: 'primary',
-                lower_bound: 0.2,
-                upper_bound: 0.8
-              })}>
-                Update Bands
-              </Button>
+        {/* Retune Panel */}
+        <div className="card p-6">
+          <h3 className="text-lg font-semibold mb-4">Band Adjustment</h3>
+          <div className="space-y-3">
+            <div className="text-sm text-muted-foreground">
+              DE band optimization suggestions
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-32 bg-muted/20 rounded-md flex items-center justify-center">
+              <span className="text-muted-foreground">Retune controls</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Scorecard */}
-      <Card className="p-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Loop Scorecard
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {scorecardData?.ci?.toFixed(1) || '0.5'}
-              </div>
-              <div className="text-sm text-muted-foreground">Composite Index</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-accent">stable</div>
-              <div className="text-sm text-muted-foreground">DE State</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-secondary">{controllerTunings.length}</div>
-              <div className="text-sm text-muted-foreground">Tunings</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-muted-foreground">{bandWeightChanges.length}</div>
-              <div className="text-sm text-muted-foreground">Adjustments</div>
-            </div>
+      <div className="card p-6">
+        <h3 className="text-lg font-semibold mb-4">Loop Scorecard</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary">0.5</div>
+            <div className="text-sm text-muted-foreground">Fatigue</div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-accent">stable</div>
+            <div className="text-sm text-muted-foreground">DE State</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-secondary">2.1</div>
+            <div className="text-sm text-muted-foreground">Velocity</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-muted-foreground">0</div>
+            <div className="text-sm text-muted-foreground">Breach Days</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
