@@ -1776,6 +1776,114 @@ export type Database = {
         }
         Relationships: []
       }
+      dq_events: {
+        Row: {
+          created_at: string
+          detail: Json
+          event_id: string
+          indicator_key: string | null
+          kind: string
+          severity: string
+          source_id: string
+          ts: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          event_id?: string
+          indicator_key?: string | null
+          kind: string
+          severity: string
+          source_id: string
+          ts: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          event_id?: string
+          indicator_key?: string | null
+          kind?: string
+          severity?: string
+          source_id?: string
+          ts?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dq_events_indicator_key_fkey"
+            columns: ["indicator_key"]
+            isOneToOne: false
+            referencedRelation: "indicator_registry"
+            referencedColumns: ["indicator_key"]
+          },
+          {
+            foreignKeyName: "dq_events_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "source_registry"
+            referencedColumns: ["source_id"]
+          },
+        ]
+      }
+      dq_status: {
+        Row: {
+          as_of: string
+          created_at: string
+          id: string
+          indicator_key: string
+          missingness: number
+          outlier_rate: number
+          quality: string
+          schema_drift: boolean
+          source_id: string
+          staleness_seconds: number
+          user_id: string
+        }
+        Insert: {
+          as_of: string
+          created_at?: string
+          id?: string
+          indicator_key: string
+          missingness?: number
+          outlier_rate?: number
+          quality: string
+          schema_drift?: boolean
+          source_id: string
+          staleness_seconds?: number
+          user_id?: string
+        }
+        Update: {
+          as_of?: string
+          created_at?: string
+          id?: string
+          indicator_key?: string
+          missingness?: number
+          outlier_rate?: number
+          quality?: string
+          schema_drift?: boolean
+          source_id?: string
+          staleness_seconds?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dq_status_indicator_key_fkey"
+            columns: ["indicator_key"]
+            isOneToOne: false
+            referencedRelation: "indicator_registry"
+            referencedColumns: ["indicator_key"]
+          },
+          {
+            foreignKeyName: "dq_status_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "source_registry"
+            referencedColumns: ["source_id"]
+          },
+        ]
+      }
       entity_links: {
         Row: {
           created_at: string
@@ -2147,6 +2255,70 @@ export type Database = {
         }
         Relationships: []
       }
+      indicator_registry: {
+        Row: {
+          created_at: string
+          indicator_key: string
+          loop_id: string | null
+          notes: string | null
+          snl_key: string | null
+          title: string
+          transform: string | null
+          triad_tag: string | null
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          indicator_key: string
+          loop_id?: string | null
+          notes?: string | null
+          snl_key?: string | null
+          title: string
+          transform?: string | null
+          triad_tag?: string | null
+          unit: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          indicator_key?: string
+          loop_id?: string | null
+          notes?: string | null
+          snl_key?: string | null
+          title?: string
+          transform?: string | null
+          triad_tag?: string | null
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "indicator_registry_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "loops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "indicator_registry_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "mv_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "indicator_registry_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "safe_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
+        ]
+      }
       indicator_values: {
         Row: {
           created_at: string | null
@@ -2217,6 +2389,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      ingestion_runs: {
+        Row: {
+          created_at: string
+          finished_at: string | null
+          lag_seconds: number
+          message: string | null
+          rows_in: number
+          rows_kept: number
+          run_id: string
+          source_id: string
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          finished_at?: string | null
+          lag_seconds?: number
+          message?: string | null
+          rows_in?: number
+          rows_kept?: number
+          run_id?: string
+          source_id: string
+          started_at?: string
+          status: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          finished_at?: string | null
+          lag_seconds?: number
+          message?: string | null
+          rows_in?: number
+          rows_kept?: number
+          run_id?: string
+          source_id?: string
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_runs_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "source_registry"
+            referencedColumns: ["source_id"]
+          },
+        ]
       }
       interventions: {
         Row: {
@@ -2433,6 +2655,70 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "shared_nodes"
             referencedColumns: ["snl_id"]
+          },
+        ]
+      }
+      loop_signal_scores: {
+        Row: {
+          as_of: string
+          created_at: string
+          details: Json
+          dispersion: number
+          hub_load: number
+          legitimacy_delta: number
+          loop_id: string
+          persistence: number
+          severity: number
+          time_window: string
+          user_id: string
+        }
+        Insert: {
+          as_of: string
+          created_at?: string
+          details?: Json
+          dispersion?: number
+          hub_load?: number
+          legitimacy_delta?: number
+          loop_id: string
+          persistence?: number
+          severity?: number
+          time_window: string
+          user_id?: string
+        }
+        Update: {
+          as_of?: string
+          created_at?: string
+          details?: Json
+          dispersion?: number
+          hub_load?: number
+          legitimacy_delta?: number
+          loop_id?: string
+          persistence?: number
+          severity?: number
+          time_window?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loop_signal_scores_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "loops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loop_signal_scores_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "mv_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "loop_signal_scores_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "safe_loop_metrics"
+            referencedColumns: ["loop_id"]
           },
         ]
       }
@@ -2714,6 +3000,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      normalized_observations: {
+        Row: {
+          band_pos: number
+          created_at: string
+          indicator_key: string
+          loop_id: string
+          norm_id: string
+          notes: string | null
+          severity: number
+          status: string
+          ts: string
+          user_id: string
+          value: number
+          value_smoothed: number
+        }
+        Insert: {
+          band_pos: number
+          created_at?: string
+          indicator_key: string
+          loop_id: string
+          norm_id?: string
+          notes?: string | null
+          severity?: number
+          status: string
+          ts: string
+          user_id?: string
+          value: number
+          value_smoothed: number
+        }
+        Update: {
+          band_pos?: number
+          created_at?: string
+          indicator_key?: string
+          loop_id?: string
+          norm_id?: string
+          notes?: string | null
+          severity?: number
+          status?: string
+          ts?: string
+          user_id?: string
+          value?: number
+          value_smoothed?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "normalized_observations_indicator_key_fkey"
+            columns: ["indicator_key"]
+            isOneToOne: false
+            referencedRelation: "indicator_registry"
+            referencedColumns: ["indicator_key"]
+          },
+          {
+            foreignKeyName: "normalized_observations_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "loops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "normalized_observations_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "mv_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
+          {
+            foreignKeyName: "normalized_observations_loop_id_fkey"
+            columns: ["loop_id"]
+            isOneToOne: false
+            referencedRelation: "safe_loop_metrics"
+            referencedColumns: ["loop_id"]
+          },
+        ]
       }
       option_effects: {
         Row: {
@@ -3049,6 +3409,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      raw_observations: {
+        Row: {
+          hash: string
+          indicator_key: string
+          ingested_at: string
+          meta: Json
+          obs_id: string
+          schema_version: number
+          source_id: string
+          ts: string
+          unit: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          hash: string
+          indicator_key: string
+          ingested_at?: string
+          meta?: Json
+          obs_id?: string
+          schema_version?: number
+          source_id: string
+          ts: string
+          unit: string
+          user_id?: string
+          value: number
+        }
+        Update: {
+          hash?: string
+          indicator_key?: string
+          ingested_at?: string
+          meta?: Json
+          obs_id?: string
+          schema_version?: number
+          source_id?: string
+          ts?: string
+          unit?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raw_observations_indicator_key_fkey"
+            columns: ["indicator_key"]
+            isOneToOne: false
+            referencedRelation: "indicator_registry"
+            referencedColumns: ["indicator_key"]
+          },
+          {
+            foreignKeyName: "raw_observations_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "source_registry"
+            referencedColumns: ["source_id"]
+          },
+        ]
       }
       reflex_memory: {
         Row: {
@@ -3439,6 +3856,51 @@ export type Database = {
           threshold_crossed?: number | null
           user_id?: string
           watchpoint_id?: string
+        }
+        Relationships: []
+      }
+      source_registry: {
+        Row: {
+          config: Json
+          created_at: string
+          enabled: boolean
+          name: string
+          pii_class: string
+          provider: string
+          schedule_cron: string | null
+          schema_version: number
+          source_id: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          name: string
+          pii_class?: string
+          provider: string
+          schedule_cron?: string | null
+          schema_version?: number
+          source_id?: string
+          type: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          name?: string
+          pii_class?: string
+          provider?: string
+          schedule_cron?: string | null
+          schema_version?: number
+          source_id?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
