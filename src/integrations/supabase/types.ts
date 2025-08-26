@@ -5637,7 +5637,7 @@ export type Database = {
         Returns: string
       }
       get_loop_hydrate: {
-        Args: { loop_uuid: string } | { p_loop_code: string }
+        Args: { p_loop_code: string } | { p_loop_uuid: string }
         Returns: Json
       }
       get_reflexive_context: {
