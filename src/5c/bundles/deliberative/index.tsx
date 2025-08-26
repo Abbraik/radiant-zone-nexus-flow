@@ -20,7 +20,7 @@ const DeliberativeBundle: React.FC<BundleProps5C> = ({ task }) => {
     createSession,
     addCriterion,
     addOption
-  } = useDeliberativeData(loopId);
+  } = useDeliberativeData(loopId, task);
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-12">Loading deliberative data...</div>;

@@ -19,7 +19,7 @@ const StructuralBundle: React.FC<BundleProps5C> = ({ task }) => {
     isLoading,
     createDossier,
     runConformanceCheck
-  } = useStructuralData(loopId);
+  } = useStructuralData(loopId, task);
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-12">Loading structural data...</div>;

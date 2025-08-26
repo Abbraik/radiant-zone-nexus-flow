@@ -1,9 +1,74 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useGoldenScenarioEnrichment } from './useGoldenScenarioEnrichment';
+import type { EnhancedTask5C } from '@/5c/types';
 
-export function useResponsiveData(loopId: string) {
+export function useResponsiveData(loopId: string, task?: EnhancedTask5C) {
   const queryClient = useQueryClient();
+  const enrichedTask = useGoldenScenarioEnrichment(task || null);
+
+  // Generate scenario-based data if available
+  const getScenarioData = () => {
+    if (!enrichedTask?.payload) return { breachEvents: [], activeClaims: [], deBands: [] };
+    
+    const payload = enrichedTask.payload as any;
+    
+    if (payload.scenario_id === 'fertility') {
+      return {
+        breachEvents: [{
+          id: 'breach-1',
+          indicator_name: 'Childcare Wait Time',
+          breach_type: 'upper_threshold',
+          value: payload.childcare?.wait_time_days || 28,
+          threshold_value: 21,
+          severity_score: 3,
+          at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          resolved_at: null
+        }],
+        activeClaims: [{
+          id: 'claim-1',
+          assignee: task?.user_id || 'system',
+          leverage: 'M',
+          status: 'active'
+        }],
+        deBands: [{
+          id: 'band-1',
+          indicator: 'childcare_wait_time',
+          lower_bound: 15,
+          upper_bound: 21,
+          current_value: payload.childcare?.wait_time_days || 28
+        }]
+      };
+    }
+
+    if (payload.scenario_id === 'social-cohesion') {
+      return {
+        breachEvents: [{
+          id: 'breach-2',
+          indicator_name: 'Service Outage Rate',
+          breach_type: 'upper_threshold',
+          value: payload.service_reliability?.outage_rate || 0.05,
+          threshold_value: 0.02,
+          severity_score: 2,
+          at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+          resolved_at: null
+        }],
+        activeClaims: [],
+        deBands: [{
+          id: 'band-2',
+          indicator: 'outage_rate',
+          lower_bound: 0,
+          upper_bound: 0.02,
+          current_value: payload.service_reliability?.outage_rate || 0.05
+        }]
+      };
+    }
+
+    return { breachEvents: [], activeClaims: [], deBands: [] };  
+  };
+
+  const scenarioData = getScenarioData();
 
   // Fetch breach events for responsive capacity
   const { data: breachEvents = [], isLoading: isLoadingBreaches } = useQuery({
@@ -106,9 +171,9 @@ export function useResponsiveData(loopId: string) {
   });
 
   return {
-    breachEvents,
-    activeClaims,
-    deBands,
+    breachEvents: scenarioData.breachEvents.length > 0 ? scenarioData.breachEvents : breachEvents,
+    activeClaims: scenarioData.activeClaims.length > 0 ? scenarioData.activeClaims : activeClaims,
+    deBands: scenarioData.deBands.length > 0 ? scenarioData.deBands : deBands,
     isLoading: isLoadingBreaches || isLoadingClaims || isLoadingBands,
     createClaim,
     respondToBreach

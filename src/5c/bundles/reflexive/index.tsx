@@ -18,7 +18,7 @@ const ReflexiveBundle: React.FC<BundleProps5C> = ({ task }) => {
     createReflexMemory,
     updateDeBands,
     updateScorecard
-  } = useReflexiveData(loopId);
+  } = useReflexiveData(loopId, task);
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-12">Loading reflexive data...</div>;

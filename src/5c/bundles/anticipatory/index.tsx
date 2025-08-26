@@ -35,7 +35,7 @@ const AnticipatoryBundle: React.FC<BundleProps5C> = ({ task }) => {
     createScenario,
     runScenario,
     armWatchpoint
-  } = useAnticipatoryData(loopId);
+  } = useAnticipatoryData(loopId, task);
 
   if (isLoading) {
     return (

@@ -1,9 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useGoldenScenarioEnrichment } from './useGoldenScenarioEnrichment';
+import type { EnhancedTask5C } from '@/5c/types';
+import { getDeliberativeScenarioData } from '@/utils/scenarioDataHelpers';
 
-export function useDeliberativeData(loopId: string) {
+export function useDeliberativeData(loopId: string, task?: EnhancedTask5C) {
   const queryClient = useQueryClient();
+  const enrichedTask = useGoldenScenarioEnrichment(task || null);
+  
+  // Generate scenario-based data if available
+  const getScenarioData = () => {
+    if (!enrichedTask) return null;
+    return getDeliberativeScenarioData(enrichedTask);
+  };
+  
+  const scenarioData = getScenarioData();
 
   // Fetch deliberative sessions
   const { data: sessions = [], isLoading: isLoadingSessions } = useQuery({
@@ -199,11 +211,24 @@ export function useDeliberativeData(loopId: string) {
     }
   });
 
+  // Use scenario data if available
+  const finalCriteria = scenarioData?.criteria || criteria;
+  const finalOptions = scenarioData?.options || options;
+
   return {
-    sessions,
-    activeSession,
-    criteria,
-    options,
+    sessions: sessions.length > 0 ? sessions : (scenarioData ? [{
+      id: 'session-1',
+      mission: scenarioData.title,
+      status: 'active',
+      created_at: new Date().toISOString()
+    }] : []),
+    activeSession: sessions[0] || (scenarioData ? {
+      id: 'session-1',
+      mission: scenarioData.title,
+      status: 'active'
+    } : null),
+    criteria: finalCriteria,
+    options: finalOptions,
     scores,
     frontierPoints,
     dossiers,
