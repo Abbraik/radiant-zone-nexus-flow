@@ -12,3 +12,15 @@ verify_jwt = false
 
 [functions.admin-seed-delib]
 verify_jwt = true
+
+[functions.signals-push]
+verify_jwt = false
+
+[functions.capacity-brain-activate]
+verify_jwt = true
+
+[functions.capacity-brain-override]
+verify_jwt = true
+
+[functions.capacity-brain-create-task]
+verify_jwt = true

@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      activation_events: {
+        Row: {
+          as_of: string
+          created_at: string | null
+          created_by: string
+          decision: Json
+          event_id: string
+          fingerprint: string
+          loop_id: string
+          time_window: string
+        }
+        Insert: {
+          as_of: string
+          created_at?: string | null
+          created_by: string
+          decision: Json
+          event_id?: string
+          fingerprint: string
+          loop_id: string
+          time_window: string
+        }
+        Update: {
+          as_of?: string
+          created_at?: string | null
+          created_by?: string
+          decision?: Json
+          event_id?: string
+          fingerprint?: string
+          loop_id?: string
+          time_window?: string
+        }
+        Relationships: []
+      }
+      activation_overrides: {
+        Row: {
+          actor: string
+          after: Json
+          approved_by: string | null
+          before: Json
+          created_at: string | null
+          event_id: string | null
+          override_id: string
+          reason: string
+        }
+        Insert: {
+          actor: string
+          after: Json
+          approved_by?: string | null
+          before: Json
+          created_at?: string | null
+          event_id?: string | null
+          override_id?: string
+          reason: string
+        }
+        Update: {
+          actor?: string
+          after?: Json
+          approved_by?: string | null
+          before?: Json
+          created_at?: string | null
+          event_id?: string | null
+          override_id?: string
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activation_overrides_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "activation_events"
+            referencedColumns: ["event_id"]
+          },
+        ]
+      }
       antic_activation_events: {
         Row: {
           created_at: string | null
@@ -5212,6 +5286,30 @@ export type Database = {
           details?: Json | null
           event_type?: string
           id?: string
+          task_id?: string
+        }
+        Relationships: []
+      }
+      task_fingerprints: {
+        Row: {
+          capacity: string
+          created_at: string | null
+          fp: string
+          loop_id: string
+          task_id: string
+        }
+        Insert: {
+          capacity: string
+          created_at?: string | null
+          fp: string
+          loop_id: string
+          task_id: string
+        }
+        Update: {
+          capacity?: string
+          created_at?: string | null
+          fp?: string
+          loop_id?: string
           task_id?: string
         }
         Relationships: []
