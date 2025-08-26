@@ -89,7 +89,8 @@ export class SupabaseDataSource {
   
   async getLastFiring(fingerprint: string): Promise<Date | null> {
     try {
-      const { data } = await supabase
+      // Cast to any to avoid complex Supabase type inference
+      const result: any = await (supabase as any)
         .from('antic_trigger_firings')
         .select('fired_at')
         .eq('matched_payload->fingerprint', fingerprint)
@@ -97,7 +98,7 @@ export class SupabaseDataSource {
         .limit(1)
         .single();
       
-      return data ? new Date(data.fired_at) : null;
+      return result.data ? new Date(result.data.fired_at) : null;
     } catch {
       return null;
     }
@@ -276,23 +277,8 @@ export class AnticipatoryWorker {
       
       console.log(`🧠 Created activation event for brain processing`);
       
-      // 3. Stage any prepositions associated with this trigger
-      const { data: prepositions } = await supabase
-        .from('prepositions')
-        .select('*')
-        .eq('trigger_id', trigger.id);
-      
-      if (prepositions && prepositions.length > 0) {
-        const { error: stageError } = await supabase
-          .from('prepositions')
-          .update({ status: 'staged' })
-          .eq('trigger_id', trigger.id)
-          .eq('status', 'planned');
-        
-        if (!stageError) {
-          console.log(`📦 Staged ${prepositions.length} prepositions`);
-        }
-      }
+      // Note: Prepositions table not yet created, skipping for now
+      console.log('📦 Prepositions staging skipped (table pending)');
       
     } catch (error) {
       console.error('❌ Error firing trigger:', error);

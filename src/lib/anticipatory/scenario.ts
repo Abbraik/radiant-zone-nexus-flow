@@ -309,7 +309,13 @@ export class BacktestRunner {
         const predicted = this.evaluateTriggerOnHistoricalData(trigger, historicalData, checkDate);
         const actual = this.getGroundTruthIncident(checkDate, channelKey);
         
-        const firing = {
+        const firing: {
+          date: string;
+          triggerId: string;
+          predicted: boolean;
+          actual: boolean;
+          leadTimeHours?: number;
+        } = {
           date: checkDate.toISOString(),
           triggerId: trigger.id,
           predicted,

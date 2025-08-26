@@ -62,12 +62,7 @@ export async function seedRiskChannels(): Promise<void> {
   
   // Skip for now - table creation pending
   console.log('⏩ Skipping risk channels (table creation pending)');
-  
-  if (error) {
-    console.error('Error seeding risk channels:', error);
-  } else {
-    console.log(`✅ Seeded ${channels.length} risk channels`);
-  }
+  console.log(`📝 Would seed ${channels.length} risk channels`);
 }
 
 // Seeder for playbooks
@@ -183,12 +178,7 @@ export async function seedPlaybooks(): Promise<void> {
   
   // Skip for now - table creation pending
   console.log('⏩ Skipping playbooks (table creation pending)');
-  
-  if (error) {
-    console.error('Error seeding playbooks:', error);
-  } else {
-    console.log(`✅ Seeded ${playbooks.length} playbooks`);
-  }
+  console.log(`📝 Would seed ${playbooks.length} playbooks`);
 }
 
 // Seeder for trigger templates
@@ -272,12 +262,7 @@ export async function seedTriggerTemplates(): Promise<void> {
   
   // Skip for now - table creation pending
   console.log('⏩ Skipping trigger templates (table creation pending)');
-  
-  if (error) {
-    console.error('Error seeding trigger templates:', error);
-  } else {
-    console.log(`✅ Seeded ${templates.length} trigger templates`);
-  }
+  console.log(`📝 Would seed ${templates.length} trigger templates`);
 }
 
 // Seeder for demo scenarios
@@ -289,10 +274,10 @@ export async function seedDemoScenarios(): Promise<void> {
   const scenarios = [
     {
       id: 'demo_childcare_surge',
-      title: 'Childcare System Surge',
-      description: 'Simulate 30% increase in childcare demand over 2 weeks',
-      channel_key: 'childcare_load',
-      inputs: {
+      name: 'Childcare System Surge',
+      assumptions: {
+        description: 'Simulate 30% increase in childcare demand over 2 weeks',
+        channel_key: 'childcare_load',
         indicatorShocks: [
           {
             indicator: 'childcare_wait_days',
@@ -302,15 +287,16 @@ export async function seedDemoScenarios(): Promise<void> {
           }
         ]
       },
-      horizon: 'P30D',
+      target_loops: ['FER-L01'],
+      org_id: userId,
       created_by: userId
     },
     {
       id: 'demo_heat_wave_response',
-      title: 'Extended Heat Wave',
-      description: 'Simulate 7-day heat wave with progressive intensity',
-      channel_key: 'heat_wave',
-      inputs: {
+      name: 'Extended Heat Wave',
+      assumptions: {
+        description: 'Simulate 7-day heat wave with progressive intensity',
+        channel_key: 'heat_wave',
         indicatorShocks: [
           {
             indicator: 'heat_index',
@@ -320,15 +306,16 @@ export async function seedDemoScenarios(): Promise<void> {
           }
         ]
       },
-      horizon: 'P21D',
+      target_loops: ['MES-L01'],
+      org_id: userId,
       created_by: userId
     },
     {
       id: 'demo_economic_dual_shock',
-      title: 'Economic Dual Indicator Shock',
-      description: 'Simulate orderbook decline with visa processing delays',
-      channel_key: 'orderbook_visa',
-      inputs: {
+      name: 'Economic Dual Indicator Shock',
+      assumptions: {
+        description: 'Simulate orderbook decline with visa processing delays',
+        channel_key: 'orderbook_visa',
         indicatorShocks: [
           {
             indicator: 'orderbook_index',
@@ -351,7 +338,8 @@ export async function seedDemoScenarios(): Promise<void> {
           }
         ]
       },
-      horizon: 'P45D',
+      target_loops: ['MAC-L06'],
+      org_id: userId,
       created_by: userId
     }
   ];
@@ -478,12 +466,3 @@ export async function seedAnticipatoryRuntime(): Promise<void> {
     throw error;
   }
 }
-
-// Individual export functions for selective seeding
-export {
-  seedRiskChannels,
-  seedPlaybooks,
-  seedTriggerTemplates,
-  seedDemoScenarios,
-  seedDemoBacktests
-};
