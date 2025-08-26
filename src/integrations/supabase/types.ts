@@ -1213,6 +1213,114 @@ export type Database = {
           },
         ]
       }
+      compass_anchor_map: {
+        Row: {
+          anchor: string
+          created_at: string | null
+          id: string
+          indicator_key: string
+          loop_id: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          anchor: string
+          created_at?: string | null
+          id?: string
+          indicator_key: string
+          loop_id: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+          weight?: number | null
+        }
+        Update: {
+          anchor?: string
+          created_at?: string | null
+          id?: string
+          indicator_key?: string
+          loop_id?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      compass_snapshots: {
+        Row: {
+          as_of: string
+          ci: number
+          consent_avg: number | null
+          created_at: string | null
+          drift: Json
+          loop_id: string
+          snap_id: string
+          tri: Json
+          user_id: string
+        }
+        Insert: {
+          as_of: string
+          ci: number
+          consent_avg?: number | null
+          created_at?: string | null
+          drift: Json
+          loop_id: string
+          snap_id?: string
+          tri: Json
+          user_id?: string
+        }
+        Update: {
+          as_of?: string
+          ci?: number
+          consent_avg?: number | null
+          created_at?: string | null
+          drift?: Json
+          loop_id?: string
+          snap_id?: string
+          tri?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compass_weights: {
+        Row: {
+          created_at: string | null
+          id: string
+          loop_id: string | null
+          updated_at: string | null
+          user_id: string
+          w_domains: number | null
+          w_institutions: number | null
+          w_legitimacy: number | null
+          w_population: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          loop_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          w_domains?: number | null
+          w_institutions?: number | null
+          w_legitimacy?: number | null
+          w_population?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          loop_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          w_domains?: number | null
+          w_institutions?: number | null
+          w_legitimacy?: number | null
+          w_population?: number | null
+        }
+        Relationships: []
+      }
       conformance_findings: {
         Row: {
           detail: Json | null
@@ -1380,6 +1488,39 @@ export type Database = {
             referencedColumns: ["std_ver_id"]
           },
         ]
+      }
+      consent_cells: {
+        Row: {
+          as_of: string
+          cell_id: string
+          consent_score: number
+          created_at: string | null
+          domain: string
+          region: string
+          sources: Json | null
+          user_id: string
+        }
+        Insert: {
+          as_of: string
+          cell_id?: string
+          consent_score: number
+          created_at?: string | null
+          domain: string
+          region: string
+          sources?: Json | null
+          user_id?: string
+        }
+        Update: {
+          as_of?: string
+          cell_id?: string
+          consent_score?: number
+          created_at?: string | null
+          domain?: string
+          region?: string
+          sources?: Json | null
+          user_id?: string
+        }
+        Relationships: []
       }
       controller_tunings: {
         Row: {
@@ -2744,6 +2885,39 @@ export type Database = {
         }
         Relationships: []
       }
+      horizon_goals: {
+        Row: {
+          created_at: string | null
+          description: string
+          goal_id: string
+          horizon: string
+          owner: string
+          status: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          goal_id?: string
+          horizon: string
+          owner: string
+          status?: string | null
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          goal_id?: string
+          horizon?: string
+          owner?: string
+          status?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       hub_allocations: {
         Row: {
           alloc_id: string
@@ -3192,6 +3366,41 @@ export type Database = {
           weight?: number | null
         }
         Relationships: []
+      }
+      loop_horizon_links: {
+        Row: {
+          created_at: string | null
+          goal_id: string
+          id: string
+          loop_id: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          goal_id: string
+          id?: string
+          loop_id: string
+          user_id?: string
+          weight?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          goal_id?: string
+          id?: string
+          loop_id?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loop_horizon_links_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "horizon_goals"
+            referencedColumns: ["goal_id"]
+          },
+        ]
       }
       loop_nodes: {
         Row: {
@@ -4256,6 +4465,39 @@ export type Database = {
             referencedColumns: ["source_id"]
           },
         ]
+      }
+      reciprocity_ledger: {
+        Row: {
+          audience: string
+          created_at: string | null
+          entry_id: string
+          kind: string
+          label: string
+          link: string | null
+          loop_id: string | null
+          user_id: string
+        }
+        Insert: {
+          audience: string
+          created_at?: string | null
+          entry_id?: string
+          kind: string
+          label: string
+          link?: string | null
+          loop_id?: string | null
+          user_id?: string
+        }
+        Update: {
+          audience?: string
+          created_at?: string | null
+          entry_id?: string
+          kind?: string
+          label?: string
+          link?: string | null
+          loop_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       reflex_memory: {
         Row: {
@@ -6957,6 +7199,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tri_snapshots: {
+        Row: {
+          as_of: string
+          created_at: string | null
+          integrity: number
+          loop_id: string | null
+          notes: Json | null
+          reciprocity: number
+          snap_id: string
+          trust: number
+          user_id: string
+        }
+        Insert: {
+          as_of: string
+          created_at?: string | null
+          integrity: number
+          loop_id?: string | null
+          notes?: Json | null
+          reciprocity: number
+          snap_id?: string
+          trust: number
+          user_id?: string
+        }
+        Update: {
+          as_of?: string
+          created_at?: string | null
+          integrity?: number
+          loop_id?: string | null
+          notes?: Json | null
+          reciprocity?: number
+          snap_id?: string
+          trust?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       trigger_rules: {
         Row: {
