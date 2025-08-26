@@ -2406,24 +2406,35 @@ export type Database = {
           created_at: string
           id: string
           loop_id: string
-          node_id: string
+          note: string | null
           role: string | null
+          snl_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           loop_id: string
-          node_id: string
+          note?: string | null
           role?: string | null
+          snl_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           loop_id?: string
-          node_id?: string
+          note?: string | null
           role?: string | null
+          snl_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_loop_shared_nodes_snl_id"
+            columns: ["snl_id"]
+            isOneToOne: false
+            referencedRelation: "shared_nodes"
+            referencedColumns: ["snl_id"]
+          },
+        ]
       }
       loop_tags: {
         Row: {
@@ -3362,29 +3373,29 @@ export type Database = {
       shared_nodes: {
         Row: {
           created_at: string
-          description: string | null
-          descriptor: string | null
-          domain: string | null
           id: string
+          key: string | null
           label: string
+          snl_id: string
+          type: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
-          description?: string | null
-          descriptor?: string | null
-          domain?: string | null
           id?: string
+          key?: string | null
           label: string
+          snl_id?: string
+          type?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
-          description?: string | null
-          descriptor?: string | null
-          domain?: string | null
           id?: string
+          key?: string | null
           label?: string
+          snl_id?: string
+          type?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -5312,15 +5323,24 @@ export type Database = {
       }
       v_loop_shared_nodes: {
         Row: {
-          descriptor: string | null
-          domain: string | null
           id: string | null
           loop_id: string | null
+          note: string | null
           role: string | null
           snl_id: string | null
+          snl_key: string | null
           snl_label: string | null
+          snl_type: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_loop_shared_nodes_snl_id"
+            columns: ["snl_id"]
+            isOneToOne: false
+            referencedRelation: "shared_nodes"
+            referencedColumns: ["snl_id"]
+          },
+        ]
       }
       v_me: {
         Row: {
