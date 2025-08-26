@@ -1,5 +1,5 @@
 // Enhanced 5C Task Hook with TaskEngine V2 Integration
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { useTaskEngine } from './useTaskEngine';
@@ -20,9 +20,22 @@ export const use5cTaskEngine = () => {
   // 5C Tasks queries
   const { data: c5Tasks = [], isLoading: isLoadingTasks, error: tasksError } = useQuery({
     queryKey: QUERY_KEYS_5C.tasks(),
-    queryFn: () => getTasks5C(),
+    queryFn: () => {
+      console.log('🔍 5C useQuery: Fetching tasks...');
+      return getTasks5C();
+    },
     refetchInterval: 30000 // Refresh every 30s
   });
+
+  // Log query results
+  useEffect(() => {
+    if (c5Tasks && c5Tasks.length > 0) {
+      console.log('✅ 5C useQuery: Tasks fetched successfully:', c5Tasks);
+    }
+    if (tasksError) {
+      console.error('❌ 5C useQuery: Error fetching tasks:', tasksError);
+    }
+  }, [c5Tasks, tasksError]);
 
   const { data: activeTask, isLoading: isLoadingTask, error: taskError } = useQuery({
     queryKey: QUERY_KEYS_5C.task(taskId!),
@@ -94,7 +107,9 @@ export const use5cTaskEngine = () => {
 
   // Filtered tasks
   const filteredTasks = useMemo(() => {
-    return {
+    console.log('🔍 5C useMemo: Processing tasks:', c5Tasks);
+    
+    const result = {
       myTasks: c5Tasks.filter(t => t.status === 'claimed').map(convertToWorkspaceTask),
       availableTasks: c5Tasks.filter(t => t.status === 'open').map(convertToWorkspaceTask),
       activeTasks: c5Tasks.filter(t => t.status === 'active'),
@@ -107,6 +122,9 @@ export const use5cTaskEngine = () => {
         structural: c5Tasks.filter(t => t.capacity === 'structural')
       }
     };
+    
+    console.log('✅ 5C useMemo: Filtered tasks result:', result);
+    return result;
   }, [c5Tasks, convertToWorkspaceTask]);
 
   // Task management functions

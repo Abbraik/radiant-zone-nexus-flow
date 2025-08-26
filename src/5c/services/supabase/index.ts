@@ -28,15 +28,17 @@ export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> 
     id: data.id,
     capacity: data.capacity as Capacity5C,
     loop_id: data.loop_id || `loop-${data.capacity}-001`,
-    type: data.capacity === 'responsive' ? 'reactive' : 
-          data.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    type: (data.capacity === 'responsive' ? 'reactive' : 
+          data.capacity === 'reflexive' ? 'structural' : 
+          data.capacity === 'anticipatory' ? 'perceptual' :
+          data.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
     scale: 'meso' as const,
     leverage: 'P' as Leverage5C,
     title: data.title,
     description: data.description,
-    status: data.status === 'available' ? 'open' : 
+    status: (data.status === 'available' ? 'open' : 
             data.status === 'claimed' ? 'claimed' :
-            data.status === 'in_progress' ? 'active' : 'done',
+            data.status === 'in_progress' ? 'active' : 'done') as EnhancedTask5C['status'],
     payload: data.payload as any || {},
     tri: undefined, // Will be set if available
     created_at: data.created_at,
@@ -46,6 +48,8 @@ export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> 
 };
 
 export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
+  console.log('🔍 getTasks5C called with filters:', filters);
+  
   // Fetch from main tasks table to get golden scenario tasks
   let query = supabase.from('tasks').select('*');
   
@@ -59,30 +63,41 @@ export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
     query = query.eq('status', 'available');
   }
   
+  console.log('🔍 Executing tasks query...');
   const { data, error } = await query.order('created_at', { ascending: false });
   
-  if (error) throw error;
+  if (error) {
+    console.error('❌ getTasks5C error:', error);
+    throw error;
+  }
+  
+  console.log('✅ getTasks5C raw data:', data);
   
   // Transform main tasks to 5C format
-  return (data || []).map(item => ({
+  const transformedTasks = (data || []).map(item => ({
     id: item.id,
     capacity: item.capacity as Capacity5C,
     loop_id: item.loop_id || `loop-${item.capacity}-001`,
-    type: item.capacity === 'responsive' ? 'reactive' : 
-          item.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    type: (item.capacity === 'responsive' ? 'reactive' : 
+          item.capacity === 'reflexive' ? 'structural' : 
+          item.capacity === 'anticipatory' ? 'perceptual' :
+          item.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
     scale: 'meso' as const,
     leverage: 'P' as Leverage5C,
     title: item.title,
     description: item.description,
-    status: item.status === 'available' ? 'open' : 
+    status: (item.status === 'available' ? 'open' : 
             item.status === 'claimed' ? 'claimed' :
-            item.status === 'in_progress' ? 'active' : 'done',
+            item.status === 'in_progress' ? 'active' : 'done') as EnhancedTask5C['status'],
     payload: item.payload as any || {},
     tri: undefined, // Will be set if available
     created_at: item.created_at,
     updated_at: item.updated_at,
     user_id: item.user_id
   }));
+  
+  console.log('✅ getTasks5C transformed tasks:', transformedTasks);
+  return transformedTasks;
 };
 
 export const createTask5C = async (task: Partial<EnhancedTask5C>): Promise<EnhancedTask5C> => {
@@ -110,8 +125,10 @@ export const createTask5C = async (task: Partial<EnhancedTask5C>): Promise<Enhan
     id: data.id,
     capacity: data.capacity as Capacity5C,
     loop_id: data.loop_id,
-    type: data.capacity === 'responsive' ? 'reactive' : 
-          data.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    type: (data.capacity === 'responsive' ? 'reactive' : 
+          data.capacity === 'reflexive' ? 'structural' : 
+          data.capacity === 'anticipatory' ? 'perceptual' :
+          data.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
     scale: 'meso' as const,
     leverage: 'P' as Leverage5C,
     title: data.title,
@@ -155,15 +172,17 @@ export const updateTask5C = async (id: string, updates: Partial<EnhancedTask5C>)
     id: data.id,
     capacity: data.capacity as Capacity5C,
     loop_id: data.loop_id || `loop-${data.capacity}-001`,
-    type: data.capacity === 'responsive' ? 'reactive' : 
-          data.capacity === 'reflexive' ? 'structural' : 'perceptual',
+    type: (data.capacity === 'responsive' ? 'reactive' : 
+          data.capacity === 'reflexive' ? 'structural' : 
+          data.capacity === 'anticipatory' ? 'perceptual' :
+          data.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
     scale: 'meso' as const,
     leverage: 'P' as Leverage5C,
     title: data.title,
     description: data.description,
-    status: data.status === 'available' ? 'open' : 
+    status: (data.status === 'available' ? 'open' : 
             data.status === 'claimed' ? 'claimed' :
-            data.status === 'in_progress' ? 'active' : 'done',
+            data.status === 'in_progress' ? 'active' : 'done') as EnhancedTask5C['status'],
     payload: data.payload as any || {},
     tri: undefined,
     created_at: data.created_at,
