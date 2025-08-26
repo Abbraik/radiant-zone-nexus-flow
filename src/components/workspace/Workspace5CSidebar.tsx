@@ -1,8 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { AlertCircle, CheckCircle, Clock, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import type { EnhancedTask5C } from '@/5c/types';
 
 interface Workspace5CSidebarProps {
@@ -44,6 +45,8 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
   isCollapsed,
   onToggleCollapse
 }) => {
+  const [isMyTasksCollapsed, setIsMyTasksCollapsed] = useState(false);
+  const [isAvailableTasksCollapsed, setIsAvailableTasksCollapsed] = useState(false);
   const TaskCard = ({ task }: { task: EnhancedTask5C }) => (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -119,35 +122,73 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {/* My Tasks */}
         {myTasks.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-gray-300 font-medium text-sm">My Tasks</h3>
-              <Badge variant="secondary" className="text-xs">
-                {myTasks.length}
-              </Badge>
-            </div>
-            <div className="space-y-2">
-              {myTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-            </div>
-          </div>
+          <Collapsible open={!isMyTasksCollapsed} onOpenChange={(open) => setIsMyTasksCollapsed(!open)}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex items-center justify-between w-full mb-3 p-0 h-auto hover:bg-transparent"
+              >
+                <div className="flex items-center gap-2">
+                  <h3 className="text-gray-300 font-medium text-sm">My Tasks</h3>
+                  <Badge variant="secondary" className="text-xs">
+                    {myTasks.length}
+                  </Badge>
+                </div>
+                {isMyTasksCollapsed ? (
+                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <ChevronUp className="h-4 w-4 text-gray-400" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <motion.div
+                initial={false}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-2"
+              >
+                {myTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
+              </motion.div>
+            </CollapsibleContent>
+          </Collapsible>
         )}
 
         {/* Available Tasks */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-gray-300 font-medium text-sm">Available Tasks</h3>
-            <Badge variant="secondary" className="text-xs">
-              {availableTasks.length}
-            </Badge>
-          </div>
-          <div className="space-y-2">
-            {availableTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
-            ))}
-          </div>
-        </div>
+        <Collapsible open={!isAvailableTasksCollapsed} onOpenChange={(open) => setIsAvailableTasksCollapsed(!open)}>
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex items-center justify-between w-full mb-3 p-0 h-auto hover:bg-transparent"
+            >
+              <div className="flex items-center gap-2">
+                <h3 className="text-gray-300 font-medium text-sm">Available Tasks</h3>
+                <Badge variant="secondary" className="text-xs">
+                  {availableTasks.length}
+                </Badge>
+              </div>
+              {isAvailableTasksCollapsed ? (
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              ) : (
+                <ChevronUp className="h-4 w-4 text-gray-400" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <motion.div
+              initial={false}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-2"
+            >
+              {availableTasks.map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </motion.div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {availableTasks.length === 0 && myTasks.length === 0 && (
           <div className="text-center py-8">
