@@ -20,7 +20,12 @@ export const use5cTaskEngine = () => {
   // 5C Tasks queries
   const { data: c5Tasks = [], isLoading: isLoadingTasks, error: tasksError } = useQuery({
     queryKey: QUERY_KEYS_5C.tasks(),
-    queryFn: () => getTasks5C(),
+    queryFn: async () => {
+      console.log('🔍 use5cTaskEngine: Calling getTasks5C...');
+      const result = await getTasks5C();
+      console.log('🔍 use5cTaskEngine: getTasks5C returned:', result?.length || 0, 'tasks');
+      return result;
+    },
     refetchInterval: 30000 // Refresh every 30s
   });
 
@@ -95,9 +100,18 @@ export const use5cTaskEngine = () => {
 
   // Filtered tasks
   const filteredTasks = useMemo(() => {
+    console.log('🔍 use5cTaskEngine: Filtering', c5Tasks?.length || 0, 'tasks...');
+    console.log('🔍 use5cTaskEngine: Tasks received:', c5Tasks?.map(t => ({ id: t.id, title: t.title, status: t.status })));
+    
+    const openTasks = c5Tasks.filter(t => t.status === 'open');
+    console.log('🔍 use5cTaskEngine: Found', openTasks.length, 'open tasks:', openTasks.map(t => ({ id: t.id, title: t.title })));
+    
+    const availableTasksConverted = openTasks.map(convertToWorkspaceTask);
+    console.log('🔍 use5cTaskEngine: Converted available tasks:', availableTasksConverted.map(t => ({ id: t.id, title: t.title, status: t.status })));
+    
     const result = {
       myTasks: c5Tasks.filter(t => t.status === 'claimed').map(convertToWorkspaceTask),
-      availableTasks: c5Tasks.filter(t => t.status === 'open').map(convertToWorkspaceTask),
+      availableTasks: availableTasksConverted,
       activeTasks: c5Tasks.filter(t => t.status === 'active'),
       completedTasks: c5Tasks.filter(t => t.status === 'done'),
       byCapacity: {
@@ -108,6 +122,14 @@ export const use5cTaskEngine = () => {
         structural: c5Tasks.filter(t => t.capacity === 'structural')
       }
     };
+    
+    console.log('🔍 use5cTaskEngine: Final filteredTasks result:', {
+      availableTasksCount: result.availableTasks.length,
+      myTasksCount: result.myTasks.length,
+      activeTasksCount: result.activeTasks.length,
+      completedTasksCount: result.completedTasks.length
+    });
+    
     return result;
   }, [c5Tasks, convertToWorkspaceTask]);
 

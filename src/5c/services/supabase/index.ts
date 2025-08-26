@@ -48,17 +48,27 @@ export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> 
 };
 
 export const getTasks5C = async (filters?: { capacity?: Capacity5C }): Promise<EnhancedTask5C[]> => {
+  console.log('🔍 getTasks5C: Starting fetch from database...');
+  
   // Fetch from main tasks table to get golden scenario tasks  
-  // Note: Ignoring filters for now to show all golden scenario tasks
   const { data, error } = await supabase
     .from('tasks')
     .select('*')
     .order('created_at', { ascending: false });
   
-  if (error) throw error;
+  console.log('🔍 getTasks5C: Raw database response:', { data, error });
+  
+  if (error) {
+    console.error('❌ getTasks5C: Database error:', error);
+    throw error;
+  }
+  
+  console.log('🔍 getTasks5C: Found', data?.length || 0, 'tasks in database');
   
   // Transform main tasks to 5C format
-  const transformedTasks = (data || []).map(item => ({
+  const transformedTasks = (data || []).map(item => {
+    console.log('🔍 getTasks5C: Transforming task:', item.id, item.title, 'Status:', item.status);
+    return {
     id: item.id,
     capacity: item.capacity as Capacity5C,
     loop_id: item.loop_id || `loop-${item.capacity}-001`,
@@ -78,7 +88,10 @@ export const getTasks5C = async (filters?: { capacity?: Capacity5C }): Promise<E
     created_at: item.created_at,
     updated_at: item.updated_at,
     user_id: item.user_id
-  }));
+    };
+  });
+  
+  console.log('🔍 getTasks5C: Transformed tasks:', transformedTasks.map(t => ({ id: t.id, title: t.title, status: t.status })));
   
   return transformedTasks;
 };
