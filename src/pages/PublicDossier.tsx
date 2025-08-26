@@ -51,7 +51,7 @@ export const PublicDossier: React.FC = () => {
       </Card>
 
       <div className="grid gap-4">
-        {dossier.components?.map((component: any, index: number) => (
+        {(dossier.components as any[])?.map((component: any, index: number) => (
           <Card key={index}>
             <CardHeader>
               <CardTitle className="capitalize">{component.kind}</CardTitle>

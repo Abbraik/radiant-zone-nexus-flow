@@ -91,7 +91,7 @@ export const AdoptionMap: React.FC<AdoptionMapProps> = ({ dossierId }) => {
             exception_notes: notes,
             type: 'adoption_exception'
           },
-          due_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+          due_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
         });
         
       if (error) throw error;

@@ -113,7 +113,7 @@ export const ConformanceDashboard: React.FC<ConformanceDashboardProps> = ({ doss
     }
   };
 
-  const passRate = latestRun?.summary?.pass_rate || 0;
+  const passRate = (latestRun?.summary as any)?.pass_rate || 0;
   const mustRules = rules.filter(r => r.severity === 'must').length;
   const shouldRules = rules.filter(r => r.severity === 'should').length;
 
@@ -162,7 +162,7 @@ export const ConformanceDashboard: React.FC<ConformanceDashboardProps> = ({ doss
               </div>
               <Progress value={passRate * 100} className="h-2" />
               <p className="text-sm text-muted-foreground">
-                {latestRun?.summary?.passed_rules || 0} of {latestRun?.summary?.total_rules || 0} rules
+                {(latestRun?.summary as any)?.passed_rules || 0} of {(latestRun?.summary as any)?.total_rules || 0} rules
               </p>
             </div>
           </CardContent>
@@ -173,7 +173,7 @@ export const ConformanceDashboard: React.FC<ConformanceDashboardProps> = ({ doss
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold text-red-600">
-                  {latestRun?.summary?.failed_must_rules || 0}
+                  {(latestRun?.summary as any)?.failed_must_rules || 0}
                 </span>
                 <Badge variant="destructive">MUST Failures</Badge>
               </div>
@@ -230,7 +230,7 @@ export const ConformanceDashboard: React.FC<ConformanceDashboardProps> = ({ doss
                             {rule?.severity?.toUpperCase()}
                           </Badge>
                           <span className="text-sm text-muted-foreground">
-                            {rule?.rule_expr?.type || 'unknown'}
+                            {(rule?.rule_expr as any)?.type || 'unknown'}
                           </span>
                         </div>
                       </div>
@@ -245,9 +245,9 @@ export const ConformanceDashboard: React.FC<ConformanceDashboardProps> = ({ doss
                       </Badge>
                       {finding.detail && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          {finding.detail.error || 
-                           finding.detail.current_value ||
-                           finding.detail.status ||
+                          {(finding.detail as any)?.error || 
+                           (finding.detail as any)?.current_value ||
+                           (finding.detail as any)?.status ||
                            'Details available'}
                         </p>
                       )}
@@ -280,7 +280,7 @@ export const ConformanceDashboard: React.FC<ConformanceDashboardProps> = ({ doss
                       {new Date(latestRun.started_at).toLocaleString()}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {latestRun.summary?.total_rules || 0} rules evaluated
+                      {(latestRun.summary as any)?.total_rules || 0} rules evaluated
                     </p>
                   </div>
                 </div>

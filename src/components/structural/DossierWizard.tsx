@@ -29,7 +29,7 @@ export const DossierWizard: React.FC<DossierWizardProps> = ({
   loopId,
   onPublish
 }) => {
-  const [activeTab, setActiveTab] = useState<string>('mandate');
+  const [activeTab, setActiveTab] = useState<'mandate' | 'mesh' | 'process' | 'standard' | 'market' | 'transparency'>('mandate');
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [version, setVersion] = useState('1.0');
@@ -172,13 +172,13 @@ export const DossierWizard: React.FC<DossierWizardProps> = ({
     // Basic validation rules
     switch (kind) {
       case 'mandate':
-        return component.content?.approved ? 'valid' : 'invalid';
+        return (component.content as any)?.approved ? 'valid' : 'invalid';
       case 'mesh':
-        return component.content?.joint_kpis?.length > 0 ? 'valid' : 'invalid';
+        return (component.content as any)?.joint_kpis?.length > 0 ? 'valid' : 'invalid';
       case 'process':
-        return (component.content?.sla && component.content?.steps?.length > 0 && component.content?.gates?.length > 0) ? 'valid' : 'invalid';
+        return ((component.content as any)?.sla && (component.content as any)?.steps?.length > 0 && (component.content as any)?.gates?.length > 0) ? 'valid' : 'invalid';
       case 'standard':
-        return (component.content?.spec || component.content?.standard_version_id) ? 'valid' : 'invalid';
+        return ((component.content as any)?.spec || (component.content as any)?.standard_version_id) ? 'valid' : 'invalid';
       default:
         return component.content && Object.keys(component.content).length > 0 ? 'valid' : 'invalid';
     }
@@ -264,7 +264,7 @@ export const DossierWizard: React.FC<DossierWizardProps> = ({
                   className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
                     activeTab === tab.id ? 'bg-primary/10 text-primary' : 'hover:bg-muted'
                   }`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => setActiveTab(tab.id as any)}
                 >
                   <div className={`p-1 rounded ${
                     status === 'valid' ? 'bg-green-100 text-green-600' :
@@ -299,8 +299,8 @@ export const DossierWizard: React.FC<DossierWizardProps> = ({
           {/* Main Content */}
           <div className="lg:col-span-3">
             <ComponentEditor
-              kind={activeTab as any}
-              component={getCurrentComponent()}
+              kind={activeTab}
+              component={getCurrentComponent() as DossierComponent | undefined}
               onSave={handleComponentSave}
             />
           </div>
@@ -312,7 +312,7 @@ export const DossierWizard: React.FC<DossierWizardProps> = ({
 
 // Component Editor for each section
 const ComponentEditor: React.FC<{
-  kind: string;
+  kind: 'mandate' | 'mesh' | 'process' | 'standard' | 'market' | 'transparency';
   component?: DossierComponent;
   onSave: (content: any) => void;
 }> = ({ kind, component, onSave }) => {
