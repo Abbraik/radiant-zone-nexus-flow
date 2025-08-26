@@ -15,164 +15,94 @@ import type {
 
 // Task operations
 export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> => {
-  // Fetch from main tasks table to get golden scenario task
+  // Fetch from 5C tasks table
   const { data, error } = await supabase
-    .from('tasks')
+    .from('tasks_5c')
     .select('*')
     .eq('id', id)
-    .single();
+    .maybeSingle();
   
   if (error) throw error;
   
+  // Data is already in 5C format from tasks_5c table
   return data ? {
-    id: data.id,
-    capacity: data.capacity as Capacity5C,
-    loop_id: data.loop_id || `loop-${data.capacity}-001`,
-    type: (data.capacity === 'responsive' ? 'reactive' : 
-          data.capacity === 'reflexive' ? 'structural' : 
-          data.capacity === 'anticipatory' ? 'perceptual' :
-          data.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
-    scale: 'meso' as const,
-    leverage: 'P' as Leverage5C,
-    title: data.title,
-    description: data.description,
-    status: (data.status === 'available' ? 'open' : 
-            data.status === 'claimed' ? 'claimed' :
-            data.status === 'in_progress' ? 'active' : 'done') as EnhancedTask5C['status'],
-    payload: data.payload as any || {},
-    tri: undefined, // Will be set if available
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    user_id: data.user_id
-  } : null;
+    ...data,
+    tri: data.tri || undefined
+  } as EnhancedTask5C : null;
 };
 
 export const getTasks5C = async (filters?: { capacity?: Capacity5C }): Promise<EnhancedTask5C[]> => {
-  // Fetch from main tasks table to get golden scenario tasks  
-  const { data, error } = await supabase
-    .from('tasks')
+  // Fetch from 5C tasks table  
+  let query = supabase
+    .from('tasks_5c')
     .select('*')
     .order('created_at', { ascending: false });
+    
+  // Apply capacity filter if provided
+  if (filters?.capacity) {
+    query = query.eq('capacity', filters.capacity);
+  }
+  
+  const { data, error } = await query;
   
   if (error) throw error;
   
-  // Transform main tasks to 5C format
-  const transformedTasks = (data || []).map(item => {
-    return {
-    id: item.id,
-    capacity: item.capacity as Capacity5C,
-    loop_id: item.loop_id || `loop-${item.capacity}-001`,
-    type: (item.capacity === 'responsive' ? 'reactive' : 
-          item.capacity === 'reflexive' ? 'structural' : 
-          item.capacity === 'anticipatory' ? 'perceptual' :
-          item.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
-    scale: 'meso' as const,
-    leverage: 'P' as Leverage5C,
-    title: item.title,
-    description: item.description,
-    status: (item.status === 'available' ? 'open' : 
-            item.status === 'claimed' ? 'claimed' :
-            item.status === 'in_progress' ? 'active' : 'done') as EnhancedTask5C['status'],
-    payload: item.payload as any || {},
-    tri: undefined, // Will be set if available
-    created_at: item.created_at,
-    updated_at: item.updated_at,
-    user_id: item.user_id
-    };
-  });
+  // Tasks are already in 5C format from tasks_5c table
+  const transformedTasks = (data || []).map(item => ({
+    ...item,
+    // Ensure all required fields are present
+    tri: item.tri || undefined,
+  } as EnhancedTask5C));
   
   return transformedTasks;
 };
 
 export const createTask5C = async (task: Partial<EnhancedTask5C>): Promise<EnhancedTask5C> => {
-  // Create in main tasks table to match golden scenario structure
+  // Create in 5C tasks table
   const taskData = {
     capacity: task.capacity,
+    type: task.type || 'reactive',
+    scale: task.scale || 'meso', 
+    leverage: task.leverage || 'P',
     loop_id: task.loop_id || `loop-${task.capacity}-001`,
     title: task.title,
     description: task.description,
-    status: 'available', // New tasks start as available
+    status: task.status || 'open',
     payload: task.payload || {},
-    user_id: '00000000-0000-0000-0000-000000000000' // Default user for demo
+    user_id: task.user_id || '00000000-0000-0000-0000-000000000000'
   };
 
   const { data, error } = await supabase
-    .from('tasks')
+    .from('tasks_5c')
     .insert(taskData)
     .select()
     .single();
   
   if (error) throw error;
   
-  // Transform to 5C format
+  // Data is already in 5C format
   return {
-    id: data.id,
-    capacity: data.capacity as Capacity5C,
-    loop_id: data.loop_id,
-    type: (data.capacity === 'responsive' ? 'reactive' : 
-          data.capacity === 'reflexive' ? 'structural' : 
-          data.capacity === 'anticipatory' ? 'perceptual' :
-          data.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
-    scale: 'meso' as const,
-    leverage: 'P' as Leverage5C,
-    title: data.title,
-    description: data.description,
-    status: 'open',
-    payload: data.payload as any || {},
-    tri: undefined,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    user_id: data.user_id
-  };
+    ...data,
+    tri: data.tri || undefined
+  } as EnhancedTask5C;
 };
 
 export const updateTask5C = async (id: string, updates: Partial<EnhancedTask5C>): Promise<EnhancedTask5C> => {
-  // Update in main tasks table
-  const taskUpdates: any = {};
-  
-  if (updates.status) {
-    // Map 5C status back to main task status
-    taskUpdates.status = updates.status === 'open' ? 'available' :
-                        updates.status === 'claimed' ? 'claimed' :
-                        updates.status === 'active' ? 'in_progress' :
-                        updates.status === 'done' ? 'completed' : updates.status;
-  }
-  
-  if (updates.title) taskUpdates.title = updates.title;
-  if (updates.description) taskUpdates.description = updates.description;
-  if (updates.payload) taskUpdates.payload = updates.payload;
-  
+  // Update in 5C tasks table
   const { data, error } = await supabase
-    .from('tasks')
-    .update(taskUpdates)
+    .from('tasks_5c')
+    .update(updates)
     .eq('id', id)
     .select()
     .single();
   
   if (error) throw error;
   
-  // Transform back to 5C format
+  // Data is already in 5C format
   return {
-    id: data.id,
-    capacity: data.capacity as Capacity5C,
-    loop_id: data.loop_id || `loop-${data.capacity}-001`,
-    type: (data.capacity === 'responsive' ? 'reactive' : 
-          data.capacity === 'reflexive' ? 'structural' : 
-          data.capacity === 'anticipatory' ? 'perceptual' :
-          data.capacity === 'deliberative' ? 'perceptual' : 'reactive') as any,
-    scale: 'meso' as const,
-    leverage: 'P' as Leverage5C,
-    title: data.title,
-    description: data.description,
-    status: (data.status === 'available' ? 'open' : 
-            data.status === 'claimed' ? 'claimed' :
-            data.status === 'in_progress' ? 'active' : 'done') as EnhancedTask5C['status'],
-    payload: data.payload as any || {},
-    tri: undefined,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    user_id: data.user_id
-  };
+    ...data,
+    tri: data.tri || undefined
+  } as EnhancedTask5C;
 };
 
 // Claim operations
