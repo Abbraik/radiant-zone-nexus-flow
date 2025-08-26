@@ -29,6 +29,7 @@ import AdminPage from "./pages/AdminPage";
 import MissionControl from "./pages/MissionControl";
 import { Workspace5C } from "./pages/Workspace5C";
 import { Demo } from "./pages/Demo";
+import TaskEnginePage from "./pages/TaskEngineDemo";
 import { createQueryClient } from "./services/api";
 import DemoBootstrap from "@/bootstrap/DemoBootstrap";
 import GlobalPortals from '@/components/global/GlobalPortals';
@@ -115,10 +116,11 @@ const App = () => (
                      <Route path="/think" element={<ThinkZone />} />
                      <Route path="/think-zone-studio" element={<ThinkZoneStudio />} />
                      <Route path="/scenario-planner" element={<ScenarioPlannerPage />} />
-                     <Route path="/act" element={<ActZone />} />
-                     <Route path="/monitor" element={<MonitorZone />} />
-                     <Route path="/innovate" element={<InnovateLearnZone />} />
-                      <Route path="*" element={<Workspace5C />} />
+                      <Route path="/act" element={<ActZone />} />
+                      <Route path="/monitor" element={<MonitorZone />} />
+                      <Route path="/innovate" element={<InnovateLearnZone />} />
+                      <Route path="/task-engine" element={<TaskEnginePage />} />
+                       <Route path="*" element={<Workspace5C />} />
                   </Routes>
                 </Shell>
               </FeatureFlagGuard>
