@@ -133,6 +133,67 @@ export type Database = {
         }
         Relationships: []
       }
+      adopting_entities: {
+        Row: {
+          entity_id: string
+          kind: string
+          name: string
+          parent_id: string | null
+        }
+        Insert: {
+          entity_id?: string
+          kind: string
+          name: string
+          parent_id?: string | null
+        }
+        Update: {
+          entity_id?: string
+          kind?: string
+          name?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adopting_entities_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "adopting_entities"
+            referencedColumns: ["entity_id"]
+          },
+        ]
+      }
+      adoption_events: {
+        Row: {
+          adopt_id: string
+          at: string | null
+          detail: Json | null
+          event_id: string
+          type: string
+        }
+        Insert: {
+          adopt_id: string
+          at?: string | null
+          detail?: Json | null
+          event_id?: string
+          type: string
+        }
+        Update: {
+          adopt_id?: string
+          at?: string | null
+          detail?: Json | null
+          event_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adoption_events_adopt_id_fkey"
+            columns: ["adopt_id"]
+            isOneToOne: false
+            referencedRelation: "structural_adoptions"
+            referencedColumns: ["adopt_id"]
+          },
+        ]
+      }
       antic_activation_events: {
         Row: {
           created_at: string | null
@@ -1110,6 +1171,174 @@ export type Database = {
           },
         ]
       }
+      conformance_findings: {
+        Row: {
+          detail: Json | null
+          finding_id: string
+          passed: boolean
+          rule_id: string
+          run_id: string
+        }
+        Insert: {
+          detail?: Json | null
+          finding_id?: string
+          passed: boolean
+          rule_id: string
+          run_id: string
+        }
+        Update: {
+          detail?: Json | null
+          finding_id?: string
+          passed?: boolean
+          rule_id?: string
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conformance_findings_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "conformance_rules"
+            referencedColumns: ["rule_id"]
+          },
+          {
+            foreignKeyName: "conformance_findings_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "conformance_runs"
+            referencedColumns: ["run_id"]
+          },
+        ]
+      }
+      conformance_rules: {
+        Row: {
+          created_at: string | null
+          dossier_id: string
+          rule_expr: Json
+          rule_id: string
+          rule_title: string
+          severity: string
+          std_ver_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dossier_id: string
+          rule_expr: Json
+          rule_id?: string
+          rule_title: string
+          severity: string
+          std_ver_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dossier_id?: string
+          rule_expr?: Json
+          rule_id?: string
+          rule_title?: string
+          severity?: string
+          std_ver_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conformance_rules_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "conformance_rules_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "conformance_rules_std_ver_id_fkey"
+            columns: ["std_ver_id"]
+            isOneToOne: false
+            referencedRelation: "standard_versions"
+            referencedColumns: ["std_ver_id"]
+          },
+        ]
+      }
+      conformance_runs: {
+        Row: {
+          dossier_id: string
+          finished_at: string | null
+          run_id: string
+          started_at: string | null
+          status: string | null
+          summary: Json | null
+        }
+        Insert: {
+          dossier_id: string
+          finished_at?: string | null
+          run_id?: string
+          started_at?: string | null
+          status?: string | null
+          summary?: Json | null
+        }
+        Update: {
+          dossier_id?: string
+          finished_at?: string | null
+          run_id?: string
+          started_at?: string | null
+          status?: string | null
+          summary?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conformance_runs_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "conformance_runs_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+        ]
+      }
+      conformance_targets: {
+        Row: {
+          endpoint: string | null
+          expected: Json | null
+          kpi_key: string | null
+          std_ver_id: string
+          target_id: string
+          target_kind: string
+        }
+        Insert: {
+          endpoint?: string | null
+          expected?: Json | null
+          kpi_key?: string | null
+          std_ver_id: string
+          target_id?: string
+          target_kind: string
+        }
+        Update: {
+          endpoint?: string | null
+          expected?: Json | null
+          kpi_key?: string | null
+          std_ver_id?: string
+          target_id?: string
+          target_kind?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conformance_targets_std_ver_id_fkey"
+            columns: ["std_ver_id"]
+            isOneToOne: false
+            referencedRelation: "standard_versions"
+            referencedColumns: ["std_ver_id"]
+          },
+        ]
+      }
       controller_tunings: {
         Row: {
           after: Json
@@ -1908,6 +2137,87 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      dossier_links: {
+        Row: {
+          dossier_id: string
+          id: string
+          relation: string
+          task_id: string | null
+        }
+        Insert: {
+          dossier_id: string
+          id?: string
+          relation: string
+          task_id?: string | null
+        }
+        Update: {
+          dossier_id?: string
+          id?: string
+          relation?: string
+          task_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dossier_links_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "dossier_links_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+        ]
+      }
+      dossier_versions: {
+        Row: {
+          change_log: string | null
+          created_at: string | null
+          created_by: string | null
+          dossier_id: string
+          id: string
+          snapshot: Json | null
+          version: string
+        }
+        Insert: {
+          change_log?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          dossier_id: string
+          id?: string
+          snapshot?: Json | null
+          version: string
+        }
+        Update: {
+          change_log?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          dossier_id?: string
+          id?: string
+          snapshot?: Json | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dossier_versions_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "dossier_versions_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+        ]
       }
       dq_events: {
         Row: {
@@ -4465,6 +4775,62 @@ export type Database = {
         }
         Relationships: []
       }
+      standard_versions: {
+        Row: {
+          created_at: string | null
+          spec: Json
+          standard_id: string
+          std_ver_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string | null
+          spec: Json
+          standard_id: string
+          std_ver_id?: string
+          version: string
+        }
+        Update: {
+          created_at?: string | null
+          spec?: Json
+          standard_id?: string
+          std_ver_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "standard_versions_standard_id_fkey"
+            columns: ["standard_id"]
+            isOneToOne: false
+            referencedRelation: "standards"
+            referencedColumns: ["standard_id"]
+          },
+        ]
+      }
+      standards: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          domain: string
+          name: string
+          standard_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          domain: string
+          name: string
+          standard_id?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          domain?: string
+          name?: string
+          standard_id?: string
+        }
+        Relationships: []
+      }
       stress_tests: {
         Row: {
           created_at: string
@@ -5447,6 +5813,209 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      structural_adoptions: {
+        Row: {
+          adopt_id: string
+          dossier_id: string
+          entity_id: string
+          moved_at: string | null
+          notes: string | null
+          owner: string | null
+          started_at: string | null
+          state: string
+        }
+        Insert: {
+          adopt_id?: string
+          dossier_id: string
+          entity_id: string
+          moved_at?: string | null
+          notes?: string | null
+          owner?: string | null
+          started_at?: string | null
+          state: string
+        }
+        Update: {
+          adopt_id?: string
+          dossier_id?: string
+          entity_id?: string
+          moved_at?: string | null
+          notes?: string | null
+          owner?: string | null
+          started_at?: string | null
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "structural_adoptions_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "structural_adoptions_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "structural_adoptions_entity_id_fkey"
+            columns: ["entity_id"]
+            isOneToOne: false
+            referencedRelation: "adopting_entities"
+            referencedColumns: ["entity_id"]
+          },
+        ]
+      }
+      structural_artifacts: {
+        Row: {
+          artifact_id: string
+          component_id: string | null
+          created_at: string | null
+          dossier_id: string
+          hash: string | null
+          kind: string
+          storage_path: string
+        }
+        Insert: {
+          artifact_id?: string
+          component_id?: string | null
+          created_at?: string | null
+          dossier_id: string
+          hash?: string | null
+          kind: string
+          storage_path: string
+        }
+        Update: {
+          artifact_id?: string
+          component_id?: string | null
+          created_at?: string | null
+          dossier_id?: string
+          hash?: string | null
+          kind?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "structural_artifacts_component_id_fkey"
+            columns: ["component_id"]
+            isOneToOne: false
+            referencedRelation: "structural_components"
+            referencedColumns: ["component_id"]
+          },
+          {
+            foreignKeyName: "structural_artifacts_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "structural_artifacts_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+        ]
+      }
+      structural_components: {
+        Row: {
+          component_id: string
+          content: Json
+          dossier_id: string
+          kind: string
+          order_no: number
+          title: string
+        }
+        Insert: {
+          component_id?: string
+          content?: Json
+          dossier_id: string
+          kind: string
+          order_no?: number
+          title: string
+        }
+        Update: {
+          component_id?: string
+          content?: Json
+          dossier_id?: string
+          kind?: string
+          order_no?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "structural_components_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "structural_dossiers"
+            referencedColumns: ["dossier_id"]
+          },
+          {
+            foreignKeyName: "structural_components_dossier_id_fkey"
+            columns: ["dossier_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_dossier"
+            referencedColumns: ["dossier_id"]
+          },
+        ]
+      }
+      structural_dossiers: {
+        Row: {
+          coherence_note: string | null
+          consent_note: string | null
+          created_at: string | null
+          dossier_id: string
+          horizon_tag: string | null
+          loop_id: string
+          override_council: Json | null
+          public_slug: string | null
+          published_at: string | null
+          published_by: string | null
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          coherence_note?: string | null
+          consent_note?: string | null
+          created_at?: string | null
+          dossier_id?: string
+          horizon_tag?: string | null
+          loop_id: string
+          override_council?: Json | null
+          public_slug?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          status: string
+          summary?: string | null
+          title: string
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          coherence_note?: string | null
+          consent_note?: string | null
+          created_at?: string | null
+          dossier_id?: string
+          horizon_tag?: string | null
+          loop_id?: string
+          override_council?: Json | null
+          public_slug?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
       }
       substep_templates: {
         Row: {
@@ -6611,6 +7180,45 @@ export type Database = {
           org_id: string | null
           role: string | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      v_public_dossier: {
+        Row: {
+          coherence_note: string | null
+          components: Json | null
+          dossier_id: string | null
+          horizon_tag: string | null
+          public_artifacts: Json | null
+          public_slug: string | null
+          published_at: string | null
+          summary: string | null
+          title: string | null
+          version: string | null
+        }
+        Insert: {
+          coherence_note?: string | null
+          components?: never
+          dossier_id?: string | null
+          horizon_tag?: string | null
+          public_artifacts?: never
+          public_slug?: string | null
+          published_at?: string | null
+          summary?: string | null
+          title?: string | null
+          version?: string | null
+        }
+        Update: {
+          coherence_note?: string | null
+          components?: never
+          dossier_id?: string | null
+          horizon_tag?: string | null
+          public_artifacts?: never
+          public_slug?: string | null
+          published_at?: string | null
+          summary?: string | null
+          title?: string | null
+          version?: string | null
         }
         Relationships: []
       }
