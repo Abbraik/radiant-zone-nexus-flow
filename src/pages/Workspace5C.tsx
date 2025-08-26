@@ -31,6 +31,7 @@ import { useToolsStore } from '@/stores/toolsStore';
 import { getTasks5C, getTask5CById } from '@/5c/services';
 import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import { use5cTaskEngine } from '@/hooks/use5cTaskEngine';
+import { ServiceStatus } from '@/5c/components/ServiceStatus';
 import type { CapacityBundleProps } from '@/types/capacity';
 
 // Helper function for compatibility
@@ -128,6 +129,9 @@ export const Workspace5C: React.FC = () => {
 
               {/* System Status Display */}
               <ZoneAwareSystemStatus />
+              
+              {/* Service Health Monitor */}
+              <ServiceStatus />
             </motion.div>
           </main>
         </div>
@@ -262,62 +266,69 @@ export const Workspace5C: React.FC = () => {
             </div>
 
             {/* 5C Capacity Bundle - Full screen when sidebar collapsed */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className={`p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10 transition-all duration-300 ${
-                  isSidebarCollapsed ? 'min-h-[calc(100vh-200px)]' : ''
-                }`}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-400 to-blue-400"></div>
-                    <h3 className="text-lg font-semibold text-white">
-                      {activeTask.capacity.toUpperCase()} Capacity Bundle
-                    </h3>
-                    {isSidebarCollapsed && (
-                      <span className="text-sm text-gray-400 ml-2">• Full Screen Mode</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="capitalize">
-                      {activeTask.capacity}
-                    </Badge>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={openMetaLoopConsole}
-                      className="gap-2"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Meta-Loop Console
-                    </Button>
-                    {!isSidebarCollapsed && (
-                      <button
-                        onClick={() => setIsSidebarCollapsed(true)}
-                        className="p-1 text-gray-400 hover:text-white transition-colors"
-                        title="Expand to full screen"
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-3">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className={`p-6 bg-glass/30 backdrop-blur-20 rounded-2xl border border-white/10 transition-all duration-300 ${
+                    isSidebarCollapsed ? 'min-h-[calc(100vh-200px)]' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-teal-400 to-blue-400"></div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {activeTask.capacity.toUpperCase()} Capacity Bundle
+                      </h3>
+                      {isSidebarCollapsed && (
+                        <span className="text-sm text-gray-400 ml-2">• Full Screen Mode</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="capitalize">
+                        {activeTask.capacity}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={openMetaLoopConsole}
+                        className="gap-2"
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M8 3H5C3.89543 3 3 3.89543 3 5V8M21 8V5C21 3.89543 20.1046 3 19 3H16M16 21H19C20.1046 21 21 20.1046 21 19V16M8 21H5C3.89543 21 3 20.1046 3 19V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    )}
+                        <Settings className="w-4 h-4" />
+                        Meta-Loop Console
+                      </Button>
+                      {!isSidebarCollapsed && (
+                        <button
+                          onClick={() => setIsSidebarCollapsed(true)}
+                          className="p-1 text-gray-400 hover:text-white transition-colors"
+                          title="Expand to full screen"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 3H5C3.89543 3 3 3.89543 3 5V8M21 8V5C21 3.89543 20.1046 3 19 3H16M16 21H19C20.1046 21 21 20.1046 21 19V16M8 21H5C3.89543 21 3 20.1046 3 19V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
+                  
+                  <DynamicCapacityBundle
+                    capacity={activeTask.capacity as Capacity5C}
+                    taskId={activeTask.id}
+                    taskData={workspaceTask}
+                    payload={{}}
+                    onPayloadUpdate={(payload) => console.log('5C bundle payload updated:', payload)}
+                    onValidationChange={(isValid, errors) => console.log('5C bundle validation:', isValid, errors)}
+                    readonly={false}
+                  />
+                </motion.div>
+              </div>
+              {!isSidebarCollapsed && (
+                <div className="lg:col-span-1">
+                  <ServiceStatus />
                 </div>
-                
-                <DynamicCapacityBundle
-                  capacity={activeTask.capacity as Capacity5C}
-                  taskId={activeTask.id}
-                  taskData={workspaceTask}
-                  payload={{}}
-                  onPayloadUpdate={(payload) => console.log('5C bundle payload updated:', payload)}
-                  onValidationChange={(isValid, errors) => console.log('5C bundle validation:', isValid, errors)}
-                  readonly={false}
-                />
-              </motion.div>
+              )}
             </div>
           </motion.div>
         </main>

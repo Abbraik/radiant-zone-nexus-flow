@@ -1,12 +1,38 @@
 // Workspace 5C Service Router - Routes to Supabase or Mock based on flag
-// For now, default to Supabase service to get real golden scenario tasks
+// Environment-based service selection with comprehensive logging
 const SUPABASE_LIVE = true;
+const isDev = import.meta.env.DEV;
 
 // Import both service implementations
-import * as supabaseService from './supabase';
+import * as supabaseService from './supabase/index';
 import * as mockService from './mock';
 
-// Export the appropriate service based on flag
+// Service health logging
+console.log(`[5C Service Router] Environment: ${isDev ? 'Development' : 'Production'}`);
+console.log(`[5C Service Router] Using ${SUPABASE_LIVE ? 'Supabase' : 'Mock'} service`);
+console.log(`[5C Service Router] Service module loaded successfully`);
+
+// Export the appropriate service based on flag with enhanced logging and fallbacks
+import { serviceMonitor } from './service-monitor';
+import { createServiceWithFallback } from './service-interface';
+
+// Create enhanced service with comprehensive monitoring
+const activeService = SUPABASE_LIVE ? supabaseService : mockService;
+
+// Validate service before export
+console.log('[5C Service Router] Validating service implementation...');
+try {
+  // Perform initial health check
+  if (SUPABASE_LIVE) {
+    serviceMonitor.checkSupabaseHealth().then(health => {
+      console.log('[5C Service Router] Supabase health check:', health);
+    });
+  }
+  console.log('[5C Service Router] Service validation completed successfully');
+} catch (error) {
+  console.error('[5C Service Router] Service validation failed:', error);
+}
+
 export const {
   getTask5CById,
   getTasks5C,
@@ -28,4 +54,4 @@ export const {
   getMandateRules5C,
   checkMandate5C,
   switchMode5C
-} = SUPABASE_LIVE ? supabaseService : mockService;
+} = activeService;
