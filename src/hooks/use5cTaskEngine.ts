@@ -236,13 +236,18 @@ export const use5cTaskEngine = () => {
     // TaskEngine V2 integration
     taskEngineV2,
     
-    // Mock task management interface for compatibility
-    openClaimPopup: handleTaskClaim,
-    confirmClaimTask: () => console.log('5C Task claim confirmed'),
-    cancelClaimTask: () => console.log('5C Task claim cancelled'),
-    claimingTask: null,
-    showClaimPopup: false,
-    isClaimingTask: false,
+  // Mock task management interface for compatibility
+  openClaimPopup: handleTaskClaim,
+  confirmClaimTask: () => {
+    const taskIdParam = searchParams.get('task5c');
+    if (taskIdParam) {
+      claimTask(taskIdParam);
+    }
+  },
+  cancelClaimTask: () => console.log('5C Task claim cancelled'),
+  claimingTask: null,
+  showClaimPopup: false,
+  isClaimingTask: updateTask5CMutation.isPending,
     isCompletingTask: updateTask5CMutation.isPending,
     
     // Error states

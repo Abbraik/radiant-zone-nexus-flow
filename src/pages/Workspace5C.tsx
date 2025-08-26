@@ -53,7 +53,7 @@ export const Workspace5C: React.FC = () => {
     showClaimPopup,
     isClaimingTask,
     isLoading
-  } = use5cTasks();
+  } = use5cTaskEngine();
   
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
