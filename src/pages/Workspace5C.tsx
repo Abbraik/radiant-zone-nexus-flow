@@ -30,8 +30,13 @@ import { getTasks5C, getTask5CById } from '@/5c/services';
 import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import type { CapacityBundleProps } from '@/types/capacity';
 
-// Hook to mimic the workspace task management for 5C tasks
+// Enhanced 5C Tasks Hook with TaskEngine V2 integration
+import { use5cTaskEngine } from '@/hooks/use5cTaskEngine';
+
 const use5cTasks = () => {
+  // Use the enhanced hook but maintain compatibility
+  const enhanced = use5cTaskEngine();
+  return enhanced;
   const [searchParams, setSearchParams] = useSearchParams();
   const taskId = searchParams.get('task5c');
   
