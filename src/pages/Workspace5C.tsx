@@ -31,6 +31,7 @@ import { useToolsStore } from '@/stores/toolsStore';
 import { getTasks5C, getTask5CById } from '@/5c/services';
 import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import { use5cTaskEngine } from '@/hooks/use5cTaskEngine';
+import { useGoldenScenarioEnrichment } from '@/hooks/useGoldenScenarioEnrichment';
 import { ServiceStatus } from '@/5c/components/ServiceStatus';
 import type { CapacityBundleProps } from '@/types/capacity';
 
@@ -43,7 +44,7 @@ const use5cTasks = () => {
 export const Workspace5C: React.FC = () => {
   const { 
     myTasks, 
-    activeTask, 
+    activeTask: rawActiveTask, 
     availableTasks, 
     completeTask, 
     isCompletingTask,
@@ -55,6 +56,9 @@ export const Workspace5C: React.FC = () => {
     isClaimingTask,
     isLoading
   } = use5cTaskEngine();
+  
+  // Enrich the active task with golden scenario data
+  const activeTask = useGoldenScenarioEnrichment(rawActiveTask);
   
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
@@ -317,9 +321,14 @@ export const Workspace5C: React.FC = () => {
                     capacity={activeTask.capacity as Capacity5C}
                     taskId={activeTask.id}
                     taskData={workspaceTask}
-                    payload={{}}
-                    onPayloadUpdate={(payload) => console.log('5C bundle payload updated:', payload)}
-                    onValidationChange={(isValid, errors) => console.log('5C bundle validation:', isValid, errors)}
+                    payload={activeTask.payload || {}}
+                    onPayloadUpdate={(payload) => {
+                      console.log('5C bundle payload updated:', payload);
+                      // TODO: Implement real payload update
+                    }}
+                    onValidationChange={(isValid, errors) => {
+                      console.log('5C bundle validation:', isValid, errors);
+                    }}
                     readonly={false}
                   />
                 </motion.div>

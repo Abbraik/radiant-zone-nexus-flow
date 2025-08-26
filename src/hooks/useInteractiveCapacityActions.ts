@@ -16,7 +16,6 @@ export const useInteractiveCapacityActions = (task: EnhancedTask5C | null) => {
         title: `Incident: ${payload.title || 'Service Disruption'}`,
         description: payload.description || 'Incident response task',
         capacity: 'responsive',
-        priority: 'high',
         payload: {
           incident_type: payload.type,
           severity: payload.severity,
@@ -61,7 +60,6 @@ export const useInteractiveCapacityActions = (task: EnhancedTask5C | null) => {
             title: taskData.title,
             description: taskData.description,
             capacity: taskData.capacity || task.capacity,
-            priority: 'medium',
             payload: {
               sprint_id: payload.sprint_id,
               parent_task_id: task.id,
@@ -122,7 +120,6 @@ export const useInteractiveCapacityActions = (task: EnhancedTask5C | null) => {
         title: `Scenario Analysis: ${scenarioId}`,
         description: `Analysis of scenario ${scenarioId} impact`,
         capacity: 'anticipatory',
-        priority: 'high',
         payload: {
           scenario_id: scenarioId,
           parent_task_id: task.id,
