@@ -47,31 +47,15 @@ export const getTask5CById = async (id: string): Promise<EnhancedTask5C | null> 
   } : null;
 };
 
-export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
-  console.log('🔍 getTasks5C called with filters:', filters);
+export const getTasks5C = async (filters?: { capacity?: Capacity5C }): Promise<EnhancedTask5C[]> => {
+  // Fetch from main tasks table to get golden scenario tasks  
+  // Note: Ignoring filters for now to show all golden scenario tasks
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('*')
+    .order('created_at', { ascending: false });
   
-  // Fetch from main tasks table to get golden scenario tasks
-  let query = supabase.from('tasks').select('*');
-  
-  if (filters?.capacity) {
-    query = query.eq('capacity', filters.capacity);
-  }
-  if (filters?.status) {
-    query = query.eq('status', filters.status);
-  } else {
-    // Default to available tasks for the workspace
-    query = query.eq('status', 'available');
-  }
-  
-  console.log('🔍 Executing tasks query...');
-  const { data, error } = await query.order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error('❌ getTasks5C error:', error);
-    throw error;
-  }
-  
-  console.log('✅ getTasks5C raw data:', data);
+  if (error) throw error;
   
   // Transform main tasks to 5C format
   const transformedTasks = (data || []).map(item => ({
@@ -96,7 +80,6 @@ export const getTasks5C = async (filters?: any): Promise<EnhancedTask5C[]> => {
     user_id: item.user_id
   }));
   
-  console.log('✅ getTasks5C transformed tasks:', transformedTasks);
   return transformedTasks;
 };
 
