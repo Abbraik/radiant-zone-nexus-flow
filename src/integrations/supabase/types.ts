@@ -6480,21 +6480,24 @@ export type Database = {
       }
       task_assignments: {
         Row: {
-          added_at: string
+          assigned_at: string
+          assigned_by: string
           id: string
           role: string
           task_id: string
           user_id: string
         }
         Insert: {
-          added_at?: string
+          assigned_at?: string
+          assigned_by?: string
           id?: string
           role: string
           task_id: string
           user_id: string
         }
         Update: {
-          added_at?: string
+          assigned_at?: string
+          assigned_by?: string
           id?: string
           role?: string
           task_id?: string
@@ -6567,24 +6570,24 @@ export type Database = {
           created_at: string
           created_by: string
           detail: Json
-          event_id: string
           event_type: string
+          id: string
           task_id: string
         }
         Insert: {
           created_at?: string
           created_by: string
           detail?: Json
-          event_id?: string
           event_type: string
+          id?: string
           task_id: string
         }
         Update: {
           created_at?: string
           created_by?: string
           detail?: Json
-          event_id?: string
           event_type?: string
+          id?: string
           task_id?: string
         }
         Relationships: []
