@@ -223,10 +223,16 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Task claim failed:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Internal server error' 
+        error: error.message || 'Internal server error',
+        details: error.stack
       }),
       { 
         status: 500, 
