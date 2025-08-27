@@ -83,8 +83,13 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
   };
 
   const handleViewLoop = () => {
-    if (taskData?.loop.loop_code) {
-      navigate(`/loops/${taskData.loop.loop_code}`);
+    // Handle atlas loops with proper ID format
+    if (taskData?.loop.loop_code && taskData.loop.loop_code !== 'UNKNOWN') {
+      // Use atlas loop ID format for navigation
+      navigate(`/registry/atlas-${taskData.loop.loop_code}`);
+    } else if (taskData.loop.id) {
+      // Fallback to loop ID for database loops
+      navigate(`/registry/${taskData.loop.id}`);
     }
   };
 
