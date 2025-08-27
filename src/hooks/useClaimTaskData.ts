@@ -43,141 +43,84 @@ export const useClaimTaskData = (taskId: string) => {
   return useQuery({
     queryKey: ['claim-task-data', taskId],
     queryFn: async (): Promise<ClaimTaskData> => {
-      // For now, return mock data that matches the expected structure
-      // In production, this would be a single comprehensive query to fetch all related data
+      // Fetch task data from tasks_5c table
+      const { data: task, error: taskError } = await supabase
+        .from('tasks_5c')
+        .select('*')
+        .eq('id', taskId)
+        .single();
+
+      if (taskError) {
+        throw new Error(`Failed to fetch task: ${taskError.message}`);
+      }
+
+      if (!task) {
+        throw new Error('Task not found');
+      }
+
+      // Fetch loop data separately
+      const { data: loop } = await supabase
+        .from('loops')
+        .select('id, name, metadata')
+        .eq('id', task.loop_id)
+        .single();
+
+      // Parse payload as JSON object
+      const payload = (typeof task.payload === 'string' ? JSON.parse(task.payload) : task.payload) || {};
       
-      // Mock task data based on the taskId from console logs
-      const mockTask: ClaimTaskData = {
-        task: {
-          task_id: taskId,
-          title: "Childcare Wait Time Surge",
-          capacity: "responsive",
-          priority: 2,
-          status: "available",
-          open_route: "/playbooks/responsive-childcare",
-          due_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          review_at: null,
-          payload: {
-            description: "Monitor and respond to increasing childcare wait times affecting fertility decisions",
-            urgency: "medium",
-            scenario: "golden",
-            estimated_hours: 4,
-            scenario_id: "fertility",
-            loop_code: "FER-L01",
-            capacity: "responsive",
-            indicators: {
-              childcare_wait_days: 29.94307346395721,
-              fertility_intention_gap: 0.6172483570048783,
-              capacity_utilization: 0.9833356836158554
-            },
-            context: {
-              alert_level: "medium",
-              trending: "increasing"
-            },
-            primary_indicator: "childcare_wait_days",
-            expected_outputs: ["situation_report", "intervention_recommendation"]
-          }
-        },
-        loop: {
-          id: "029968e3-9650-4b2a-acab-0c371a0bae8d",
-          name: "Fertility Support Loop",
-          loop_code: "FER-L01"
-        },
-        template: {
-          template_title: "Responsive Capacity Template",
-          default_sla_hours: 24,
-          default_payload: {
-            capacity: "responsive",
-            estimated_duration: 4
-          }
-        },
-        checklist: [
-          {
-            id: "check-1",
-            label: "Review current childcare capacity metrics",
-            required: true,
-            done: false,
-            order_index: 1
-          },
-          {
-            id: "check-2", 
-            label: "Analyze wait time trends and patterns",
-            required: true,
-            done: false,
-            order_index: 2
-          },
-          {
-            id: "check-3",
-            label: "Assess impact on fertility intentions",
-            required: true,
-            done: false,
-            order_index: 3
-          },
-          {
-            id: "check-4",
-            label: "Prepare intervention recommendations",
-            required: false,
-            done: false,
-            order_index: 4
-          },
-          {
-            id: "check-5",
-            label: "Submit situation report",
-            required: true,
-            done: false,
-            order_index: 5
-          }
-        ],
-        artifacts: [
-          {
-            id: "artifact-1",
-            title: "Childcare Capacity Dashboard",
-            url: "https://dashboard.childcare.gov/capacity",
-            kind: "dashboard"
-          },
-          {
-            id: "artifact-2",
-            title: "Fertility Trends Report Q4",
-            url: null,
-            kind: "report"
-          }
-        ],
-        guardrails: {
-          name: "Standard Responsive Guardrails",
-          timebox_hours: 8,
-          daily_delta_limit: 0.1,
-          coverage_limit_pct: 75,
-          concurrent_substeps_limit: 3,
-          renewal_limit: 2,
-          evaluation_required_after_renewals: 1
-        },
-        owner: null, // Task is available
-        tri: {
-          T: 0.700569265360428,
-          R: 0.9,
-          I: 0.7
-        },
-        signal: {
-          indicator: "childcare_wait_days",
-          status: "above",
-          severity: 0.85,
-          value: 29.94307346395721,
-          ts: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          band: {
-            lower: 15,
-            upper: 25
-          }
-        },
-        source: {
-          label: "Golden Scenario Generator - Fertility Domain",
-          fired_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() // 3 hours ago
+      // Parse TRI as JSON object
+      const tri = task.tri && typeof task.tri === 'object' ? task.tri as { T: number; R: number; I: number } : null;
+
+      // Get loop code from metadata
+      const loopMetadata = loop?.metadata && typeof loop.metadata === 'object' ? loop.metadata as any : {};
+      const loopCode = loopMetadata?.loop_code || 'UNKNOWN';
+
+      // Map task status to expected format
+      const mapStatus = (status: string): 'available' | 'claimed' | 'in_progress' | 'review_due' | 'completed' | 'cancelled' => {
+        switch (status) {
+          case 'open': return 'available';
+          case 'claimed': return 'claimed';
+          case 'in_progress': return 'in_progress';
+          case 'review_due': return 'review_due';
+          case 'completed': return 'completed';
+          case 'cancelled': return 'cancelled';
+          default: return 'available';
         }
       };
 
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      return mockTask;
+      // Build the response in the expected format
+      const claimTaskData: ClaimTaskData = {
+        task: {
+          task_id: task.id,
+          title: task.title,
+          capacity: task.capacity,
+          priority: 1, // Default priority since not in tasks_5c
+          status: mapStatus(task.status),
+          open_route: `/playbooks/${task.capacity}`,
+          due_at: null, // Not in tasks_5c schema
+          review_at: null, // Not in tasks_5c schema
+          payload: payload
+        },
+        loop: {
+          id: loop?.id || task.loop_id,
+          name: loop?.name || 'Unknown Loop',
+          loop_code: loopCode
+        },
+        template: payload?.template ? {
+          template_title: payload.template.title || `${task.capacity} Template`,
+          default_sla_hours: payload.template.default_sla_hours || 24,
+          default_payload: payload.template.default_payload
+        } : undefined,
+        checklist: Array.isArray(payload?.checklist) ? payload.checklist : [],
+        artifacts: Array.isArray(payload?.artifacts) ? payload.artifacts : [],
+        guardrails: payload?.guardrails || undefined,
+        owner: task.assigned_to ? { user_id: task.assigned_to } : null,
+        tri: tri,
+        signal: payload?.signal || null,
+        source: payload?.source || null
+      };
+
+      return claimTaskData;
     },
     enabled: !!taskId,
     staleTime: 1000 * 60 * 5, // 5 minutes
