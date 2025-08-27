@@ -13,7 +13,7 @@ export type ClaimTaskData = {
     review_at: string | null;
     payload: any;
   };
-  loop: { id: string; name: string; loop_code: string };
+  loop: { id: string; name: string; loop_code: string; description?: string | null };
   template?: { template_title: string; default_sla_hours: number; default_payload?: any };
   checklist: Array<{ id: string; label: string; required: boolean; done: boolean; order_index: number }>;
   artifacts: Array<{ id: string; title: string; url: string | null; kind: string }>;
@@ -61,7 +61,7 @@ export const useClaimTaskData = (taskId: string) => {
       // Fetch loop data separately
       const { data: loop } = await supabase
         .from('loops')
-        .select('id, name, metadata')
+        .select('id, name, description, metadata')
         .eq('id', task.loop_id)
         .single();
 
@@ -104,7 +104,8 @@ export const useClaimTaskData = (taskId: string) => {
         loop: {
           id: loop?.id || task.loop_id,
           name: loop?.name || 'Unknown Loop',
-          loop_code: loopCode
+          loop_code: loopCode,
+          description: loop?.description || null
         },
         template: payload?.template ? {
           template_title: payload.template.title || `${task.capacity} Template`,

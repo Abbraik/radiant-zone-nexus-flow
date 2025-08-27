@@ -368,8 +368,24 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Loop Information */}
             <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="font-medium text-foreground mb-2">Loop: {taskData.loop.name}</h3>
-              <p className="text-sm text-muted-foreground">Code: {taskData.loop.loop_code}</p>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="font-medium text-foreground mb-1">Loop: {taskData.loop.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-2">Code: {taskData.loop.loop_code}</p>
+                  {taskData.loop.description && (
+                    <p className="text-sm text-foreground">{taskData.loop.description}</p>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleViewLoop}
+                  className="gap-2 shrink-0"
+                >
+                  <Eye className="h-4 w-4" />
+                  View Details
+                </Button>
+              </div>
             </div>
 
             {/* SLA Countdown */}
