@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { EnhancedTask5C } from '@/5c/types';
+import { fetchInboxTasks, fetchLoopSharedNodes, normalizeAnchor } from '@/types/production-safe';
 
 // Database-first data hooks with real-time subscriptions
 export const useDatabaseTasks = () => {
