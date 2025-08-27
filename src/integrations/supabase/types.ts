@@ -6680,25 +6680,34 @@ export type Database = {
       }
       task_locks: {
         Row: {
+          created_at: string
           expires_at: string
           id: string
           locked_at: string
           locked_by: string
+          released_at: string | null
           task_id: string
+          updated_at: string
         }
         Insert: {
+          created_at?: string
           expires_at?: string
           id?: string
           locked_at?: string
           locked_by: string
+          released_at?: string | null
           task_id: string
+          updated_at?: string
         }
         Update: {
+          created_at?: string
           expires_at?: string
           id?: string
           locked_at?: string
           locked_by?: string
+          released_at?: string | null
           task_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
