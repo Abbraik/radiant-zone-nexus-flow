@@ -316,7 +316,7 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -364,22 +364,29 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Loop Information */}
-          <div className="rounded-lg border border-border bg-card p-4">
-            <h3 className="font-medium text-foreground mb-2">Loop: {taskData.loop.name}</h3>
-            <p className="text-sm text-muted-foreground">Code: {taskData.loop.loop_code}</p>
-          </div>
-
-          {/* SLA Countdown */}
-          {slaDeadline && (
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Due:</span>
-              <span className="text-foreground font-medium">
-                {format(slaDeadline, 'PPp')} ({formatDistanceToNow(slaDeadline)} from now)
-              </span>
+          {/* Top Row - Basic Info */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Loop Information */}
+            <div className="rounded-lg border border-border bg-card p-4">
+              <h3 className="font-medium text-foreground mb-2">Loop: {taskData.loop.name}</h3>
+              <p className="text-sm text-muted-foreground">Code: {taskData.loop.loop_code}</p>
             </div>
-          )}
+
+            {/* SLA Countdown */}
+            {slaDeadline && (
+              <div className="rounded-lg border border-border bg-card p-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Due</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {format(slaDeadline, 'PPp')} ({formatDistanceToNow(slaDeadline)} from now)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Owner Status */}
           {taskData.owner && taskData.owner.user_id !== 'current-user' && (
@@ -394,20 +401,26 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
           {/* Guardrails */}
           {renderGuardrails()}
 
-          {/* TRI Progress */}
-          {renderTRIProgress()}
+          {/* Middle Row - TRI and Signal Status */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              {/* TRI Progress */}
+              {renderTRIProgress()}
+            </div>
+            <div className="space-y-4">
+              {/* Signal Status */}
+              {renderSignalStatus()}
+            </div>
+          </div>
 
           <Separator />
 
-          {/* Signal Status */}
-          {renderSignalStatus()}
-
-          <Separator />
-
-          {/* Task Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Bottom Row - Checklist, Source, and Artifacts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Checklist */}
-            {renderChecklist()}
+            <div className="space-y-4">
+              {renderChecklist()}
+            </div>
 
             {/* Source Information */}
             {taskData.source && (
@@ -423,32 +436,38 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Artifacts */}
-          {taskData.artifacts.length > 0 && (
+            {/* Artifacts */}
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-foreground">Related Artifacts</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {taskData.artifacts.map((artifact) => (
-                  <div key={artifact.id} className="flex items-center gap-2 p-2 rounded border border-border bg-card">
-                    <span className="text-sm text-foreground">{artifact.title}</span>
-                    <Badge variant="outline" className="text-xs">{artifact.kind}</Badge>
-                    {artifact.url && (
-                      <Button variant="ghost" size="sm" asChild>
-                        <a href={artifact.url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              {taskData.artifacts.length > 0 ? (
+                <div className="space-y-2">
+                  {taskData.artifacts.map((artifact) => (
+                    <div key={artifact.id} className="flex items-center justify-between p-2 rounded border border-border bg-card">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">{artifact.kind}</Badge>
+                        <span className="text-sm text-foreground">{artifact.title}</span>
+                      </div>
+                      {artifact.url && (
+                        <Button variant="ghost" size="sm" asChild>
+                          <a href={artifact.url} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No artifacts available</p>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
-        <DialogFooter className="flex justify-between items-center pt-6">
+        <Separator className="my-6" />
+
+        <DialogFooter className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex-1">
             {guardrailCheck?.result === 'throttle' && (
               <p className="text-sm text-yellow-600">
