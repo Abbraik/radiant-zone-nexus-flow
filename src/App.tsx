@@ -38,6 +38,7 @@ import GlobalPortals from '@/components/global/GlobalPortals';
 import { PublicDossier } from './pages/PublicDossier';
 import { ShareView } from './pages/ShareView';
 import { Home } from './pages/Home';
+import { ClaimTaskRoute } from './components/tasks/ClaimTaskDialog';
 
 const queryClient = createQueryClient();
 
@@ -84,13 +85,15 @@ const App = () => (
                       <Route path="/p/:slug" element={<PublicDossier />} />
                       {/* Share Views */}
                       <Route path="/share/:token" element={<ShareView />} />
-                     {/* 5C Workspace */}
-                     <Route path="/workspace" element={<Workspace5C />} />
-                     <Route path="/workspace-5c/*" element={<Workspace5C />} />
-                     {/* Home page */}
-                    <Route path="/" element={<Home />} />
-                    {/* Fallback to 5C workspace for unknown routes */}
-                    <Route path="*" element={<Workspace5C />} />
+                      {/* Task deep-link routes */}
+                      <Route path="/tasks/:id" element={<ClaimTaskRoute />} />
+                      {/* 5C Workspace */}
+                      <Route path="/workspace" element={<Workspace5C />} />
+                      <Route path="/workspace-5c/*" element={<Workspace5C />} />
+                      {/* Home page */}
+                     <Route path="/" element={<Home />} />
+                     {/* Fallback to 5C workspace for unknown routes */}
+                     <Route path="*" element={<Workspace5C />} />
                 </Routes>
               </Shell>
             </BrowserRouter>
