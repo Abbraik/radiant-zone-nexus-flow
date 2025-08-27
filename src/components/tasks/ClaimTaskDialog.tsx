@@ -187,28 +187,86 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
       above: 'text-orange-500',
     };
 
+    // Mock capacity brain decision parameters based on signal data
+    const decisionParams = {
+      severity: signal.severity || 0,
+      persistence: Math.random() * 0.8 + 0.1, // Mock π in [0..1]
+      dispersion: Math.random() * 0.6 + 0.2,  // Mock δ in [0..1]  
+      hubLoad: Math.random() * 0.4 + 0.1,     // Mock η in [0..1]
+      legitimacyDelta: (Math.random() - 0.5) * 0.3, // Mock λ (can be negative)
+    };
+
+    const getParamColor = (value: number, threshold: number = 0.5) => {
+      if (value >= threshold) return 'text-orange-500';
+      if (value >= threshold * 0.5) return 'text-yellow-500';
+      return 'text-green-500';
+    };
+
     return (
       <div className="space-y-2">
-        <h4 className="text-sm font-medium text-foreground">Signal Status</h4>
+        <h4 className="text-sm font-medium text-foreground">Signal Status & Decision Parameters</h4>
         <div className="rounded-lg border border-border bg-card p-3">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-foreground">{signal.indicator}</span>
             <Badge variant={signal.status === 'in_band' ? 'default' : 'destructive'}>
               {signal.status}
             </Badge>
           </div>
-          <div className="grid grid-cols-2 gap-4 text-xs">
+          
+          {/* Primary Signal Data */}
+          <div className="grid grid-cols-2 gap-4 text-xs mb-3 pb-3 border-b border-border">
             <div>
               <span className="text-muted-foreground">Value: </span>
               <span className="text-foreground">{signal.value?.toFixed(3)}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Severity: </span>
-              <span className="text-foreground">{signal.severity?.toFixed(2)}</span>
+              <span className="text-muted-foreground">Band Position: </span>
+              <span className="text-foreground">
+                {signal.band?.lower ? `[${signal.band.lower}, ${signal.band.upper}]` : 'N/A'}
+              </span>
             </div>
           </div>
+
+          {/* Capacity Brain Decision Parameters */}
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Decision Parameters</p>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Severity (ε):</span>
+                <span className={getParamColor(decisionParams.severity, 1.0)}>
+                  {decisionParams.severity.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Persistence (π):</span>
+                <span className={getParamColor(decisionParams.persistence, 0.6)}>
+                  {(decisionParams.persistence * 100).toFixed(0)}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Dispersion (δ):</span>
+                <span className={getParamColor(decisionParams.dispersion, 0.5)}>
+                  {(decisionParams.dispersion * 100).toFixed(0)}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Hub Load (η):</span>
+                <span className={getParamColor(decisionParams.hubLoad, 0.7)}>
+                  {(decisionParams.hubLoad * 100).toFixed(0)}%
+                </span>
+              </div>
+              <div className="flex justify-between col-span-2">
+                <span className="text-muted-foreground">Legitimacy Δ (λ):</span>
+                <span className={decisionParams.legitimacyDelta < -0.1 ? 'text-red-500' : 
+                              decisionParams.legitimacyDelta > 0.1 ? 'text-orange-500' : 'text-green-500'}>
+                  {decisionParams.legitimacyDelta >= 0 ? '+' : ''}{decisionParams.legitimacyDelta.toFixed(3)}
+                </span>
+              </div>
+            </div>
+          </div>
+
           {signal.ts && (
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border">
               Last updated: {formatDistanceToNow(new Date(signal.ts))} ago
             </p>
           )}
