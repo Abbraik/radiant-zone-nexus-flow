@@ -72,6 +72,9 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
           description: `"${taskData.task.title}" has been claimed successfully`,
         });
         onOpenChange(false);
+        
+        // Navigate to workspace with the claimed task active
+        navigate(`/workspace?task5c=${taskId}`);
       },
       onError: (error: any) => {
         toast({
