@@ -1,12 +1,66 @@
 import { useMemo } from 'react';
 import { useGoldenScenarioEnrichment } from '@/hooks/useGoldenScenarioEnrichment';
+import { useDatabaseClaims, useDatabaseBreachEvents } from '@/hooks/useDatabaseData';
 import type { EnhancedTask5C } from '@/5c/types';
 import { getReflexiveScenarioData } from '@/utils/scenarioDataHelpers';
 
 export const useResponsiveData = (task: EnhancedTask5C | null) => {
   const enrichedTask = useGoldenScenarioEnrichment(task);
+  const { data: claims } = useDatabaseClaims(task?.id);
+  const { data: breachEvents } = useDatabaseBreachEvents(task?.loop_id);
   
   return useMemo(() => {
+    if (!enrichedTask && !claims) {
+      return {
+        alerts: [],
+        claims: [],
+        guardrails: {
+          concurrentSubsteps: 0,
+          maxSubsteps: 3,
+          timeRemaining: 480,
+          allWithinLimits: true
+        },
+        isGoldenScenario: false
+      };
+    }
+
+    // PRIORITY 1: Use database data if available
+    if (claims && claims.length > 0) {
+      // Transform database claims to expected format
+      const dbClaims = claims.map(claim => ({
+        id: claim.id,
+        task_id: claim.task_id,
+        assignee: claim.assignee,
+        leverage: claim.leverage,
+        status: claim.status,
+        evidence: claim.evidence,
+        raci: claim.raci
+      }));
+
+      // Generate alerts from breach events if available
+      const alerts = breachEvents?.slice(0, 5).map(breach => ({
+        id: breach.id,
+        title: `${breach.breach_type.charAt(0).toUpperCase() + breach.breach_type.slice(1)} Breach`,
+        description: `${breach.indicator_name}: ${breach.value} (threshold: ${breach.threshold_value})`,
+        severity: breach.severity_score > 2 ? 'high' as const : 'medium' as const,
+        createdAt: breach.created_at
+      })) || [];
+
+      return {
+        alerts,
+        claims: dbClaims,
+        guardrails: {
+          concurrentSubsteps: claims.filter(c => c.status === 'active').length,
+          maxSubsteps: 3,
+          timeRemaining: 480,
+          allWithinLimits: claims.every(c => c.mandate_status === 'allowed')
+        },
+        isGoldenScenario: false,
+        isDatabaseDriven: true
+      };
+    }
+
+    // PRIORITY 2: Fall back to enriched golden scenario data
     if (!enrichedTask) {
       return {
         alerts: [],
@@ -105,5 +159,5 @@ export const useResponsiveData = (task: EnhancedTask5C | null) => {
       },
       isGoldenScenario: false
     };
-  }, [enrichedTask]);
+  }, [enrichedTask, claims, breachEvents]);
 };

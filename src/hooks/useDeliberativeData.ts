@@ -1,12 +1,64 @@
 import { useMemo } from 'react';
 import { useGoldenScenarioEnrichment } from '@/hooks/useGoldenScenarioEnrichment';
+import { useDatabaseClaims, useDatabaseDEBands } from '@/hooks/useDatabaseData';
 import type { EnhancedTask5C } from '@/5c/types';
 import { getDeliberativeScenarioData } from '@/utils/scenarioDataHelpers';
 
 export const useDeliberativeData = (task: EnhancedTask5C | null) => {
   const enrichedTask = useGoldenScenarioEnrichment(task);
+  const { data: claims } = useDatabaseClaims(task?.id);
+  const { data: deBands } = useDatabaseDEBands(task?.loop_id);
   
   return useMemo(() => {
+    if (!enrichedTask && !claims) {
+      return {
+        options: [],
+        criteria: [],
+        scenarios: [],
+        evidence: [],
+        isGoldenScenario: false
+      };
+    }
+
+    // PRIORITY 1: Use database data if available
+    if (claims && claims.length > 0) {
+      // Generate deliberative options from active claims
+      const options = claims.map((claim, index) => ({
+        id: `opt-${claim.id}`,
+        name: `Claim ${index + 1} - ${claim.leverage} Leverage`,
+        synopsis: `Database claim with ${claim.leverage} leverage level`,
+        costs: { capex: 50000 * (index + 1) },
+        latencyDays: 30 + (index * 15),
+        authorityFlag: claim.mandate_status === 'allowed' ? 'ok' as const : 'review' as const
+      }));
+
+      const criteria = [
+        { id: 'crit1', label: 'Leverage Effectiveness', weight: 0.4, direction: 'maximize' as const },
+        { id: 'crit2', label: 'Implementation Cost', weight: 0.3, direction: 'minimize' as const },
+        { id: 'crit3', label: 'Mandate Compliance', weight: 0.3, direction: 'maximize' as const }
+      ];
+
+      return {
+        title: 'Database-Driven Decision Analysis',
+        options,
+        criteria,
+        evidence: [
+          { 
+            id: 'db-ev1', 
+            label: 'Claims Analysis', 
+            loopCodes: [task?.loop_id || ''], 
+            indicators: ['Leverage Distribution', 'Status Tracking'] 
+          }
+        ],
+        scenarios: [
+          { id: 'db-sc1', name: 'Current Claims', summary: 'Based on active database claims' }
+        ],
+        isGoldenScenario: false,
+        isDatabaseDriven: true
+      };
+    }
+
+    // PRIORITY 2: Fall back to enriched golden scenario data
     if (!enrichedTask) {
       return {
         options: [],
@@ -67,5 +119,5 @@ export const useDeliberativeData = (task: EnhancedTask5C | null) => {
       ],
       isGoldenScenario: false
     };
-  }, [enrichedTask]);
+  }, [enrichedTask, claims, deBands]);
 };
