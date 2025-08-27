@@ -72,10 +72,11 @@ serve(async (req) => {
     if (taskData.status !== 'open') {
       return new Response(
         JSON.stringify({ 
-          error: `Task is not available. Current status: ${taskData.status}` 
+          error: `Task is not available. Current status: ${taskData.status}`,
+          success: false
         }),
         { 
-          status: 409, 
+          status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
@@ -100,10 +101,11 @@ serve(async (req) => {
           JSON.stringify({ 
             error: 'Task is currently locked by another user',
             locked_by: activeLock.locked_by,
-            expires_at: activeLock.expires_at
+            expires_at: activeLock.expires_at,
+            success: false
           }),
           { 
-            status: 409, 
+            status: 200, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
           }
         );
@@ -126,10 +128,11 @@ serve(async (req) => {
       console.error('Lock creation error:', lockError);
       return new Response(
         JSON.stringify({ 
-          error: `Failed to acquire lock: ${lockError.message}` 
+          error: `Failed to acquire lock: ${lockError.message}`,
+          success: false
         }),
         { 
-          status: 409, 
+          status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
@@ -214,7 +217,8 @@ serve(async (req) => {
         task_id,
         locked_by: user.id,
         locked_at: now.toISOString(),
-        expires_at: lockExpiry.toISOString()
+        expires_at: lockExpiry.toISOString(),
+        success: true
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

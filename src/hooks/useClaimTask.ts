@@ -27,9 +27,9 @@ export const useClaimTask = () => {
         throw new Error(response.error.message || 'Failed to claim task');
       }
 
-      // Check if the response contains an error (e.g., 409 conflict)
-      if (response.data?.error) {
-        throw new Error(response.data.error);
+      // Check if the response contains an error (success: false)
+      if (response.data?.success === false || response.data?.error) {
+        throw new Error(response.data.error || 'Failed to claim task');
       }
 
       return response.data;
