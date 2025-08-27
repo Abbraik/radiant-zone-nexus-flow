@@ -57,9 +57,10 @@ const App = () => (
                    
                    <Route path="/auth" element={<Auth />} />
                    <Route path="/demo" element={<Demo />} />
-                   <Route path="/registry" element={<LoopRegistry />} />
-                   <Route path="/registry/:id" element={<LoopDetail />} />
-                   <Route path="/registry/:id/edit" element={<LoopEditor />} />
+                    <Route path="/registry" element={<LoopRegistry />} />
+                    <Route path="/registry/:id" element={<LoopDetail />} />
+                    <Route path="/registry/:id/edit" element={<LoopEditor />} />
+                    <Route path="/loops/:id" element={<LoopDetail />} />
                    <Route path="/signal-monitor" element={<LoopSignalMonitor />} />
                    <Route path="/dashboard/loops" element={<LoopDashboard />} />
                    <Route path="/dashboard" element={
