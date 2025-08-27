@@ -82,20 +82,23 @@ serve(async (req) => {
       );
     }
 
-    // Step 2: Check for existing active locks
-    const { data: existingLocks, error: lockCheckError } = await supabase
+    // Step 2: Check for ANY existing locks (active or not)
+    const { data: allExistingLocks, error: lockCheckError } = await supabase
       .from('task_locks')
       .select('*')
-      .eq('task_id', task_id)
-      .is('released_at', null)
-      .gt('expires_at', now.toISOString());
+      .eq('task_id', task_id);
 
     if (lockCheckError) {
       throw new Error(`Failed to check existing locks: ${lockCheckError.message}`);
     }
 
-    if (existingLocks && existingLocks.length > 0) {
-      const activeLock = existingLocks[0];
+    // Check if there are active locks (not released and not expired)
+    const activeLocks = allExistingLocks?.filter(lock => 
+      lock.released_at === null && new Date(lock.expires_at) > now
+    ) || [];
+
+    if (activeLocks.length > 0) {
+      const activeLock = activeLocks[0];
       if (activeLock.locked_by !== user.id) {
         return new Response(
           JSON.stringify({ 
@@ -112,17 +115,41 @@ serve(async (req) => {
       }
     }
 
-    // Step 3: Insert task lock
-    const { data: lockData, error: lockError } = await supabase
-      .from('task_locks')
-      .insert({
-        task_id,
-        locked_by: user.id,
-        locked_at: now.toISOString(),
-        expires_at: lockExpiry.toISOString()
-      })
-      .select()
-      .single();
+    // Step 3: Upsert task lock (insert or update existing)
+    let lockData;
+    let lockError;
+    
+    if (allExistingLocks && allExistingLocks.length > 0) {
+      // Update existing lock
+      const existingLock = allExistingLocks[0];
+      const { data, error } = await supabase
+        .from('task_locks')
+        .update({
+          locked_by: user.id,
+          locked_at: now.toISOString(),
+          expires_at: lockExpiry.toISOString(),
+          released_at: null // Clear any previous release
+        })
+        .eq('id', existingLock.id)
+        .select()
+        .single();
+      lockData = data;
+      lockError = error;
+    } else {
+      // Insert new lock
+      const { data, error } = await supabase
+        .from('task_locks')
+        .insert({
+          task_id,
+          locked_by: user.id,
+          locked_at: now.toISOString(),
+          expires_at: lockExpiry.toISOString()
+        })
+        .select()
+        .single();
+      lockData = data;
+      lockError = error;
+    }
 
     if (lockError) {
       console.error('Lock creation error:', lockError);
