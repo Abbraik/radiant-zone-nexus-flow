@@ -38,7 +38,12 @@ export const useClaimTask = () => {
       // Invalidate and refetch relevant queries
       queryClient.invalidateQueries({ queryKey: ['claim-task-data', taskId] });
       queryClient.invalidateQueries({ queryKey: ['tasks-v2'] });
+      
+      // 5C workspace query invalidation - match the exact query key pattern
       queryClient.invalidateQueries({ queryKey: ['5c', 'tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['5c', 'tasks', undefined] });
+      queryClient.invalidateQueries({ queryKey: ['5c', 'task', taskId] });
+      
       queryClient.invalidateQueries({ queryKey: ['task-assignments', taskId] });
       queryClient.invalidateQueries({ queryKey: ['task-locks', taskId] });
     },
