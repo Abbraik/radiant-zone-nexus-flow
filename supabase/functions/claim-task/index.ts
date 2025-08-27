@@ -69,7 +69,7 @@ serve(async (req) => {
       throw new Error(`Task not found: ${taskError.message}`);
     }
 
-    if (taskData.status !== 'available') {
+    if (taskData.status !== 'open') {
       return new Response(
         JSON.stringify({ 
           error: `Task is not available. Current status: ${taskData.status}` 
@@ -193,7 +193,7 @@ serve(async (req) => {
         detail: {
           ip: ip_address,
           user_agent,
-          prev_status: 'available',
+          prev_status: 'open',
           claimed_by: user.id,
           lock_id: lockData.id
         },
