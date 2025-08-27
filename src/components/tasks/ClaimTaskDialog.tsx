@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Clock, Shield, AlertTriangle, Eye, ExternalLink, CheckCircle2, Circle } from 'lucide-react';
+import { Clock, Shield, AlertTriangle, Eye, ExternalLink, CheckCircle2, Circle, Info } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
   Dialog,
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { useClaimTaskData } from '@/hooks/useClaimTaskData';
 import { useClaimTask } from '@/hooks/useClaimTask';
@@ -203,75 +204,127 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
     };
 
     return (
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium text-foreground">Signal Status & Decision Parameters</h4>
-        <div className="rounded-lg border border-border bg-card p-3">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-foreground">{signal.indicator}</span>
-            <Badge variant={signal.status === 'in_band' ? 'default' : 'destructive'}>
-              {signal.status}
-            </Badge>
-          </div>
-          
-          {/* Primary Signal Data */}
-          <div className="grid grid-cols-2 gap-4 text-xs mb-3 pb-3 border-b border-border">
-            <div>
-              <span className="text-muted-foreground">Value: </span>
-              <span className="text-foreground">{signal.value?.toFixed(3)}</span>
+      <TooltipProvider>
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-foreground">Signal Status & Decision Parameters</h4>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-foreground">{signal.indicator}</span>
+              <Badge variant={signal.status === 'in_band' ? 'default' : 'destructive'}>
+                {signal.status}
+              </Badge>
             </div>
-            <div>
-              <span className="text-muted-foreground">Band Position: </span>
-              <span className="text-foreground">
-                {signal.band?.lower ? `[${signal.band.lower}, ${signal.band.upper}]` : 'N/A'}
-              </span>
+            
+            {/* Primary Signal Data */}
+            <div className="grid grid-cols-2 gap-4 text-xs mb-3 pb-3 border-b border-border">
+              <div>
+                <span className="text-muted-foreground">Value: </span>
+                <span className="text-foreground">{signal.value?.toFixed(3)}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Band Position: </span>
+                <span className="text-foreground">
+                  {signal.band?.lower ? `[${signal.band.lower}, ${signal.band.upper}]` : 'N/A'}
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Capacity Brain Decision Parameters */}
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Decision Parameters</p>
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Severity (ε):</span>
-                <span className={getParamColor(decisionParams.severity, 1.0)}>
-                  {decisionParams.severity.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Persistence (π):</span>
-                <span className={getParamColor(decisionParams.persistence, 0.6)}>
-                  {(decisionParams.persistence * 100).toFixed(0)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Dispersion (δ):</span>
-                <span className={getParamColor(decisionParams.dispersion, 0.5)}>
-                  {(decisionParams.dispersion * 100).toFixed(0)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Hub Load (η):</span>
-                <span className={getParamColor(decisionParams.hubLoad, 0.7)}>
-                  {(decisionParams.hubLoad * 100).toFixed(0)}%
-                </span>
-              </div>
-              <div className="flex justify-between col-span-2">
-                <span className="text-muted-foreground">Legitimacy Δ (λ):</span>
-                <span className={decisionParams.legitimacyDelta < -0.1 ? 'text-red-500' : 
-                              decisionParams.legitimacyDelta > 0.1 ? 'text-orange-500' : 'text-green-500'}>
-                  {decisionParams.legitimacyDelta >= 0 ? '+' : ''}{decisionParams.legitimacyDelta.toFixed(3)}
-                </span>
+            {/* Capacity Brain Decision Parameters */}
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Decision Parameters</p>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">Severity (ε):</span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Signal deviation intensity - how far outside normal bounds (0-2 scale)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <span className={getParamColor(decisionParams.severity, 1.0)}>
+                    {decisionParams.severity.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">Persistence (π):</span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">How long the signal has remained outside normal bounds (0-100%)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <span className={getParamColor(decisionParams.persistence, 0.6)}>
+                    {(decisionParams.persistence * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">Dispersion (δ):</span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">How many related indicators are also showing problems (0-100%)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <span className={getParamColor(decisionParams.dispersion, 0.5)}>
+                    {(decisionParams.dispersion * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">Hub Load (η):</span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Critical system hub utilization - key bottlenecks (0-100%)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <span className={getParamColor(decisionParams.hubLoad, 0.7)}>
+                    {(decisionParams.hubLoad * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <div className="flex justify-between items-center col-span-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-muted-foreground">Legitimacy Δ (λ):</span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Trust-service alignment gap - negative means trust is falling faster than service quality</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <span className={decisionParams.legitimacyDelta < -0.1 ? 'text-red-500' : 
+                                decisionParams.legitimacyDelta > 0.1 ? 'text-orange-500' : 'text-green-500'}>
+                    {decisionParams.legitimacyDelta >= 0 ? '+' : ''}{decisionParams.legitimacyDelta.toFixed(3)}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {signal.ts && (
-            <p className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border">
-              Last updated: {formatDistanceToNow(new Date(signal.ts))} ago
-            </p>
-          )}
+            {signal.ts && (
+              <p className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border">
+                Last updated: {formatDistanceToNow(new Date(signal.ts))} ago
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      </TooltipProvider>
     );
   };
 
