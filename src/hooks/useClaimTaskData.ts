@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getAtlasLoop } from '@/services/atlasData';
 
 export type ClaimTaskData = {
   task: {
@@ -58,22 +59,31 @@ export const useClaimTaskData = (taskId: string) => {
         throw new Error('Task not found');
       }
 
-      // Fetch loop data separately
-      const { data: loop } = await supabase
-        .from('loops')
-        .select('id, name, description, metadata')
-        .eq('id', task.loop_id)
-        .single();
-
       // Parse payload as JSON object
       const payload = (typeof task.payload === 'string' ? JSON.parse(task.payload) : task.payload) || {};
       
       // Parse TRI as JSON object
       const tri = task.tri && typeof task.tri === 'object' ? task.tri as { T: number; R: number; I: number } : null;
 
-      // Get loop code from metadata
-      const loopMetadata = loop?.metadata && typeof loop.metadata === 'object' ? loop.metadata as any : {};
-      const loopCode = loopMetadata?.loop_code || 'UNKNOWN';
+      // Get loop code from payload and try to fetch from atlas registry
+      const loopCode = payload?.loop_code;
+      let atlasLoop = null;
+      
+      if (loopCode) {
+        // Try to find the loop by code in atlas registry
+        atlasLoop = getAtlasLoop(`atlas-${loopCode}`);
+      }
+
+      // Fallback to database loop if atlas not found
+      let dbLoop = null;
+      if (!atlasLoop && task.loop_id) {
+        const { data: loop } = await supabase
+          .from('loops')
+          .select('id, name, description, metadata')
+          .eq('id', task.loop_id)
+          .maybeSingle();
+        dbLoop = loop;
+      }
 
       // Map task status to expected format
       const mapStatus = (status: string): 'available' | 'claimed' | 'in_progress' | 'review_due' | 'completed' | 'cancelled' => {
@@ -87,6 +97,10 @@ export const useClaimTaskData = (taskId: string) => {
           default: return 'available';
         }
       };
+
+      // Determine which loop data to use (atlas preferred, then database)
+      const loopData = atlasLoop || dbLoop;
+      const finalLoopCode = loopCode || (dbLoop?.metadata && typeof dbLoop.metadata === 'object' ? (dbLoop.metadata as any)?.loop_code : null) || 'UNKNOWN';
 
       // Build the response in the expected format
       const claimTaskData: ClaimTaskData = {
@@ -102,10 +116,10 @@ export const useClaimTaskData = (taskId: string) => {
           payload: payload
         },
         loop: {
-          id: loop?.id || task.loop_id,
-          name: loop?.name || 'Unknown Loop',
-          loop_code: loopCode,
-          description: loop?.description || null
+          id: loopData?.id || task.loop_id,
+          name: atlasLoop?.name || dbLoop?.name || 'Unknown Loop',
+          loop_code: finalLoopCode,
+          description: atlasLoop?.notes || dbLoop?.description || null
         },
         template: payload?.template ? {
           template_title: payload.template.title || `${task.capacity} Template`,
