@@ -18,14 +18,13 @@ import { CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { OKR } from '@/modules/collab/data/mockData';
 import CascadeSidebar from '@/components/workspace/CascadeSidebar';
-import TaskClaimPopup from '@/components/workspace/TaskClaimPopup';
-import EnhancedTaskClaimPopup from '@/modules/taskClaimPopup/TaskClaimPopup';
 import EnhancedTaskCard from '@/components/workspace/EnhancedTaskCard';
 import { ZoneBundleTest } from '@/components/workspace/ZoneBundleTest';
 import { ZoneAwareSystemStatus } from '@/components/workspace/ZoneAwareSystemStatus';
 import { Workspace5CSidebar } from '@/components/workspace/Workspace5CSidebar';
 import { TaskEngineWidgets } from '@/components/workspace/TaskEngineWidgets';
 import { TaskEngineToolbar } from '@/components/workspace/TaskEngineToolbar';
+import { ClaimTaskDialog } from '@/components/tasks/ClaimTaskDialog';
 import ZoneToolsPortals from '@/components/zone/ZoneToolsPortals';
 import { useToolsStore } from '@/stores/toolsStore';
 import { getTasks5C, getTask5CById } from '@/5c/services';
@@ -48,12 +47,6 @@ export const Workspace5C: React.FC = () => {
     availableTasks, 
     completeTask, 
     isCompletingTask,
-    openClaimPopup,
-    confirmClaimTask,
-    cancelClaimTask,
-    claimingTask,
-    showClaimPopup,
-    isClaimingTask,
     isLoading
   } = use5cTaskEngine();
   
@@ -62,13 +55,24 @@ export const Workspace5C: React.FC = () => {
   
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
-  const [isTeamsOpen, setIsTeamsOpen] = useState(false);
+  const [isTeamsOpen, setIsTeamsOpen] = useState(false);  
   const [isGoalTreeOpen, setIsGoalTreeOpen] = useState(false);
   const [selectedOKR, setSelectedOKR] = useState<OKR | null>(null);
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
   const [pairWorkPartner, setPairWorkPartner] = useState<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
+  // New ClaimTaskDialog state
+  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
+  const [claimingTaskId, setClaimingTaskId] = useState<string | null>(null);
+  
+  // Handle task claim popup
+  const handleTaskClaim = (task: EnhancedTask5C) => {
+    console.log('Opening claim dialog for task:', task.id);
+    setClaimingTaskId(task.id);
+    setClaimDialogOpen(true);
+  };
+
   const openMetaLoopConsole = () => {
     useToolsStore.getState().open('admin', 'meta');
   };
@@ -102,7 +106,7 @@ export const Workspace5C: React.FC = () => {
             myTasks={myTasks.map(t => t as any)}
             availableTasks={availableTasks.map(t => t as any)}
             activeTask={null}
-            onTaskClaim={openClaimPopup}
+            onTaskClaim={handleTaskClaim}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
@@ -147,28 +151,27 @@ export const Workspace5C: React.FC = () => {
               <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
             </DialogHeader>
             <GoalTreeWidget 
-              onTaskClaim={openClaimPopup}
+              onTaskClaim={(taskId) => {
+                // Convert string taskId to task object for compatibility
+                const task = availableTasks.find(t => t.id === taskId);
+                if (task) handleTaskClaim(task);
+              }}
               onOKRSelect={(okr) => setSelectedOKR(okr)}
             />
           </DialogContent>
         </Dialog>
 
-        {/* Task Claim Popup - Enhanced or Basic (for no active task state) */}
-        {flags.useEnhancedTaskPopup ? (
-          <EnhancedTaskClaimPopup
-            isOpen={showClaimPopup}
-            task={claimingTask}
-            onConfirm={confirmClaimTask}
-            onCancel={cancelClaimTask}
-            isLoading={isClaimingTask}
-          />
-        ) : (
-          <TaskClaimPopup
-            isOpen={showClaimPopup}
-            task={claimingTask}
-            onConfirm={confirmClaimTask}
-            onCancel={cancelClaimTask}
-            isLoading={isClaimingTask}
+        {/* New ClaimTaskDialog */}
+        {claimingTaskId && (
+          <ClaimTaskDialog
+            taskId={claimingTaskId}
+            open={claimDialogOpen}
+            onOpenChange={(open) => {
+              setClaimDialogOpen(open);
+              if (!open) {
+                setClaimingTaskId(null);
+              }
+            }}
           />
         )}
       </div>
@@ -218,7 +221,7 @@ export const Workspace5C: React.FC = () => {
             myTasks={myTasks.map(t => t as any)}
             availableTasks={availableTasks.map(t => t as any)}
             activeTask={activeTask}
-            onTaskClaim={openClaimPopup}
+            onTaskClaim={handleTaskClaim}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
@@ -364,7 +367,11 @@ export const Workspace5C: React.FC = () => {
             <DialogTitle className="text-white">Goals & OKRs Cascade</DialogTitle>
           </DialogHeader>
           <GoalTreeWidget 
-            onTaskClaim={openClaimPopup}
+            onTaskClaim={(taskId) => {
+              // Convert string taskId to task object for compatibility
+              const task = availableTasks.find(t => t.id === taskId);
+              if (task) handleTaskClaim(task);
+            }}
             onOKRSelect={(okr) => setSelectedOKR(okr)}
           />
         </DialogContent>
@@ -374,7 +381,11 @@ export const Workspace5C: React.FC = () => {
         isOpen={!!selectedOKR}
         onClose={() => setSelectedOKR(null)}
         okr={selectedOKR}
-        onTaskClaim={(taskId) => console.log('Claim task from OKR:', taskId)}
+        onTaskClaim={(taskId) => {
+          // Convert string taskId to task object for compatibility
+          const task = availableTasks.find(t => t.id === taskId);
+          if (task) handleTaskClaim(task);
+        }}
       />
 
       <PairWorkOverlay
@@ -384,22 +395,17 @@ export const Workspace5C: React.FC = () => {
         taskTitle={activeTask?.title}
       />
 
-      {/* Task Claim Popup - Enhanced or Basic */}
-      {flags.useEnhancedTaskPopup ? (
-        <EnhancedTaskClaimPopup
-          isOpen={showClaimPopup}
-          task={claimingTask}
-          onConfirm={confirmClaimTask}
-          onCancel={cancelClaimTask}
-          isLoading={isClaimingTask}
-        />
-      ) : (
-        <TaskClaimPopup
-          isOpen={showClaimPopup}
-          task={claimingTask}
-          onConfirm={confirmClaimTask}
-          onCancel={cancelClaimTask}
-          isLoading={isClaimingTask}
+      {/* New ClaimTaskDialog */}
+      {claimingTaskId && (
+        <ClaimTaskDialog
+          taskId={claimingTaskId}
+          open={claimDialogOpen}
+          onOpenChange={(open) => {
+            setClaimDialogOpen(open);
+            if (!open) {
+              setClaimingTaskId(null);
+            }
+          }}
         />
       )}
       
