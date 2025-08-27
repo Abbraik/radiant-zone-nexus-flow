@@ -336,11 +336,6 @@ export const Workspace5C: React.FC = () => {
                   />
                 </motion.div>
               </div>
-              {!isSidebarCollapsed && (
-                <div className="lg:col-span-1">
-                  <ServiceStatus />
-                </div>
-              )}
             </div>
           </motion.div>
         </main>
