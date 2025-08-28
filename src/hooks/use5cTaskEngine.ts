@@ -96,7 +96,7 @@ export const use5cTaskEngine = () => {
   // Filtered tasks
   const filteredTasks = useMemo(() => {
     const result = {
-      myTasks: c5Tasks.filter(t => t.status === 'active').map(convertToWorkspaceTask),
+      myTasks: c5Tasks.filter(t => t.status === 'claimed').map(convertToWorkspaceTask),
       availableTasks: c5Tasks.filter(t => t.status === 'open').map(convertToWorkspaceTask),
       activeTasks: c5Tasks.filter(t => t.status === 'active'),
       completedTasks: c5Tasks.filter(t => t.status === 'done'),
@@ -133,7 +133,7 @@ export const use5cTaskEngine = () => {
     try {
       await updateTask5CMutation.mutateAsync({
         taskId,
-        updates: { status: 'active' }
+        updates: { status: 'claimed' }
       });
       setSearchParams({ task5c: taskId }); // Set as active task
     } catch (error) {
