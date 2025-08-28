@@ -8,10 +8,12 @@ const corsHeaders = {
 interface Database {
   public: {
     Tables: {
-      tasks_v2: {
+      tasks_5c: {
         Row: {
           id: string
           status: string
+          capacity: string
+          title: string
           created_at: string
           updated_at: string
           [key: string]: any
@@ -19,6 +21,18 @@ interface Database {
         Update: {
           status?: string
           updated_at?: string
+          [key: string]: any
+        }
+      }
+      claims_5c: {
+        Row: {
+          id: string
+          task_id: string
+          status: string
+          [key: string]: any
+        }
+        Update: {
+          status?: string
           [key: string]: any
         }
       }
@@ -72,23 +86,23 @@ Deno.serve(async (req) => {
 
     console.log('👑 Admin access confirmed for user:', user.id)
 
-    // Get all claimed/active tasks
+    // Get all claimed/active 5C tasks
     const { data: claimedTasks, error: fetchError } = await supabaseClient
-      .from('tasks_v2')
-      .select('task_id, status, title, capacity')
-      .in('status', ['claimed', 'active', 'in_progress'])
+      .from('tasks_5c')
+      .select('id, status, title, capacity')
+      .in('status', ['claimed', 'active'])
 
     if (fetchError) {
-      throw new Error(`Failed to fetch claimed tasks: ${fetchError.message}`)
+      throw new Error(`Failed to fetch claimed 5C tasks: ${fetchError.message}`)
     }
 
-    console.log('📋 Found claimed tasks:', claimedTasks?.length || 0)
+    console.log('📋 Found claimed 5C tasks:', claimedTasks?.length || 0)
 
     if (!claimedTasks || claimedTasks.length === 0) {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'No claimed tasks to reset',
+          message: 'No claimed 5C tasks to reset',
           resetCount: 0 
         }),
         { 
@@ -98,36 +112,36 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Reset all claimed tasks to 'available' status (the default)
+    // Reset all claimed 5C tasks to 'open' status
     const { data: updatedTasks, error: updateError } = await supabaseClient
-      .from('tasks_v2')
+      .from('tasks_5c')
       .update({ 
-        status: 'available',
+        status: 'open',
         updated_at: new Date().toISOString()
       })
-      .in('status', ['claimed', 'active', 'in_progress'])
-      .select('task_id, title, status, capacity')
+      .in('status', ['claimed', 'active'])
+      .select('id, title, status, capacity')
 
     if (updateError) {
-      throw new Error(`Failed to reset tasks: ${updateError.message}`)
+      throw new Error(`Failed to reset 5C tasks: ${updateError.message}`)
     }
 
-    console.log('✅ Successfully reset tasks:', updatedTasks?.length || 0)
+    console.log('✅ Successfully reset 5C tasks:', updatedTasks?.length || 0)
 
-    // Also clear any associated claims
+    // Also clear any associated 5C claims
     const { error: claimsError } = await supabaseClient
-      .from('claims')
-      .update({ status: 'cancelled' })
-      .in('status', ['active', 'pending'])
+      .from('claims_5c')
+      .update({ status: 'done' })
+      .in('status', ['active', 'draft'])
 
     if (claimsError) {
-      console.warn('⚠️ Warning: Failed to update claims:', claimsError.message)
+      console.warn('⚠️ Warning: Failed to update 5C claims:', claimsError.message)
     }
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        message: `Successfully reset ${updatedTasks?.length || 0} tasks to available status`,
+        message: `Successfully reset ${updatedTasks?.length || 0} 5C tasks to open status`,
         resetCount: updatedTasks?.length || 0,
         resetTasks: updatedTasks
       }),

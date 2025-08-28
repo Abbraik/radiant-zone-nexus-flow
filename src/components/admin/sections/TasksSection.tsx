@@ -23,23 +23,23 @@ export const TasksSection: React.FC = () => {
   const { resetClaimedTasks, isResetting } = useResetTasks();
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // Fetch task statistics from tasks_v2 table
+  // Fetch 5C task statistics from tasks_5c table
   const { data: taskStats, isLoading, refetch } = useQuery({
-    queryKey: ['admin', 'task-stats'],
+    queryKey: ['admin', '5c-task-stats'],
     queryFn: async () => {
       try {
         const [claimedResult, totalResult] = await Promise.all([
           supabase
-            .from('tasks_v2')
-            .select('task_id, capacity, status, title, created_at')
-            .in('status', ['claimed', 'active', 'in_progress']),
+            .from('tasks_5c')
+            .select('id, capacity, status, title, description, payload, created_at')
+            .in('status', ['claimed', 'active']),
           supabase
-            .from('tasks_v2')
-            .select('task_id, capacity, status')
+            .from('tasks_5c')
+            .select('id, capacity, status, title')
         ]);
 
         if (claimedResult.error) {
-          console.error('Failed to fetch claimed tasks:', claimedResult.error);
+          console.error('Failed to fetch claimed 5C tasks:', claimedResult.error);
           return {
             claimedTasks: [],
             totalTasks: 0,
@@ -49,7 +49,7 @@ export const TasksSection: React.FC = () => {
         }
 
         if (totalResult.error) {
-          console.error('Failed to fetch total tasks:', totalResult.error);
+          console.error('Failed to fetch total 5C tasks:', totalResult.error);
           return {
             claimedTasks: claimedResult.data || [],
             totalTasks: 0,
@@ -62,10 +62,10 @@ export const TasksSection: React.FC = () => {
           claimedTasks: claimedResult.data || [],
           totalTasks: totalResult.data?.length || 0,
           claimedCount: claimedResult.data?.length || 0,
-          availableCount: totalResult.data?.filter(t => t.status === 'available').length || 0,
+          availableCount: totalResult.data?.filter(t => t.status === 'open').length || 0,
         };
       } catch (error) {
-        console.error('Error in task stats query:', error);
+        console.error('Error in 5C task stats query:', error);
         return {
           claimedTasks: [],
           totalTasks: 0,
@@ -113,9 +113,9 @@ export const TasksSection: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-semibold text-foreground mb-2">Task Management</h2>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">5C Task Management</h2>
         <p className="text-foreground-muted">
-          Manage and reset claimed tasks in the system. Use this to return claimed tasks back to available status.
+          Manage and reset claimed tasks in the 5C workspace. Use this to return claimed tasks back to open status for new claims.
         </p>
       </div>
 
@@ -168,9 +168,9 @@ export const TasksSection: React.FC = () => {
             <RefreshCw className="h-5 w-5" />
             <span>Reset Claimed Tasks</span>
           </CardTitle>
-          <CardDescription>
-            Reset all claimed and in-progress tasks back to available status. This will make them available for claiming again.
-          </CardDescription>
+            <CardDescription>
+              Reset all claimed and active 5C tasks back to open status. This will make them available for claiming again in the workspace.
+            </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {taskStats?.claimedCount && taskStats.claimedCount > 0 ? (
@@ -179,10 +179,15 @@ export const TasksSection: React.FC = () => {
                 <h4 className="font-medium text-warning mb-2">Currently Claimed Tasks</h4>
                 <div className="space-y-2">
                   {taskStats.claimedTasks.slice(0, 5).map((task: any, index: number) => (
-                    <div key={task.task_id || index} className="flex items-center justify-between text-sm">
-                      <span className="truncate flex-1 mr-4">
-                        {task.title || `${task.capacity} Task`}
-                      </span>
+                    <div key={task.id || index} className="flex items-center justify-between text-sm">
+                      <div className="flex flex-col flex-1 mr-4">
+                        <span className="truncate font-medium">
+                          {task.title || `${task.capacity} Task`}
+                        </span>
+                        <span className="text-xs text-foreground-muted capitalize">
+                          {task.capacity} capacity
+                        </span>
+                      </div>
                       <Badge variant="outline" className="text-xs">
                         {task.status}
                       </Badge>

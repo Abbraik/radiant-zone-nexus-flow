@@ -57,44 +57,42 @@ export const OverviewSection: React.FC = () => {
     );
   }
 
-  // Task counts by capacity
-  const taskCounts = stats?.tasks?.reduce((acc, task) => {
-    acc[task.capacity] = (acc[task.capacity] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>) || {};
-
+  // 5C Task stats
+  const taskCounts = stats?.capacityStats || {};
   const totalActiveTasks = stats?.totalTasks || 0;
   const availableTasksCount = stats?.availableTasks || 0;
   const claimedTasksCount = stats?.claimedTasks || 0;
+  const completedTasksCount = stats?.completedTasks || 0;
+  const blockedTasksCount = stats?.blockedTasks || 0;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-semibold text-foreground mb-2">Dashboard Overview</h2>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">5C Workspace Dashboard</h2>
         <p className="text-sm text-foreground-muted">
-          System health and key metrics at a glance
+          System health and key 5C workspace metrics at a glance
         </p>
       </div>
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Active Tasks */}
+        {/* 5C Tasks Overview */}
         <Card className="glass-secondary hover:glass-accent transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">
-              Active Tasks
+              Total 5C Tasks
             </CardTitle>
             <Activity className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{totalActiveTasks}</div>
-            <p className="text-xs text-foreground-muted">
-              Across all capacities
+            <p className="text-xs text-foreground-muted mb-2">
+              Across all 5C capacities
             </p>
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div className="flex flex-wrap gap-1">
               {Object.entries(taskCounts).map(([capacity, count]) => (
-                <Badge key={capacity} variant="outline" className="text-xs">
+                <Badge key={capacity} variant="outline" className="text-xs capitalize">
                   {capacity}: {count}
                 </Badge>
               ))}
@@ -102,7 +100,26 @@ export const OverviewSection: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Active Watchpoints */}
+        {/* Available vs Claimed Tasks */}
+        <Card className="glass-secondary hover:glass-accent transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-foreground-muted">
+              Available Tasks
+            </CardTitle>
+            <CheckCircle className="h-4 w-4 text-success" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">{availableTasksCount}</div>
+            <p className="text-xs text-foreground-muted">
+              Open for claiming
+            </p>
+            <div className="mt-1 text-xs text-foreground-muted">
+              {claimedTasksCount} claimed, {completedTasksCount} done
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Armed Watchpoints */}
         <Card className="glass-secondary hover:glass-accent transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">
@@ -113,40 +130,29 @@ export const OverviewSection: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{stats?.activeWatchpoints}</div>
             <p className="text-xs text-foreground-muted">
-              Ready to trigger
+              {stats?.activeWatchpoints === 0 ? 'No active alerts' : 'Ready to trigger'}
             </p>
           </CardContent>
         </Card>
 
-        {/* SLA Breaches (24h) */}
+        {/* Active Claims */}
         <Card className="glass-secondary hover:glass-accent transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-foreground-muted">
-              SLA Breaches (24h)
+              Active Claims
             </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <Users className="h-4 w-4 text-info" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{stats?.slaBreaches}</div>
+            <div className="text-2xl font-bold text-foreground">{stats?.activeClaims}</div>
             <p className="text-xs text-foreground-muted">
-              {stats?.slaBreaches === 0 ? 'All SLAs met' : 'Requires attention'}
+              Total: {stats?.totalClaims} claims
             </p>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="glass-secondary hover:glass-accent transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-foreground-muted">
-              Recent Events
-            </CardTitle>
-            <FileText className="h-4 w-4 text-info" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-foreground">{stats?.recentAudit.length}</div>
-            <p className="text-xs text-foreground-muted">
-              Last 20 audit entries
-            </p>
+            {blockedTasksCount > 0 && (
+              <div className="mt-1 text-xs text-warning">
+                {blockedTasksCount} blocked tasks
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

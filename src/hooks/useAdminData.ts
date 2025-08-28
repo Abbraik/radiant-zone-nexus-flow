@@ -96,21 +96,28 @@ export const useAuditLog = () => {
   });
 };
 
-// Updated overview stats to use real backend data
+// Updated overview stats to use 5C backend data
 export const useOverviewStats = () => {
   return useQuery({
-    queryKey: ['admin', 'overview-stats'],
+    queryKey: ['admin', '5c-overview-stats'],
     queryFn: async () => {
       const [
         tasksResult,
+        claimsResult,
         auditResult,
-        rolesResult
+        rolesResult,
+        watchpointsResult
       ] = await Promise.all([
-        // Get tasks from tasks_v2 table
+        // Get 5C tasks
         supabase
-          .from('tasks_v2')
-          .select('task_id, capacity, status, title')
-          .in('status', ['available', 'claimed', 'active', 'in_progress']),
+          .from('tasks_5c')
+          .select('id, capacity, status, title, payload')
+          .in('status', ['open', 'claimed', 'active', 'done', 'blocked']),
+        // Get 5C claims for additional context
+        supabase
+          .from('claims_5c')
+          .select('id, status, task_id')
+          .in('status', ['active', 'draft', 'done']),
         // Get recent audit logs
         supabase
           .from('audit_log')
@@ -120,13 +127,27 @@ export const useOverviewStats = () => {
         // Get user roles for admin stats
         supabase
           .from('user_roles')
-          .select('role, user_id')
+          .select('role, user_id'),
+        // Get watchpoints for system health
+        supabase
+          .from('antic_watchpoints')
+          .select('id, status, risk_channel')
+          .eq('status', 'armed')
       ]);
 
-      // Calculate task stats
+      // Calculate 5C task stats
       const tasks = tasksResult.data || [];
-      const availableTasks = tasks.filter(t => t.status === 'available').length;
-      const claimedTasks = tasks.filter(t => ['claimed', 'active', 'in_progress'].includes(t.status)).length;
+      const claims = claimsResult.data || [];
+      const availableTasks = tasks.filter(t => t.status === 'open').length;
+      const claimedTasks = tasks.filter(t => ['claimed', 'active'].includes(t.status)).length;
+      const completedTasks = tasks.filter(t => t.status === 'done').length;
+      const blockedTasks = tasks.filter(t => t.status === 'blocked').length;
+      
+      // Calculate capacity distribution
+      const capacityStats = tasks.reduce((acc, task) => {
+        acc[task.capacity] = (acc[task.capacity] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
       
       // Calculate role distribution  
       const roles = rolesResult.data || [];
@@ -134,19 +155,26 @@ export const useOverviewStats = () => {
       const userCount = new Set(roles.map(r => r.user_id)).size; // Unique users
 
       return {
-        // Task statistics
+        // 5C Task statistics
         tasks: tasks,
         totalTasks: tasks.length,
         availableTasks: availableTasks,
         claimedTasks: claimedTasks,
+        completedTasks: completedTasks,
+        blockedTasks: blockedTasks,
+        capacityStats: capacityStats,
+        
+        // Claims statistics
+        totalClaims: claims.length,
+        activeClaims: claims.filter(c => c.status === 'active').length,
         
         // User statistics  
         totalUsers: userCount,
         adminUsers: adminCount,
         
-        // System health (mock for now, can be enhanced later)
-        activeWatchpoints: Math.floor(Math.random() * 5) + 1,
-        slaBreaches: Math.floor(Math.random() * 3),
+        // System health from real data
+        activeWatchpoints: watchpointsResult.data?.length || 0,
+        slaBreaches: 0, // Can be enhanced with real SLA tracking
         
         // Recent activity
         recentAudit: auditResult.data || [],
