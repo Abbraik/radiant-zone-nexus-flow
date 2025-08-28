@@ -26,7 +26,7 @@ import LoopDashboard from "./pages/LoopDashboard";
 import LoopSignalMonitor from "./pages/LoopSignalMonitor";
 import NotFound from "./pages/NotFound";
 
-import AdminPage from "./pages/AdminPage";
+import AdminConsole from "./pages/AdminConsole";
 import MissionControl from "./pages/MissionControl";
 import SecurityOps from "./pages/SecurityOps";
 import { Workspace5C } from "./pages/Workspace5C";
@@ -69,7 +69,7 @@ const App = () => (
                      </div>
                    } />
                    {/* Admin Pages */}
-                   <Route path="/admin" element={<AdminPage />} />
+                   <Route path="/admin" element={<AdminConsole />} />
                    <Route path="/plugins" element={<AdminPage />} />
                    <Route path="/offline" element={<AdminPage />} />
                    <Route path="/security" element={<SecurityOps />} />
