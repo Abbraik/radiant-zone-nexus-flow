@@ -2,10 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { GoldenScenariosPanel } from './GoldenScenariosPanel';
 import { useTasks } from '@/hooks/useTasks';
-import { Clock, AlertTriangle, CheckCircle2, TrendingUp } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Clock, AlertTriangle, CheckCircle2, TrendingUp, LogIn, User } from 'lucide-react';
 import { isFeatureEnabled } from '@/lib/featureFlags';
+import { useNavigate } from 'react-router-dom';
 
 const QuickStats: React.FC = () => {
   const { allTasks, myTasks, availableTasks } = useTasks();
@@ -82,6 +85,16 @@ const QuickStats: React.FC = () => {
 
 export const HomeWorkspace: React.FC = () => {
   const useRealData = isFeatureEnabled('useTaskEngineV2') && !isFeatureEnabled('useMockHome');
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAuthAction = () => {
+    if (user) {
+      navigate('/admin');
+    } else {
+      navigate('/auth');
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -105,6 +118,22 @@ export const HomeWorkspace: React.FC = () => {
             <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">NCF Compass Active</span>
           </div>
+          <Button
+            onClick={handleAuthAction}
+            className="bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent-hover transition-all duration-300"
+          >
+            {user ? (
+              <>
+                <User className="h-4 w-4 mr-2" />
+                Admin Console
+              </>
+            ) : (
+              <>
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </>
+            )}
+          </Button>
         </div>
       </motion.div>
 

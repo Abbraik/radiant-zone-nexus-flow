@@ -55,7 +55,7 @@ const App = () => (
               <Shell>
                  <Routes>
                    
-                   <Route path="/auth" element={<Auth />} />
+                    <Route path="/auth" element={<Auth />} />
                    <Route path="/demo" element={<Demo />} />
                     <Route path="/registry" element={<LoopRegistry />} />
                     <Route path="/registry/:id" element={<LoopDetail />} />
