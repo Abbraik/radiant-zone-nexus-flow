@@ -4,7 +4,7 @@ import { AlertRail } from '@/components/alerts/AlertRail';
 import { useTasks } from '../../hooks/useTasks';
 import { DynamicWidget } from './DynamicWidget';
 import { WorkspaceProSidebar } from './WorkspaceProSidebar';
-
+import { WorkspaceProHeader } from './WorkspaceProHeader';
 import { CopilotDrawer } from '../../modules/ai/components/CopilotDrawer';
 import { DeliveryChainManager } from '@/components/delivery/DeliveryChainManager';
 import { GoalTreeWidget } from '../../modules/cascade/components/GoalTreeWidget';
@@ -188,6 +188,18 @@ export const Workspace: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Header */}
+      <WorkspaceProHeader
+        activeTask={activeTask}
+        myTasks={myTasks}
+        onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
+        onTeamsToggle={() => setIsDeliveryManagerOpen(!isDeliveryManagerOpen)}
+        onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
+        onPairWorkStart={(partnerId) => {
+          setPairWorkPartner(partnerId);
+          setIsPairWorkOpen(true);
+        }}
+      />
       
       <div className="flex">
         <FeatureFlagGuard 
