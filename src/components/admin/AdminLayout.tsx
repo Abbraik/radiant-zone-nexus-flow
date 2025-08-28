@@ -24,6 +24,7 @@ import { TemplatesSection } from './sections/TemplatesSection';
 import { TokensSection } from './sections/TokensSection';
 import { AuditLogSection } from './sections/AuditLogSection';
 import { TelemetrySection } from './sections/TelemetrySection';
+import { TasksSection } from './sections/TasksSection';
 
 const adminSections = [
   { 
@@ -53,6 +54,13 @@ const adminSections = [
     icon: Shield, 
     path: '/admin#roles',
     component: RolesSection 
+  },
+  { 
+    id: 'tasks', 
+    label: 'Task Management', 
+    icon: Activity, 
+    path: '/admin#tasks',
+    component: TasksSection 
   },
   { 
     id: 'sources', 
@@ -106,7 +114,7 @@ const adminSections = [
   { 
     id: 'telemetry', 
     label: 'Telemetry', 
-    icon: Activity, 
+    icon: BarChart3, 
     path: '/admin#telemetry',
     component: TelemetrySection 
   },
