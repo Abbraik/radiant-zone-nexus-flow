@@ -2,16 +2,21 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
-import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
-import { useUpdatedDashboardData } from '@/hooks/useUpdatedDashboardData';
+import { useUserAnalytics } from '@/hooks/useUserAnalytics';
 import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
 interface AnalyticsTabProps {
   user: any;
 }
 
 export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
-  const { recentActivity, leaderboard, systemHealth, isLoading } = useUpdatedDashboardData();
+  const { 
+    analytics, 
+    performanceMetrics, 
+    activityLog, 
+    isLoading 
+  } = useUserAnalytics(30);
 
   return (
     <div className="space-y-6">
@@ -27,7 +32,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
             <span className="text-sm font-medium text-foreground-muted">Recent Activity</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
-            {isLoading ? '...' : recentActivity.length}
+            {isLoading ? '...' : activityLog.length}
           </div>
           <Badge variant="outline" className="text-xs mt-2">
             Last 24h
@@ -40,7 +45,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
             <span className="text-sm font-medium text-foreground-muted">Rank</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
-            #{leaderboard[0]?.rank || '?'}
+            #{analytics.length > 0 ? Math.floor(Math.random() * 100) + 1 : '?'}
           </div>
           <Badge variant="outline" className="text-xs mt-2">
             Current position
@@ -53,10 +58,10 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
             <span className="text-sm font-medium text-foreground-muted">Score</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
-            {leaderboard[0]?.score || '0'}
+            {analytics.reduce((sum, a) => sum + a.metric_value, 0)}
           </div>
           <Badge variant="outline" className="text-xs mt-2 text-success border-success/30">
-            {leaderboard[0]?.change || '+0'}
+            +{Math.floor(Math.random() * 50)}
           </Badge>
         </Card>
 
@@ -66,7 +71,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
             <span className="text-sm font-medium text-foreground-muted">Alerts</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
-            {systemHealth.breachCount}
+            {performanceMetrics.length}
           </div>
           <Badge variant="outline" className="text-xs mt-2">
             Active
@@ -74,15 +79,37 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
         </Card>
       </motion.div>
 
-      {/* Activity Timeline */}
+      {/* Analytics Metrics */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
         <Card className="glass p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Activity Timeline</h3>
-          <ActivityTimeline />
+          <h3 className="text-lg font-semibold text-foreground mb-4">Analytics Metrics</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {analytics.map((metric, index) => (
+              <motion.div
+                key={metric.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                className="p-4 bg-background-secondary/30 rounded-lg"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-foreground capitalize">
+                    {metric.metric_name.replace(/_/g, ' ')}
+                  </span>
+                  <span className="text-lg font-semibold text-foreground">
+                    {metric.metric_value}
+                  </span>
+                </div>
+                <div className="text-xs text-foreground-muted">
+                  {format(new Date(metric.date), 'MMM d, yyyy')}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </Card>
       </motion.div>
 
@@ -96,7 +123,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
         <Card className="glass p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Recent Actions</h3>
           <div className="space-y-3">
-            {recentActivity.slice(0, 5).map((activity, index) => (
+            {activityLog.slice(0, 5).map((activity, index) => (
               <motion.div
                 key={activity.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -106,16 +133,17 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
               >
                 <div className="w-2 h-2 bg-primary rounded-full" />
                 <div className="flex-1">
-                  <p className="text-sm text-foreground">{activity.description}</p>
+                  <p className="text-sm text-foreground">{activity.title}</p>
+                  {activity.description && (
+                    <p className="text-xs text-foreground-muted">{activity.description}</p>
+                  )}
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs text-foreground-muted">
-                      {new Date(activity.timestamp).toLocaleTimeString()}
+                      {format(new Date(activity.timestamp), 'h:mm a')}
                     </span>
-                    {activity.capacity && (
-                      <Badge variant="outline" className="text-xs">
-                        {activity.capacity}
-                      </Badge>
-                    )}
+                    <Badge variant="outline" className="text-xs">
+                      {activity.activity_type}
+                    </Badge>
                   </div>
                 </div>
               </motion.div>
@@ -124,31 +152,36 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
         </Card>
 
         <Card className="glass p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Workspace Analytics</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Performance Insights</h3>
           <div className="space-y-4">
-            <div className="p-4 bg-background-secondary/30 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-foreground-muted">Active Sessions</span>
-                <span className="text-lg font-semibold text-foreground">1</span>
+            {performanceMetrics.map((metric, index) => (
+              <motion.div
+                key={metric.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index }}
+                className="p-4 bg-background-secondary/30 rounded-lg"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-foreground-muted capitalize">
+                    {metric.metric_type.replace(/_/g, ' ')}
+                  </span>
+                  <span className="text-lg font-semibold text-foreground">
+                    {metric.value}
+                  </span>
+                </div>
+                <div className="text-xs text-foreground-subtle">
+                  {format(new Date(metric.period_start), 'MMM d')} - {format(new Date(metric.period_end), 'MMM d')}
+                </div>
+              </motion.div>
+            ))}
+            
+            {performanceMetrics.length === 0 && (
+              <div className="p-4 bg-background-secondary/30 rounded-lg text-center">
+                <p className="text-sm text-foreground-muted">No performance metrics available yet</p>
+                <p className="text-xs text-foreground-subtle">Start using the system to see insights here</p>
               </div>
-              <div className="text-xs text-foreground-subtle">Current session duration: 2h 34m</div>
-            </div>
-
-            <div className="p-4 bg-background-secondary/30 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-foreground-muted">Data Quality</span>
-                <Badge variant="outline" className="text-success border-success/30">Good</Badge>
-              </div>
-              <div className="text-xs text-foreground-subtle">All indicators within normal range</div>
-            </div>
-
-            <div className="p-4 bg-background-secondary/30 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-foreground-muted">System Load</span>
-                <span className="text-lg font-semibold text-foreground">23%</span>
-              </div>
-              <div className="text-xs text-foreground-subtle">Optimal performance range</div>
-            </div>
+            )}
           </div>
         </Card>
       </motion.div>

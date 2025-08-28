@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Activity, Calendar, MapPin, Monitor } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useActivity } from '@/hooks/useProfile';
+import { useUserAnalytics } from '@/hooks/useUserAnalytics';
 import { format, formatDistanceToNow } from 'date-fns';
 
 interface ActivityTabProps {
@@ -11,30 +11,38 @@ interface ActivityTabProps {
 }
 
 export const ActivityTab: React.FC<ActivityTabProps> = ({ user }) => {
-  const { data: activities, isLoading } = useActivity();
+  const { activityLog: activities, isLoading } = useUserAnalytics(30);
 
-  const getActivityIcon = (action: string) => {
-    switch (action.toLowerCase()) {
+  const getActivityIcon = (activityType: string) => {
+    switch (activityType.toLowerCase()) {
+      case 'session':
       case 'login':
       case 'logout':
         return <Monitor className="w-4 h-4" />;
       case 'update':
+      case 'create':
         return <Activity className="w-4 h-4" />;
+      case 'view':
+        return <Calendar className="w-4 h-4" />;
       default:
         return <Activity className="w-4 h-4" />;
     }
   };
 
-  const getActivityColor = (action: string) => {
-    switch (action.toLowerCase()) {
+  const getActivityColor = (activityType: string) => {
+    switch (activityType.toLowerCase()) {
+      case 'session':
       case 'login':
         return 'text-success';
       case 'logout':
         return 'text-warning';
       case 'update':
+      case 'create':
         return 'text-info';
       case 'delete':
         return 'text-destructive';
+      case 'view':
+        return 'text-primary';
       default:
         return 'text-foreground-muted';
     }
@@ -97,8 +105,8 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ user }) => {
             <div>
               <p className="text-sm text-foreground-muted">Last Active</p>
               <p className="text-sm font-semibold text-foreground">
-                {activities?.[0]?.created_at 
-                  ? formatDistanceToNow(new Date(activities[0].created_at), { addSuffix: true })
+                {activities?.[0]?.timestamp 
+                  ? formatDistanceToNow(new Date(activities[0].timestamp), { addSuffix: true })
                   : 'Never'
                 }
               </p>
@@ -135,36 +143,38 @@ export const ActivityTab: React.FC<ActivityTabProps> = ({ user }) => {
                 transition={{ delay: index * 0.05 }}
                 className="flex items-start gap-4 p-4 rounded-lg bg-background/30 border border-border/30"
               >
-                <div className={`w-8 h-8 rounded-full bg-background flex items-center justify-center ${getActivityColor(activity.action)}`}>
-                  {getActivityIcon(activity.action)}
+                <div className={`w-8 h-8 rounded-full bg-background flex items-center justify-center ${getActivityColor(activity.activity_type)}`}>
+                  {getActivityIcon(activity.activity_type)}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                  <p className="font-medium text-foreground">
-                    {String(activity.action).charAt(0).toUpperCase() + String(activity.action).slice(1)}
-                  </p>
+                    <p className="font-medium text-foreground">
+                      {activity.title}
+                    </p>
                     <Badge variant="outline" className="text-xs">
-                      {String(activity.resource_type)}
+                      {activity.activity_type}
                     </Badge>
                   </div>
                   
-                  <p className="text-sm text-foreground-muted mb-2">
-                    Resource: {String(activity.resource_id || 'N/A')}
-                  </p>
+                  {activity.description && (
+                    <p className="text-sm text-foreground-muted mb-2">
+                      {activity.description}
+                    </p>
+                  )}
                   
                   <div className="flex items-center gap-4 text-xs text-foreground-subtle">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {format(new Date(activity.created_at), 'MMM d, yyyy')}
+                      {format(new Date(activity.timestamp), 'MMM d, yyyy')}
                     </span>
                     <span>
-                      {format(new Date(activity.created_at), 'h:mm a')}
+                      {format(new Date(activity.timestamp), 'h:mm a')}
                     </span>
-                    {activity.ip_address && (
+                    {activity.related_entity_type && (
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3 h-3" />
-                        {String(activity.ip_address)}
+                        {activity.related_entity_type}
                       </span>
                     )}
                   </div>
