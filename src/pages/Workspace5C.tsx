@@ -32,6 +32,7 @@ import { QUERY_KEYS_5C, Capacity5C, EnhancedTask5C } from '@/5c/types';
 import { use5cTaskEngine } from '@/hooks/use5cTaskEngine';
 import { useGoldenScenarioEnrichment } from '@/hooks/useGoldenScenarioEnrichment';
 import { ServiceStatus } from '@/5c/components/ServiceStatus';
+import { TaskSwitchLoader } from '@/components/workspace/TaskSwitchLoader';
 import type { CapacityBundleProps } from '@/types/capacity';
 
 // Helper function for compatibility
@@ -84,32 +85,25 @@ export const Workspace5C: React.FC = () => {
     }
   }, [activeTask]);
 
-  // Show loading state
+  // Show enhanced loading state for general workspace loading
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400 mx-auto mb-4"></div>
-            <p className="text-white">Loading 5C Workspace...</p>
-          </div>
-        </div>
-      </div>
+      <TaskSwitchLoader message="Loading 5C Workspace..." />
     );
   }
 
-  // Show loading state while claiming a task
+  // Show enhanced loading state while switching/claiming tasks
   const taskIdFromUrl = new URLSearchParams(window.location.search).get('task5c');
   if (taskIdFromUrl && isLoading && !activeTask) {
+    // Try to find the task title for better UX
+    const targetTask = myTasks.find(t => t.id === taskIdFromUrl) || 
+                      availableTasks.find(t => t.id === taskIdFromUrl);
+    
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400 mx-auto mb-4"></div>
-            <p className="text-white">Loading claimed task...</p>
-          </div>
-        </div>
-      </div>
+      <TaskSwitchLoader 
+        message={targetTask ? "Switching to task..." : "Loading task..."}
+        taskTitle={targetTask?.title}
+      />
     );
   }
 
