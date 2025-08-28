@@ -387,9 +387,9 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
       </motion.header>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Priority Content */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        {/* Main Column - Priority Content */}
+        <div className="xl:col-span-3 space-y-6">
           {/* Checkpoint Console */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -438,7 +438,7 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
         </div>
 
         {/* Right Column - Operational Context */}
-        <div className="space-y-6">
+        <div className="xl:col-span-1 space-y-6">
           {/* Guardrails */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}

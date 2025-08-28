@@ -256,9 +256,9 @@ export const ReflexiveCapacityPage: React.FC<ReflexiveCapacityPageProps> = ({
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Primary Work */}
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          {/* Main Column - Primary Work */}
+          <div className="xl:col-span-3 space-y-6">
             {/* Screen Toggle */}
             <Tabs value={screen} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
