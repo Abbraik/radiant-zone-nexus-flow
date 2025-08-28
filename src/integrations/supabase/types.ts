@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_definitions: {
+        Row: {
+          category: string
+          created_at: string
+          criteria: Json
+          description: string
+          icon: string
+          id: string
+          name: string
+          points: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          criteria?: Json
+          description: string
+          icon?: string
+          id?: string
+          name: string
+          points?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          criteria?: Json
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          points?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      achievement_progress: {
+        Row: {
+          achievement_id: string
+          current_progress: number
+          id: string
+          last_updated: string
+          metadata: Json | null
+          target_progress: number
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          current_progress?: number
+          id?: string
+          last_updated?: string
+          metadata?: Json | null
+          target_progress?: number
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          current_progress?: number
+          id?: string
+          last_updated?: string
+          metadata?: Json | null
+          target_progress?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievement_progress_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievement_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activation_events: {
         Row: {
           as_of: string
@@ -4194,6 +4268,39 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_type: string
+          period_end: string
+          period_start: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          period_end: string
+          period_start: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          period_end?: string
+          period_start?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       pii_policies: {
         Row: {
           column_name: string
@@ -4375,6 +4482,45 @@ export type Database = {
             referencedColumns: ["playbook_key"]
           },
         ]
+      }
+      privacy_settings: {
+        Row: {
+          analytics_tracking: boolean | null
+          created_at: string
+          data_sharing_consent: boolean | null
+          id: string
+          profile_visibility: string | null
+          show_achievements: boolean | null
+          show_activity: boolean | null
+          show_performance: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analytics_tracking?: boolean | null
+          created_at?: string
+          data_sharing_consent?: boolean | null
+          id?: string
+          profile_visibility?: string | null
+          show_achievements?: boolean | null
+          show_activity?: boolean | null
+          show_performance?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analytics_tracking?: boolean | null
+          created_at?: string
+          data_sharing_consent?: boolean | null
+          id?: string
+          profile_visibility?: string | null
+          show_achievements?: boolean | null
+          show_activity?: boolean | null
+          show_performance?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -7442,6 +7588,149 @@ export type Database = {
             referencedColumns: ["channel_key"]
           },
         ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          metadata: Json | null
+          progress: number | null
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          metadata?: Json | null
+          progress?: number | null
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          metadata?: Json | null
+          progress?: number | null
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievement_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_activity_log: {
+        Row: {
+          activity_type: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          related_entity_id: string | null
+          related_entity_type: string | null
+          timestamp: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          timestamp?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          timestamp?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_analytics: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_value: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_value: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_value?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          dashboard_config: Json | null
+          email_notifications: boolean | null
+          id: string
+          language: string | null
+          push_notifications: boolean | null
+          theme: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+          workspace_layout: Json | null
+        }
+        Insert: {
+          created_at?: string
+          dashboard_config?: Json | null
+          email_notifications?: boolean | null
+          id?: string
+          language?: string | null
+          push_notifications?: boolean | null
+          theme?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+          workspace_layout?: Json | null
+        }
+        Update: {
+          created_at?: string
+          dashboard_config?: Json | null
+          email_notifications?: boolean | null
+          id?: string
+          language?: string | null
+          push_notifications?: boolean | null
+          theme?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+          workspace_layout?: Json | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

@@ -1,192 +1,261 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Download, Trash2, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { usePrivacySettings } from '@/hooks/usePrivacySettings';
+import { Loader2, Shield, Eye, BarChart3, Database, Users } from 'lucide-react';
 
 interface PrivacyTabProps {
   user: any;
 }
 
 export const PrivacyTab: React.FC<PrivacyTabProps> = ({ user }) => {
-  const [privacySettings, setPrivacySettings] = useState({
-    profileVisible: true,
-    activityVisible: false,
-    dataCollection: true,
-    analyticsOptOut: false,
-  });
+  const { privacySettings, isLoading, updatePrivacySettings } = usePrivacySettings();
+  const [localSettings, setLocalSettings] = React.useState(privacySettings);
 
-  const handlePrivacyChange = (key: string, value: boolean) => {
-    setPrivacySettings(prev => ({
-      ...prev,
-      [key]: value,
-    }));
+  React.useEffect(() => {
+    setLocalSettings(privacySettings);
+  }, [privacySettings]);
+
+  const handleSettingChange = (key: string, value: any) => {
+    setLocalSettings(prev => prev ? { ...prev, [key]: value } : null);
   };
 
-  const handleDataExport = () => {
-    toast({
-      title: 'Data Export Requested',
-      description: 'Your data export will be prepared and emailed to you within 24 hours.',
-    });
+  const handleSave = async () => {
+    if (!localSettings) return;
+
+    const updates = {
+      profile_visibility: localSettings.profile_visibility,
+      show_activity: localSettings.show_activity,
+      show_achievements: localSettings.show_achievements,
+      show_performance: localSettings.show_performance,
+      data_sharing_consent: localSettings.data_sharing_consent,
+      analytics_tracking: localSettings.analytics_tracking,
+    };
+
+    updatePrivacySettings.mutate(updates);
   };
 
-  const handleAccountDeletion = () => {
-    toast({
-      title: 'Account Deletion',
-      description: 'Please contact support to delete your account.',
-      variant: 'destructive',
-    });
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div>
-        <h3 className="text-xl font-semibold text-foreground mb-2">
-          Privacy & Data
-        </h3>
-        <p className="text-foreground-muted">
-          Manage your privacy settings and data preferences.
-        </p>
-      </div>
-
       {/* Profile Visibility */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Eye className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Profile Visibility</h4>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Public Profile</Label>
-              <p className="text-sm text-foreground-muted">Make your profile visible to other users</p>
-            </div>
-            <Switch
-              checked={privacySettings.profileVisible}
-              onCheckedChange={(checked) => handlePrivacyChange('profileVisible', checked)}
-            />
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Eye className="h-5 w-5" />
+            Profile Visibility
+          </CardTitle>
+          <CardDescription>
+            Control who can see your profile and information
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="profile-visibility">Profile Visibility</Label>
+            <Select
+              value={localSettings?.profile_visibility || 'public'}
+              onValueChange={(value) => handleSettingChange('profile_visibility', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select visibility" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Public - Anyone can view
+                  </div>
+                </SelectItem>
+                <SelectItem value="team">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Team - Only team members
+                  </div>
+                </SelectItem>
+                <SelectItem value="private">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Private - Only you
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Activity Status</Label>
-              <p className="text-sm text-foreground-muted">Show when you were last active</p>
-            </div>
-            <Switch
-              checked={privacySettings.activityVisible}
-              onCheckedChange={(checked) => handlePrivacyChange('activityVisible', checked)}
-            />
-          </div>
-        </div>
+        </CardContent>
       </Card>
 
-      {/* Data Collection */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Shield className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Data Collection</h4>
-        </div>
-
-        <div className="space-y-4">
+      {/* Activity & Performance */}
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Activity & Performance
+          </CardTitle>
+          <CardDescription>
+            Choose what information to display on your profile
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <Label>Analytics Data</Label>
-              <p className="text-sm text-foreground-muted">Help improve our service with usage analytics</p>
+              <Label htmlFor="show-activity">Show Activity</Label>
+              <p className="text-sm text-foreground-muted">
+                Display your recent tasks and actions
+              </p>
             </div>
             <Switch
-              checked={privacySettings.dataCollection}
-              onCheckedChange={(checked) => handlePrivacyChange('dataCollection', checked)}
+              id="show-activity"
+              checked={localSettings?.show_activity ?? true}
+              onCheckedChange={(checked) => handleSettingChange('show_activity', checked)}
             />
           </div>
 
+          <Separator />
+
           <div className="flex items-center justify-between">
             <div>
-              <Label>Opt-out of Analytics</Label>
-              <p className="text-sm text-foreground-muted">Disable all analytics tracking</p>
+              <Label htmlFor="show-achievements">Show Achievements</Label>
+              <p className="text-sm text-foreground-muted">
+                Display your unlocked badges and achievements
+              </p>
             </div>
             <Switch
-              checked={privacySettings.analyticsOptOut}
-              onCheckedChange={(checked) => handlePrivacyChange('analyticsOptOut', checked)}
+              id="show-achievements"
+              checked={localSettings?.show_achievements ?? true}
+              onCheckedChange={(checked) => handleSettingChange('show_achievements', checked)}
             />
           </div>
-        </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="show-performance">Show Performance Metrics</Label>
+              <p className="text-sm text-foreground-muted">
+                Display completion rates and performance statistics
+              </p>
+            </div>
+            <Switch
+              id="show-performance"
+              checked={localSettings?.show_performance ?? true}
+              onCheckedChange={(checked) => handleSettingChange('show_performance', checked)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Data & Analytics */}
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Data & Analytics
+          </CardTitle>
+          <CardDescription>
+            Manage how your data is used and shared
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="analytics-tracking">Analytics Tracking</Label>
+              <p className="text-sm text-foreground-muted">
+                Allow collection of usage analytics to improve the platform
+              </p>
+            </div>
+            <Switch
+              id="analytics-tracking"
+              checked={localSettings?.analytics_tracking ?? true}
+              onCheckedChange={(checked) => handleSettingChange('analytics_tracking', checked)}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="data-sharing">Data Sharing Consent</Label>
+              <p className="text-sm text-foreground-muted">
+                Allow anonymized data sharing for research and improvement
+              </p>
+            </div>
+            <Switch
+              id="data-sharing"
+              checked={localSettings?.data_sharing_consent ?? false}
+              onCheckedChange={(checked) => handleSettingChange('data_sharing_consent', checked)}
+            />
+          </div>
+        </CardContent>
       </Card>
 
       {/* Data Management */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Download className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Data Management</h4>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-background/30 rounded-lg border border-border/30">
-            <div>
-              <Label>Export Your Data</Label>
-              <p className="text-sm text-foreground-muted">Download a copy of your personal data</p>
-            </div>
-            <Button 
-              onClick={handleDataExport}
-              variant="outline"
-              size="sm"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export
+      <Card className="glass border-destructive/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <Shield className="h-5 w-5" />
+            Data Management
+          </CardTitle>
+          <CardDescription>
+            Manage your personal data and account
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Button variant="outline" className="w-full">
+              Download My Data
             </Button>
+            <p className="text-xs text-foreground-muted">
+              Download a copy of all your data stored on the platform
+            </p>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-background/30 rounded-lg border border-destructive/30">
-            <div>
-              <Label className="text-destructive">Delete Account</Label>
-              <p className="text-sm text-foreground-muted">Permanently delete your account and all data</p>
-            </div>
-            <Button 
-              onClick={handleAccountDeletion}
-              variant="destructive"
-              size="sm"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete
+          <Separator />
+
+          <div className="space-y-2">
+            <Button variant="destructive" className="w-full">
+              Delete Account
             </Button>
+            <p className="text-xs text-destructive">
+              Permanently delete your account and all associated data
+            </p>
           </div>
-        </div>
+        </CardContent>
       </Card>
 
-      {/* Privacy Notice */}
-      <Card className="glass-secondary p-6 border-info/20">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-info mt-0.5" />
-          <div>
-            <h4 className="text-lg font-medium text-foreground mb-2">Privacy Information</h4>
-            <div className="text-foreground-muted space-y-2 text-sm">
-              <p>
-                We are committed to protecting your privacy and handling your data responsibly.
-              </p>
-              <p>
-                Your profile information is only shared according to your visibility settings.
-                We use analytics data to improve our service, but you can opt-out at any time.
-              </p>
-              <div className="flex gap-2 mt-4">
-                <Badge variant="outline">
-                  GDPR Compliant
-                </Badge>
-                <Badge variant="outline">
-                  SOC 2 Certified
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button 
+          onClick={handleSave} 
+          disabled={updatePrivacySettings.isPending}
+          className="glass"
+        >
+          {updatePrivacySettings.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            'Save Privacy Settings'
+          )}
+        </Button>
+      </div>
     </motion.div>
   );
 };

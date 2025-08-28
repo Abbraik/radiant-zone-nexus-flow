@@ -1,227 +1,237 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Monitor, Bell, Globe, Palette } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { Loader2, Settings, Globe, Bell, Layout, Monitor } from 'lucide-react';
 
 interface PreferencesTabProps {
   user: any;
 }
 
 export const PreferencesTab: React.FC<PreferencesTabProps> = ({ user }) => {
-  const [preferences, setPreferences] = useState({
-    theme: 'dark',
-    language: 'en',
-    timezone: 'UTC',
-    notifications: {
-      email: true,
-      push: false,
-      tasks: true,
-      system: false,
-    },
-    workspace: {
-      compactMode: false,
-      showTips: true,
-      autoSave: true,
-    }
-  });
+  const { preferences, isLoading, updatePreferences } = useUserPreferences();
+  const [localPreferences, setLocalPreferences] = React.useState(preferences);
 
-  const handleNotificationChange = (key: string, value: boolean) => {
-    setPreferences(prev => ({
-      ...prev,
-      notifications: {
-        ...prev.notifications,
-        [key]: value,
-      }
-    }));
+  React.useEffect(() => {
+    setLocalPreferences(preferences);
+  }, [preferences]);
+
+  const handlePreferenceChange = (key: string, value: any) => {
+    setLocalPreferences(prev => prev ? { ...prev, [key]: value } : null);
   };
 
-  const handleWorkspaceChange = (key: string, value: boolean) => {
-    setPreferences(prev => ({
-      ...prev,
-      workspace: {
-        ...prev.workspace,
-        [key]: value,
-      }
-    }));
+  const handleSave = async () => {
+    if (!localPreferences) return;
+
+    const updates = {
+      theme: localPreferences.theme,
+      language: localPreferences.language,
+      timezone: localPreferences.timezone,
+      email_notifications: localPreferences.email_notifications,
+      push_notifications: localPreferences.push_notifications,
+      workspace_layout: localPreferences.workspace_layout,
+      dashboard_config: localPreferences.dashboard_config,
+    };
+
+    updatePreferences.mutate(updates);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    );
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className="space-y-6"
     >
-      <div>
-        <h3 className="text-xl font-semibold text-foreground mb-2">
-          Preferences
-        </h3>
-        <p className="text-foreground-muted">
-          Customize your experience and notification settings.
-        </p>
-      </div>
-
-      {/* Appearance */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Palette className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Appearance</h4>
-        </div>
-
-        <div className="space-y-4">
+      {/* General Preferences */}
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            General Preferences
+          </CardTitle>
+          <CardDescription>
+            Customize your workspace and application behavior
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Theme */}
           <div className="space-y-2">
-            <Label>Theme</Label>
-            <Select value={preferences.theme} onValueChange={(value) => setPreferences(prev => ({ ...prev, theme: value }))}>
-              <SelectTrigger className="input-floating">
-                <SelectValue />
+            <Label htmlFor="theme">Theme</Label>
+            <Select
+              value={localPreferences?.theme || 'system'}
+              onValueChange={(value) => handlePreferenceChange('theme', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select theme" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="light" disabled>Light (Coming Soon)</SelectItem>
-                <SelectItem value="auto" disabled>Auto (Coming Soon)</SelectItem>
+                <SelectItem value="light">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-white border" />
+                    Light
+                  </div>
+                </SelectItem>
+                <SelectItem value="dark">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-gray-800" />
+                    Dark
+                  </div>
+                </SelectItem>
+                <SelectItem value="system">
+                  <div className="flex items-center gap-2">
+                    <Monitor className="w-3 h-3" />
+                    System
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </div>
-      </Card>
 
-      {/* Localization */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Globe className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Localization</h4>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Language */}
           <div className="space-y-2">
-            <Label>Language</Label>
-            <Select value={preferences.language} onValueChange={(value) => setPreferences(prev => ({ ...prev, language: value }))}>
-              <SelectTrigger className="input-floating">
-                <SelectValue />
+            <Label htmlFor="language" className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              Language
+            </Label>
+            <Select
+              value={localPreferences?.language || 'en'}
+              onValueChange={(value) => handlePreferenceChange('language', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es" disabled>Spanish (Coming Soon)</SelectItem>
-                <SelectItem value="fr" disabled>French (Coming Soon)</SelectItem>
+                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="fr">Français</SelectItem>
+                <SelectItem value="de">Deutsch</SelectItem>
+                <SelectItem value="it">Italiano</SelectItem>
+                <SelectItem value="pt">Português</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {/* Timezone */}
           <div className="space-y-2">
-            <Label>Timezone</Label>
-            <Select value={preferences.timezone} onValueChange={(value) => setPreferences(prev => ({ ...prev, timezone: value }))}>
-              <SelectTrigger className="input-floating">
-                <SelectValue />
+            <Label htmlFor="timezone">Timezone</Label>
+            <Select
+              value={localPreferences?.timezone || 'UTC'}
+              onValueChange={(value) => handlePreferenceChange('timezone', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select timezone" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="UTC">UTC</SelectItem>
-                <SelectItem value="EST">EST</SelectItem>
-                <SelectItem value="PST">PST</SelectItem>
-                <SelectItem value="CET">CET</SelectItem>
+                <SelectItem value="UTC">UTC (Coordinated Universal Time)</SelectItem>
+                <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
+                <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
+                <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
+                <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                <SelectItem value="Europe/London">London (GMT)</SelectItem>
+                <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
+                <SelectItem value="Europe/Berlin">Berlin (CET)</SelectItem>
+                <SelectItem value="Asia/Tokyo">Tokyo (JST)</SelectItem>
+                <SelectItem value="Asia/Shanghai">Shanghai (CST)</SelectItem>
+                <SelectItem value="Australia/Sydney">Sydney (AEDT)</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </div>
+        </CardContent>
       </Card>
 
       {/* Notifications */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Bell className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Notifications</h4>
-        </div>
-
-        <div className="space-y-4">
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5" />
+            Notifications
+          </CardTitle>
+          <CardDescription>
+            Configure how you receive notifications
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <Label>Email Notifications</Label>
-              <p className="text-sm text-foreground-muted">Receive updates via email</p>
+              <Label htmlFor="email-notifications">Email Notifications</Label>
+              <p className="text-sm text-foreground-muted">
+                Receive notifications via email
+              </p>
             </div>
             <Switch
-              checked={preferences.notifications.email}
-              onCheckedChange={(checked) => handleNotificationChange('email', checked)}
+              id="email-notifications"
+              checked={localPreferences?.email_notifications ?? true}
+              onCheckedChange={(checked) => handlePreferenceChange('email_notifications', checked)}
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Push Notifications</Label>
-              <p className="text-sm text-foreground-muted">Browser push notifications</p>
-            </div>
-            <Switch
-              checked={preferences.notifications.push}
-              onCheckedChange={(checked) => handleNotificationChange('push', checked)}
-            />
-          </div>
+          <Separator />
 
           <div className="flex items-center justify-between">
             <div>
-              <Label>Task Updates</Label>
-              <p className="text-sm text-foreground-muted">Notifications about task changes</p>
+              <Label htmlFor="push-notifications">Push Notifications</Label>
+              <p className="text-sm text-foreground-muted">
+                Receive browser push notifications
+              </p>
             </div>
             <Switch
-              checked={preferences.notifications.tasks}
-              onCheckedChange={(checked) => handleNotificationChange('tasks', checked)}
+              id="push-notifications"
+              checked={localPreferences?.push_notifications ?? true}
+              onCheckedChange={(checked) => handlePreferenceChange('push_notifications', checked)}
             />
           </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>System Updates</Label>
-              <p className="text-sm text-foreground-muted">Maintenance and system notices</p>
-            </div>
-            <Switch
-              checked={preferences.notifications.system}
-              onCheckedChange={(checked) => handleNotificationChange('system', checked)}
-            />
-          </div>
-        </div>
+        </CardContent>
       </Card>
 
-      {/* Workspace */}
-      <Card className="glass-secondary p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Monitor className="w-5 h-5 text-primary" />
-          <h4 className="text-lg font-medium text-foreground">Workspace</h4>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Compact Mode</Label>
-              <p className="text-sm text-foreground-muted">Use a more compact interface layout</p>
-            </div>
-            <Switch
-              checked={preferences.workspace.compactMode}
-              onCheckedChange={(checked) => handleWorkspaceChange('compactMode', checked)}
-            />
+      {/* Workspace Layout */}
+      <Card className="glass">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Layout className="h-5 w-5" />
+            Workspace Layout
+          </CardTitle>
+          <CardDescription>
+            Customize your workspace appearance and behavior
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-sm text-foreground-muted">
+            Workspace layout preferences are automatically saved as you make changes to your workspace.
           </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Show Tips</Label>
-              <p className="text-sm text-foreground-muted">Display helpful tips and guides</p>
-            </div>
-            <Switch
-              checked={preferences.workspace.showTips}
-              onCheckedChange={(checked) => handleWorkspaceChange('showTips', checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <Label>Auto-Save</Label>
-              <p className="text-sm text-foreground-muted">Automatically save your work</p>
-            </div>
-            <Switch
-              checked={preferences.workspace.autoSave}
-              onCheckedChange={(checked) => handleWorkspaceChange('autoSave', checked)}
-            />
-          </div>
-        </div>
+        </CardContent>
       </Card>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button 
+          onClick={handleSave} 
+          disabled={updatePreferences.isPending}
+          className="glass"
+        >
+          {updatePreferences.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            'Save Preferences'
+          )}
+        </Button>
+      </div>
     </motion.div>
   );
 };

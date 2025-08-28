@@ -27,7 +27,7 @@ export interface Badge {
   criteria: string;
 }
 
-// Mock data
+// Legacy mock data - kept for compatibility but will be replaced by real backend data
 const mockStats: UserStats = {
   completed: 24,
   pending: 3,
@@ -158,6 +158,8 @@ export const useBadges = (userId?: string) => {
   return useQuery({
     queryKey: ['badges', userId],
     queryFn: async (): Promise<{ unlocked: Badge[], locked: Badge[] }> => {
+      // Note: This will be replaced by real achievement system
+      // For now, using mock data for compatibility
       await new Promise(resolve => setTimeout(resolve, 250));
       return mockBadges;
     }
