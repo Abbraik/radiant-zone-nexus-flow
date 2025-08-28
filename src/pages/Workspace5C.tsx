@@ -33,7 +33,6 @@ import { use5cTaskEngine } from '@/hooks/use5cTaskEngine';
 import { useGoldenScenarioEnrichment } from '@/hooks/useGoldenScenarioEnrichment';
 import { ServiceStatus } from '@/5c/components/ServiceStatus';
 import { TaskSwitchLoader } from '@/components/workspace/TaskSwitchLoader';
-import { QuickTaskRevert } from '@/components/admin/QuickTaskRevert';
 import type { CapacityBundleProps } from '@/types/capacity';
 
 // Helper function for compatibility
@@ -130,9 +129,6 @@ export const Workspace5C: React.FC = () => {
             >
               <div className="text-center py-20">
                 <div className="mb-8 p-8 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
-                  <div className="flex justify-end mb-4">
-                    <QuickTaskRevert />
-                  </div>
                   <h2 className="text-2xl font-bold text-white mb-4">No Active 5C Task</h2>
                   {myTasks.length > 0 ? (
                     <div>

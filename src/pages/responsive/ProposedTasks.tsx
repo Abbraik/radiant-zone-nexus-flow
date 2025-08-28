@@ -1,6 +1,5 @@
 import React from 'react';
 import { TaskManagementDashboard } from '@/components/responsive/TaskManagementDashboard';
-import { QuickTaskRevert } from '@/components/admin/QuickTaskRevert';
 
 interface Task {
   title: string;
@@ -56,11 +55,6 @@ export const ProposedTasks: React.FC<ProposedTasksProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Quick Task Revert */}
-      <div className="flex justify-end">
-        <QuickTaskRevert />
-      </div>
-      
       {/* Enhanced Task Management Dashboard */}
       <TaskManagementDashboard 
         sprintId={sprintId}

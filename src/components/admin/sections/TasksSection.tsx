@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, RefreshCw, CheckCircle, Clock } from 'lucide-react';
 import { useResetTasks } from '@/hooks/useResetTasks';
 import { useQuery } from '@tanstack/react-query';
+import { QuickTaskRevert } from '@/components/admin/QuickTaskRevert';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -112,11 +113,14 @@ export const TasksSection: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-semibold text-foreground mb-2">5C Task Management</h2>
-        <p className="text-foreground-muted">
-          Manage and reset claimed tasks in the 5C workspace. Use this to return claimed tasks back to open status for new claims.
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-semibold text-foreground mb-2">5C Task Management</h2>
+          <p className="text-foreground-muted">
+            Manage and reset claimed tasks in the 5C workspace. Use this to return claimed tasks back to open status for new claims.
+          </p>
+        </div>
+        <QuickTaskRevert />
       </div>
 
       {/* Task Statistics */}
