@@ -17,9 +17,9 @@ interface ProfileTabsProps {
 
 export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
   return (
-    <Card className="glass p-6">
+    <Card className="glass p-4 max-w-none w-full">
       <Tabs defaultValue="performance" className="w-full">
-        <TabsList className="flex w-full justify-between glass-secondary overflow-x-auto">
+        <TabsList className="grid w-full grid-cols-8 glass-secondary min-w-fit">
           <TabsTrigger 
             value="personal" 
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
