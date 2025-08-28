@@ -8210,6 +8210,10 @@ export type Database = {
         Args: { playbook_uuid: string; watchpoint_uuid: string }
         Returns: Json
       }
+      check_and_unlock_achievements: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       compute_band_status: {
         Args: { p_lower_bound: number; p_upper_bound: number; p_value: number }
         Returns: Json

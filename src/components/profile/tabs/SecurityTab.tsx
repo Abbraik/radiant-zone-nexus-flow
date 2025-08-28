@@ -8,12 +8,14 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useUserAnalytics } from '@/hooks/useUserAnalytics';
 
 interface SecurityTabProps {
   user: any;
 }
 
 export const SecurityTab: React.FC<SecurityTabProps> = ({ user }) => {
+  const { logActivity } = useUserAnalytics();
   const [passwordForm, setPasswordForm] = useState({
     current: '',
     new: '',
@@ -52,6 +54,13 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ user }) => {
       toast({
         title: 'Success',
         description: 'Password updated successfully',
+      });
+
+      // Log security activity for achievements
+      logActivity.mutate({
+        activityType: 'security',
+        title: 'Password Changed',
+        description: 'User successfully updated their password'
       });
 
       setPasswordForm({ current: '', new: '', confirm: '' });

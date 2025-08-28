@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
-import { useUserAnalytics } from '@/hooks/useUserAnalytics';
 import { Badge } from '@/components/ui/badge';
+import { useUserAnalytics } from '@/hooks/useUserAnalytics';
 import { format } from 'date-fns';
 
 interface AnalyticsTabProps {
@@ -15,8 +15,20 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
     analytics, 
     performanceMetrics, 
     activityLog, 
-    isLoading 
+    isLoading,
+    logActivity 
   } = useUserAnalytics(30);
+
+  // Log analytics view for achievements
+  React.useEffect(() => {
+    if (!isLoading && logActivity) {
+      logActivity.mutate({
+        activityType: 'view',
+        title: 'Analytics Viewed',
+        description: 'User viewed their analytics dashboard'
+      });
+    }
+  }, [isLoading, logActivity]);
 
   return (
     <div className="space-y-6">
