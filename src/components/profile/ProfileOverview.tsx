@@ -1,12 +1,15 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { User, Calendar, Activity, Shield } from 'lucide-react';
+import { User, Calendar, Activity, Shield, Trophy, Target, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
+import { useUpdatedDashboardData } from '@/hooks/useUpdatedDashboardData';
+import { useBadges } from '@/hooks/useUserStats';
 import { format } from 'date-fns';
 
 interface ProfileOverviewProps {
@@ -16,6 +19,8 @@ interface ProfileOverviewProps {
 export const ProfileOverview: React.FC<ProfileOverviewProps> = ({ user }) => {
   const { profile, uploadAvatar } = useProfile();
   const { userRoles, isAdmin } = useAuth();
+  const { userStats, achievements, systemHealth, isLoading } = useUpdatedDashboardData();
+  const { data: badges } = useBadges();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +141,97 @@ export const ProfileOverview: React.FC<ProfileOverviewProps> = ({ user }) => {
             <span className="text-sm font-medium">
               {profile ? '100%' : '60%'} Complete
             </span>
+          </div>
+        </div>
+
+        {/* Dashboard Stats Preview */}
+        <div className="mt-6 space-y-4">
+          <h3 className="text-sm font-medium text-foreground-muted">Performance Overview</h3>
+          
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-primary" />
+                <span className="text-sm text-foreground-muted">Active Loops</span>
+              </div>
+              <span className="text-sm font-bold text-primary">
+                {isLoading ? '...' : userStats.activeLoops}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-success/10 rounded-lg">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-success" />
+                <span className="text-sm text-foreground-muted">Completed Tasks</span>
+              </div>
+              <span className="text-sm font-bold text-success">
+                {isLoading ? '...' : userStats.completedTasks}
+              </span>
+            </div>
+
+            <div className="p-3 bg-accent/10 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-accent" />
+                  <span className="text-sm text-foreground-muted">TRI Score</span>
+                </div>
+                <span className="text-sm font-bold text-accent">
+                  {isLoading ? '...' : `${Math.round(userStats.avgTRI * 100)}%`}
+                </span>
+              </div>
+              <Progress value={userStats.avgTRI * 100} className="h-2" />
+            </div>
+          </div>
+        </div>
+
+        {/* Achievement Preview */}
+        {badges && badges.unlocked && badges.unlocked.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-foreground-muted mb-3">Recent Achievements</h3>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {badges.unlocked.slice(0, 3).map((badge) => (
+                <motion.div
+                  key={badge.id}
+                  whileHover={{ scale: 1.1 }}
+                  className="p-2 bg-success/10 border border-success/20 rounded-lg text-center"
+                  title={badge.description}
+                >
+                  <div className="text-lg">{badge.icon}</div>
+                  <div className="text-xs text-success font-medium mt-1">
+                    {badge.name}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            {badges.unlocked.length > 3 && (
+              <div className="text-center mt-2">
+                <span className="text-xs text-foreground-subtle">
+                  +{badges.unlocked.length - 3} more achievements
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* System Health Indicator */}
+        <div className="mt-6">
+          <div className={`p-3 rounded-lg border ${
+            systemHealth.status === 'healthy' ? 'bg-success/10 border-success/20' :
+            systemHealth.status === 'warning' ? 'bg-warning/10 border-warning/20' :
+            'bg-destructive/10 border-destructive/20'
+          }`}>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${
+                systemHealth.status === 'healthy' ? 'bg-success' :
+                systemHealth.status === 'warning' ? 'bg-warning' :
+                'bg-destructive'
+              }`} />
+              <span className="text-xs font-medium">
+                {systemHealth.status === 'healthy' ? 'All Systems Operational' :
+                 systemHealth.status === 'warning' ? 'Minor Issues Detected' :
+                 'Critical Issues Present'}
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>

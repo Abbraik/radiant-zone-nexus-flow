@@ -6,12 +6,18 @@ import { SecurityTab } from './tabs/SecurityTab';
 import { PreferencesTab } from './tabs/PreferencesTab';
 import { ActivityTab } from './tabs/ActivityTab';
 import { PrivacyTab } from './tabs/PrivacyTab';
+import { PerformanceTab } from './tabs/PerformanceTab';
+import { AchievementsTab } from './tabs/AchievementsTab';
+import { AnalyticsTab } from './tabs/AnalyticsTab';
 import { 
   User, 
   Shield, 
   Settings, 
   Activity, 
-  Lock 
+  Lock,
+  TrendingUp,
+  Trophy,
+  BarChart3
 } from 'lucide-react';
 
 interface ProfileTabsProps {
@@ -21,8 +27,8 @@ interface ProfileTabsProps {
 export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
   return (
     <Card className="glass p-6">
-      <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 glass-secondary">
+      <Tabs defaultValue="performance" className="w-full">
+        <TabsList className="grid w-full grid-cols-8 glass-secondary">
           <TabsTrigger 
             value="personal" 
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
@@ -62,6 +68,30 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             <Lock className="w-4 h-4" />
             <span className="hidden sm:inline">Privacy</span>
           </TabsTrigger>
+
+          <TabsTrigger 
+            value="performance"
+            className="flex items-center gap-2 data-[state=active]:bg-primary/10"
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span className="hidden sm:inline">Performance</span>
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="achievements"
+            className="flex items-center gap-2 data-[state=active]:bg-primary/10"
+          >
+            <Trophy className="w-4 h-4" />
+            <span className="hidden sm:inline">Achievements</span>
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="analytics"
+            className="flex items-center gap-2 data-[state=active]:bg-primary/10"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span className="hidden sm:inline">Analytics</span>
+          </TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
@@ -83,6 +113,18 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
 
           <TabsContent value="privacy">
             <PrivacyTab user={user} />
+          </TabsContent>
+
+          <TabsContent value="performance">
+            <PerformanceTab user={user} />
+          </TabsContent>
+
+          <TabsContent value="achievements">
+            <AchievementsTab user={user} />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AnalyticsTab user={user} />
           </TabsContent>
         </div>
       </Tabs>
