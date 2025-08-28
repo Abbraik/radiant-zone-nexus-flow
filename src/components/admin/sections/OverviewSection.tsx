@@ -58,12 +58,14 @@ export const OverviewSection: React.FC = () => {
   }
 
   // Task counts by capacity
-  const taskCounts = stats?.tasks.reduce((acc, task) => {
+  const taskCounts = stats?.tasks?.reduce((acc, task) => {
     acc[task.capacity] = (acc[task.capacity] || 0) + 1;
     return acc;
   }, {} as Record<string, number>) || {};
 
-  const totalActiveTasks = stats?.tasks.length || 0;
+  const totalActiveTasks = stats?.totalTasks || 0;
+  const availableTasksCount = stats?.availableTasks || 0;
+  const claimedTasksCount = stats?.claimedTasks || 0;
 
   return (
     <div className="space-y-6">

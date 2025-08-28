@@ -98,11 +98,11 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Reset all claimed tasks to 'open' status
+    // Reset all claimed tasks to 'available' status (the default)
     const { data: updatedTasks, error: updateError } = await supabaseClient
       .from('tasks_v2')
       .update({ 
-        status: 'open',
+        status: 'available',
         updated_at: new Date().toISOString()
       })
       .in('status', ['claimed', 'active', 'in_progress'])

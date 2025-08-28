@@ -23,7 +23,7 @@ export const TasksSection: React.FC = () => {
   const { resetClaimedTasks, isResetting } = useResetTasks();
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // Fetch task statistics
+  // Fetch task statistics from tasks_v2 table
   const { data: taskStats, isLoading, refetch } = useQuery({
     queryKey: ['admin', 'task-stats'],
     queryFn: async () => {
@@ -62,7 +62,7 @@ export const TasksSection: React.FC = () => {
           claimedTasks: claimedResult.data || [],
           totalTasks: totalResult.data?.length || 0,
           claimedCount: claimedResult.data?.length || 0,
-          availableCount: totalResult.data?.filter(t => t.status === 'open').length || 0,
+          availableCount: totalResult.data?.filter(t => t.status === 'available').length || 0,
         };
       } catch (error) {
         console.error('Error in task stats query:', error);
