@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   X, 
   ChevronLeft, 
@@ -38,6 +39,8 @@ interface SprintConfig {
   capacity: string;
   leverage: string;
   duration: number;
+  startDate?: string;
+  endDate?: string;
   teamSize: number;
   guardrails: string[];
   tasks: TaskConfig[];
@@ -56,6 +59,7 @@ interface TaskConfig {
   assignee?: string;
   priority: string;
   estimatedHours: number;
+  dueDate?: string;
   dependencies: string[];
 }
 
@@ -87,6 +91,8 @@ export const SprintSetupWizard: React.FC<SprintSetupWizardProps> = ({
     capacity: taskData?.capacity || 'responsive',
     leverage: 'P',
     duration: 7,
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     teamSize: 5,
     guardrails: ['max_concurrent_tasks:3', 'daily_standup:required'],
     tasks: [],
@@ -99,6 +105,17 @@ export const SprintSetupWizard: React.FC<SprintSetupWizardProps> = ({
   });
 
   const { toast } = useToast();
+
+  // Helper function to convert priority string to number
+  const getPriorityNumber = (priority: string): number => {
+    switch (priority) {
+      case 'critical': return 1;
+      case 'high': return 2; 
+      case 'medium': return 3;
+      case 'low': return 4;
+      default: return 3;
+    }
+  };
 
   const handleNext = () => {
     if (currentStep < WIZARD_STEPS.length - 1) {
@@ -114,13 +131,57 @@ export const SprintSetupWizard: React.FC<SprintSetupWizardProps> = ({
 
   const handleFinish = async () => {
     try {
-      // Simulate sprint creation
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Create the sprint first
+      const { data: sprint, error: sprintError } = await supabase
+        .from('sprints')
+        .insert({
+          user_id: user.id,
+          name: config.name,
+          description: config.description,
+          status: 'planning',
+          start_date: config.startDate,
+          end_date: config.endDate,
+          goals: config.tasks.map(t => ({ title: t.title, description: t.description }))
+        })
+        .select()
+        .single();
+
+      if (sprintError) throw sprintError;
+
+      // Create sprint tasks
+      const sprintTasks = config.tasks.map(task => ({
+        sprint_id: sprint.id,
+        user_id: user.id,
+        title: task.title,
+        description: task.description || '',
+        status: 'pending',
+        priority: getPriorityNumber(task.priority),
+        estimated_hours: task.estimatedHours || 8,
+        due_date: task.dueDate || config.endDate,
+        meta: {
+          capacity: config.capacity,
+          leverage: config.leverage,
+          progress_percent: 0
+        }
+      }));
+
+      if (sprintTasks.length > 0) {
+        const { error: tasksError } = await supabase
+          .from('sprint_tasks')
+          .insert(sprintTasks);
+
+        if (tasksError) throw tasksError;
+      }
+
       toast({
         title: "Sprint Created Successfully!",
         description: `${config.name} has been set up with ${config.tasks.length} tasks and ${config.teamMembers.length} team members.`,
       });
 
-      // Simulate Teams channel creation
+      // Simulate Teams channel creation if enabled
       if (config.teamsIntegration.enabled) {
         setTimeout(() => {
           toast({
@@ -132,9 +193,10 @@ export const SprintSetupWizard: React.FC<SprintSetupWizardProps> = ({
 
       onClose();
     } catch (error) {
+      console.error('Error creating sprint:', error);
       toast({
         title: "Error Creating Sprint",
-        description: "Please try again or contact support.",
+        description: error instanceof Error ? error.message : "Please try again or contact support.",
         variant: "destructive"
       });
     }
