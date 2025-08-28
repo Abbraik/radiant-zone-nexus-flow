@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Shell } from "./components/layout/Shell";
 import { FeatureFlagGuard, FeatureFlagProvider } from "./components/layout/FeatureFlagProvider";
 import { WorkspaceShell } from "./components/layout/WorkspaceShell";
+import Profile from "./pages/Profile";
 
 
 import { ErrorBoundary } from "./components/common/ErrorBoundary";
@@ -55,8 +56,9 @@ const App = () => (
               <Shell>
                  <Routes>
                    
-                    <Route path="/auth" element={<Auth />} />
-                   <Route path="/demo" element={<Demo />} />
+                     <Route path="/auth" element={<Auth />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/demo" element={<Demo />} />
                     <Route path="/registry" element={<LoopRegistry />} />
                     <Route path="/registry/:id" element={<LoopDetail />} />
                     <Route path="/registry/:id/edit" element={<LoopEditor />} />
