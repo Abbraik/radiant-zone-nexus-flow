@@ -42,6 +42,7 @@ const use5cTasks = () => {
 };
 
 export const Workspace5C: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { 
     myTasks, 
     activeTask: rawActiveTask, 
@@ -136,23 +137,22 @@ export const Workspace5C: React.FC = () => {
                       </p>
                       <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-4 mb-6">
                         <h3 className="text-blue-300 font-semibold mb-2">Your Claimed Tasks:</h3>
-                        <div className="space-y-2">
-                          {myTasks.slice(0, 3).map((task) => (
-                            <button
-                              key={task.id}
-                              onClick={() => {
-                                const newSearchParams = new URLSearchParams(window.location.search);
-                                newSearchParams.set('task5c', task.id);
-                                window.history.pushState({}, '', `${window.location.pathname}?${newSearchParams}`);
-                                window.location.reload(); // Force reload to trigger query
-                              }}
-                              className="block w-full text-left px-3 py-2 bg-blue-800/20 border border-blue-400/20 rounded text-blue-200 hover:bg-blue-800/30 transition-colors"
-                            >
-                              <div className="font-medium">{task.title}</div>
-                              <div className="text-sm text-blue-300/70">Capacity: {task.capacity}</div>
-                            </button>
-                          ))}
-                        </div>
+                      <div className="space-y-2">
+                        {myTasks.slice(0, 3).map((task) => (
+                          <button
+                            key={task.id}
+                            onClick={() => {
+                              const newSearchParams = new URLSearchParams(searchParams);
+                              newSearchParams.set('task5c', task.id);
+                              setSearchParams(newSearchParams);
+                            }}
+                            className="block w-full text-left px-3 py-2 bg-blue-800/20 border border-blue-400/20 rounded text-blue-200 hover:bg-blue-800/30 transition-colors"
+                          >
+                            <div className="font-medium">{task.title}</div>
+                            <div className="text-sm text-blue-300/70">Capacity: {task.capacity}</div>
+                          </button>
+                        ))}
+                      </div>
                       </div>
                     </div>
                   ) : (

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -49,14 +50,15 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
 }) => {
   const [isMyTasksCollapsed, setIsMyTasksCollapsed] = useState(false);
   const [isAvailableTasksCollapsed, setIsAvailableTasksCollapsed] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const TaskCard = ({ task, isMyTask = false }: { task: EnhancedTask5C; isMyTask?: boolean }) => {
     const handleTaskClick = () => {
       if (isMyTask) {
-        // For claimed tasks, switch to that task
-        const newSearchParams = new URLSearchParams(window.location.search);
+        // For claimed tasks, switch to that task using React Router
+        const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set('task5c', task.id);
-        window.history.pushState({}, '', `${window.location.pathname}?${newSearchParams}`);
-        window.location.reload(); // Force reload to trigger query
+        setSearchParams(newSearchParams);
       } else {
         // For available tasks, open claim dialog
         onTaskClaim(task);
