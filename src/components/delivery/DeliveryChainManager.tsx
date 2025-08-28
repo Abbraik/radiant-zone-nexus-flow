@@ -36,7 +36,6 @@ export const DeliveryChainManager: React.FC<DeliveryChainManagerProps> = ({
   taskData 
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [showWizard, setShowWizard] = useState(false);
   const [activeSprints] = useState([
     {
       id: '1',
@@ -160,32 +159,26 @@ export const DeliveryChainManager: React.FC<DeliveryChainManagerProps> = ({
                 <div className="flex-1 px-6 py-4">
                   {/* Overview Tab */}
                   <TabsContent value="overview" className="space-y-6 mt-0">
-                    {/* Sprint Creation */}
+                    {/* Team Coordination */}
                     <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                          <Play className="h-5 w-5 text-green-600" />
-                          Sprint Management
+                          <Users className="h-5 w-5 text-blue-600" />
+                          Team Coordination
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              Set up new sprints with automated task distribution and team coordination
-                            </p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <CheckCircle className="h-3 w-3" />
-                              <span>Automated role assignment</span>
-                              <CheckCircle className="h-3 w-3" />
-                              <span>Microsoft Teams integration</span>
-                              <CheckCircle className="h-3 w-3" />
-                              <span>Real-time progress tracking</span>
-                            </div>
-                          </div>
-                          <Button onClick={() => setShowWizard(true)} className="bg-gradient-to-r from-blue-600 to-purple-600">
-                            <Zap className="h-4 w-4 mr-2" />
-                            Start Sprint Wizard
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Coordinate with team members and manage collaborative workflows
+                        </p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button variant="outline" className="justify-start">
+                            <Users className="h-4 w-4 mr-2" />
+                            Invite Members
+                          </Button>
+                          <Button variant="outline" className="justify-start">
+                            <GitBranch className="h-4 w-4 mr-2" />
+                            Create Branch
                           </Button>
                         </div>
                       </CardContent>
@@ -277,14 +270,6 @@ export const DeliveryChainManager: React.FC<DeliveryChainManagerProps> = ({
             </div>
           </motion.div>
 
-          {/* Sprint Setup Wizard Modal */}
-          {showWizard && (
-            <SprintSetupWizard 
-              isOpen={showWizard}
-              onClose={() => setShowWizard(false)}
-              taskData={taskData}
-            />
-          )}
         </>
       )}
     </AnimatePresence>

@@ -8,6 +8,7 @@ import { ResponsiveHeaderLanguage } from "./ResponsiveLanguage";
 import type { LangMode } from "./types.ui.lang";
 import { responsiveDict } from "./types.ui.lang";
 import { label } from "@/lib/i18n-lite";
+import { SprintSetupWizard } from "@/components/delivery/SprintSetupWizard";
 
 // App-shell functions (wire these in your shell)
 declare function upsertIncident(payload: any): Promise<{id:string}>;
@@ -52,42 +53,10 @@ export default function ResponsiveBundle(props: ResponsiveBundleProps) {
     structural: ((reading?.persistencePk ?? 0)/100) >= 0.5 || (reading?.integralError ?? 0) >= 0.5,
   };
 
-  async function startContainmentSprint() {
-    setBusy(true);
-    try {
-      const inc = !incidentId ? await upsertIncident({
-        loop_code: loopCode,
-        indicator,
-        severity: decision.severity,
-        srt: decision.srt,
-        guardrails: decision.guardrails,
-        status: "active"
-      }) : { id: incidentId };
-
-      setIncidentId(inc.id);
-
-      const tasks = suggestedPB
-        ? expandResponsivePlaybook(decision, suggestedPB)
-        : [];
-
-      const sprint = await createSprintWithTasks({
-        capacity: "responsive",
-        leverage: "P",
-        due_at: new Date(Date.now() + timeboxDays*24*3600*1000).toISOString(),
-        guardrails: decision.guardrails,
-        srt: decision.srt,
-        tasks
-      });
-
-      await appendIncidentEvent(inc.id, {
-        kind: "action",
-        payload: { type: "start_containment_sprint", sprint_id: sprint.id, playbook: suggestedPB?.id }
-      });
-
-      openClaimDrawer(tasks);
-    } finally {
-      setBusy(false);
-    }
+  const [showSprintWizard, setShowSprintWizard] = React.useState(false);
+  
+  function startContainmentSprint() {
+    setShowSprintWizard(true);
   }
 
   function handoff(to: "reflexive"|"deliberative"|"structural") {
@@ -175,6 +144,15 @@ export default function ResponsiveBundle(props: ResponsiveBundleProps) {
           → Structural (mandate/pathway)
         </button>
       </div>
+
+      {/* Sprint Setup Wizard */}
+      {showSprintWizard && (
+        <SprintSetupWizard
+          isOpen={showSprintWizard}
+          onClose={() => setShowSprintWizard(false)}
+          taskData={{ decision, reading, playbook: suggestedPB, loop: loopCode, indicator }}
+        />
+      )}
     </div>
   );
 }

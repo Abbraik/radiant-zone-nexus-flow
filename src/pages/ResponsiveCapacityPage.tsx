@@ -45,6 +45,7 @@ import { ActivationVector } from './responsive/ActivationVector';
 import { SRTCountdown } from './responsive/SRTCountdown';
 import { useLanguageMode } from './ResponsiveCapacityWrapper';
 import { mainHeaderCopy, kpiFooterCopy } from '@/bundles/responsive/copy.map';
+import { SprintSetupWizard } from '@/components/delivery/SprintSetupWizard';
 
 interface ResponsiveCapacityPageProps {
   decision?: any;
@@ -202,68 +203,13 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Sprint wizard state
+  const [showSprintWizard, setShowSprintWizard] = useState(false);
+
   // Actions
-  const handleStartSprint = useCallback(async () => {
-    if (isStartingSprint) return;
-    
-    setIsStartingSprint(true);
-    try {
-      // Create incident
-      const incident = await onUpsertIncident?.({
-        loop_code: loop,
-        indicator,
-        severity: decision.severity,
-        srt: decision.srt,
-        guardrails: decision.guardrails,
-        status: 'active'
-      });
-
-      if (incident) {
-        setActiveIncidentId(incident.id);
-        
-        // Append timeline event
-        await onAppendIncidentEvent?.(incident.id, {
-          kind: 'containment_sprint_started',
-          payload: { playbook_id: playbook.id, tasks_count: playbook.tasks.length }
-        });
-
-        // Create sprint with tasks
-        await onCreateSprintWithTasks?.({
-          capacity: 'responsive',
-          leverage: 'P',
-          due_at: new Date(Date.now() + timeboxDays * 24 * 60 * 60 * 1000).toISOString(),
-          guardrails: decision.guardrails,
-          srt: decision.srt,
-          tasks: playbook.tasks
-        });
-
-        // Update timeline
-        setTimelineEvents(prev => [{
-          id: Date.now(),
-          timestamp: new Date(),
-          kind: 'containment_sprint_started',
-          description: `Containment sprint started · due in ${timeboxDays} days`,
-          icon: Activity
-        }, ...prev]);
-
-        // Open claim drawer
-        onOpenClaimDrawer?.(playbook.tasks);
-
-        toast({
-          title: "Containment sprint started",
-          description: `Due ${new Date(Date.now() + timeboxDays * 24 * 60 * 60 * 1000).toLocaleDateString()}. Tasks ready to claim.`,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error starting sprint",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive"
-      });
-    } finally {
-      setIsStartingSprint(false);
-    }
-  }, [isStartingSprint, loop, indicator, decision, playbook, timeboxDays, onUpsertIncident, onAppendIncidentEvent, onCreateSprintWithTasks, onOpenClaimDrawer, toast]);
+  const handleStartSprint = useCallback(() => {
+    setShowSprintWizard(true);
+  }, []);
 
   const handlePublishBanner = useCallback(() => {
     toast({
@@ -549,6 +495,15 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
           </div>
         </div>
       </motion.footer>
+
+      {/* Sprint Setup Wizard */}
+      {showSprintWizard && (
+        <SprintSetupWizard
+          isOpen={showSprintWizard}
+          onClose={() => setShowSprintWizard(false)}
+          taskData={{ decision, reading, playbook, loop, indicator }}
+        />
+      )}
     </motion.div>
   );
 };
