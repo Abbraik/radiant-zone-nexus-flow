@@ -49,55 +49,80 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
 }) => {
   const [isMyTasksCollapsed, setIsMyTasksCollapsed] = useState(false);
   const [isAvailableTasksCollapsed, setIsAvailableTasksCollapsed] = useState(false);
-  const TaskCard = ({ task }: { task: EnhancedTask5C }) => (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
-        activeTask?.id === task.id 
-          ? 'bg-primary/20 border-primary/40' 
-          : 'bg-glass/30 border-white/10 hover:bg-glass/40'
-      }`}
-      onClick={() => onTaskClaim(task)}
-    >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
-          {getStatusIcon(task.status)}
-          <span className="text-xs text-gray-400 uppercase tracking-wide">
-            {task.type} • {task.scale}
-          </span>
-        </div>
-        <Badge className={`text-xs ${getCapacityColor(task.capacity)}`}>
-          {task.capacity}
-        </Badge>
-      </div>
-      
-      <h4 className="text-white font-medium text-sm mb-1 line-clamp-2">
-        {task.title}
-      </h4>
-      
-      {task.description && (
-        <p className="text-gray-400 text-xs line-clamp-2 mb-2">
-          {task.description}
-        </p>
-      )}
-      
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">
-            Leverage: {task.leverage}
-          </span>
+  const TaskCard = ({ task, isMyTask = false }: { task: EnhancedTask5C; isMyTask?: boolean }) => {
+    const handleTaskClick = () => {
+      if (isMyTask) {
+        // For claimed tasks, switch to that task
+        const newSearchParams = new URLSearchParams(window.location.search);
+        newSearchParams.set('task5c', task.id);
+        window.history.pushState({}, '', `${window.location.pathname}?${newSearchParams}`);
+        window.location.reload(); // Force reload to trigger query
+      } else {
+        // For available tasks, open claim dialog
+        onTaskClaim(task);
+      }
+    };
+
+    return (
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
+          activeTask?.id === task.id 
+            ? 'bg-primary/20 border-primary/40 ring-1 ring-primary/30' 
+            : 'bg-glass/30 border-white/10 hover:bg-glass/40'
+        }`}
+        onClick={handleTaskClick}
+      >
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center gap-2">
+            {getStatusIcon(task.status)}
+            <span className="text-xs text-gray-400 uppercase tracking-wide">
+              {task.type} • {task.scale}
+            </span>
+            {activeTask?.id === task.id && (
+              <Badge className="text-xs bg-primary/30 text-primary-foreground border-primary/50">
+                ACTIVE
+              </Badge>
+            )}
+          </div>
+          <Badge className={`text-xs ${getCapacityColor(task.capacity)}`}>
+            {task.capacity}
+          </Badge>
         </div>
         
-        {task.tri && task.tri.t_value !== undefined && task.tri.r_value !== undefined && task.tri.i_value !== undefined && (
-          <div className="flex items-center gap-1 text-xs">
-            <span className="text-red-300">T:{task.tri.t_value.toFixed(1)}</span>
-            <span className="text-blue-300">R:{task.tri.r_value.toFixed(1)}</span>
-            <span className="text-green-300">I:{task.tri.i_value.toFixed(1)}</span>
-          </div>
+        <h4 className="text-white font-medium text-sm mb-1 line-clamp-2">
+          {task.title}
+        </h4>
+        
+        {task.description && (
+          <p className="text-gray-400 text-xs line-clamp-2 mb-2">
+            {task.description}
+          </p>
         )}
-      </div>
-    </motion.div>
-  );
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">
+              Leverage: {task.leverage}
+            </span>
+            {isMyTask && (
+              <span className="text-xs text-teal-400 font-medium">
+                Click to switch
+              </span>
+            )}
+          </div>
+          
+          {task.tri && task.tri.t_value !== undefined && task.tri.r_value !== undefined && task.tri.i_value !== undefined && (
+            <div className="flex items-center gap-1 text-xs">
+              <span className="text-red-300">T:{task.tri.t_value.toFixed(1)}</span>
+              <span className="text-blue-300">R:{task.tri.r_value.toFixed(1)}</span>
+              <span className="text-green-300">I:{task.tri.i_value.toFixed(1)}</span>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <motion.div
@@ -151,7 +176,7 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
                 className="space-y-2"
               >
                 {myTasks.map((task) => (
-                  <TaskCard key={task.id} task={task} />
+                  <TaskCard key={task.id} task={task} isMyTask={true} />
                 ))}
               </motion.div>
             </CollapsibleContent>
@@ -186,7 +211,7 @@ export const Workspace5CSidebar: React.FC<Workspace5CSidebarProps> = ({
               className="space-y-2"
             >
               {availableTasks.map((task) => (
-                <TaskCard key={task.id} task={task} />
+                <TaskCard key={task.id} task={task} isMyTask={false} />
               ))}
             </motion.div>
           </CollapsibleContent>
