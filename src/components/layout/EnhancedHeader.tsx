@@ -52,7 +52,6 @@ const zoneTabs: NavigationItem[] = [
 // Ultimate Workspace Navigation
 const workspaceNavigation: NavigationItem[] = [
   { id: 'workspace', label: 'Home', icon: Home, path: '/workspace', description: 'Main workspace hub' },
-  { id: 'dashboard', label: 'Dashboard', icon: BarChart3, path: '/dashboard', description: 'Analytics & insights' },
   { 
     id: 'mission-control', 
     label: 'Mission Control', 
@@ -233,7 +232,7 @@ export const EnhancedHeader: React.FC = () => {
             )}
 
             {/* Task Count Badge for Ultimate Workspace */}
-            {isUltimateWorkspace && (location.pathname === '/workspace' || location.pathname === '/dashboard') && myTasks.length > 0 && (
+            {isUltimateWorkspace && location.pathname === '/workspace' && myTasks.length > 0 && (
               <Badge variant="secondary" className="glass text-foreground-subtle border-border-subtle hidden sm:flex">
                 {myTasks.length} task{myTasks.length !== 1 ? 's' : ''}
               </Badge>
