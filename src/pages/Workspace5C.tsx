@@ -98,6 +98,21 @@ export const Workspace5C: React.FC = () => {
     );
   }
 
+  // Show loading state while claiming a task
+  const taskIdFromUrl = new URLSearchParams(window.location.search).get('task5c');
+  if (taskIdFromUrl && isLoading && !activeTask) {
+    return (
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400 mx-auto mb-4"></div>
+            <p className="text-white">Loading claimed task...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!activeTask) {
     return (
       <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -118,14 +133,53 @@ export const Workspace5C: React.FC = () => {
               className="max-w-4xl mx-auto"
             >
               <div className="text-center py-20">
-                <div className="p-6 bg-glass/70 backdrop-blur-20 rounded-2xl shadow-2xl border border-white/10">
-                  <AlertCircle className="h-16 w-16 text-teal-400 mx-auto mb-4" />
-                  <h2 className="text-2xl font-semibold text-white mb-2">No Active 5C Task</h2>
-                  <p className="text-gray-300 mb-6">
-                    Claim a capacity-based task from the sidebar to get started with your 5C workspace
-                  </p>
-                  <div className="text-sm text-gray-400">
-                    {availableTasks.length} capacity tasks available • {myTasks.length} claimed tasks
+                <div className="mb-8 p-8 bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
+                  <h2 className="text-2xl font-bold text-white mb-4">No Active 5C Task</h2>
+                  {myTasks.length > 0 ? (
+                    <div>
+                      <p className="text-gray-300 mb-6">
+                        You have {myTasks.length} claimed task{myTasks.length > 1 ? 's' : ''}. Click on one in the sidebar to start working.
+                      </p>
+                      <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-4 mb-6">
+                        <h3 className="text-blue-300 font-semibold mb-2">Your Claimed Tasks:</h3>
+                        <div className="space-y-2">
+                          {myTasks.slice(0, 3).map((task) => (
+                            <button
+                              key={task.id}
+                              onClick={() => {
+                                const newSearchParams = new URLSearchParams(window.location.search);
+                                newSearchParams.set('task5c', task.id);
+                                window.history.pushState({}, '', `${window.location.pathname}?${newSearchParams}`);
+                                window.location.reload(); // Force reload to trigger query
+                              }}
+                              className="block w-full text-left px-3 py-2 bg-blue-800/20 border border-blue-400/20 rounded text-blue-200 hover:bg-blue-800/30 transition-colors"
+                            >
+                              <div className="font-medium">{task.title}</div>
+                              <div className="text-sm text-blue-300/70">Capacity: {task.capacity}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-300 mb-6">
+                      You don't have any active tasks. Choose one from the sidebar or browse available tasks.
+                    </p>
+                  )}
+                  
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={() => setIsGoalTreeOpen(true)}
+                      className="px-6 py-3 bg-teal-600/20 border border-teal-400/30 rounded-lg text-teal-300 hover:bg-teal-600/30 transition-colors"
+                    >
+                      Browse Goals Tree
+                    </button>
+                    <button
+                      onClick={openMetaLoopConsole}
+                      className="px-6 py-3 bg-purple-600/20 border border-purple-400/30 rounded-lg text-purple-300 hover:bg-purple-600/30 transition-colors"
+                    >
+                      Open Meta Console
+                    </button>
                   </div>
                 </div>
               </div>

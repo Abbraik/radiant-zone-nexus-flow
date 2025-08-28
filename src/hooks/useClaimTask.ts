@@ -44,6 +44,10 @@ export const useClaimTask = () => {
       queryClient.invalidateQueries({ queryKey: ['5c', 'tasks', undefined] });
       queryClient.invalidateQueries({ queryKey: ['5c', 'task', taskId] });
       
+      // Force refetch the specific task to ensure immediate UI update
+      queryClient.refetchQueries({ queryKey: ['5c', 'task', taskId] });
+      queryClient.refetchQueries({ queryKey: ['5c', 'tasks'] });
+      
       queryClient.invalidateQueries({ queryKey: ['task-assignments', taskId] });
       queryClient.invalidateQueries({ queryKey: ['task-locks', taskId] });
     },
