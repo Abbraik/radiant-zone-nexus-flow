@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Brain, 
   Zap, 
@@ -79,6 +79,7 @@ const workspaceNavigation: NavigationItem[] = [
 
 export const EnhancedHeader: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { currentZone, setCurrentZone } = useUIStore();
   const { updateFlag, isEnabled } = useFeatureFlags();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -266,7 +267,12 @@ export const EnhancedHeader: React.FC = () => {
             </div>
             
             {/* User Profile */}
-            <Button variant="ghost" size="sm" className="p-2 hover:bg-glass-accent transition-all text-foreground-subtle hover:text-foreground">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-2 hover:bg-glass-accent transition-all text-foreground-subtle hover:text-foreground"
+              onClick={() => navigate('/profile')}
+            >
               <User className="w-4 h-4" />
             </Button>
 
