@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Target, Activity, Brain } from 'lucide-react';
+import { Icon } from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
 import { PerformanceCharts } from '@/components/dashboard/PerformanceCharts';
 import { CapacityBrainWidget } from '@/components/dashboard/CapacityBrainWidget';
@@ -24,7 +24,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({ user }) => {
       >
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Activity className="w-5 h-5 text-success" />
+            <Icon name="Activity" className="w-5 h-5 text-success" />
             <span className="text-sm font-medium text-foreground-muted">Active Loops</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -37,7 +37,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Target className="w-5 h-5 text-primary" />
+            <Icon name="Target" className="w-5 h-5 text-primary" />
             <span className="text-sm font-medium text-foreground-muted">Completed Tasks</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -50,7 +50,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-5 h-5 text-accent" />
+            <Icon name="TrendingUp" className="w-5 h-5 text-accent" />
             <span className="text-sm font-medium text-foreground-muted">Avg TRI Score</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -83,7 +83,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({ user }) => {
 
         <Card className="glass p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Brain className="w-5 h-5 text-primary" />
+            <Icon name="Brain" className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-semibold text-foreground">Capacity Brain</h3>
           </div>
           <CapacityBrainWidget />

@@ -9,16 +9,7 @@ import { PrivacyTab } from './tabs/PrivacyTab';
 import { PerformanceTab } from './tabs/PerformanceTab';
 import { AchievementsTab } from './tabs/AchievementsTab';
 import { AnalyticsTab } from './tabs/AnalyticsTab';
-import { 
-  User, 
-  Shield, 
-  Settings, 
-  Activity, 
-  Lock,
-  TrendingUp,
-  Trophy,
-  BarChart3
-} from 'lucide-react';
+import { Icon } from '@/components/ui/icon';
 
 interface ProfileTabsProps {
   user: any;
@@ -33,7 +24,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="personal" 
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <User className="w-4 h-4" />
+            <Icon name="User" className="w-4 h-4" />
             <span className="hidden sm:inline">Personal</span>
           </TabsTrigger>
           
@@ -41,7 +32,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="security"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <Shield className="w-4 h-4" />
+            <Icon name="Shield" className="w-4 h-4" />
             <span className="hidden sm:inline">Security</span>
           </TabsTrigger>
           
@@ -49,7 +40,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="preferences"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <Settings className="w-4 h-4" />
+            <Icon name="Settings" className="w-4 h-4" />
             <span className="hidden sm:inline">Settings</span>
           </TabsTrigger>
           
@@ -57,7 +48,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="activity"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <Activity className="w-4 h-4" />
+            <Icon name="Activity" className="w-4 h-4" />
             <span className="hidden sm:inline">Activity</span>
           </TabsTrigger>
           
@@ -65,7 +56,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="privacy"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <Lock className="w-4 h-4" />
+            <Icon name="Lock" className="w-4 h-4" />
             <span className="hidden sm:inline">Privacy</span>
           </TabsTrigger>
 
@@ -73,7 +64,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="performance"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <TrendingUp className="w-4 h-4" />
+            <Icon name="TrendingUp" className="w-4 h-4" />
             <span className="hidden sm:inline">Performance</span>
           </TabsTrigger>
 
@@ -81,7 +72,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="achievements"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <Trophy className="w-4 h-4" />
+            <Icon name="Trophy" className="w-4 h-4" />
             <span className="hidden sm:inline">Achievements</span>
           </TabsTrigger>
 
@@ -89,7 +80,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({ user }) => {
             value="analytics"
             className="flex items-center gap-2 data-[state=active]:bg-primary/10"
           >
-            <BarChart3 className="w-4 h-4" />
+            <Icon name="BarChart3" className="w-4 h-4" />
             <span className="hidden sm:inline">Analytics</span>
           </TabsTrigger>
         </TabsList>

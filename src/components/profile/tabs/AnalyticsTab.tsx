@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, Clock, Users, AlertTriangle } from 'lucide-react';
+import { Icon } from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
 import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
 import { useUpdatedDashboardData } from '@/hooks/useUpdatedDashboardData';
@@ -23,7 +23,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
       >
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Clock className="w-5 h-5 text-primary" />
+            <Icon name="Clock" className="w-5 h-5 text-primary" />
             <span className="text-sm font-medium text-foreground-muted">Recent Activity</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -36,7 +36,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Users className="w-5 h-5 text-accent" />
+            <Icon name="Users" className="w-5 h-5 text-accent" />
             <span className="text-sm font-medium text-foreground-muted">Rank</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -49,7 +49,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <BarChart3 className="w-5 h-5 text-success" />
+            <Icon name="BarChart3" className="w-5 h-5 text-success" />
             <span className="text-sm font-medium text-foreground-muted">Score</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -62,7 +62,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <AlertTriangle className="w-5 h-5 text-warning" />
+            <Icon name="AlertTriangle" className="w-5 h-5 text-warning" />
             <span className="text-sm font-medium text-foreground-muted">Alerts</span>
           </div>
           <div className="text-2xl font-bold text-foreground">

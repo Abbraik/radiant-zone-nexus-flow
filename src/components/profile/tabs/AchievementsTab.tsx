@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Star, Award, Lock } from 'lucide-react';
+import { Icon } from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -25,7 +25,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ user }) => {
       >
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Trophy className="w-5 h-5 text-warning" />
+            <Icon name="Trophy" className="w-5 h-5 text-warning" />
             <span className="text-sm font-medium text-foreground-muted">Unlocked</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -35,7 +35,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Star className="w-5 h-5 text-accent" />
+            <Icon name="Star" className="w-5 h-5 text-accent" />
             <span className="text-sm font-medium text-foreground-muted">In Progress</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -45,7 +45,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ user }) => {
 
         <Card className="glass p-4">
           <div className="flex items-center gap-3 mb-2">
-            <Award className="w-5 h-5 text-primary" />
+            <Icon name="Award" className="w-5 h-5 text-primary" />
             <span className="text-sm font-medium text-foreground-muted">Total Available</span>
           </div>
           <div className="text-2xl font-bold text-foreground">
@@ -75,9 +75,9 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ user }) => {
                   achievement.unlockedAt ? 'bg-success/20' : 'bg-background-secondary'
                 }`}>
                   {achievement.unlockedAt ? 
-                    <Trophy className="w-5 h-5 text-success" /> :
-                    <Star className="w-5 h-5 text-foreground-muted" />
-                  }
+                     <Icon name="Trophy" className="w-5 h-5 text-success" /> :
+                     <Icon name="Star" className="w-5 h-5 text-foreground-muted" />
+                   }
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -151,7 +151,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ user }) => {
                     <h5 className="font-medium text-foreground text-sm mb-1">{badge.name}</h5>
                     <p className="text-xs text-foreground-muted mb-2">{badge.description}</p>
                     <div className="flex items-center justify-center gap-1 text-xs text-foreground-subtle">
-                      <Lock className="w-3 h-3" />
+                      <Icon name="Lock" className="w-3 h-3" />
                       <span>{badge.criteria}</span>
                     </div>
                   </motion.div>
