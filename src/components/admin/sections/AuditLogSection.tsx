@@ -99,7 +99,7 @@ export const AuditLogSection: React.FC = () => {
                     </div>
                     {entry.ip_address && (
                       <div className="text-xs text-foreground-muted font-mono">
-                        {entry.ip_address}
+                        {String(entry.ip_address)}
                       </div>
                     )}
                   </div>

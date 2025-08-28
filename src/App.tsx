@@ -68,10 +68,10 @@ const App = () => (
                        <Dashboard />
                      </div>
                    } />
-                   {/* Admin Pages */}
-                   <Route path="/admin" element={<AdminConsole />} />
-                   <Route path="/plugins" element={<AdminPage />} />
-                   <Route path="/offline" element={<AdminPage />} />
+                    {/* Admin Pages */}
+                    <Route path="/admin" element={<AdminConsole />} />
+                    <Route path="/plugins" element={<AdminConsole />} />
+                    <Route path="/offline" element={<AdminConsole />} />
                    <Route path="/security" element={<SecurityOps />} />
                    <Route path="/mission-control" element={<MissionControl />} />
                    {/* Legacy Zone Access */}

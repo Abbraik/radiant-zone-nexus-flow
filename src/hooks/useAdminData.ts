@@ -164,7 +164,7 @@ export const useOrgSettings = (orgId: string) => {
           kind: 'process_map',
           org_id: orgId,
           session_id: null,
-          artifact: newSettings,
+          blob: newSettings,
         })
         .select()
         .single();
