@@ -116,6 +116,7 @@ export const WorkspaceShell: React.FC<WorkspaceShellProps> = ({
               className="text-accent hover:text-accent-hover hover:bg-accent/10"
             >
               <Users className="h-4 w-4" />
+              <span className="hidden md:inline ml-2">Teams</span>
             </Button>
           )}
 
