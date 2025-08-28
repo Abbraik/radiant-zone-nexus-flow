@@ -2,9 +2,19 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Bell, Plus, Eye, AlertTriangle } from 'lucide-react';
+import { useWatchpointsData } from '@/hooks/useAdminData';
 
 export const WatchpointsSection: React.FC = () => {
+  const { watchpoints, recentFirings, isLoading } = useWatchpointsData();
+
+  const armedCount = watchpoints.filter(w => w.status === 'armed').length;
+  const disarmedCount = watchpoints.filter(w => w.status === 'disarmed').length;
+  const recentTriggersCount = recentFirings.filter(f => 
+    new Date(f.fired_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+  ).length;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -32,15 +42,27 @@ export const WatchpointsSection: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Armed</span>
-                <Badge className="bg-success/20 text-success border-success/30">8</Badge>
+                {isLoading ? (
+                  <Skeleton className="h-5 w-8" />
+                ) : (
+                  <Badge className="bg-success/20 text-success border-success/30">{armedCount}</Badge>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Disarmed</span>
-                <Badge variant="outline">3</Badge>
+                {isLoading ? (
+                  <Skeleton className="h-5 w-8" />
+                ) : (
+                  <Badge variant="outline">{disarmedCount}</Badge>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Triggered (24h)</span>
-                <Badge className="bg-warning/20 text-warning border-warning/30">2</Badge>
+                {isLoading ? (
+                  <Skeleton className="h-5 w-8" />
+                ) : (
+                  <Badge className="bg-warning/20 text-warning border-warning/30">{recentTriggersCount}</Badge>
+                )}
               </div>
             </div>
           </CardContent>
@@ -53,31 +75,55 @@ export const WatchpointsSection: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border/50">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
-                      <Eye className="h-4 w-4 text-success" />
+                {isLoading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border/50">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <div className="space-y-1">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-48" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-5 w-16" />
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">Housing Price Monitor</p>
-                      <p className="text-xs text-foreground-muted">Threshold: &gt;15% monthly increase</p>
+                  ))
+                ) : watchpoints.length === 0 ? (
+                  <p className="text-sm text-foreground-muted">No watchpoints configured</p>
+                ) : (
+                  watchpoints.slice(0, 5).map((watchpoint) => (
+                    <div key={watchpoint.id} className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                          watchpoint.status === 'armed' 
+                            ? 'bg-success/20' 
+                            : recentFirings.some(f => f.rule_id) 
+                              ? 'bg-warning/20' 
+                              : 'bg-muted/20'
+                        }`}>
+                          {watchpoint.status === 'armed' ? (
+                            <Eye className="h-4 w-4 text-success" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-warning" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{watchpoint.risk_channel || 'System Monitor'}</p>
+                          <p className="text-xs text-foreground-muted">
+                            EWS Probability: {(watchpoint.ews_prob * 100).toFixed(1)}%
+                          </p>
+                        </div>
+                      </div>
+                      <Badge className={
+                        watchpoint.status === 'armed' 
+                          ? "bg-success/20 text-success border-success/30"
+                          : "bg-muted/20 text-muted-foreground border-muted/30"
+                      }>
+                        {watchpoint.status}
+                      </Badge>
                     </div>
-                  </div>
-                  <Badge className="bg-success/20 text-success border-success/30">Armed</Badge>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border/50">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-warning/20 flex items-center justify-center">
-                      <AlertTriangle className="h-4 w-4 text-warning" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Unemployment Spike</p>
-                      <p className="text-xs text-foreground-muted">Recently triggered</p>
-                    </div>
-                  </div>
-                  <Badge className="bg-warning/20 text-warning border-warning/30">Triggered</Badge>
-                </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>

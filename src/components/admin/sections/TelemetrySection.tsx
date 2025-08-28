@@ -1,10 +1,26 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Activity, BarChart3, Clock, Zap } from 'lucide-react';
+import { useTelemetryData } from '@/hooks/useAdminData';
 
 export const TelemetrySection: React.FC = () => {
+  const { data: telemetry, isLoading } = useTelemetryData();
+
+  const formatTrend = (value: number) => {
+    if (value > 0) return `↑ ${value.toFixed(1)}%`;
+    if (value < 0) return `↓ ${Math.abs(value).toFixed(1)}%`;
+    return '→ 0%';
+  };
+
+  const getTrendColor = (value: number, isErrorRate = false) => {
+    const isPositive = isErrorRate ? value < 0 : value > 0;
+    return isPositive 
+      ? "bg-success/20 text-success border-success/30"
+      : "bg-warning/20 text-warning border-warning/30";
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -23,10 +39,19 @@ export const TelemetrySection: React.FC = () => {
             <Activity className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">24</div>
-            <p className="text-xs text-foreground-muted">
-              Tasks completed today
-            </p>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-8 w-16 mb-1" />
+                <Skeleton className="h-3 w-32" />
+              </>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-foreground">{telemetry?.taskThroughput || 0}</div>
+                <p className="text-xs text-foreground-muted">
+                  Tasks completed today
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -38,10 +63,21 @@ export const TelemetrySection: React.FC = () => {
             <Clock className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">2.4h</div>
-            <p className="text-xs text-foreground-muted">
-              Below 4h SLA target
-            </p>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-8 w-16 mb-1" />
+                <Skeleton className="h-3 w-32" />
+              </>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-foreground">
+                  {telemetry?.avgResponseTime ? `${telemetry.avgResponseTime.toFixed(1)}h` : 'N/A'}
+                </div>
+                <p className="text-xs text-foreground-muted">
+                  {(telemetry?.avgResponseTime || 0) < 4 ? 'Below 4h SLA target' : 'Above SLA target'}
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -53,10 +89,21 @@ export const TelemetrySection: React.FC = () => {
             <Zap className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">68%</div>
-            <p className="text-xs text-foreground-muted">
-              Optimal range
-            </p>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-8 w-16 mb-1" />
+                <Skeleton className="h-3 w-32" />
+              </>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-foreground">
+                  {telemetry?.systemLoad ? `${telemetry.systemLoad.toFixed(0)}%` : 'N/A'}
+                </div>
+                <p className="text-xs text-foreground-muted">
+                  {(telemetry?.systemLoad || 0) < 80 ? 'Optimal range' : 'High load'}
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -68,10 +115,21 @@ export const TelemetrySection: React.FC = () => {
             <BarChart3 className="h-4 w-4 text-info" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">94%</div>
-            <p className="text-xs text-foreground-muted">
-              Above quality threshold
-            </p>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-8 w-16 mb-1" />
+                <Skeleton className="h-3 w-32" />
+              </>
+            ) : (
+              <>
+                <div className="text-2xl font-bold text-foreground">
+                  {telemetry?.dataQuality ? `${telemetry.dataQuality.toFixed(0)}%` : 'N/A'}
+                </div>
+                <p className="text-xs text-foreground-muted">
+                  {(telemetry?.dataQuality || 0) > 90 ? 'Above quality threshold' : 'Below quality threshold'}
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -86,18 +144,35 @@ export const TelemetrySection: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Task Completion Rate</span>
-                <Badge className="bg-success/20 text-success border-success/30">↑ 12%</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Average Processing Time</span>
-                <Badge className="bg-success/20 text-success border-success/30">↓ 8%</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Error Rate</span>
-                <Badge className="bg-success/20 text-success border-success/30">↓ 15%</Badge>
-              </div>
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-5 w-16" />
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Task Completion Rate</span>
+                    <Badge className={getTrendColor(telemetry?.completionTrend || 0)}>
+                      {formatTrend(telemetry?.completionTrend || 0)}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Average Processing Time</span>
+                    <Badge className={getTrendColor(-(telemetry?.processingTime || 0))}>
+                      {telemetry?.processingTime ? `${telemetry.processingTime.toFixed(1)}h` : 'N/A'}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Error Rate</span>
+                    <Badge className={getTrendColor(-(telemetry?.errorRate || 0), true)}>
+                      {telemetry?.errorRate ? `${telemetry.errorRate.toFixed(1)}%` : 'N/A'}
+                    </Badge>
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

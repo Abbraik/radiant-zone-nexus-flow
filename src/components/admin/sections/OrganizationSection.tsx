@@ -2,9 +2,30 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Building2, Settings, Users, Bell } from 'lucide-react';
+import { useWatchpointsData, useOverviewStats } from '@/hooks/useAdminData';
+import { supabase } from '@/integrations/supabase/client';
 
 export const OrganizationSection: React.FC = () => {
+  const { watchpoints } = useWatchpointsData();
+  const { data: stats, isLoading: statsLoading } = useOverviewStats();
+  
+  const [orgId, setOrgId] = React.useState<string>('');
+  
+  React.useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setOrgId(user.id);
+      }
+    };
+    getCurrentUser();
+  }, []);
+
+  const activeWatchpointsCount = watchpoints.filter(w => w.status === 'armed').length;
+  const totalMembersCount = stats?.totalUsers || 0;
+
   return (
     <div className="space-y-6">
       <div>
@@ -26,19 +47,27 @@ export const OrganizationSection: React.FC = () => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-foreground-muted">Organization ID</span>
-                <p className="font-mono">org_12345...</p>
+                {orgId ? (
+                  <p className="font-mono">{orgId.slice(0, 8)}...</p>
+                ) : (
+                  <Skeleton className="h-4 w-24" />
+                )}
               </div>
               <div>
                 <span className="text-foreground-muted">Plan</span>
-                <p>Enterprise</p>
+                <p>5C Enterprise</p>
               </div>
               <div>
                 <span className="text-foreground-muted">Members</span>
-                <p>12 active</p>
+                {statsLoading ? (
+                  <Skeleton className="h-4 w-16" />
+                ) : (
+                  <p>{totalMembersCount} active</p>
+                )}
               </div>
               <div>
                 <span className="text-foreground-muted">Region</span>
-                <p>US-East</p>
+                <p>Cloud</p>
               </div>
             </div>
             <Button variant="outline" size="sm">
@@ -59,15 +88,27 @@ export const OrganizationSection: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Active Watchpoints</span>
-                <Badge>8</Badge>
+                {statsLoading ? (
+                  <Skeleton className="h-5 w-8" />
+                ) : (
+                  <Badge>{activeWatchpointsCount}</Badge>
+                )}
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Trigger Rules</span>
-                <Badge variant="outline">15</Badge>
+                <span className="text-sm">Total Tasks</span>
+                {statsLoading ? (
+                  <Skeleton className="h-5 w-8" />
+                ) : (
+                  <Badge variant="outline">{stats?.totalTasks || 0}</Badge>
+                )}
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm">Data Sources</span>
-                <Badge variant="secondary">5</Badge>
+                <span className="text-sm">Active Claims</span>
+                {statsLoading ? (
+                  <Skeleton className="h-5 w-8" />
+                ) : (
+                  <Badge variant="secondary">{stats?.activeClaims || 0}</Badge>
+                )}
               </div>
             </div>
           </CardContent>
@@ -76,15 +117,20 @@ export const OrganizationSection: React.FC = () => {
 
       <Card className="glass-secondary">
         <CardHeader>
-          <CardTitle>Organization Settings</CardTitle>
+          <CardTitle>5C Configuration</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-foreground-muted text-sm mb-4">
-            Configuration and preference management coming soon.
+            Your 5C workspace is connected and operational. Advanced configuration options coming soon.
           </p>
-          <Button variant="outline" disabled>
-            Configure Settings
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" disabled>
+              Configure Capacities
+            </Button>
+            <Button variant="outline" disabled>
+              Manage Loops
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

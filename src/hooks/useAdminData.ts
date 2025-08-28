@@ -183,6 +183,180 @@ export const useOverviewStats = () => {
   });
 };
 
+// Watchpoints and Triggers data
+export const useWatchpointsData = () => {
+  const queryClient = useQueryClient();
+
+  const watchpoints = useQuery({
+    queryKey: ['admin', 'watchpoints'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('antic_watchpoints')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const triggerRules = useQuery({
+    queryKey: ['admin', 'trigger-rules'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('antic_trigger_rules')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const recentFirings = useQuery({
+    queryKey: ['admin', 'trigger-firings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('antic_trigger_firings')
+        .select('*')
+        .order('fired_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return {
+    watchpoints: watchpoints.data || [],
+    triggerRules: triggerRules.data || [],
+    recentFirings: recentFirings.data || [],
+    isLoading: watchpoints.isLoading || triggerRules.isLoading,
+    refetch: () => {
+      watchpoints.refetch();
+      triggerRules.refetch();
+      recentFirings.refetch();
+    },
+  };
+};
+
+// Indicators and DE Bands data
+export const useIndicatorsData = () => {
+  const indicators = useQuery({
+    queryKey: ['admin', 'indicators'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('de_bands_5c')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const bandCrossings = useQuery({
+    queryKey: ['admin', 'band-crossings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('band_crossings_5c')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  return {
+    indicators: indicators.data || [],
+    bandCrossings: bandCrossings.data || [],
+    isLoading: indicators.isLoading || bandCrossings.isLoading,
+    refetch: () => {
+      indicators.refetch();
+      bandCrossings.refetch();
+    },
+  };
+};
+
+// Telemetry data from real 5C metrics
+export const useTelemetryData = () => {
+  return useQuery({
+    queryKey: ['admin', 'telemetry'],
+    queryFn: async () => {
+      const [
+        tasksToday,
+        recentClaims,
+        recentBreaches,
+        allTasks
+      ] = await Promise.all([
+        // Tasks completed today
+        supabase
+          .from('tasks_5c')
+          .select('id, created_at, status')
+          .eq('status', 'done')
+          .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+        // Recent claims for response time calculation
+        supabase
+          .from('claims_5c')
+          .select('id, created_at, started_at, finished_at, status')
+          .not('finished_at', 'is', null)
+          .order('finished_at', { ascending: false })
+          .limit(50),
+        // Recent band crossings for quality metrics
+        supabase
+          .from('band_crossings_5c')
+          .select('id, created_at')
+          .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+        // All tasks for throughput trends
+        supabase
+          .from('tasks_5c')
+          .select('id, created_at, status')
+          .order('created_at', { ascending: false })
+          .limit(100)
+      ]);
+
+      // Calculate metrics
+      const completedToday = tasksToday.data?.length || 0;
+      
+      // Calculate average response time from claims
+      const claims = recentClaims.data || [];
+      const completedClaims = claims.filter(c => c.started_at && c.finished_at);
+      const avgResponseTime = completedClaims.length > 0 
+        ? completedClaims.reduce((acc, claim) => {
+            const start = new Date(claim.started_at).getTime();
+            const end = new Date(claim.finished_at).getTime();
+            return acc + (end - start);
+          }, 0) / completedClaims.length / (1000 * 60 * 60) // Convert to hours
+        : 0;
+
+      // Calculate quality score (inverse of breach rate)
+      const breaches = recentBreaches.data?.length || 0;
+      const qualityScore = Math.max(0, Math.min(100, 100 - (breaches * 2))); // Simple quality calculation
+
+      // Calculate task completion trends
+      const allTasksData = allTasks.data || [];
+      const recentTasks = allTasksData.slice(0, 50);
+      const olderTasks = allTasksData.slice(50, 100);
+      const recentCompletionRate = recentTasks.filter(t => t.status === 'done').length / Math.max(1, recentTasks.length);
+      const olderCompletionRate = olderTasks.filter(t => t.status === 'done').length / Math.max(1, olderTasks.length);
+      const completionTrend = recentCompletionRate - olderCompletionRate;
+
+      return {
+        taskThroughput: completedToday,
+        avgResponseTime: avgResponseTime,
+        systemLoad: Math.random() * 30 + 50, // Mock system load for now
+        dataQuality: qualityScore,
+        completionRate: recentCompletionRate * 100,
+        completionTrend: completionTrend * 100,
+        errorRate: Math.max(0, 10 - qualityScore / 10), // Inverse relationship
+        processingTime: avgResponseTime,
+      };
+    },
+  });
+};
+
 export const useOrgSettings = (orgId: string) => {
   const queryClient = useQueryClient();
 
