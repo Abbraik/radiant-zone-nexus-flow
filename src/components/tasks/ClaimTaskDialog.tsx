@@ -53,6 +53,13 @@ export const ClaimTaskDialog: React.FC<ClaimTaskDialogProps> = ({
     }
   }, [open, taskData, taskId]);
 
+  // Close dialog if task is already claimed
+  useEffect(() => {
+    if (taskData && taskData.task.status !== 'available' && open) {
+      onOpenChange(false);
+    }
+  }, [taskData, open, onOpenChange]);
+
   const handleClaim = () => {
     if (!taskData) return;
 
