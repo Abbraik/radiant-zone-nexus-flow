@@ -7,7 +7,7 @@ import { DynamicCapacityBundle } from '@/components/workspace/DynamicCapacityBun
 import { WorkspaceProSidebar } from '@/components/workspace/WorkspaceProSidebar';
 import { WorkspaceProHeader } from '@/components/workspace/WorkspaceProHeader';
 import { CopilotDrawer } from '@/modules/ai/components/CopilotDrawer';
-import { TeamsDrawer } from '@/modules/teams/components/TeamsDrawer';
+import { DeliveryChainManager } from '@/components/delivery/DeliveryChainManager';
 import { GoalTreeWidget } from '@/modules/cascade/components/GoalTreeWidget';
 import { OKRPanel } from '@/modules/cascade/components/OKRPanel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -57,7 +57,7 @@ export const Workspace5C: React.FC = () => {
   
   const { flags } = useFeatureFlags();
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
-  const [isTeamsOpen, setIsTeamsOpen] = useState(false);  
+  const [isDeliveryManagerOpen, setIsDeliveryManagerOpen] = useState(false);  
   const [isGoalTreeOpen, setIsGoalTreeOpen] = useState(false);
   const [selectedOKR, setSelectedOKR] = useState<OKR | null>(null);
   const [isPairWorkOpen, setIsPairWorkOpen] = useState(false);
@@ -255,7 +255,7 @@ export const Workspace5C: React.FC = () => {
         activeTask={workspaceTask}
         myTasks={myTasks}
         onCopilotToggle={() => setIsCopilotOpen(!isCopilotOpen)}
-        onTeamsToggle={() => setIsTeamsOpen(!isTeamsOpen)}
+        onTeamsToggle={() => setIsDeliveryManagerOpen(!isDeliveryManagerOpen)}
         onGoalTreeToggle={() => setIsGoalTreeOpen(!isGoalTreeOpen)}
         onPairWorkStart={(partnerId) => {
           setPairWorkPartner(partnerId);
@@ -392,11 +392,11 @@ export const Workspace5C: React.FC = () => {
         activeTask={workspaceTask}
       />
       
-      <TeamsDrawer
-        isOpen={isTeamsOpen}
-        onClose={() => setIsTeamsOpen(false)}
+      <DeliveryChainManager
+        isOpen={isDeliveryManagerOpen}
+        onClose={() => setIsDeliveryManagerOpen(false)}
         taskId={activeTask?.id}
-        taskTitle={activeTask?.title}
+        taskData={workspaceTask}
       />
 
       {/* Goals Tree Dialog */}
