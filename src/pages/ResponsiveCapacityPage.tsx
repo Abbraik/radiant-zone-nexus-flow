@@ -39,6 +39,7 @@ import { GuardrailsPanel } from './responsive/GuardrailsPanel';
 import { HarmonizationDrawer } from './responsive/HarmonizationDrawer';
 import { AlertsWatchpoints } from './responsive/AlertsWatchpoints';
 import { ProposedTasks } from './responsive/ProposedTasks';
+import { TaskManagementDashboard } from '@/components/responsive/TaskManagementDashboard';
 import { HandoffsCard } from './responsive/HandoffsCard';
 import { ActivationVector } from './responsive/ActivationVector';
 import { SRTCountdown } from './responsive/SRTCountdown';
@@ -502,9 +503,8 @@ export const ResponsiveCapacityPage: React.FC<ResponsiveCapacityPageProps> = ({
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <ProposedTasks
-              tasks={playbook.tasks}
-              onOpenClaimDrawer={() => onOpenClaimDrawer?.(playbook.tasks)}
+            <TaskManagementDashboard 
+              onCreateTask={() => onOpenClaimDrawer?.(playbook.tasks)}
             />
           </motion.div>
         </div>

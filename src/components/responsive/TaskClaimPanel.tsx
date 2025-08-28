@@ -113,7 +113,7 @@ export const TaskClaimPanel: React.FC<TaskClaimPanelProps> = ({
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <Badge variant={status.variant} className="text-xs flex items-center gap-1">
+              <Badge variant={status.variant === 'success' ? 'default' : status.variant} className={`text-xs flex items-center gap-1 ${status.variant === 'success' ? 'bg-green-600 text-white' : ''}`}>
                 <StatusIcon className="h-3 w-3" />
                 {status.label}
               </Badge>
@@ -204,7 +204,8 @@ export const TaskClaimPanel: React.FC<TaskClaimPanelProps> = ({
                 onClick={handleComplete}
                 disabled={updating}
                 size="sm"
-                variant="success"
+                variant="default"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Complete
@@ -250,7 +251,7 @@ export const TaskClaimPanel: React.FC<TaskClaimPanelProps> = ({
                     <label className="text-xs font-medium">Status</label>
                     <select
                       value={statusInput}
-                      onChange={(e) => setStatusInput(e.target.value)}
+                      onChange={(e) => setStatusInput(e.target.value as Task['status'])}
                       className="text-xs border rounded px-2 py-1"
                     >
                       <option value="in_progress">In Progress</option>
