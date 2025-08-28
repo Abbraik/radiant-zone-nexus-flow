@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="container max-w-6xl mx-auto px-4 py-8"
+      className="container mx-auto px-4 py-8"
     >
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -59,14 +59,14 @@ const Profile: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
         {/* Left Panel - Profile Overview */}
-        <div className="lg:col-span-1">
+        <div className="xl:col-span-1">
           <ProfileOverview user={user} />
         </div>
 
         {/* Right Panel - Management Tabs */}
-        <div className="lg:col-span-2">
+        <div className="xl:col-span-3">
           <ProfileTabs user={user} />
         </div>
       </div>
