@@ -15,21 +15,25 @@ export const useAuth = () => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('🔐 Auth state change:', event, 'User:', session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         // Fetch user roles when user changes
         if (session?.user) {
           setTimeout(async () => {
-            const { data: roles } = await supabase
+            console.log('🔍 Fetching roles for user:', session.user.id);
+            const { data: roles, error } = await supabase
               .from('user_roles')
               .select('*')
               .eq('user_id', session.user.id);
             
+            console.log('👥 User roles:', roles, 'Error:', error);
             setUserRoles(roles || []);
             setLoading(false);
           }, 0);
         } else {
+          console.log('❌ No user session, clearing roles');
           setUserRoles([]);
           setLoading(false);
         }
@@ -38,6 +42,7 @@ export const useAuth = () => {
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔍 Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -46,11 +51,13 @@ export const useAuth = () => {
           .from('user_roles')
           .select('*')
           .eq('user_id', session.user.id)
-          .then(({ data: roles }) => {
+          .then(({ data: roles, error }) => {
+            console.log('👥 Initial roles fetch:', roles, 'Error:', error);
             setUserRoles(roles || []);
             setLoading(false);
           });
       } else {
+        console.log('❌ No initial session found');
         setLoading(false);
       }
     });
@@ -59,6 +66,7 @@ export const useAuth = () => {
   }, []);
 
   const isAdmin = userRoles.some(role => ['admin', 'owner'].includes(role.role));
+  console.log('🛡️ Admin check - Roles:', userRoles, 'IsAdmin:', isAdmin);
 
   return {
     user,
