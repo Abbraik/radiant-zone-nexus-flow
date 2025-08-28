@@ -20,7 +20,8 @@ import {
   Users,
   Target,
   MessageSquare,
-  Activity
+  Activity,
+  Video
 } from 'lucide-react';
 import { useUIStore } from '../../stores/ui-store';
 import { FeatureFlagChip, useFeatureFlags } from './FeatureFlagProvider';
@@ -29,7 +30,16 @@ import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useTasks } from '../../hooks/useTasks';
+import { EnhancedPresenceBar } from '../../modules/collab/components/EnhancedPresenceBar';
 import type { Zone } from '../../types';
+
+interface UnifiedHeaderProps {
+  onCopilotToggle?: () => void;
+  onTeamsToggle?: () => void;
+  onGoalTreeToggle?: () => void;
+  onPairWorkStart?: (partnerId: string) => void;
+  isDashboard?: boolean;
+}
 
 interface NavigationItem {
   id: string;
@@ -76,15 +86,22 @@ const workspaceNavigation: NavigationItem[] = [
   }
 ];
 
-export const EnhancedHeader: React.FC = () => {
+export const EnhancedHeader: React.FC<UnifiedHeaderProps> = ({ 
+  onCopilotToggle,
+  onTeamsToggle, 
+  onGoalTreeToggle,
+  onPairWorkStart,
+  isDashboard = false
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentZone, setCurrentZone } = useUIStore();
-  const { updateFlag, isEnabled } = useFeatureFlags();
+  const { flags, updateFlag, isEnabled } = useFeatureFlags();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { myTasks, activeTask } = useTasks();
 
   const isUltimateWorkspace = isEnabled('newTaskDrivenUI');
+  const isWorkspaceRoute = location.pathname === '/workspace' || location.pathname.startsWith('/workspace');
 
   const handleZoneChange = (zone: Zone) => {
     setCurrentZone(zone);
@@ -136,17 +153,17 @@ export const EnhancedHeader: React.FC = () => {
               </div>
             </NavLink>
 
-            {/* Task Selector for Ultimate Workspace */}
-            {isUltimateWorkspace && activeTask && myTasks.length > 1 && (
+            {/* Enhanced Task Selector for Workspace */}
+            {isWorkspaceRoute && activeTask && myTasks.length > 1 && !isDashboard && (
               <Select value={activeTask.id}>
-                <SelectTrigger className="w-40 md:w-48 glass border-border-subtle text-foreground backdrop-blur-md">
+                <SelectTrigger className="w-48 md:w-64 bg-white/10 border-white/20 text-white backdrop-blur-md">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="glass-secondary backdrop-blur-xl border-border-subtle">
+                <SelectContent className="bg-gray-900 border-white/20">
                   {myTasks.map((task) => (
-                    <SelectItem key={task.id} value={task.id} className="text-foreground hover:bg-glass-accent">
+                    <SelectItem key={task.id} value={task.id} className="text-white hover:bg-white/10">
                       <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs glass text-foreground-subtle border-border-subtle">
+                        <Badge variant="secondary" className="bg-teal-500/20 text-teal-300 text-xs">
                           {task.zone}
                         </Badge>
                         <span className="truncate">{task.title}</span>
@@ -165,7 +182,28 @@ export const EnhancedHeader: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            {visibleNavigation.map((item) => {
+            {/* Workspace Collaboration & Status - Center */}
+            {isWorkspaceRoute && !isDashboard && (
+              <div className="flex items-center gap-4 px-4">
+                <EnhancedPresenceBar 
+                  taskId={activeTask?.id} 
+                  onPairWorkStart={onPairWorkStart}
+                />
+                
+                {myTasks.length > 0 && (
+                  <Badge variant="secondary" className="bg-white/10 text-white">
+                    {myTasks.length} active task{myTasks.length !== 1 ? 's' : ''}
+                  </Badge>
+                )}
+              </div>
+            )}
+
+            {isDashboard && (
+              <Badge variant="secondary" className="bg-teal-500/20 text-teal-300 mx-4">
+                Personal Analytics
+              </Badge>
+            )}
+            {!isWorkspaceRoute && visibleNavigation.map((item) => {
               const Icon = item.icon;
               const isActive = (item.id === 'workspace' && (location.pathname === '/workspace' || location.pathname === '/')) ||
                 (item.id !== 'workspace' && location.pathname === item.path) ||
@@ -200,6 +238,37 @@ export const EnhancedHeader: React.FC = () => {
                 </NavLink>
               );
             })}
+
+            {/* Workspace Navigation Tabs */}
+            {isWorkspaceRoute && (
+              <div className="flex items-center gap-2">
+                <NavLink
+                  to="/workspace"
+                  className={({ isActive }) =>
+                    `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      isActive && !isDashboard
+                        ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`
+                  }
+                >
+                  Workspace
+                </NavLink>
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                      isActive || isDashboard
+                        ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`
+                  }
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Dashboard
+                </NavLink>
+              </div>
+            )}
           </motion.nav>
 
           {/* Right Side Actions */}
@@ -209,33 +278,56 @@ export const EnhancedHeader: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            {/* Ultimate Workspace Quick Actions */}
-            {isUltimateWorkspace && location.pathname === '/workspace' && isEnabled('realTimeCollab') && (
-              <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 transition-smooth">
-                <MessageSquare className="w-4 h-4 md:mr-1" />
+            {/* Enhanced Collaboration Tools */}
+            {isWorkspaceRoute && flags.realTimeCollab && onTeamsToggle && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onTeamsToggle}
+                className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
                 <span className="hidden md:inline">Teams</span>
               </Button>
             )}
 
-            {isUltimateWorkspace && location.pathname === '/workspace' && (
-              <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300 hover:bg-green-500/20 transition-smooth">
-                <Target className="w-4 h-4 md:mr-1" />
+            {isWorkspaceRoute && onGoalTreeToggle && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onGoalTreeToggle}
+                className="text-green-400 hover:text-green-300 hover:bg-green-500/20"
+              >
+                <Target className="h-4 w-4 mr-2" />
                 <span className="hidden md:inline">Goals</span>
               </Button>
             )}
 
-            {isUltimateWorkspace && location.pathname === '/workspace' && isEnabled('aiCopilot') && (
-              <Button variant="ghost" size="sm" className="text-info hover:text-info/80 hover:bg-info/20 transition-smooth">
-                <Bot className="w-4 h-4 md:mr-1" />
+            {isWorkspaceRoute && flags.aiCopilot && onCopilotToggle && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onCopilotToggle}
+                className="text-teal-400 hover:text-teal-300 hover:bg-teal-500/20"
+              >
+                <Bot className="h-4 w-4 mr-2" />
                 <span className="hidden md:inline">Copilot</span>
               </Button>
             )}
-
-            {/* Task Count Badge for Ultimate Workspace */}
-            {isUltimateWorkspace && location.pathname === '/workspace' && myTasks.length > 0 && (
-              <Badge variant="secondary" className="glass text-foreground-subtle border-border-subtle hidden sm:flex">
-                {myTasks.length} task{myTasks.length !== 1 ? 's' : ''}
-              </Badge>
+            
+            {/* Module Indicators */}
+            {isWorkspaceRoute && (
+              <div className="flex items-center gap-1">
+                {flags.realTimeCollab && (
+                  <div className="w-2 h-2 bg-green-500 rounded-full" title="Collaboration Active" />
+                )}
+                {flags.automation && (
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full" title="Automation Active" />
+                )}
+                {flags.advancedAnalytics && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full" title="Analytics Active" />
+                )}
+              </div>
             )}
 
             {/* Feature Flag Chip */}
@@ -260,10 +352,10 @@ export const EnhancedHeader: React.FC = () => {
               </span>
             </Button>
 
-            {/* Role Badge */}
-            <div className="hidden xl:block glass backdrop-blur-md rounded-2xl px-3 py-1.5 border border-border-subtle">
-              <span className="text-xs font-medium text-foreground-subtle">Champion</span>
-            </div>
+            {/* Enhanced Role Badge */}
+            <Badge variant="secondary" className={isWorkspaceRoute ? "bg-blue-500/20 text-blue-300" : "glass text-foreground-subtle border-border-subtle"}>
+              Champion
+            </Badge>
             
             {/* User Profile */}
             <Button 
