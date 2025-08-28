@@ -1,6 +1,6 @@
 import React from 'react';
-import { HomeWorkspace } from '@/components/home/HomeWorkspace';
+import { LandingPage } from './LandingPage';
 
 export const Home: React.FC = () => {
-  return <HomeWorkspace />;
+  return <LandingPage />;
 };
