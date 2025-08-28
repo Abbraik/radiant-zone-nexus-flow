@@ -5009,6 +5009,68 @@ export type Database = {
         }
         Relationships: []
       }
+      sprint_tasks: {
+        Row: {
+          actual_hours: number | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          estimated_hours: number | null
+          id: string
+          meta: Json | null
+          priority: number | null
+          sprint_id: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_hours?: number | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          meta?: Json | null
+          priority?: number | null
+          sprint_id: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_hours?: number | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          id?: string
+          meta?: Json | null
+          priority?: number | null
+          sprint_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprint_tasks_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sprints: {
         Row: {
           created_at: string | null
@@ -6764,6 +6826,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      task_progress_logs: {
+        Row: {
+          attachments: Json | null
+          created_at: string
+          hours_logged: number | null
+          id: string
+          metadata: Json | null
+          new_status: string | null
+          notes: string | null
+          old_status: string | null
+          progress_type: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string
+          hours_logged?: number | null
+          id?: string
+          metadata?: Json | null
+          new_status?: string | null
+          notes?: string | null
+          old_status?: string | null
+          progress_type: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string
+          hours_logged?: number | null
+          id?: string
+          metadata?: Json | null
+          new_status?: string | null
+          notes?: string | null
+          old_status?: string | null
+          progress_type?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_progress_logs_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "sprint_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       task_reminders: {
         Row: {
