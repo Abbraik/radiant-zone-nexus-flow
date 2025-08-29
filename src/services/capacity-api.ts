@@ -49,30 +49,75 @@ export interface CapacityAPIService {
 export class SupabaseCapacityService implements CapacityAPIService {
   async getTaskById(id: string): Promise<EnhancedTask | null> {
     const { data, error } = await supabase
-      .from('tasks')
+      .from('tasks_5c')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
     
-    if (error) throw error;
-    return data as any as EnhancedTask;
+    if (error) {
+      console.error('Error fetching task:', error);
+      return null;
+    }
+    
+    if (!data) return null;
+
+    // Map tasks_5c data to EnhancedTask format
+    return {
+      id: data.id,
+      title: data.title || 'Untitled Task',
+      description: data.description || '',
+      capacity: data.capacity,
+      loop_id: data.loop_id || '',
+      type: data.type,
+      scale: data.scale,
+      leverage: data.leverage,
+      tri: data.tri as any,
+      priority: 'medium', // Default since no priority field
+      user_id: data.user_id,
+      assigned_to: data.assigned_to,
+      status: data.status as any,
+      payload: data.payload || {},
+      created_at: data.created_at,
+      updated_at: data.updated_at
+    } as EnhancedTask;
   }
 
   async listTasksByCapacity(capacity: string): Promise<EnhancedTask[]> {
     const { data, error } = await supabase
-      .from('tasks')
+      .from('tasks_5c')
       .select('*')
       .eq('capacity', capacity as any)
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data as any as EnhancedTask[];
+    
+    return data.map(task => ({
+      id: task.id,
+      title: task.title || 'Untitled Task',
+      description: task.description || '',
+      capacity: task.capacity,
+      loop_id: task.loop_id || '',
+      type: task.type,
+      scale: task.scale,
+      leverage: task.leverage,
+      tri: task.tri as any,
+      priority: 'medium', // Default
+      user_id: task.user_id,
+      assigned_to: task.assigned_to,
+      status: task.status as any,
+      payload: task.payload || {},
+      created_at: task.created_at,
+      updated_at: task.updated_at
+    })) as EnhancedTask[];
   }
 
   async updateTaskPayload(id: string, payload: any): Promise<void> {
     const { error } = await supabase
-      .from('tasks')
-      .update({ payload })
+      .from('tasks_5c')
+      .update({ 
+        payload,
+        updated_at: new Date().toISOString()
+      })
       .eq('id', id);
     
     if (error) throw error;
@@ -80,7 +125,7 @@ export class SupabaseCapacityService implements CapacityAPIService {
 
   async claimTask(id: string, assignee: string): Promise<void> {
     const { error } = await supabase
-      .from('tasks')
+      .from('tasks_5c')
       .update({ 
         assigned_to: assignee, 
         status: 'claimed' 

@@ -165,26 +165,38 @@ serve(async (req) => {
       );
     }
 
-    // Step 4: Upsert task assignment (owner role)
-    const { error: assignmentError } = await supabase
+    // Step 4: Check existing assignment, create only if needed
+    const { data: existingAssignment } = await supabase
       .from('task_assignments')
-      .upsert({
-        task_id,
-        user_id: user.id,
-        role: 'owner',
-        assigned_at: now.toISOString(),
-        assigned_by: user.id
-      });
+      .select('*')
+      .eq('task_id', task_id)
+      .eq('user_id', user.id)
+      .eq('role', 'owner')
+      .maybeSingle();
 
-    if (assignmentError) {
-      console.error('Assignment error:', assignmentError);
-      // Rollback lock if assignment fails
-      await supabase
-        .from('task_locks')
-        .update({ released_at: now.toISOString() })
-        .eq('id', lockData.id);
-      
-      throw new Error(`Failed to assign task: ${assignmentError.message}`);
+    if (!existingAssignment) {
+      const { error: assignmentError } = await supabase
+        .from('task_assignments')
+        .insert({
+          task_id,
+          user_id: user.id,
+          role: 'owner',
+          assigned_at: now.toISOString(),
+          assigned_by: user.id
+        });
+
+      if (assignmentError) {
+        console.error('Assignment error:', assignmentError);
+        // Rollback lock if assignment fails
+        await supabase
+          .from('task_locks')
+          .update({ released_at: now.toISOString() })
+          .eq('id', lockData.id);
+        
+        throw new Error(`Failed to assign task: ${assignmentError.message}`);
+      }
+    } else {
+      console.log(`Assignment already exists for task ${task_id} and user ${user.id}`);
     }
 
     // Step 5: Update task status
