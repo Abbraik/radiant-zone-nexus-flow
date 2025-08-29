@@ -70,6 +70,8 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
       label: edge.polarity === 1 ? '+' : '-',
       style: { stroke: edge.polarity === 1 ? '#22c55e' : '#ef4444' },
       data: { originalIndex: index, ...edge },
+      sourceHandle: null,
+      targetHandle: null,
     };
   });
 
@@ -93,9 +95,10 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
       const targetNode = nodes.find(n => n.id === params.target);
       
       if (sourceNode && targetNode) {
-        const newEdge = {
-          ...params,
+        const newEdgeData: Edge = {
           id: `edge-${Date.now()}`,
+          source: params.source!,
+          target: params.target!,
           label: '+',
           style: { stroke: '#22c55e' },
           data: {
@@ -107,7 +110,7 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
             note: '',
           },
         };
-        setEdges((eds) => addEdge(newEdge, eds));
+        setEdges((eds) => [...eds, newEdgeData]);
       }
     },
     [nodes, setEdges]
@@ -157,8 +160,8 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
   const onSubmit = () => {
     // Convert React Flow data back to form format
     const formNodes = nodes.map((node) => ({
-      label: node.data.label,
-      kind: node.data.kind,
+      label: String(node.data.label),
+      kind: String(node.data.kind) as 'stock' | 'flow' | 'aux' | 'actor' | 'indicator',
       meta: {},
       pos: node.position,
     }));
@@ -167,12 +170,12 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
       const sourceNode = nodes.find(n => n.id === edge.source);
       const targetNode = nodes.find(n => n.id === edge.target);
       return {
-        from_label: sourceNode?.data.label || '',
-        to_label: targetNode?.data.label || '',
-        polarity: edge.data?.polarity || 1,
-        delay_ms: edge.data?.delay_ms || 0,
-        weight: edge.data?.weight || 1.0,
-        note: edge.data?.note || '',
+        from_label: String(sourceNode?.data.label || ''),
+        to_label: String(targetNode?.data.label || ''),
+        polarity: (edge.data?.polarity || 1) as 1 | -1,
+        delay_ms: Number(edge.data?.delay_ms || 0),
+        weight: Number(edge.data?.weight || 1.0),
+        note: String(edge.data?.note || ''),
       };
     });
 
@@ -281,8 +284,8 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
                   key={node.id} 
                   className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full"
                 >
-                  <Badge variant="secondary">{node.data.kind}</Badge>
-                  <span className="text-sm">{node.data.label}</span>
+                  <Badge variant="secondary">{String(node.data.kind)}</Badge>
+                  <span className="text-sm">{String(node.data.label)}</span>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -312,7 +315,7 @@ export const FlowStep: React.FC<FlowStepProps> = ({ onNext, onPrevious }) => {
                     className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg"
                   >
                     <span className="text-sm">
-                      {sourceNode?.data.label} → {targetNode?.data.label}
+                      {String(sourceNode?.data.label || '')} → {String(targetNode?.data.label || '')}
                     </span>
                     <div className="flex items-center gap-2">
                       <Button

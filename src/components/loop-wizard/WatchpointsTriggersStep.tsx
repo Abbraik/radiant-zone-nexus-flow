@@ -294,7 +294,7 @@ export const WatchpointsTriggersStep: React.FC<WatchpointsTriggersStepProps> = (
                               aria-label={`Trigger ${index + 1} condition`}
                             />
                             <p className="text-xs text-muted-foreground mt-1">
-                              DSL condition string (e.g., avg(indicator, 14d) > threshold)
+                              DSL condition string (e.g., avg(indicator, 14d) {'>'} threshold)
                             </p>
                           </div>
 
