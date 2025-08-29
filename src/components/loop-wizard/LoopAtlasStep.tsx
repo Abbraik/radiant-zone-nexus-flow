@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Plus, X, Minus, Target, GitBranch, Settings } from 'lucide-react';
+import { Plus, X, Minus, Target, GitBranch, Settings, ArrowRight, Link, Users } from 'lucide-react';
 import { useLoopWizardStore } from '@/stores/useLoopWizardStore';
 import { loopAtlasSchema } from '@/lib/validation/loop-wizard';
 import { toast } from '@/hooks/use-toast';
@@ -35,6 +35,8 @@ export const LoopAtlasStep: React.FC<LoopAtlasStepProps> = ({ onNext, onPrevious
       loop_classification: formData.loop_classification,
       system_purpose: formData.system_purpose,
       key_feedbacks: formData.key_feedbacks,
+      cascades: formData.cascades,
+      shared_node_links: formData.shared_node_links,
     },
   });
 
@@ -113,7 +115,72 @@ export const LoopAtlasStep: React.FC<LoopAtlasStepProps> = ({ onNext, onPrevious
   const bands = form.watch('bands') || [];
   const loop_classification = form.watch('loop_classification') || [];
   const key_feedbacks = form.watch('key_feedbacks') || [];
+  const cascades = form.watch('cascades') || [];
+  const shared_node_links = form.watch('shared_node_links') || [];
   const availableNodes = formData.nodes.map(node => node.label);
+
+  // Mock data for cascades and shared nodes (replace with real data)
+  const availableLoops = [
+    { id: 'loop-1', name: 'Urban Planning Loop', code: 'UPL-01' },
+    { id: 'loop-2', name: 'Traffic Management Loop', code: 'TML-01' },
+    { id: 'loop-3', name: 'Energy Distribution Loop', code: 'EDL-01' },
+  ];
+
+  const availableSharedNodes = [
+    { id: 'snl-1', label: 'City Council', domain: 'institution' },
+    { id: 'snl-2', label: 'Population Growth', domain: 'population' },
+    { id: 'snl-3', label: 'Budget Allocation', domain: 'resource' },
+    { id: 'snl-4', label: 'Public Transport', domain: 'product' },
+    { id: 'snl-5', label: 'Community Engagement', domain: 'social' },
+  ];
+
+  const addCascade = () => {
+    const currentCascades = form.getValues('cascades') || [];
+    form.setValue('cascades', [
+      ...currentCascades,
+      {
+        to_loop_id: '',
+        relation: 'drives' as const,
+        note: '',
+      },
+    ]);
+  };
+
+  const removeCascade = (index: number) => {
+    const currentCascades = form.getValues('cascades') || [];
+    form.setValue('cascades', currentCascades.filter((_, i) => i !== index));
+  };
+
+  const updateCascade = (index: number, field: string, value: any) => {
+    const currentCascades = form.getValues('cascades') || [];
+    const updated = [...currentCascades];
+    updated[index] = { ...updated[index], [field]: value };
+    form.setValue('cascades', updated);
+  };
+
+  const addSharedNodeLink = () => {
+    const currentLinks = form.getValues('shared_node_links') || [];
+    form.setValue('shared_node_links', [
+      ...currentLinks,
+      {
+        snl_id: '',
+        role: 'actor' as const,
+        note: '',
+      },
+    ]);
+  };
+
+  const removeSharedNodeLink = (index: number) => {
+    const currentLinks = form.getValues('shared_node_links') || [];
+    form.setValue('shared_node_links', currentLinks.filter((_, i) => i !== index));
+  };
+
+  const updateSharedNodeLink = (index: number, field: string, value: any) => {
+    const currentLinks = form.getValues('shared_node_links') || [];
+    const updated = [...currentLinks];
+    updated[index] = { ...updated[index], [field]: value };
+    form.setValue('shared_node_links', updated);
+  };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -359,6 +426,188 @@ export const LoopAtlasStep: React.FC<LoopAtlasStepProps> = ({ onNext, onPrevious
         </CardContent>
       </Card>
 
+      {/* Loop Cascades */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ArrowRight className="w-5 h-5" />
+            Loop Cascades
+          </CardTitle>
+          <CardDescription>
+            Define relationships with other loops in the system
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {cascades.map((cascade, index) => (
+            <Card key={index} className="relative">
+              <CardContent className="pt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium">Cascade {index + 1}</h4>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeCascade(index)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Target Loop</Label>
+                    <Select 
+                      onValueChange={(value) => updateCascade(index, 'to_loop_id', value)} 
+                      value={cascade.to_loop_id}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select target loop" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableLoops.map((loop) => (
+                          <SelectItem key={loop.id} value={loop.id}>
+                            {loop.name} ({loop.code})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Relation</Label>
+                    <Select 
+                      onValueChange={(value) => updateCascade(index, 'relation', value)} 
+                      value={cascade.relation}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select relation" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="drives">Drives - Direct causal influence</SelectItem>
+                        <SelectItem value="influences">Influences - Indirect effect</SelectItem>
+                        <SelectItem value="constrains">Constrains - Limits or bounds</SelectItem>
+                        <SelectItem value="enables">Enables - Facilitates or allows</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Note</Label>
+                  <Textarea
+                    value={cascade.note || ''}
+                    onChange={(e) => updateCascade(index, 'note', e.target.value)}
+                    placeholder="Describe the cascade relationship..."
+                    rows={2}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={addCascade}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Loop Cascade
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Shared Node Links */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Shared Node Links
+          </CardTitle>
+          <CardDescription>
+            Link to shared nodes in the system library
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {shared_node_links.map((link, index) => (
+            <Card key={index} className="relative">
+              <CardContent className="pt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium">Shared Node {index + 1}</h4>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeSharedNodeLink(index)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Shared Node</Label>
+                    <Select 
+                      onValueChange={(value) => updateSharedNodeLink(index, 'snl_id', value)} 
+                      value={link.snl_id}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select shared node" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableSharedNodes.map((node) => (
+                          <SelectItem key={node.id} value={node.id}>
+                            {node.label} ({node.domain})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Role</Label>
+                    <Select 
+                      onValueChange={(value) => updateSharedNodeLink(index, 'role', value)} 
+                      value={link.role}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="actor">Actor - Active participant</SelectItem>
+                        <SelectItem value="system">System - System component</SelectItem>
+                        <SelectItem value="bottleneck">Bottleneck - Constraint point</SelectItem>
+                        <SelectItem value="beneficiary">Beneficiary - Outcome recipient</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Note</Label>
+                  <Textarea
+                    value={link.note || ''}
+                    onChange={(e) => updateSharedNodeLink(index, 'note', e.target.value)}
+                    placeholder="Describe the shared node relationship..."
+                    rows={2}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={addSharedNodeLink}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Shared Node Link
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Adaptive Bands */}
       <Card>
         <CardHeader>
@@ -479,10 +728,10 @@ export const LoopAtlasStep: React.FC<LoopAtlasStepProps> = ({ onNext, onPrevious
       </Card>
 
       <Alert>
-        <GitBranch className="w-4 h-4" />
+        <Target className="w-4 h-4" />
         <AlertDescription>
-          The Loop Atlas identifies key system feedbacks and leverage points for intervention. 
-          Focus on the most critical loops that drive system behavior.
+          The Loop Atlas integrates your loop with the broader system registry through cascades and shared nodes. 
+          This enables system-level analysis and cross-loop coordination for comprehensive governance.
         </AlertDescription>
       </Alert>
 

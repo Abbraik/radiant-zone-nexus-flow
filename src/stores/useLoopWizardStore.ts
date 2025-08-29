@@ -2,14 +2,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface LoopFormData {
-  // Step 0 - Paradigm & Doctrine (RRE Enhanced)
+  // Step 0 - Paradigm & Doctrine (RRE Enhanced with Registry Alignment)
   name: string;
   loop_code: string;
   description: string;
+  synopsis?: string;
   type: 'reactive' | 'perceptual' | 'structural';
   scale: 'micro' | 'meso' | 'macro';
   domain: string;
-  layer: string;
+  layer: 'meta' | 'macro' | 'meso' | 'micro';
+  motif: 'B' | 'R' | 'N' | 'C' | 'T';
+  default_leverage: 'N' | 'P' | 'S';
+  tags: string[];
   doctrine_reference: string;
   
   // RRE Paradigm Fields
@@ -73,6 +77,18 @@ export interface LoopFormData {
   }>;
   system_purpose: string;
   key_feedbacks: string[];
+  
+  // Registry Integration Fields
+  cascades: Array<{
+    to_loop_id: string;
+    relation: 'drives' | 'influences' | 'constrains' | 'enables';
+    note?: string;
+  }>;
+  shared_node_links: Array<{
+    snl_id: string;
+    role: 'actor' | 'system' | 'bottleneck' | 'beneficiary';
+    note?: string;
+  }>;
 
   // Step 4 - Modules & Experiments (RRE)
   experiments: Array<{
@@ -163,10 +179,14 @@ const initialFormData: LoopFormData = {
   name: '',
   loop_code: '',
   description: '',
+  synopsis: '',
   type: 'reactive',
   scale: 'micro',
   domain: '',
-  layer: '',
+  layer: 'micro',
+  motif: 'B',
+  default_leverage: 'N',
+  tags: [],
   doctrine_reference: '',
   
   // RRE Paradigm Fields
@@ -185,6 +205,8 @@ const initialFormData: LoopFormData = {
   loop_classification: [],
   system_purpose: '',
   key_feedbacks: [],
+  cascades: [],
+  shared_node_links: [],
   
   experiments: [],
   pilots: [],

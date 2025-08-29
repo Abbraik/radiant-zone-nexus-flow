@@ -3,7 +3,7 @@ import { z } from 'zod';
 // Loop Code validation regex
 const LOOP_CODE_REGEX = /^[A-Z0-9\-_]+$/;
 
-// Step 0 - Paradigm & Doctrine (RRE Enhanced)
+// Step 0 - Paradigm & Doctrine (RRE Enhanced with Registry Alignment)
 export const paradigmDoctrineSchema = z.object({
   name: z.string().min(1, 'Loop name is required').max(100, 'Loop name too long'),
   loop_code: z
@@ -12,10 +12,14 @@ export const paradigmDoctrineSchema = z.object({
     .max(50, 'Loop code too long')
     .regex(LOOP_CODE_REGEX, 'Loop code must contain only A-Z, 0-9, hyphens, and underscores'),
   description: z.string().max(500, 'Description too long'),
+  synopsis: z.string().max(200, 'Synopsis too long').optional(),
   type: z.enum(['reactive', 'perceptual', 'structural']),
   scale: z.enum(['micro', 'meso', 'macro']),
   domain: z.string().min(1, 'Domain is required').max(50, 'Domain too long'),
-  layer: z.string().min(1, 'Layer is required').max(50, 'Layer too long'),
+  layer: z.enum(['meta', 'macro', 'meso', 'micro']),
+  motif: z.enum(['B', 'R', 'N', 'C', 'T']),
+  default_leverage: z.enum(['N', 'P', 'S']),
+  tags: z.array(z.string()).max(20, 'Too many tags'),
   doctrine_reference: z.string().max(200, 'Doctrine reference too long'),
   
   // RRE Paradigm Fields
@@ -102,11 +106,27 @@ export const loopClassificationSchema = z.object({
   leverage_points: z.array(z.string()).max(10, 'Too many leverage points'),
 });
 
+// Cascade schema for connecting loops
+export const cascadeSchema = z.object({
+  to_loop_id: z.string().min(1, 'Target loop is required'),
+  relation: z.enum(['drives', 'influences', 'constrains', 'enables']),
+  note: z.string().max(200, 'Cascade note too long').optional(),
+});
+
+// Shared node link schema
+export const sharedNodeLinkSchema = z.object({
+  snl_id: z.string().min(1, 'Shared node ID is required'),
+  role: z.enum(['actor', 'system', 'bottleneck', 'beneficiary']),
+  note: z.string().max(200, 'Link note too long').optional(),
+});
+
 export const loopAtlasSchema = z.object({
   bands: z.array(bandSchema),
   loop_classification: z.array(loopClassificationSchema),
   system_purpose: z.string().min(1, 'System purpose is required').max(500, 'System purpose too long'),
   key_feedbacks: z.array(z.string()).max(15, 'Too many key feedbacks'),
+  cascades: z.array(cascadeSchema),
+  shared_node_links: z.array(sharedNodeLinkSchema),
 });
 
 // Backward compatibility
