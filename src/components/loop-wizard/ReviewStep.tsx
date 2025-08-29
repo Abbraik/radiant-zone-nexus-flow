@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Edit, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Check, Edit, Loader2, AlertCircle, FlaskConical, Target, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,6 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
 
   const buildPayload = () => {
     const now = new Date().toISOString();
-    const in180d = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
 
     return {
       loop: {
@@ -37,6 +36,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
         layer: formData.layer,
         metadata: {
           doctrine_reference: formData.doctrine_reference,
+          worldview: formData.worldview,
+          paradigm_statement: formData.paradigm_statement,
+          coherence_principles: formData.coherence_principles,
+          cas_assumptions: formData.cas_assumptions,
           created_via: 'rre_wizard',
         },
       },
@@ -45,17 +48,19 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
       nodes: formData.nodes,
       edges: formData.edges,
       bands: formData.bands,
-      watchpoints: formData.watchpoints,
-      triggers: formData.triggers.map(trigger => ({
-        ...trigger,
-        valid_from: trigger.valid_from === 'now' ? now : trigger.valid_from,
-        expires_at: trigger.expires_at === 'in_180d' ? in180d : trigger.expires_at,
-      })),
+      
+      // RRE-specific data
+      loop_classification: formData.loop_classification,
+      system_purpose: formData.system_purpose,
+      key_feedbacks: formData.key_feedbacks,
+      experiments: formData.experiments,
+      pilots: formData.pilots,
+      
       baselines: {
         ...formData.baselines,
         as_of: now,
       },
-      reflex_note: formData.reflex_note,
+      reflex_memory: formData.reflex_memory,
       create_followup_task: formData.create_followup_task,
     };
   };
@@ -79,8 +84,8 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
 
       // Success! 
       toast({
-        title: 'Loop created successfully!',
-        description: `${formData.name} has been created with all related artifacts.`,
+        title: 'RRE Loop created successfully!',
+        description: `${formData.name} has been created with all RRE artifacts.`,
       });
 
       // Reset the wizard and navigate to the new loop
@@ -88,11 +93,11 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
       navigate(`/loops/${loopId}`);
 
     } catch (error: any) {
-      console.error('Error creating loop:', error);
-      setCreationError(error.message || 'Failed to create loop. Please try again.');
+      console.error('Error creating RRE loop:', error);
+      setCreationError(error.message || 'Failed to create RRE loop. Please try again.');
       toast({
         title: 'Creation failed',
-        description: error.message || 'Failed to create loop. Please try again.',
+        description: error.message || 'Failed to create RRE loop. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -117,7 +122,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
       )}
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="pt-4">
             <div className="text-2xl font-bold">{formData.indicators.length}</div>
@@ -132,8 +137,14 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold">{formData.edges.length}</div>
-            <p className="text-xs text-muted-foreground">Edges</p>
+            <div className="text-2xl font-bold">{formData.loop_classification.length}</div>
+            <p className="text-xs text-muted-foreground">Loop Types</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold">{(formData.experiments?.length || 0) + (formData.pilots?.length || 0)}</div>
+            <p className="text-xs text-muted-foreground">Modules</p>
           </CardContent>
         </Card>
         <Card>
@@ -146,11 +157,11 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
 
       <ScrollArea className="h-96">
         <div className="space-y-4">
-          {/* Basics */}
+          {/* Paradigm & Doctrine */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Basics & Doctrine</CardTitle>
+                <CardTitle className="text-lg">Paradigm & Doctrine</CardTitle>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -169,16 +180,18 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
               <div><strong>Scale:</strong> <Badge>{formData.scale}</Badge></div>
               <div><strong>Domain:</strong> {formData.domain}</div>
               <div><strong>Layer:</strong> {formData.layer}</div>
+              <div><strong>Worldview:</strong> <Badge variant="outline">{formData.worldview}</Badge></div>
               {formData.description && <div><strong>Description:</strong> {formData.description}</div>}
+              {formData.paradigm_statement && <div><strong>Paradigm:</strong> {formData.paradigm_statement}</div>}
               {formData.doctrine_reference && <div><strong>Doctrine:</strong> {formData.doctrine_reference}</div>}
             </CardContent>
           </Card>
 
-          {/* Indicators */}
+          {/* Aggregates & Indicators */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Indicators ({formData.indicators.length})</CardTitle>
+                <CardTitle className="text-lg">Aggregates & Indicators ({formData.indicators.length})</CardTitle>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -216,11 +229,11 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
             </CardContent>
           </Card>
 
-          {/* Loop Structure */}
+          {/* Stocks & Flows */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Loop Structure</CardTitle>
+                <CardTitle className="text-lg">Stocks & Flows</CardTitle>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -262,37 +275,46 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
             </CardContent>
           </Card>
 
-          {/* Monitoring */}
+          {/* Loop Atlas */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Monitoring & Triggers</CardTitle>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => editSection(3)}
-                    className="flex items-center space-x-1"
-                  >
-                    <Edit className="w-3 h-3" />
-                    <span>Bands</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => editSection(4)}
-                    className="flex items-center space-x-1"
-                  >
-                    <Edit className="w-3 h-3" />
-                    <span>Triggers</span>
-                  </Button>
-                </div>
+                <CardTitle className="text-lg">Loop Atlas</CardTitle>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => editSection(3)}
+                  className="flex items-center space-x-1"
+                >
+                  <Edit className="w-3 h-3" />
+                  <span>Edit</span>
+                </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CardContent className="space-y-4">
+              {formData.system_purpose && (
                 <div>
-                  <h5 className="font-medium mb-2">Bands ({formData.bands.length})</h5>
+                  <h5 className="font-medium mb-1">System Purpose</h5>
+                  <p className="text-sm text-muted-foreground">{formData.system_purpose}</p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h5 className="font-medium mb-2">Loop Classifications ({formData.loop_classification.length})</h5>
+                  <div className="space-y-1">
+                    {formData.loop_classification.map((classification, index) => (
+                      <div key={index} className="text-sm">
+                        <Badge variant={classification.loop_type === 'reinforcing' ? 'default' : 'secondary'}>
+                          {classification.loop_type === 'reinforcing' ? 'R' : 'B'}
+                        </Badge>
+                        <span className="ml-2">{classification.from_node} → {classification.to_node}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h5 className="font-medium mb-2">Adaptive Bands ({formData.bands.length})</h5>
                   <div className="text-sm text-muted-foreground">
                     {formData.bands.length > 0 ? 
                       formData.bands.map(b => b.indicator).join(', ') : 
@@ -300,33 +322,74 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
                     }
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Modules & Experiments */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Modules & Experiments</CardTitle>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => editSection(4)}
+                  className="flex items-center space-x-1"
+                >
+                  <Edit className="w-3 h-3" />
+                  <span>Edit</span>
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h5 className="font-medium mb-2">Watchpoints ({formData.watchpoints.length})</h5>
-                  <div className="text-sm text-muted-foreground">
-                    {formData.watchpoints.length > 0 ? 
-                      `${formData.watchpoints.filter(w => w.armed).length} armed` : 
-                      'No watchpoints'
-                    }
+                  <h5 className="font-medium mb-2 flex items-center gap-2">
+                    <FlaskConical className="w-4 h-4" />
+                    Experiments ({formData.experiments?.length || 0})
+                  </h5>
+                  <div className="space-y-1">
+                    {(formData.experiments || []).map((experiment, index) => (
+                      <div key={index} className="text-sm">
+                        <div className="font-medium">{experiment.name}</div>
+                        <Badge variant="outline" className="text-xs">{experiment.methodology}</Badge>
+                      </div>
+                    ))}
+                    {(!formData.experiments || formData.experiments.length === 0) && (
+                      <div className="text-sm text-muted-foreground">No experiments defined</div>
+                    )}
                   </div>
                 </div>
                 <div>
-                  <h5 className="font-medium mb-2">Triggers ({formData.triggers.length})</h5>
-                  <div className="text-sm text-muted-foreground">
-                    {formData.triggers.length > 0 ? 
-                      formData.triggers.map(t => t.name).join(', ') : 
-                      'No triggers'
-                    }
+                  <h5 className="font-medium mb-2 flex items-center gap-2">
+                    <Target className="w-4 h-4" />
+                    Pilots ({formData.pilots?.length || 0})
+                  </h5>
+                  <div className="space-y-1">
+                    {(formData.pilots || []).map((pilot, index) => (
+                      <div key={index} className="text-sm">
+                        <div className="font-medium">{pilot.name}</div>
+                        <div className="text-xs text-muted-foreground">{pilot.duration_weeks} weeks</div>
+                      </div>
+                    ))}
+                    {(!formData.pilots || formData.pilots.length === 0) && (
+                      <div className="text-sm text-muted-foreground">No pilots defined</div>
+                    )}
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Baselines */}
+          {/* Baselines & Reflex Memory */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">TRI Baselines</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  Baselines & Reflex Memory
+                </CardTitle>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -338,8 +401,8 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4 mb-4">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <div className="text-sm text-muted-foreground">Trust</div>
                   <div className="font-medium">{Math.round(formData.baselines.trust * 100)}%</div>
@@ -356,10 +419,30 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
                   <Progress value={formData.baselines.integrity * 100} className="h-1 mt-1" />
                 </div>
               </div>
-              <div>
-                <h5 className="font-medium mb-1">Reflex Note</h5>
-                <p className="text-sm text-muted-foreground">{formData.reflex_note}</p>
-              </div>
+              
+              {formData.reflex_memory && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h5 className="font-medium mb-1">Learning Objectives</h5>
+                    <p className="text-sm text-muted-foreground">
+                      {formData.reflex_memory.learning_objectives?.length > 0 
+                        ? formData.reflex_memory.learning_objectives.join(', ')
+                        : 'None defined'
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <h5 className="font-medium mb-1">Adaptation Triggers</h5>
+                    <p className="text-sm text-muted-foreground">
+                      {formData.reflex_memory.adaptation_triggers?.length > 0 
+                        ? formData.reflex_memory.adaptation_triggers.join(', ')
+                        : 'None defined'
+                      }
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               {formData.create_followup_task && (
                 <Badge variant="secondary" className="mt-2">Follow-up task will be created</Badge>
               )}
@@ -388,12 +471,12 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({ onPrevious }) => {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Creating Loop...</span>
+              <span>Creating RRE Loop...</span>
             </>
           ) : (
             <>
               <Check className="w-4 h-4" />
-              <span>Create Loop</span>
+              <span>Create RRE Loop</span>
             </>
           )}
         </Button>
