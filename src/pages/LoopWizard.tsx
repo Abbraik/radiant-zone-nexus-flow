@@ -6,23 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useLoopWizardStore } from '@/stores/useLoopWizardStore';
-import { BasicsStep } from '@/components/loop-wizard/BasicsStep';
+import { ParadigmDoctrineStep } from '@/components/loop-wizard/ParadigmDoctrineStep';
 import { IndicatorsStep } from '@/components/loop-wizard/IndicatorsStep';
 import { FlowStep } from '@/components/loop-wizard/FlowStep';
-import { BandsStep } from '@/components/loop-wizard/BandsStep';
-import { WatchpointsTriggersStep } from '@/components/loop-wizard/WatchpointsTriggersStep';
+import { LoopAtlasStep } from '@/components/loop-wizard/LoopAtlasStep';
+import { ModulesExperimentsStep } from '@/components/loop-wizard/ModulesExperimentsStep';
 import { BaselinesStep } from '@/components/loop-wizard/BaselinesStep';
 import { ReviewStep } from '@/components/loop-wizard/ReviewStep';
 import { toast } from '@/hooks/use-toast';
 
 const STEPS = [
-  { title: 'Basics & Doctrine', description: 'Loop fundamentals and doctrine reference' },
-  { title: 'Aggregates & Indicators', description: 'Define indicators and data sources' },
-  { title: 'Stocks, Flows & Feedbacks', description: 'Build the loop structure' },
-  { title: 'Adaptive Bands', description: 'Configure monitoring bands' },
-  { title: 'Watchpoints & Triggers', description: 'Set up alerts and automation' },
-  { title: 'Baselines & Publish', description: 'TRI baselines and publication' },
-  { title: 'Review & Create', description: 'Review and create the loop' },
+  { title: 'Paradigm & Doctrine', description: 'Define worldview, paradigm, and doctrine' },
+  { title: 'Aggregates & Indicators', description: 'Select key indicators and data sources' },
+  { title: 'Stocks & Flows', description: 'Map system dynamics and delays' },
+  { title: 'Loop Atlas', description: 'Identify feedbacks and leverage points' },
+  { title: 'Modules & Experiments', description: 'Design pilots and experiments' },
+  { title: 'Baselines & Reflex Memory', description: 'Set baselines and capture learnings' },
+  { title: 'Review & Create', description: 'Generate RRE outputs and create loop' },
 ];
 
 const LoopWizard: React.FC = () => {
@@ -61,15 +61,15 @@ const LoopWizard: React.FC = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <BasicsStep onNext={handleNext} />;
+        return <ParadigmDoctrineStep onNext={handleNext} />;
       case 1:
         return <IndicatorsStep onNext={handleNext} onPrevious={handlePrevious} />;
       case 2:
         return <FlowStep onNext={handleNext} onPrevious={handlePrevious} />;
       case 3:
-        return <BandsStep onNext={handleNext} onPrevious={handlePrevious} />;
+        return <LoopAtlasStep onNext={handleNext} onPrevious={handlePrevious} />;
       case 4:
-        return <WatchpointsTriggersStep onNext={handleNext} onPrevious={handlePrevious} />;
+        return <ModulesExperimentsStep onNext={handleNext} onPrevious={handlePrevious} />;
       case 5:
         return <BaselinesStep onNext={handleNext} onPrevious={handlePrevious} />;
       case 6:

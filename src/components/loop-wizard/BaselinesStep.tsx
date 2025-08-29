@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { useLoopWizardStore } from '@/stores/useLoopWizardStore';
-import { baselinesSchema } from '@/lib/validation/loop-wizard';
+import { baselinesReflexMemorySchema } from '@/lib/validation/loop-wizard';
 import { toast } from '@/hooks/use-toast';
 
 interface BaselinesStepProps {
@@ -24,10 +24,14 @@ export const BaselinesStep: React.FC<BaselinesStepProps> = ({ onNext, onPrevious
   const { formData, updateFormData } = useLoopWizardStore();
 
   const form = useForm({
-    resolver: zodResolver(baselinesSchema),
+    resolver: zodResolver(baselinesReflexMemorySchema),
     defaultValues: {
       baselines: formData.baselines,
-      reflex_note: formData.reflex_note,
+      reflex_memory: formData.reflex_memory,
+      generate_paradigm_statement: formData.generate_paradigm_statement,
+      generate_aggregate_dashboard: formData.generate_aggregate_dashboard,
+      generate_loop_atlas: formData.generate_loop_atlas,
+      generate_module_reports: formData.generate_module_reports,
       create_followup_task: formData.create_followup_task,
     },
   });
@@ -195,27 +199,7 @@ export const BaselinesStep: React.FC<BaselinesStepProps> = ({ onNext, onPrevious
             </p>
           </CardHeader>
           <CardContent>
-            <FormField
-              control={form.control}
-              name="reflex_note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Reflex Note *</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Loop created per URGM doctrine; aligns with cohesion outcomes. This loop addresses..."
-                      rows={4}
-                      aria-describedby="reflex-note-description"
-                    />
-                  </FormControl>
-                  <FormDescription id="reflex-note-description">
-                    Explain why this loop exists, its purpose, and reference to relevant doctrine
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Enhanced Reflex Memory fields are now handled in the new RRE sections above */}
           </CardContent>
         </Card>
 

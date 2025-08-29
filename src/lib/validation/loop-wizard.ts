@@ -3,8 +3,8 @@ import { z } from 'zod';
 // Loop Code validation regex
 const LOOP_CODE_REGEX = /^[A-Z0-9\-_]+$/;
 
-// Step 0 - Basics & Doctrine
-export const basicsSchema = z.object({
+// Step 0 - Paradigm & Doctrine (RRE Enhanced)
+export const paradigmDoctrineSchema = z.object({
   name: z.string().min(1, 'Loop name is required').max(100, 'Loop name too long'),
   loop_code: z
     .string()
@@ -17,7 +17,16 @@ export const basicsSchema = z.object({
   domain: z.string().min(1, 'Domain is required').max(50, 'Domain too long'),
   layer: z.string().min(1, 'Layer is required').max(50, 'Layer too long'),
   doctrine_reference: z.string().max(200, 'Doctrine reference too long'),
+  
+  // RRE Paradigm Fields
+  worldview: z.enum(['cas', 'coherence', 'systems', 'other']),
+  paradigm_statement: z.string().min(1, 'Paradigm statement is required').max(1000, 'Paradigm statement too long'),
+  coherence_principles: z.array(z.string()).max(10, 'Too many coherence principles'),
+  cas_assumptions: z.string().max(500, 'CAS assumptions too long'),
 });
+
+// Backward compatibility
+export const basicsSchema = paradigmDoctrineSchema;
 
 // Step 1 - Indicators & Sources
 export const indicatorSchema = z.object({
@@ -69,7 +78,7 @@ export const flowSchema = z.object({
   edges: z.array(edgeSchema),
 });
 
-// Step 3 - Adaptive Bands
+// Step 3 - Loop Atlas (RRE Enhanced)
 export const bandSchema = z.object({
   indicator: z.string().min(1, 'Indicator is required'),
   lower_bound: z.number(),
@@ -85,54 +94,87 @@ export const bandSchema = z.object({
   }
 );
 
+export const loopClassificationSchema = z.object({
+  from_node: z.string().min(1, 'From node is required'),
+  to_node: z.string().min(1, 'To node is required'),
+  loop_type: z.enum(['reinforcing', 'balancing']),
+  description: z.string().min(1, 'Description is required').max(500, 'Description too long'),
+  leverage_points: z.array(z.string()).max(10, 'Too many leverage points'),
+});
+
+export const loopAtlasSchema = z.object({
+  bands: z.array(bandSchema),
+  loop_classification: z.array(loopClassificationSchema),
+  system_purpose: z.string().min(1, 'System purpose is required').max(500, 'System purpose too long'),
+  key_feedbacks: z.array(z.string()).max(15, 'Too many key feedbacks'),
+});
+
+// Backward compatibility
 export const bandsSchema = z.object({
   bands: z.array(bandSchema),
 });
 
-// Step 4 - Watchpoints & Triggers
-export const watchpointSchema = z.object({
-  indicator: z.string().min(1, 'Indicator is required'),
-  direction: z.enum(['up', 'down', 'band']),
-  threshold_value: z.number().nullable(),
-  threshold_band: z.record(z.any()).nullable(),
-  armed: z.boolean(),
+// Step 4 - Modules & Experiments (RRE)
+export const experimentSchema = z.object({
+  name: z.string().min(1, 'Experiment name is required').max(100, 'Experiment name too long'),
+  hypothesis: z.string().min(1, 'Hypothesis is required').max(500, 'Hypothesis too long'),
+  methodology: z.enum(['did', 'rct', 'synthetic_control', 'other']),
+  success_criteria: z.string().min(1, 'Success criteria is required').max(300, 'Success criteria too long'),
+  timeline_weeks: z.number().int().min(1, 'Timeline must be > 0 weeks').max(104, 'Timeline too long'),
+  resources_required: z.string().max(500, 'Resources description too long'),
+  evaluation_plan: z.string().min(1, 'Evaluation plan is required').max(500, 'Evaluation plan too long'),
+  ethical_considerations: z.string().max(500, 'Ethical considerations too long'),
 });
 
-export const triggerSchema = z.object({
-  name: z.string().min(1, 'Trigger name is required').max(100, 'Trigger name too long'),
-  condition: z.string().min(1, 'Condition is required').max(200, 'Condition too long'),
-  threshold: z.number(),
-  window_hours: z.number().int().min(1, 'Window hours must be > 0'),
-  action_ref: z.string().min(1, 'Action reference is required').max(100, 'Action reference too long'),
-  authority: z.string().min(1, 'Authority is required').max(100, 'Authority too long'),
-  consent_note: z.string().max(300, 'Consent note too long'),
-  valid_from: z.string().min(1, 'Valid from is required'),
-  expires_at: z.string().min(1, 'Expires at is required'),
+export const pilotSchema = z.object({
+  name: z.string().min(1, 'Pilot name is required').max(100, 'Pilot name too long'),
+  objective: z.string().min(1, 'Objective is required').max(300, 'Objective too long'),
+  scope: z.string().min(1, 'Scope is required').max(300, 'Scope too long'),
+  duration_weeks: z.number().int().min(1, 'Duration must be > 0 weeks').max(52, 'Duration too long'),
+  stakeholders: z.array(z.string()).max(20, 'Too many stakeholders'),
+  risk_mitigation: z.string().max(500, 'Risk mitigation too long'),
+  learning_objectives: z.array(z.string()).max(15, 'Too many learning objectives'),
 });
 
-export const watchpointsTriggersSchema = z.object({
-  watchpoints: z.array(watchpointSchema),
-  triggers: z.array(triggerSchema),
+export const modulesExperimentsSchema = z.object({
+  experiments: z.array(experimentSchema),
+  pilots: z.array(pilotSchema),
 });
 
-// Step 5 - Baselines & Publish
-export const baselinesSchema = z.object({
+// Step 5 - Baselines & Reflex Memory (RRE Enhanced)
+export const baselinesReflexMemorySchema = z.object({
   baselines: z.object({
     trust: z.number().min(0, 'Trust must be >= 0').max(1, 'Trust must be <= 1'),
     reciprocity: z.number().min(0, 'Reciprocity must be >= 0').max(1, 'Reciprocity must be <= 1'),
     integrity: z.number().min(0, 'Integrity must be >= 0').max(1, 'Integrity must be <= 1'),
     as_of: z.string().min(1, 'As of date is required'),
   }),
-  reflex_note: z.string().min(1, 'Reflex note is required').max(500, 'Reflex note too long'),
+  
+  reflex_memory: z.object({
+    learning_objectives: z.array(z.string()).max(10, 'Too many learning objectives'),
+    adaptation_triggers: z.array(z.string()).max(15, 'Too many adaptation triggers'),
+    success_patterns: z.string().max(500, 'Success patterns too long'),
+    failure_patterns: z.string().max(500, 'Failure patterns too long'),
+    contextual_factors: z.string().max(500, 'Contextual factors too long'),
+    stakeholder_insights: z.string().max(500, 'Stakeholder insights too long'),
+  }),
+  
+  generate_paradigm_statement: z.boolean(),
+  generate_aggregate_dashboard: z.boolean(),
+  generate_loop_atlas: z.boolean(),
+  generate_module_reports: z.boolean(),
   create_followup_task: z.boolean(),
 });
 
-// Complete form validation
-export const completeFormSchema = basicsSchema
+// Backward compatibility
+export const baselinesSchema = baselinesReflexMemorySchema;
+
+// Complete form validation (RRE)
+export const completeFormSchema = paradigmDoctrineSchema
   .merge(indicatorsSourcesSchema)
   .merge(flowSchema)
-  .merge(bandsSchema)
-  .merge(watchpointsTriggersSchema)
-  .merge(baselinesSchema);
+  .merge(loopAtlasSchema)
+  .merge(modulesExperimentsSchema)
+  .merge(baselinesReflexMemorySchema);
 
 export type CompleteFormData = z.infer<typeof completeFormSchema>;

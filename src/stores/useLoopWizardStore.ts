@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface LoopFormData {
-  // Step 0 - Basics & Doctrine
+  // Step 0 - Paradigm & Doctrine (RRE Enhanced)
   name: string;
   loop_code: string;
   description: string;
@@ -11,6 +11,12 @@ export interface LoopFormData {
   domain: string;
   layer: string;
   doctrine_reference: string;
+  
+  // RRE Paradigm Fields
+  worldview: 'cas' | 'coherence' | 'systems' | 'other';
+  paradigm_statement: string;
+  coherence_principles: string[];
+  cas_assumptions: string;
 
   // Step 1 - Indicators & Sources
   indicators: Array<{
@@ -47,7 +53,7 @@ export interface LoopFormData {
     note: string;
   }>;
 
-  // Step 3 - Adaptive Bands
+  // Step 3 - Loop Atlas (RRE Enhanced)
   bands: Array<{
     indicator: string;
     lower_bound: number;
@@ -56,35 +62,63 @@ export interface LoopFormData {
     smoothing_alpha: number;
     notes: string;
   }>;
-
-  // Step 4 - Watchpoints & Triggers
-  watchpoints: Array<{
-    indicator: string;
-    direction: 'up' | 'down' | 'band';
-    threshold_value: number | null;
-    threshold_band: Record<string, any> | null;
-    armed: boolean;
+  
+  // RRE Loop Atlas Fields
+  loop_classification: Array<{
+    from_node: string;
+    to_node: string;
+    loop_type: 'reinforcing' | 'balancing';
+    description: string;
+    leverage_points: string[];
   }>;
-  triggers: Array<{
+  system_purpose: string;
+  key_feedbacks: string[];
+
+  // Step 4 - Modules & Experiments (RRE)
+  experiments: Array<{
     name: string;
-    condition: string;
-    threshold: number;
-    window_hours: number;
-    action_ref: string;
-    authority: string;
-    consent_note: string;
-    valid_from: string;
-    expires_at: string;
+    hypothesis: string;
+    methodology: 'did' | 'rct' | 'synthetic_control' | 'other';
+    success_criteria: string;
+    timeline_weeks: number;
+    resources_required: string;
+    evaluation_plan: string;
+    ethical_considerations: string;
+  }>;
+  
+  pilots: Array<{
+    name: string;
+    objective: string;
+    scope: string;
+    duration_weeks: number;
+    stakeholders: string[];
+    risk_mitigation: string;
+    learning_objectives: string[];
   }>;
 
-  // Step 5 - Baselines & Publish
+  // Step 5 - Baselines & Reflex Memory (RRE Enhanced)
   baselines: {
     trust: number;
     reciprocity: number;
     integrity: number;
     as_of: string;
   };
-  reflex_note: string;
+  
+  // Enhanced Reflex Memory
+  reflex_memory: {
+    learning_objectives: string[];
+    adaptation_triggers: string[];
+    success_patterns: string;
+    failure_patterns: string;
+    contextual_factors: string;
+    stakeholder_insights: string;
+  };
+  
+  // RRE Outputs Configuration
+  generate_paradigm_statement: boolean;
+  generate_aggregate_dashboard: boolean;
+  generate_loop_atlas: boolean;
+  generate_module_reports: boolean;
   create_followup_task: boolean;
 }
 
@@ -112,13 +146,17 @@ interface LoopWizardStore {
   removeSource: (index: number) => void;
   updateSource: (index: number, updates: Partial<LoopFormData['sources'][0]>) => void;
   
-  addWatchpoint: () => void;
-  removeWatchpoint: (index: number) => void;
-  updateWatchpoint: (index: number, updates: Partial<LoopFormData['watchpoints'][0]>) => void;
+  addExperiment: () => void;
+  removeExperiment: (index: number) => void;
+  updateExperiment: (index: number, updates: Partial<LoopFormData['experiments'][0]>) => void;
   
-  addTrigger: () => void;
-  removeTrigger: (index: number) => void;
-  updateTrigger: (index: number, updates: Partial<LoopFormData['triggers'][0]>) => void;
+  addPilot: () => void;
+  removePilot: (index: number) => void;
+  updatePilot: (index: number, updates: Partial<LoopFormData['pilots'][0]>) => void;
+  
+  addLoopClassification: () => void;
+  removeLoopClassification: (index: number) => void;
+  updateLoopClassification: (index: number, updates: Partial<LoopFormData['loop_classification'][0]>) => void;
 }
 
 const initialFormData: LoopFormData = {
@@ -131,6 +169,12 @@ const initialFormData: LoopFormData = {
   layer: '',
   doctrine_reference: '',
   
+  // RRE Paradigm Fields
+  worldview: 'cas',
+  paradigm_statement: '',
+  coherence_principles: [],
+  cas_assumptions: '',
+  
   indicators: [],
   sources: [],
   
@@ -138,9 +182,12 @@ const initialFormData: LoopFormData = {
   edges: [],
   
   bands: [],
+  loop_classification: [],
+  system_purpose: '',
+  key_feedbacks: [],
   
-  watchpoints: [],
-  triggers: [],
+  experiments: [],
+  pilots: [],
   
   baselines: {
     trust: 0.6,
@@ -148,7 +195,20 @@ const initialFormData: LoopFormData = {
     integrity: 0.6,
     as_of: new Date().toISOString(),
   },
-  reflex_note: '',
+  
+  reflex_memory: {
+    learning_objectives: [],
+    adaptation_triggers: [],
+    success_patterns: '',
+    failure_patterns: '',
+    contextual_factors: '',
+    stakeholder_insights: '',
+  },
+  
+  generate_paradigm_statement: true,
+  generate_aggregate_dashboard: true,
+  generate_loop_atlas: true,
+  generate_module_reports: true,
   create_followup_task: false,
 };
 
@@ -270,81 +330,118 @@ export const useLoopWizardStore = create<LoopWizardStore>()(
           },
         })),
 
-      // Watchpoint actions
-      addWatchpoint: () =>
-        set((state) => ({
-          formData: {
-            ...state.formData,
-            watchpoints: [
-              ...state.formData.watchpoints,
-              {
-                indicator: '',
-                direction: 'up' as const,
-                threshold_value: 0,
-                threshold_band: null,
-                armed: true,
-              },
-            ],
-          },
-        })),
+       // Experiment actions
+       addExperiment: () =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             experiments: [
+               ...state.formData.experiments,
+               {
+                 name: '',
+                 hypothesis: '',
+                 methodology: 'rct' as const,
+                 success_criteria: '',
+                 timeline_weeks: 12,
+                 resources_required: '',
+                 evaluation_plan: '',
+                 ethical_considerations: '',
+               },
+             ],
+           },
+         })),
 
-      removeWatchpoint: (index) =>
-        set((state) => ({
-          formData: {
-            ...state.formData,
-            watchpoints: state.formData.watchpoints.filter((_, i) => i !== index),
-          },
-        })),
+       removeExperiment: (index) =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             experiments: state.formData.experiments.filter((_, i) => i !== index),
+           },
+         })),
 
-      updateWatchpoint: (index, updates) =>
-        set((state) => ({
-          formData: {
-            ...state.formData,
-            watchpoints: state.formData.watchpoints.map((watchpoint, i) =>
-              i === index ? { ...watchpoint, ...updates } : watchpoint
-            ),
-          },
-        })),
+       updateExperiment: (index, updates) =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             experiments: state.formData.experiments.map((experiment, i) =>
+               i === index ? { ...experiment, ...updates } : experiment
+             ),
+           },
+         })),
 
-      // Trigger actions
-      addTrigger: () =>
-        set((state) => ({
-          formData: {
-            ...state.formData,
-            triggers: [
-              ...state.formData.triggers,
-              {
-                name: '',
-                condition: '',
-                threshold: 0,
-                window_hours: 24,
-                action_ref: '',
-                authority: '',
-                consent_note: '',
-                valid_from: 'now',
-                expires_at: 'in_180d',
-              },
-            ],
-          },
-        })),
+       // Pilot actions
+       addPilot: () =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             pilots: [
+               ...state.formData.pilots,
+               {
+                 name: '',
+                 objective: '',
+                 scope: '',
+                 duration_weeks: 8,
+                 stakeholders: [],
+                 risk_mitigation: '',
+                 learning_objectives: [],
+               },
+             ],
+           },
+         })),
 
-      removeTrigger: (index) =>
-        set((state) => ({
-          formData: {
-            ...state.formData,
-            triggers: state.formData.triggers.filter((_, i) => i !== index),
-          },
-        })),
+       removePilot: (index) =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             pilots: state.formData.pilots.filter((_, i) => i !== index),
+           },
+         })),
 
-      updateTrigger: (index, updates) =>
-        set((state) => ({
-          formData: {
-            ...state.formData,
-            triggers: state.formData.triggers.map((trigger, i) =>
-              i === index ? { ...trigger, ...updates } : trigger
-            ),
-          },
-        })),
+       updatePilot: (index, updates) =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             pilots: state.formData.pilots.map((pilot, i) =>
+               i === index ? { ...pilot, ...updates } : pilot
+             ),
+           },
+         })),
+
+       // Loop Classification actions
+       addLoopClassification: () =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             loop_classification: [
+               ...state.formData.loop_classification,
+               {
+                 from_node: '',
+                 to_node: '',
+                 loop_type: 'reinforcing' as const,
+                 description: '',
+                 leverage_points: [],
+               },
+             ],
+           },
+         })),
+
+       removeLoopClassification: (index) =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             loop_classification: state.formData.loop_classification.filter((_, i) => i !== index),
+           },
+         })),
+
+       updateLoopClassification: (index, updates) =>
+         set((state) => ({
+           formData: {
+             ...state.formData,
+             loop_classification: state.formData.loop_classification.map((classification, i) =>
+               i === index ? { ...classification, ...updates } : classification
+             ),
+           },
+         })),
     }),
     {
       name: 'loop-wizard-storage',
