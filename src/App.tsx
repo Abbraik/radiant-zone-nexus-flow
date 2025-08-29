@@ -21,6 +21,7 @@ import { InnovateLearnZone } from './pages/InnovateLearnZoneNew';
 import { Index } from "./pages/Index";
 import Auth from "./pages/Auth";
 import LoopRegistry from "./pages/LoopRegistry";
+import LoopWizard from "./pages/LoopWizard";
 import LoopDetail from "./pages/LoopDetail";
 import LoopEditor from "./pages/LoopEditor";
 import LoopDashboard from "./pages/LoopDashboard";
@@ -59,10 +60,12 @@ const App = () => (
                      <Route path="/auth" element={<Auth />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/demo" element={<Demo />} />
-                    <Route path="/registry" element={<LoopRegistry />} />
-                    <Route path="/registry/:id" element={<LoopDetail />} />
-                    <Route path="/registry/:id/edit" element={<LoopEditor />} />
-                    <Route path="/loops/:id" element={<LoopDetail />} />
+                     <Route path="/registry" element={<LoopRegistry />} />
+                     <Route path="/registry/new" element={<LoopWizard />} />
+                     <Route path="/registry/:id" element={<LoopDetail />} />
+                     <Route path="/registry/:id/edit" element={<LoopEditor />} />
+                     <Route path="/loops/:id" element={<LoopDetail />} />
+                     <Route path="/loops/new" element={<LoopWizard />} />
                    <Route path="/signal-monitor" element={<LoopSignalMonitor />} />
                    <Route path="/dashboard/loops" element={<LoopDashboard />} />
                    <Route path="/dashboard" element={

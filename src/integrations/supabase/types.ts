@@ -8556,6 +8556,10 @@ export type Database = {
         Args: { scenario_name: string }
         Returns: Json
       }
+      rre_create_loop_full: {
+        Args: { p: Json }
+        Returns: string
+      }
       run_mcda: {
         Args: { option_ids: string[]; task_uuid: string; weights?: Json }
         Returns: Json

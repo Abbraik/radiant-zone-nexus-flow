@@ -107,8 +107,8 @@ const LoopRegistry: React.FC = () => {
   };
 
   const handleNewLoop = () => {
-    // Atlas registry is read-only - show helpful message
-    console.log('Atlas registry is read-only');
+    // Navigate to new loop wizard
+    window.location.href = '/loops/new';
   };
 
   const handleImport = () => {
